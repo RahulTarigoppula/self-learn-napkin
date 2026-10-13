@@ -32,15 +32,15 @@
       "index": 4,
       "caption": "Last merge: everything at 5",
       "firstElement": 10,
-      "lastElement": 11
+      "lastElement": 12
     },
     {
       "index": 5,
       "caption": "Cut the tree to get clusters",
-      "firstElement": 12,
+      "firstElement": 13,
       "lastElement": 13
     }
   ],
-  "hash": "84452f1939423788f3ca718687aadcf2bbe3ca57",
+  "hash": "09e869be62d236b5f1843c3a469195345f6d723b",
   "title": "Agglomerative clustering of five points with single linkage: merges at 1, 1.41, 2 and 5 drawn as a dendrogram, the linkage rules compared, and a cut at height 3 giving two clusters"
 }

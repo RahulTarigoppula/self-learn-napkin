@@ -11,6 +11,14 @@ const OY = 230;
 const S = 28;
 const P = (u, v) => [OX + S * u, OY - S * v];
 const PTS = { A: [1, 1], B: [2, 1], C: [1, 3], D: [6, 4], E: [7, 5] };
+// Where each point's letter goes (dx, dy, anchor), clear of the cluster outlines.
+const LABEL = {
+  A: [0, -26, 'middle'],
+  B: [0, -26, 'middle'],
+  C: [-12, 0, 'end'],
+  D: [0, 26, 'middle'],
+  E: [0, -26, 'middle'],
+};
 
 // Dendrogram: leaves along the bottom, merge height h drawn at y = HY(h).
 const LX = { A: 304, B: 340, C: 376, D: 440, E: 476 };
@@ -49,8 +57,9 @@ export default (d) => {
   d.group(() => {
     for (const [name, [u, v]] of Object.entries(PTS)) {
       const [x, y] = P(u, v);
+      const [dx, dy, anchor] = LABEL[name];
       mark(d, x, y, 'ink');
-      d.text(x + 10, y - 10, name, { pen: 'ink', size: 16, bold: true, anchor: 'start' });
+      d.text(x + dx, y + dy, name, { pen: 'ink', size: 16, bold: true, anchor });
     }
   });
   d.group(() => {
@@ -74,10 +83,10 @@ export default (d) => {
   link(d, (LX.A + LX.B) / 2, HY(1), LX.C, BASE, 2, 'blue');
   d.group(() => {
     d.text(20, 290, 'distance from {A, B} to C:', { pen: 'ink', size: 15, anchor: 'start' });
-    d.text(20, 316, 'single   = closest pair  2.00', { pen: 'blue', size: 14, anchor: 'start', mono: true });
-    d.text(20, 338, 'complete = farthest pair 2.24', { pen: 'muted', size: 14, anchor: 'start', mono: true });
-    d.text(20, 360, 'average  = mean of pairs 2.12', { pen: 'muted', size: 14, anchor: 'start', mono: true });
-    d.text(20, 382, 'Ward     = least added variance', { pen: 'muted', size: 14, anchor: 'start', mono: true });
+    d.text(20, 316, 'single: closest pair → 2.00', { pen: 'blue', size: 15, anchor: 'start' });
+    d.text(20, 338, 'complete: farthest pair → 2.24', { pen: 'muted', size: 15, anchor: 'start' });
+    d.text(20, 360, 'average: mean of pairs → 2.12', { pen: 'muted', size: 15, anchor: 'start' });
+    d.text(20, 382, 'Ward: least added variance', { pen: 'muted', size: 15, anchor: 'start' });
   });
 
   d.step('Last merge: everything at 5');
@@ -86,15 +95,15 @@ export default (d) => {
     d.text(...P(4.4, 2.0), '5.0', { pen: 'violet', size: 15, mono: true });
   });
   link(d, (LX.A + LX.B + 2 * LX.C) / 4, HY(2), (LX.D + LX.E) / 2, HY(Math.SQRT2), 5, 'violet');
+  d.text(300, 362, 'cost: all n² pair distances\n100,000 points → 5 × 10⁹\npairs ≈ 40 GB in float64', {
+    pen: 'red',
+    size: 14,
+    anchor: 'start',
+  });
 
   d.step('Cut the tree to get clusters');
   d.group(() => {
     d.line(288, HY(3), 500, HY(3), { pen: 'orange', dashed: true, thick: true, ...neat });
-    d.text(494, HY(3) - 14, 'cut at 3 → 2 clusters', { pen: 'orange', size: 15, anchor: 'end' });
-  });
-  d.text(300, 316, 'needs all n² pair distances:\n100,000 points → 5 × 10⁹\npairs ≈ 40 GB in float64', {
-    pen: 'red',
-    size: 14,
-    anchor: 'start',
+    d.text(300, 298, 'cut at height 3 → two\nclusters {A, B, C}, {D, E}', { pen: 'orange', size: 15, anchor: 'start' });
   });
 };

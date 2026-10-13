@@ -191,6 +191,16 @@ const flashcardCount = d.flashcards.length;
         )
       }
 
+      <div class="done block" data-done-bar data-slug={id}>
+        <div>
+          <p class="done__title">Finished this napkin?</p>
+          <p class="muted">Mark it read to track your progress — your flashcards join the review queue either way.</p>
+        </div>
+        <button class="btn btn--primary" type="button" data-mark-read>
+          <Icon name="check" size={17} /> <span>Mark as read</span>
+        </button>
+      </div>
+
       <nav class="pager block" aria-label="More in this track">
         {
           prev ? (
@@ -242,7 +252,90 @@ const flashcardCount = d.flashcards.length;
   </article>
 </AppShell>
 
+<script>
+  import { getDb } from '../../db/dexie';
+  import { markRead } from '../../db/review';
+  import { lastStats } from '../../features/shell/shell';
+  import { toast } from '../../lib/toast';
+
+  // "Mark as read" + reflect the read state that the shell computed.
+  const bar = document.querySelector<HTMLElement>('[data-done-bar]');
+  const btn = bar?.querySelector<HTMLButtonElement>('[data-mark-read]');
+  const setDone = (done: boolean) => {
+    bar?.toggleAttribute('data-is-read', done);
+    const label = btn?.querySelector('span');
+    if (label) label.textContent = done ? 'Read ✓' : 'Mark as read';
+  };
+  setDone(lastStats()?.read.has(bar?.dataset.slug ?? '') ?? false);
+  document.addEventListener('napkin:stats', (e) => {
+    const s = (e as CustomEvent<{ read: Set<string> }>).detail;
+    setDone(s.read.has(bar?.dataset.slug ?? ''));
+  });
+  btn?.addEventListener('click', async () => {
+    try {
+      await markRead(getDb(), bar?.dataset.slug ?? '');
+      setDone(true);
+      document.dispatchEvent(new CustomEvent('napkin:progress'));
+      toast('Marked as read. Nice work.');
+    } catch (err) {
+      console.error(err);
+      toast("Couldn't save that — try again.", { danger: true });
+    }
+  });
+
+  // Scroll-spy for the deep-dive table of contents.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
+  if (links.length && 'IntersectionObserver' in window) {
+    const byId = new Map(links.map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const en of entries) {
+          if (!en.isIntersecting) continue;
+          for (const a of links) a.removeAttribute('aria-current');
+          byId.get(en.target.id)?.setAttribute('aria-current', 'true');
+        }
+      },
+      { rootMargin: '-15% 0px -70% 0px' },
+    );
+    for (const id of byId.keys()) {
+      const h = document.getElementById(id);
+      if (h) io.observe(h);
+    }
+  }
+</script>
+
 <style>
+  .done {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border-strong);
+    background: var(--surface);
+  }
+  .done__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-lg);
+  }
+  .done[data-is-read] {
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--success) 45%, transparent);
+    background: color-mix(in srgb, var(--success) 8%, var(--surface));
+  }
+  .done[data-is-read] .btn--primary {
+    --btn-bg: var(--success);
+    --btn-bd: var(--success);
+    --btn-fg: #fff;
+  }
+  .toc a[aria-current] {
+    color: var(--ink);
+    font-weight: 600;
+    border-left-color: var(--track);
+  }
   .napkin {
     padding-top: var(--space-4);
   }

@@ -67,7 +67,9 @@ export default function HomeDashboard({ cards }: { cards: Lite[]; tracks: { id: 
             ? 'cards'
             : due === 0
               ? 'nothing due — all caught up'
-              : `card${due === 1 ? '' : 's'} ready to review`}
+              : stats?.everReviewed
+                ? `card${due === 1 ? '' : 's'} ready to review`
+                : `new flashcard${due === 1 ? '' : 's'} to start with`}
         </span>
         <span class="dash__go">
           {due ? 'Start review' : 'Open review'} <Icon name="arrowRight" size={16} />

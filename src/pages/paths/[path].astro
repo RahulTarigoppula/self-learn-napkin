@@ -30,7 +30,7 @@ const minutes = steps.reduce((s, c) => s + c.data.minutes, 0);
       <h1>{p.title}</h1>
       <p class="muted">{p.blurb}</p>
       <div class="pathpage__cta">
-        {steps[0] && <a class="btn btn--primary btn--lg" href={cardHref(steps[0].id)} data-path-next><Icon name="play" size={17} /> Start</a>}
+        {steps[0] && <a class="btn btn--primary btn--lg" href={cardHref(steps[0].id)} data-path-next><Icon name="play" size={17} /> <span data-label>Start</span></a>}
         <span class="mono muted"><span data-path-count>0</span>/{steps.length} done</span>
       </div>
     </header>
@@ -53,7 +53,8 @@ const minutes = steps.reduce((s, c) => s + c.data.minutes, 0);
     const a = document.querySelector<HTMLAnchorElement>('[data-path-next]');
     if (a && next && done > 0) {
       a.href = cardHref(next);
-      a.lastChild && (a.lastChild.textContent = ' Continue');
+      const label = a.querySelector('[data-label]');
+      if (label) label.textContent = 'Continue';
     }
   };
   paint(lastStats());

@@ -19,7 +19,7 @@
     "preview": "astro preview",
     "lint": "biome ci .",
     "format": "biome check --write .",
-    "typecheck": "astro check",
+    "typecheck": "node scripts/lint-licences.mjs && astro check",
     "test": "vitest run",
     "test:unit": "vitest run --project unit",
     "test:component": "vitest run --project component",

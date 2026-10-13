@@ -1,0 +1,46 @@
+{
+  "name": "transformers",
+  "width": 520,
+  "height": 420,
+  "elements": 11,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Tokens become vectors",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "Add position information",
+      "firstElement": 1,
+      "lastElement": 1
+    },
+    {
+      "index": 2,
+      "caption": "Self-attention: tokens exchange information",
+      "firstElement": 2,
+      "lastElement": 5
+    },
+    {
+      "index": 3,
+      "caption": "Feed-forward, then repeat N times",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "Predict the next token",
+      "firstElement": 9,
+      "lastElement": 9
+    },
+    {
+      "index": 5,
+      "caption": "Causal mask: no peeking ahead",
+      "firstElement": 10,
+      "lastElement": 10
+    }
+  ],
+  "hash": "b8fb4a0318f9e3525994a6a22047bdd3c6788b3f",
+  "title": "A decoder-only Transformer: tokens, embeddings plus positions, N blocks of attention and feed-forward, next-token softmax, causal mask"
+}
