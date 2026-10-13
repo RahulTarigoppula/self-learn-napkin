@@ -460,6 +460,14 @@ kbd {
   animation: fade-up var(--dur-slow) var(--ease-out) both;
   animation-delay: calc(var(--d, 0) * 60ms);
 }
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) .reveal {
+    animation: none;
+  }
+}
+[data-motion="reduced"] .reveal {
+  animation: none;
+}
 
 /* ---------- Code (Shiki emits both themes as CSS variables) ---------- */
 .astro-code {

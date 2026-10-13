@@ -36,7 +36,6 @@ const md = (s: string) =>
 
 function Md({ text, as = 'span' }: { text: string; as?: 'span' | 'p' }) {
   const Tag = as;
-  // biome-ignore lint/security/noDangerouslySetInnerHtml: our own build-time content, HTML-escaped first
   return <Tag dangerouslySetInnerHTML={{ __html: md(text) }} />;
 }
 
