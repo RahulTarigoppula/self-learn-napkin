@@ -1,0 +1,64 @@
+---
+import { href } from '../lib/base';
+import Icon from './Icon.astro';
+
+interface Props {
+  title: string;
+  body: string;
+  icon?: 'wifiOff' | 'search';
+}
+const { title, body, icon = 'search' } = Astro.props;
+---
+
+<div class="lone">
+  <div class="lone__paper paper">
+    <span class="lone__icon"><Icon name={icon} size={30} /></span>
+    <h1>{title}</h1>
+    <p>{body}</p>
+    <div class="lone__cta">
+      <a class="btn btn--primary" href={href('library/')}>Back to the library</a>
+      <a class="btn" href={href('')}>Home</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .lone {
+    display: grid;
+    place-items: center;
+    min-height: 60vh;
+    padding: var(--space-6) var(--space-4);
+  }
+  .lone__paper {
+    max-width: 460px;
+    padding: var(--space-8) var(--space-7);
+    text-align: center;
+    box-shadow: var(--shadow-3);
+    transform: rotate(-1.2deg);
+    display: grid;
+    gap: var(--space-3);
+    justify-items: center;
+  }
+  .lone__icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--danger);
+  }
+  .lone h1 {
+    font-size: var(--text-2xl);
+  }
+  .lone p {
+    color: var(--ink-muted);
+  }
+  .lone__cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+</style>

@@ -1,0 +1,40 @@
+{
+  "name": "idempotency",
+  "width": 520,
+  "height": 420,
+  "elements": 11,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A payment request",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "The response is lost",
+      "firstElement": 3,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Blind retry: charged twice",
+      "firstElement": 4,
+      "lastElement": 5
+    },
+    {
+      "index": 3,
+      "caption": "Send an idempotency key",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "Same key: replay the stored reply",
+      "firstElement": 9,
+      "lastElement": 10
+    }
+  ],
+  "hash": "b9c6cd940396357ad1b5cc762b0c9d4df4ca4d9c",
+  "title": "A lost response, a retry that charges twice, and an idempotency key that makes the retry safe"
+}

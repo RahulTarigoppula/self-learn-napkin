@@ -1,0 +1,46 @@
+{
+  "name": "consistency-models",
+  "width": 520,
+  "height": 420,
+  "elements": 12,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One value, three clients, real time",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "A writes x = 1",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "C reads after that, and gets 0",
+      "firstElement": 4,
+      "lastElement": 4
+    },
+    {
+      "index": 3,
+      "caption": "B reads 1, then 0",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 4,
+      "caption": "Linearizable forbids both",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 5,
+      "caption": "Weaker models allow more",
+      "firstElement": 9,
+      "lastElement": 11
+    }
+  ],
+  "hash": "189bf1eeab7c6dcea42a165a4b149f3f2fdb0aa1",
+  "title": "Consistency models on one timeline: which reads each model allows"
+}

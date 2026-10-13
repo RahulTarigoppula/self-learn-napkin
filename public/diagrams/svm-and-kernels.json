@@ -1,0 +1,46 @@
+{
+  "name": "svm-and-kernels",
+  "width": 520,
+  "height": 420,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Many lines separate the classes",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "The widest street: maximum margin",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 2,
+      "caption": "Support vectors hold the street",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "Soft margin: hinge loss and C",
+      "firstElement": 11,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "Kernel trick: lift x to (x, x²)",
+      "firstElement": 13,
+      "lastElement": 16
+    },
+    {
+      "index": 5,
+      "caption": "RBF kernel: γ sets the reach",
+      "firstElement": 17,
+      "lastElement": 19
+    }
+  ],
+  "hash": "08da0240661bedfa95d38f1553aa5edc3daa6483",
+  "title": "SVM: many separating lines, the maximum-margin street with its support vectors, an outlier paying hinge loss, the kernel trick lifting 1-D points to (x, x²), and RBF gamma"
+}

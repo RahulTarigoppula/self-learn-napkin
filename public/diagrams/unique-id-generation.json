@@ -1,0 +1,46 @@
+{
+  "name": "unique-id-generation",
+  "width": 520,
+  "height": 420,
+  "elements": 13,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Auto-increment per shard collides",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "UUIDv4: 122 random bits, no coordination",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Snowflake: 64 bits = time | machine | sequence",
+      "firstElement": 4,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "What the bit budget buys",
+      "firstElement": 8,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "UUIDv7 / ULID: time first, so ids sort",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 5,
+      "caption": "Clock goes backwards: wait, do not reuse",
+      "firstElement": 11,
+      "lastElement": 12
+    }
+  ],
+  "hash": "331c933580716fbe78ee3555a2068556c86c2151",
+  "title": "Unique IDs: auto-increment collides across shards, UUIDv4, the 64-bit Snowflake layout, UUIDv7 and clock skew"
+}

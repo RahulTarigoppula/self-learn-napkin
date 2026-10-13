@@ -1,0 +1,46 @@
+{
+  "name": "design-news-feed",
+  "width": 520,
+  "height": 420,
+  "elements": 28,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Post path: save the post once",
+      "firstElement": 0,
+      "lastElement": 6
+    },
+    {
+      "index": 1,
+      "caption": "Fan-out on write: push to followers",
+      "firstElement": 7,
+      "lastElement": 13
+    },
+    {
+      "index": 2,
+      "caption": "Read path: fetch the ready-made list",
+      "firstElement": 14,
+      "lastElement": 18
+    },
+    {
+      "index": 3,
+      "caption": "Celebrities: pull at read time",
+      "firstElement": 19,
+      "lastElement": 21
+    },
+    {
+      "index": 4,
+      "caption": "Rank, then page with a cursor",
+      "firstElement": 22,
+      "lastElement": 24
+    },
+    {
+      "index": 5,
+      "caption": "Photos come from a CDN",
+      "firstElement": 25,
+      "lastElement": 27
+    }
+  ],
+  "hash": "1648527c8265b9efa9d52fd1536aa4a45958473d",
+  "title": "News feed: post service, fan-out queue and workers, per-user feed cache, feed service, celebrity pull and a CDN"
+}

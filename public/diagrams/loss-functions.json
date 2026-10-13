@@ -1,0 +1,46 @@
+{
+  "name": "loss-functions",
+  "width": 520,
+  "height": 420,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Loss as a function of the error",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "Squared error: big misses explode",
+      "firstElement": 1,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "Absolute error: every unit costs the same",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 3,
+      "caption": "Huber: squared near 0, straight beyond δ",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 4,
+      "caption": "Mean vs median: one late delivery",
+      "firstElement": 7,
+      "lastElement": 10
+    },
+    {
+      "index": 5,
+      "caption": "Classification: log-loss and hinge",
+      "firstElement": 11,
+      "lastElement": 14
+    }
+  ],
+  "hash": "9a8ab829af5ac9ab0503677f8cb5e181891bea50",
+  "title": "Regression losses (squared, absolute, Huber) against the error, mean vs median, and log-loss vs hinge on the margin"
+}

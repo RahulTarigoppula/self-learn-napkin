@@ -1,0 +1,45 @@
+name: Mains
+subtitle: System Design
+blurb: "How real systems stay fast and alive at scale — from one request's journey to replication, consensus and full designs."
+order:
+  - sysdesign/back-of-envelope
+  - sysdesign/client-server-basics
+  - sysdesign/dns-and-cdns
+  - sysdesign/load-balancing
+  - sysdesign/reverse-proxies-and-gateways
+  - sysdesign/horizontal-vs-vertical-scaling
+  - sysdesign/caching
+  - sysdesign/cache-eviction
+  - sysdesign/cache-invalidation
+  - sysdesign/consistent-hashing
+  - sysdesign/sharding
+  - sysdesign/replication
+  - sysdesign/quorum-n-r-w
+  - sysdesign/read-repair
+  - sysdesign/cap-theorem
+  - sysdesign/consistency-models
+  - sysdesign/acid-and-isolation
+  - sysdesign/sql-vs-nosql
+  - sysdesign/indexes-and-b-trees
+  - sysdesign/lsm-trees
+  - sysdesign/write-ahead-log
+  - sysdesign/bloom-filters
+  - sysdesign/message-queues
+  - sysdesign/pub-sub-and-streams
+  - sysdesign/idempotency
+  - sysdesign/rate-limiting
+  - sysdesign/backpressure
+  - sysdesign/circuit-breakers-and-retries
+  - sysdesign/api-design
+  - sysdesign/realtime-communication
+  - sysdesign/blob-storage
+  - sysdesign/search-indexing
+  - sysdesign/observability
+  - sysdesign/raft-leader-election
+  - sysdesign/distributed-locks
+  - sysdesign/two-phase-commit-vs-sagas
+  - sysdesign/geo-replication
+  - sysdesign/unique-id-generation
+  - sysdesign/design-url-shortener
+  - sysdesign/design-news-feed
+  - sysdesign/design-chat-system

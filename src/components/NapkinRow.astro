@@ -1,0 +1,118 @@
+---
+import { cardHref } from '../lib/base';
+import { type Card, numberOf, pad3 } from '../lib/content';
+import Icon from './Icon.astro';
+
+interface Props {
+  card: Card;
+  step?: number;
+}
+const { card, step } = Astro.props;
+const d = card.data;
+const text = `${d.title} ${d.tldr} ${d.tags.join(' ')}`.toLowerCase();
+---
+
+<li
+  class:list={['row', `t-${d.track}`]}
+  data-slug={card.id}
+  data-track={d.track}
+  data-tags={d.tags.join(' ')}
+  data-diff={d.difficulty}
+  data-text={text}
+>
+  <a href={cardHref(card.id)}>
+    <span class="row__num mono">{step !== undefined ? String(step).padStart(2, '0') : pad3(numberOf(card.id))}</span>
+    <span class="row__main">
+      <span class="row__title">{d.title}{d.griddle && <span class="row__badge" title="Has an interactive playground"><Icon name="hand" size={13} /></span>}</span>
+      <span class="row__tldr">{d.tldr}</span>
+    </span>
+    <span class="row__meta">
+      <span class="difficulty" role="img" aria-label={`difficulty ${d.difficulty} of 3`}>
+        {[1, 2, 3].map((i) => <i class:list={{ on: i <= d.difficulty }} />)}
+      </span>
+      <span class="row__min mono">{d.minutes}m</span>
+      <span class="row__done" role="img" aria-label="read"><Icon name="check" size={15} stroke={3} /></span>
+    </span>
+  </a>
+</li>
+
+<style>
+  .row a {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 64px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+  .row a:hover {
+    background: var(--surface-2);
+  }
+  .row + .row {
+    border-top: 1px solid var(--border);
+  }
+  .row__num {
+    font-size: var(--text-xs);
+    color: var(--track-ink);
+    font-weight: 700;
+  }
+  .row__main {
+    display: grid;
+    min-width: 0;
+  }
+  .row__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 650;
+    font-size: var(--text-md);
+  }
+  .row__badge {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--track-soft);
+    color: var(--track-ink);
+  }
+  .row__tldr {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .row__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .row__min {
+    font-size: var(--text-xs);
+    color: var(--ink-faint);
+    width: 26px;
+    text-align: right;
+  }
+  .row__done {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px dashed var(--border-strong);
+    color: transparent;
+  }
+  .row[data-read='true'] .row__done {
+    border: 0;
+    background: var(--success);
+    color: #fff;
+  }
+  @media (max-width: 520px) {
+    .row .difficulty {
+      display: none;
+    }
+  }
+</style>

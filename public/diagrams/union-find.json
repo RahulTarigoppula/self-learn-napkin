@@ -1,0 +1,46 @@
+{
+  "name": "union-find",
+  "width": 520,
+  "height": 400,
+  "elements": 17,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Six singletons: everyone is their own parent",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "union(0,1), union(2,3), union(4,5)",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "union(1,3): link the two roots",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "union(4,1): smaller tree under the bigger",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "find(3) compresses its path",
+      "firstElement": 10,
+      "lastElement": 13
+    },
+    {
+      "index": 5,
+      "caption": "Same root, same set",
+      "firstElement": 14,
+      "lastElement": 16
+    }
+  ],
+  "hash": "81cadfbda872ec08549d6dd70b3c22d80b58aea9",
+  "title": "Union-find on six elements: parent pointers, union by size, path compression and a cycle check"
+}

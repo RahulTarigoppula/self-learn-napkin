@@ -1,0 +1,40 @@
+{
+  "name": "recursion",
+  "width": 520,
+  "height": 420,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A base case and a recursive case",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Every call pushes a frame",
+      "firstElement": 3,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "The base case stops the descent",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Unwinding: each frame finishes its multiply",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 4,
+      "caption": "Two calls per call: a recursion tree",
+      "firstElement": 12,
+      "lastElement": 14
+    }
+  ],
+  "hash": "89bba8606f3ce0a877d1f24ece8d75a4f547083e",
+  "title": "factorial(4) on the call stack, and the call tree of fib(4)"
+}

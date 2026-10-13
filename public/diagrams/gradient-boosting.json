@@ -1,0 +1,46 @@
+{
+  "name": "gradient-boosting",
+  "width": 520,
+  "height": 420,
+  "elements": 19,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Start with the mean",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Residuals: what is left to explain",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Tree 1 fits the residuals",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Add it, shrunk by η = 0.5",
+      "firstElement": 8,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "Tree 2 fits the new residuals",
+      "firstElement": 10,
+      "lastElement": 14
+    },
+    {
+      "index": 5,
+      "caption": "Many small steps, stop early",
+      "firstElement": 15,
+      "lastElement": 18
+    }
+  ],
+  "hash": "8012917f2d17497fea57365775ad4709247e65ff",
+  "title": "Gradient boosting: start from the mean, fit stumps to the residuals, add them with shrinkage, stop early"
+}

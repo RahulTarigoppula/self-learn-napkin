@@ -1,0 +1,40 @@
+{
+  "name": "backtracking",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Subsets: one take-or-skip decision per element",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Choose, explore, unchoose",
+      "firstElement": 2,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "4-queens: row 2 has no safe square",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Backtrack: move the row-1 queen",
+      "firstElement": 9,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "Row 0 → column 1: a solution",
+      "firstElement": 13,
+      "lastElement": 15
+    }
+  ],
+  "hash": "800e57990fbb7d28786c43df027c191745c827a8",
+  "title": "Backtracking: the subsets decision tree and 4-queens with pruning"
+}

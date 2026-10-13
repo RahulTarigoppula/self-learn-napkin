@@ -1,0 +1,40 @@
+{
+  "name": "observability",
+  "width": 520,
+  "height": 420,
+  "elements": 10,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Logs: one record per event",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "Metrics: cheap numbers over time",
+      "firstElement": 1,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Traces: one request across services",
+      "firstElement": 4,
+      "lastElement": 5
+    },
+    {
+      "index": 3,
+      "caption": "Percentiles: the average hides the tail",
+      "firstElement": 6,
+      "lastElement": 7
+    },
+    {
+      "index": 4,
+      "caption": "SLO: 99.9 % leaves 43 minutes",
+      "firstElement": 8,
+      "lastElement": 9
+    }
+  ],
+  "hash": "afe4b873eacdf2eadf51f21bcbec5429c16ab2fd",
+  "title": "Logs, metrics, a distributed trace, average vs p99 latency, and an SLO error budget"
+}

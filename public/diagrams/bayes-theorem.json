@@ -1,0 +1,46 @@
+{
+  "name": "bayes-theorem",
+  "width": 520,
+  "height": 420,
+  "elements": 12,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Start with 10,000 people",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "1 % have the disease: the prior",
+      "firstElement": 1,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "Test the sick: 90 % sensitivity",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 3,
+      "caption": "Test the healthy: 9 % false positives",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 4,
+      "caption": "Keep only the positives",
+      "firstElement": 7,
+      "lastElement": 10
+    },
+    {
+      "index": 5,
+      "caption": "A second positive: the posterior becomes the prior",
+      "firstElement": 11,
+      "lastElement": 11
+    }
+  ],
+  "hash": "4a7d4537fdfe15e6dca6096c7758c2636bfbf200",
+  "title": "Bayes theorem as a natural-frequency tree: 10,000 people, a 1 % disease and an imperfect test"
+}

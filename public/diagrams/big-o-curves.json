@@ -1,0 +1,40 @@
+{
+  "name": "big-o-curves",
+  "width": 520,
+  "height": 420,
+  "elements": 17,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Axes: n across, work up",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "O(1) and O(log n) stay flat",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "O(n) and O(n log n) climb",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "O(n²) and O(2ⁿ) leave the napkin",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Drop the constants and small terms",
+      "firstElement": 11,
+      "lastElement": 16
+    }
+  ],
+  "hash": "2a62e96f527a49214e482d91bc27481ffbaa9e5c",
+  "title": "Big-O growth curves: O(1) to O(2^n)"
+}

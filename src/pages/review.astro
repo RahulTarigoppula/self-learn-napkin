@@ -1,0 +1,17 @@
+---
+import Review from '../features/review/Review';
+import AppShell from '../layouts/AppShell.astro';
+---
+
+<AppShell title="Review" active="review" focus description="Spaced-repetition flashcards: recall, rate, repeat.">
+  <div class="container review-page">
+    <h1 class="sr-only">Review</h1>
+    <Review client:load />
+  </div>
+</AppShell>
+
+<style>
+  .review-page {
+    padding-top: var(--space-5);
+  }
+</style>

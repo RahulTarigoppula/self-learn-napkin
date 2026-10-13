@@ -1,0 +1,46 @@
+{
+  "name": "graphs",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Vertices joined by edges",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Adjacency list: each vertex lists its neighbours",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Adjacency matrix: a V × V grid of 0s and 1s",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Paths and cycles",
+      "firstElement": 7,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Directed and weighted: a DAG",
+      "firstElement": 11,
+      "lastElement": 12
+    },
+    {
+      "index": 5,
+      "caption": "Implicit graph: a grid",
+      "firstElement": 13,
+      "lastElement": 15
+    }
+  ],
+  "hash": "df2de72ea2c1602544fe606f6d8d377580eabb27",
+  "title": "One graph as a picture, an adjacency list and an adjacency matrix; paths, cycles, a weighted DAG and a grid"
+}

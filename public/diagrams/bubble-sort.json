@@ -1,0 +1,40 @@
+{
+  "name": "bubble-sort",
+  "width": 520,
+  "height": 420,
+  "elements": 12,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Eight values in a row",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "Compare the first pair; swap if out of order",
+      "firstElement": 1,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "After pass 1, the 9 is parked at the end",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Each pass parks one more",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "A clean pass means sorted: stop early",
+      "firstElement": 10,
+      "lastElement": 11
+    }
+  ],
+  "hash": "dee00c1d9ccc1c4b24f6de785eea64d1340722b5",
+  "title": "Bubble sort passes over [5,3,8,1,9,2,7,4]"
+}

@@ -1,0 +1,245 @@
+---
+import Icon from '../components/Icon.astro';
+import NapkinRow from '../components/NapkinRow.astro';
+import AppShell from '../layouts/AppShell.astro';
+import { href } from '../lib/base';
+import { library } from '../lib/content';
+
+const { cards, tracks } = await library();
+const tagCounts = new Map<string, number>();
+for (const c of cards) for (const t of c.data.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+const topTags = [...tagCounts.entries()]
+  .filter(([, n]) => n >= 2)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 18)
+  .map(([t]) => t);
+---
+
+<AppShell title="Library" active="library" description="Every napkin: data structures and algorithms, system design, and data science.">
+  <div class="container lib">
+    <header class="lib__head">
+      <p class="eyebrow">The library</p>
+      <h1>Every napkin, on one menu.</h1>
+      <p class="muted">{cards.length} topics in three tracks. Filter by track, tag or difficulty — or just type.</p>
+    </header>
+
+    <div class="lib__tools" role="search">
+      <label class="lib__filter">
+        <Icon name="search" size={18} />
+        <input id="lib-q" type="search" placeholder="Filter by name, idea or tag…" aria-label="Filter napkins" autocomplete="off" />
+      </label>
+      <div class="lib__chips" role="group" aria-label="Track">
+        <button type="button" class="fchip" data-track-filter="" aria-pressed="true">All</button>
+        {tracks.map((t) => (
+          <button type="button" class:list={['fchip', `t-${t.id}`]} data-track-filter={t.id} aria-pressed="false">{t.subtitle}</button>
+        ))}
+      </div>
+      <div class="lib__chips" role="group" aria-label="More filters">
+        <button type="button" class="fchip" data-unread aria-pressed="false">Unread</button>
+        <button type="button" class="fchip" data-diff-filter="1" aria-pressed="false">Gentle</button>
+        <button type="button" class="fchip" data-diff-filter="3" aria-pressed="false">Spicy</button>
+        {topTags.map((t) => (
+          <button type="button" class="fchip fchip--tag" data-tag-filter={t} aria-pressed="false">#{t}</button>
+        ))}
+      </div>
+    </div>
+
+    {
+      tracks.map((t) => (
+        <section class:list={['lib__track', `t-${t.id}`]} data-section={t.id} aria-labelledby={`h-${t.id}`}>
+          <div class="lib__track-head">
+            <div>
+              <p class="lib__course hand">{t.name}</p>
+              <h2 id={`h-${t.id}`}>{t.subtitle}</h2>
+            </div>
+            <a class="btn btn--ghost" href={href(`${t.id}/`)}>
+              Course view <Icon name="arrowRight" />
+            </a>
+          </div>
+          <ol class="lib__list card">
+            {t.cards.map((c) => (
+              <NapkinRow card={c} />
+            ))}
+          </ol>
+        </section>
+      ))
+    }
+    <p class="lib__empty card" hidden>
+      Nothing on the menu for that. Try a broader word, or <button type="button" class="link" data-clear>clear the filters</button>.
+    </p>
+  </div>
+</AppShell>
+
+<script>
+  const q = document.querySelector<HTMLInputElement>('#lib-q');
+  const rows = [...document.querySelectorAll<HTMLElement>('.lib__list > li')];
+  const sections = [...document.querySelectorAll<HTMLElement>('[data-section]')];
+  const empty = document.querySelector<HTMLElement>('.lib__empty');
+  const state = { track: '', tag: '', diff: '', unread: false };
+
+  const params = new URLSearchParams(location.search);
+  state.tag = params.get('tag') ?? '';
+  state.track = params.get('track') ?? '';
+
+  const press = (sel: string, on: (b: HTMLElement) => boolean) => {
+    for (const b of document.querySelectorAll<HTMLElement>(sel)) b.setAttribute('aria-pressed', String(on(b)));
+  };
+
+  const apply = () => {
+    const text = (q?.value ?? '').trim().toLowerCase();
+    let shown = 0;
+    for (const r of rows) {
+      const ok =
+        (!state.track || r.dataset.track === state.track) &&
+        (!state.tag || (r.dataset.tags ?? '').split(' ').includes(state.tag)) &&
+        (!state.diff || r.dataset.diff === state.diff) &&
+        (!state.unread || r.dataset.read !== 'true') &&
+        (!text || text.split(/\s+/).every((w) => (r.dataset.text ?? '').includes(w)));
+      r.hidden = !ok;
+      if (ok) shown++;
+    }
+    for (const s of sections) s.hidden = ![...s.querySelectorAll<HTMLElement>('li')].some((li) => !li.hidden);
+    if (empty) empty.hidden = shown > 0;
+    press('[data-track-filter]', (b) => (b.dataset.trackFilter ?? '') === state.track);
+    press('[data-tag-filter]', (b) => b.dataset.tagFilter === state.tag);
+    press('[data-diff-filter]', (b) => b.dataset.diffFilter === state.diff);
+    press('[data-unread]', () => state.unread);
+    const url = new URL(location.href);
+    url.searchParams.delete('tag');
+    url.searchParams.delete('track');
+    if (state.tag) url.searchParams.set('tag', state.tag);
+    if (state.track) url.searchParams.set('track', state.track);
+    history.replaceState(null, '', url);
+  };
+
+  document.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('.fchip, [data-clear]');
+    if (!b) return;
+    if (b.hasAttribute('data-clear')) {
+      Object.assign(state, { track: '', tag: '', diff: '', unread: false });
+      if (q) q.value = '';
+    } else if (b.dataset.trackFilter !== undefined) state.track = b.dataset.trackFilter;
+    else if (b.dataset.tagFilter) state.tag = state.tag === b.dataset.tagFilter ? '' : b.dataset.tagFilter;
+    else if (b.dataset.diffFilter) state.diff = state.diff === b.dataset.diffFilter ? '' : b.dataset.diffFilter;
+    else if (b.hasAttribute('data-unread')) state.unread = !state.unread;
+    apply();
+  });
+  q?.addEventListener('input', apply);
+  document.addEventListener('napkin:stats', apply);
+  apply();
+</script>
+
+<style>
+  .lib {
+    padding-top: var(--space-6);
+  }
+  .lib__head h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin: var(--space-2) 0;
+  }
+  .lib__tools {
+    position: sticky;
+    top: calc(var(--topbar-h) + var(--safe-top));
+    z-index: 5;
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-6) calc(var(--space-4) * -1) 0;
+    padding: var(--space-3) var(--space-4);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  @media (min-width: 1024px) {
+    .lib__tools {
+      top: 0;
+    }
+  }
+  .lib__filter {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: 50px;
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-full);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--ink-muted);
+    box-shadow: var(--shadow-1);
+  }
+  .lib__filter:focus-within {
+    box-shadow: var(--ring);
+  }
+  .lib__filter input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--ink);
+    font-size: var(--text-md);
+  }
+  .lib__chips {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .lib__chips::-webkit-scrollbar {
+    display: none;
+  }
+  .fchip {
+    flex: none;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+  .fchip[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+  .fchip--tag {
+    font-weight: 500;
+  }
+  .lib__track {
+    margin-top: var(--space-8);
+  }
+  .lib__track-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  .lib__course {
+    color: var(--track-ink);
+    font-size: 1.2rem;
+  }
+  .lib__track h2 {
+    font-size: var(--text-2xl);
+  }
+  .lib__list {
+    list-style: none;
+    padding: var(--space-2);
+  }
+  .lib__empty {
+    margin-top: var(--space-8);
+    padding: var(--space-8);
+    text-align: center;
+    color: var(--ink-muted);
+  }
+  .link {
+    color: var(--accent-ink);
+    text-decoration: underline;
+    min-height: 44px;
+  }
+</style>

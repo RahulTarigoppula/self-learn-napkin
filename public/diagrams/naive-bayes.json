@@ -1,0 +1,46 @@
+{
+  "name": "naive-bayes",
+  "width": 520,
+  "height": 420,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Count words in each class",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Bayes' rule",
+      "firstElement": 2,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "Naive: words are independent",
+      "firstElement": 3,
+      "lastElement": 3
+    },
+    {
+      "index": 3,
+      "caption": "Zero counts: Laplace smoothing",
+      "firstElement": 4,
+      "lastElement": 7
+    },
+    {
+      "index": 4,
+      "caption": "Score the email \"free win\"",
+      "firstElement": 8,
+      "lastElement": 11
+    },
+    {
+      "index": 5,
+      "caption": "Add logs instead of multiplying",
+      "firstElement": 12,
+      "lastElement": 13
+    }
+  ],
+  "hash": "10a3d26ef23d60abaa1b6c880fc42aa69f5fa978",
+  "title": "Naive Bayes spam filter: word counts per class, Bayes rule, the naive independence product, Laplace smoothing, scoring the email \"free win\" and adding log-probabilities"
+}

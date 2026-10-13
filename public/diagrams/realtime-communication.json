@@ -1,0 +1,40 @@
+{
+  "name": "realtime-communication",
+  "width": 520,
+  "height": 420,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Polling: ask again and again",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Long polling: the server holds the request",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Server-Sent Events: one open stream",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "WebSocket: upgrade, then both ways",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 4,
+      "caption": "Scale out with a pub/sub backplane",
+      "firstElement": 12,
+      "lastElement": 14
+    }
+  ],
+  "hash": "e0d889bf4f2f89847cb038f618740c5d89e93447",
+  "title": "Polling, long polling, Server-Sent Events and WebSockets on a timeline, and WebSocket servers joined by a pub/sub backplane"
+}

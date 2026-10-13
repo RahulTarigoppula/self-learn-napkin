@@ -1,0 +1,46 @@
+{
+  "name": "backpropagation",
+  "width": 520,
+  "height": 420,
+  "elements": 12,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "The computation as a graph",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Forward pass: compute every value",
+      "firstElement": 2,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "Start at the end: ∂L/∂e = 2e = 4",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 3,
+      "caption": "+ and − pass the gradient straight through",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 4,
+      "caption": "× sends each input the other input",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 5,
+      "caption": "Use the gradients: one descent step",
+      "firstElement": 9,
+      "lastElement": 11
+    }
+  ],
+  "hash": "e652eaf99dc0866d20a3ec0706cec56b5ff0e0a9",
+  "title": "Backpropagation on L = (x·w + b − y)²: forward values, then gradients flowing backwards"
+}

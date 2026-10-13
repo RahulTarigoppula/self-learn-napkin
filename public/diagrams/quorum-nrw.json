@@ -1,0 +1,40 @@
+{
+  "name": "quorum-nrw",
+  "width": 520,
+  "height": 410,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "N = 3 replicas of one key",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Write with W = 2",
+      "firstElement": 5,
+      "lastElement": 10
+    },
+    {
+      "index": 2,
+      "caption": "Read with R = 2",
+      "firstElement": 11,
+      "lastElement": 14
+    },
+    {
+      "index": 3,
+      "caption": "R + W > N: the sets must overlap",
+      "firstElement": 15,
+      "lastElement": 17
+    },
+    {
+      "index": 4,
+      "caption": "R + W ≤ N: a stale read is possible",
+      "firstElement": 18,
+      "lastElement": 19
+    }
+  ],
+  "hash": "a64a9daf020d6a3533005577197c6958d20a6ed4",
+  "title": "Quorum reads and writes over three replicas"
+}

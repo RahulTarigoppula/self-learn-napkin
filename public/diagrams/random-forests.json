@@ -1,0 +1,46 @@
+{
+  "name": "random-forests",
+  "width": 520,
+  "height": 420,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One training set: ten rows",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Bootstrap: draw 10 rows with replacement",
+      "firstElement": 2,
+      "lastElement": 8
+    },
+    {
+      "index": 2,
+      "caption": "A tree per sample, random features per split",
+      "firstElement": 9,
+      "lastElement": 12
+    },
+    {
+      "index": 3,
+      "caption": "Majority vote",
+      "firstElement": 13,
+      "lastElement": 14
+    },
+    {
+      "index": 4,
+      "caption": "Out-of-bag rows: a free test set",
+      "firstElement": 15,
+      "lastElement": 16
+    },
+    {
+      "index": 5,
+      "caption": "More trees: lower variance",
+      "firstElement": 17,
+      "lastElement": 19
+    }
+  ],
+  "hash": "a3bd5c5044adf512aad56b9781de082d3ccdd931",
+  "title": "Random forest: bootstrap samples, trees on random features, a majority vote, out-of-bag rows and falling variance"
+}

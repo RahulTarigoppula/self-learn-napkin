@@ -1,0 +1,40 @@
+{
+  "name": "sorting-overview",
+  "width": 520,
+  "height": 420,
+  "elements": 10,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Two families of sorting algorithms",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "A comparison sort is a tree of questions",
+      "firstElement": 2,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "3! = 6 orders need 6 leaves, so 3 levels",
+      "firstElement": 3,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Stable: equal keys keep their order",
+      "firstElement": 7,
+      "lastElement": 7
+    },
+    {
+      "index": 4,
+      "caption": "What real libraries ship",
+      "firstElement": 8,
+      "lastElement": 9
+    }
+  ],
+  "hash": "59e410a7c948fbe0630f82fdee1141cc60c99370",
+  "title": "Sorting landscape: comparison vs non-comparison, the decision-tree lower bound, stability"
+}

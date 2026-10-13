@@ -1,0 +1,357 @@
+---
+import { getCollection } from 'astro:content';
+import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
+import SearchPalette from '../features/search/SearchPalette';
+import { href } from '../lib/base';
+import Base from './Base.astro';
+
+export type NavKey = 'home' | 'library' | 'review' | 'progress' | 'settings' | 'none';
+interface Props {
+  title: string;
+  description?: string;
+  active?: NavKey;
+  /** Hide the mobile tab bar (focus screens such as a review session). */
+  focus?: boolean;
+}
+const { title, description, active = 'none', focus = false } = Astro.props;
+
+const nav = [
+  { key: 'home', label: 'Home', icon: 'home', to: '' },
+  { key: 'library', label: 'Library', icon: 'library', to: 'library/' },
+  { key: 'review', label: 'Review', icon: 'layers', to: 'review/' },
+  { key: 'progress', label: 'Progress', icon: 'chart', to: 'progress/' },
+] as const;
+
+const tracks = (await getCollection('tracks')).sort(
+  (a, b) => ['dsa', 'sysdesign', 'ds'].indexOf(a.id) - ['dsa', 'sysdesign', 'ds'].indexOf(b.id),
+);
+---
+
+<Base title={title} description={description}>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class:list={['shell', { 'shell--focus': focus }]}>
+    <aside class="sidebar" aria-label="Main">
+      <a class="sidebar__logo" href={href('')} aria-label="Napkin home"><Logo /></a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search napkins (Control K)">
+        <Icon name="search" size={17} />
+        <span>Search</span>
+        <kbd class="search-trigger__kbd">Ctrl K</kbd>
+      </button>
+      <nav class="sidenav">
+        {
+          nav.map((n) => (
+            <a class="sidenav__link" href={href(n.to)} aria-current={active === n.key ? 'page' : undefined}>
+              <Icon name={n.icon} size={19} />
+              <span>{n.label}</span>
+              {n.key === 'review' && <span class="badge" data-due-badge hidden />}
+            </a>
+          ))
+        }
+      </nav>
+      <div class="sidebar__section">
+        <p class="eyebrow">Tracks</p>
+        {
+          tracks.map((t) => (
+            <a class:list={['sidenav__track', `t-${t.id}`]} href={href(`${t.id}/`)}>
+              <span class="dot" />
+              {t.data.subtitle}
+            </a>
+          ))
+        }
+      </div>
+      <div class="sidebar__foot">
+        <a class="sidenav__link sidenav__link--small" href={href('settings/')} aria-current={active === 'settings' ? 'page' : undefined}>
+          <Icon name="sliders" size={18} />
+          <span>Settings</span>
+        </a>
+        <p class="sidebar__streak" data-streak-chip hidden><Icon name="flame" size={16} /><span></span><span class="sr-only"> day streak</span></p>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <a href={href('')} aria-label="Napkin home"><Logo size={28} /></a>
+      <div class="topbar__actions">
+        <span class="streak-chip" data-streak-chip hidden><Icon name="flame" size={15} /><span></span><span class="sr-only"> day streak</span></span>
+        <button class="btn btn--ghost btn--icon" type="button" data-open-search aria-label="Search napkins">
+          <Icon name="search" />
+        </button>
+        <a class="btn btn--ghost btn--icon" href={href('settings/')} aria-label="Settings" aria-current={active === 'settings' ? 'page' : undefined}>
+          <Icon name="sliders" />
+        </a>
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <slot />
+    </main>
+
+    <nav class="tabbar" aria-label="Main">
+      {
+        nav.map((n) => (
+          <a class="tabbar__link" href={href(n.to)} aria-current={active === n.key ? 'page' : undefined}>
+            <span class="tabbar__icon">
+              <Icon name={n.icon} size={22} />
+              {n.key === 'review' && <span class="badge badge--dot" data-due-badge hidden />}
+            </span>
+            <span>{n.label}</span>
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+  <SearchPalette client:load />
+  <div class="toast-region" role="status" aria-live="polite"></div>
+  <script>
+    import { initShell } from '../features/shell/shell';
+    initShell();
+  </script>
+</Base>
+
+<style>
+  .shell {
+    min-height: 100dvh;
+  }
+  .main {
+    view-transition-name: main;
+    padding-top: calc(var(--topbar-h) + var(--safe-top));
+    padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + var(--space-8));
+    min-width: 0;
+  }
+  .shell--focus .main {
+    padding-bottom: calc(var(--safe-bottom) + var(--space-6));
+  }
+
+  /* ---- Mobile top bar ---- */
+  .topbar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 20;
+    height: calc(var(--topbar-h) + var(--safe-top));
+    padding: var(--safe-top) var(--space-2) 0 var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .streak-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 4px;
+    padding: 4px 9px;
+    border-radius: var(--radius-full);
+    background: var(--dsa-soft);
+    color: var(--dsa-ink);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: var(--text-sm);
+  }
+
+  /* ---- Mobile tab bar ---- */
+  .tabbar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: calc(var(--tabbar-h) + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-top: 1px solid var(--border);
+  }
+  .shell--focus .tabbar {
+    display: none;
+  }
+  .tabbar__link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .tabbar__link[aria-current='page'] {
+    color: var(--ink);
+  }
+  .tabbar__icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 30px;
+    border-radius: var(--radius-full);
+    transition: background-color var(--dur-base) var(--ease-out);
+  }
+  .tabbar__link[aria-current='page'] .tabbar__icon {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+  .badge {
+    margin-left: auto;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: var(--radius-full);
+    background: var(--badge-bg);
+    color: var(--badge-ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-grid;
+    place-items: center;
+  }
+  .badge--dot {
+    position: absolute;
+    top: -3px;
+    right: 4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 10px;
+    box-shadow: 0 0 0 2px var(--bg);
+  }
+
+  /* ---- Desktop sidebar ---- */
+  .sidebar {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .topbar,
+    .tabbar {
+      display: none;
+    }
+    .shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    }
+    .main {
+      padding-top: var(--space-6);
+      padding-bottom: var(--space-10);
+    }
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+      padding: var(--space-6) var(--space-4);
+      border-right: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
+    }
+    .sidebar__logo {
+      padding: 0 var(--space-2);
+    }
+  }
+  .search-trigger {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 42px;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+    box-shadow: var(--shadow-1);
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+  .search-trigger:hover {
+    border-color: var(--border-strong);
+  }
+  .search-trigger__kbd {
+    margin-left: auto;
+    font-size: 10px;
+  }
+  .sidenav {
+    display: grid;
+    gap: 2px;
+  }
+  .sidenav__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: 44px;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+  .sidenav__link:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .sidenav__link[aria-current='page'] {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: var(--shadow-1);
+    border: 1px solid var(--border);
+  }
+  .sidenav__link--small {
+    height: 40px;
+    font-size: var(--text-sm);
+  }
+  .sidebar__section {
+    display: grid;
+    gap: 2px;
+    padding: 0 var(--space-1);
+  }
+  .sidebar__section .eyebrow {
+    padding: 0 var(--space-2) var(--space-2);
+  }
+  .sidenav__track {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 40px;
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink-muted);
+  }
+  .sidenav__track:hover {
+    color: var(--ink);
+    background: var(--surface-2);
+  }
+  .sidenav__track .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+    background: var(--track);
+  }
+  .sidebar__foot {
+    margin-top: auto;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .sidebar__streak {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 var(--space-3);
+    color: var(--dsa-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+</style>

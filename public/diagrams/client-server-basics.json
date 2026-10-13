@@ -1,0 +1,46 @@
+{
+  "name": "client-server-basics",
+  "width": 520,
+  "height": 420,
+  "elements": 25,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A browser, a DNS resolver, a server",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "DNS: name → IP address",
+      "firstElement": 4,
+      "lastElement": 7
+    },
+    {
+      "index": 2,
+      "caption": "TCP: the three-way handshake",
+      "firstElement": 8,
+      "lastElement": 12
+    },
+    {
+      "index": 3,
+      "caption": "TLS: agree keys, check the certificate",
+      "firstElement": 13,
+      "lastElement": 16
+    },
+    {
+      "index": 4,
+      "caption": "HTTP: request and response",
+      "firstElement": 17,
+      "lastElement": 21
+    },
+    {
+      "index": 5,
+      "caption": "Where the time went",
+      "firstElement": 22,
+      "lastElement": 24
+    }
+  ],
+  "hash": "3e9e1c2c23479f2e0a007b7d94fe424973fee9d5",
+  "title": "The life of an HTTPS request: DNS lookup, TCP handshake, TLS handshake, then the HTTP request and response"
+}

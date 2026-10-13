@@ -1,0 +1,40 @@
+{
+  "name": "hash-chaining",
+  "width": 520,
+  "height": 420,
+  "elements": 19,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Eight buckets in a column",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Hash each key to a bucket",
+      "firstElement": 3,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "Two keys collide: chain them",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 3,
+      "caption": "Six keys in eight buckets: load factor 0.75",
+      "firstElement": 10,
+      "lastElement": 16
+    },
+    {
+      "index": 4,
+      "caption": "Double to 16 buckets and rehash",
+      "firstElement": 17,
+      "lastElement": 18
+    }
+  ],
+  "hash": "19fd59adde46797dcdc3f632b6d67f77b7eff136",
+  "title": "Hash table with separate chaining and a resize"
+}

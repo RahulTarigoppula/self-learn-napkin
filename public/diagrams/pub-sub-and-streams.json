@@ -1,0 +1,40 @@
+{
+  "name": "pub-sub-and-streams",
+  "width": 520,
+  "height": 420,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Work queue vs pub/sub topic",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "A stream is an append-only log",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Partitions: the key picks one",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Consumer group: one partition, one consumer",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Offsets, retention and replay",
+      "firstElement": 11,
+      "lastElement": 13
+    }
+  ],
+  "hash": "66fdbf486f31d0faba155b65e59f0fdc887d0c9d",
+  "title": "Work queue vs pub/sub, and a partitioned log with consumer groups and offsets"
+}

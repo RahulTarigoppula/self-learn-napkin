@@ -1,0 +1,40 @@
+{
+  "name": "binary-search",
+  "width": 520,
+  "height": 390,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A sorted array with lo and hi",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Probe the middle",
+      "firstElement": 4,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Target is bigger: discard the left half",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Probe the middle of what is left",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Found it",
+      "firstElement": 11,
+      "lastElement": 13
+    }
+  ],
+  "hash": "8dfd62f9ad0b26708174fe84a5029e04e8f7e6bd",
+  "title": "Binary search for 11 in a sorted array of eight"
+}

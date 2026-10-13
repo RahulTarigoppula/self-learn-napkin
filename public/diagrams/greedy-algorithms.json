@@ -1,0 +1,46 @@
+{
+  "name": "greedy-algorithms",
+  "width": 520,
+  "height": 420,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One room: fit in as many meetings as possible",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Take the meeting that ends first: A",
+      "firstElement": 2,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Next one starting at or after 4: D",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Then G: 3 meetings, the maximum",
+      "firstElement": 8,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Exchange argument: swapping in A is safe",
+      "firstElement": 11,
+      "lastElement": 12
+    },
+    {
+      "index": 5,
+      "caption": "But greedy can fail: coins {1, 3, 4}, make 6",
+      "firstElement": 13,
+      "lastElement": 14
+    }
+  ],
+  "hash": "171833d4ebe51560d7715690c432833a3497a6cd",
+  "title": "Greedy interval scheduling by earliest finish time, and a coin-change counter-example"
+}

@@ -1,0 +1,46 @@
+{
+  "name": "dns-and-cdns",
+  "width": 520,
+  "height": 420,
+  "elements": 24,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Who knows img.shop.com?",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Walk down the hierarchy",
+      "firstElement": 3,
+      "lastElement": 8
+    },
+    {
+      "index": 2,
+      "caption": "The authoritative answer, cached for its TTL",
+      "firstElement": 9,
+      "lastElement": 13
+    },
+    {
+      "index": 3,
+      "caption": "That IP is a nearby CDN edge",
+      "firstElement": 14,
+      "lastElement": 16
+    },
+    {
+      "index": 4,
+      "caption": "A miss goes to the origin once",
+      "firstElement": 17,
+      "lastElement": 21
+    },
+    {
+      "index": 5,
+      "caption": "Changing a file: purge or rename",
+      "firstElement": 22,
+      "lastElement": 23
+    }
+  ],
+  "hash": "8310b84c4cdca3883a5b5bea3838fb6825becf38",
+  "title": "A DNS lookup walking root, TLD and authoritative servers, then a CDN edge serving a cached file or fetching it from the origin"
+}

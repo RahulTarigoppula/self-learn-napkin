@@ -1,0 +1,46 @@
+{
+  "name": "missing-data",
+  "width": 520,
+  "height": 420,
+  "elements": 9,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "MCAR: missing completely at random",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "MAR: depends on what you can see",
+      "firstElement": 1,
+      "lastElement": 1
+    },
+    {
+      "index": 2,
+      "caption": "MNAR: depends on the missing value",
+      "firstElement": 2,
+      "lastElement": 2
+    },
+    {
+      "index": 3,
+      "caption": "Mean imputation: flat and biased",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 4,
+      "caption": "Model-based imputation follows the pattern",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 5,
+      "caption": "Add a missing flag; fit on train only",
+      "firstElement": 7,
+      "lastElement": 8
+    }
+  ],
+  "hash": "fadd4279a5e204b9fe4a60e8664140c68f595e01",
+  "title": "Three missingness mechanisms (MCAR, MAR, MNAR), mean vs model-based imputation, and a missing-indicator column"
+}

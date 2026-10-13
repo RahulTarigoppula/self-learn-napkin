@@ -1,0 +1,46 @@
+{
+  "name": "categorical-encoding",
+  "width": 520,
+  "height": 420,
+  "elements": 12,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A city column and a label",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "One-hot: a 0/1 column per city",
+      "firstElement": 1,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "Ordinal: one integer per city",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 3,
+      "caption": "Target encoding: the mean of y",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 4,
+      "caption": "Smooth it, compute it out-of-fold",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 5,
+      "caption": "Many categories: hash or embed",
+      "firstElement": 10,
+      "lastElement": 11
+    }
+  ],
+  "hash": "bd5f402a3f00d7d28fc9ade6f258b19109e00e79",
+  "title": "A city column encoded as one-hot, ordinal, target mean and smoothed target mean, plus hashing and embeddings"
+}

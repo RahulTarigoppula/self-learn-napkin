@@ -1,0 +1,40 @@
+{
+  "name": "decision-trees",
+  "width": 520,
+  "height": 420,
+  "elements": 13,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Fourteen loans",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Measure the mix: Gini impurity",
+      "firstElement": 2,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "Try every split, keep the purest",
+      "firstElement": 3,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Recurse on each side",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "Too deep: it memorises noise",
+      "firstElement": 10,
+      "lastElement": 12
+    }
+  ],
+  "hash": "5e57b4cfe313496a7dce9e6505fe0f582bd7ec98",
+  "title": "A decision tree splitting fourteen loans by debt and income, with Gini impurity at each step"
+}

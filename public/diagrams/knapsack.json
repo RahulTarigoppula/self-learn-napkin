@@ -1,0 +1,46 @@
+{
+  "name": "knapsack",
+  "width": 520,
+  "height": 420,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Four items, a 5 kg bag",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "The table: one row per item",
+      "firstElement": 2,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Each cell: take or skip",
+      "firstElement": 6,
+      "lastElement": 9
+    },
+    {
+      "index": 3,
+      "caption": "Fill the rest: the answer is 7",
+      "firstElement": 10,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "Walk back to find the items",
+      "firstElement": 13,
+      "lastElement": 14
+    },
+    {
+      "index": 5,
+      "caption": "One row, updated right to left",
+      "firstElement": 15,
+      "lastElement": 17
+    }
+  ],
+  "hash": "455783d1df53b98e18fe0ab7eae4b16d9db49acc",
+  "title": "0/1 knapsack: the dp table filled row by row, take or skip, walking back, and the one-row version"
+}

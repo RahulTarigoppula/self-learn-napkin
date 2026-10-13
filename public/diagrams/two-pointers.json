@@ -1,0 +1,40 @@
+{
+  "name": "two-pointers",
+  "width": 520,
+  "height": 400,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One block of memory, indexed by arithmetic",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Pointers at both ends: 16 is too small",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "18 is too big: drop the 15",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "16 again: move L",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "17: found in 4 checks",
+      "firstElement": 11,
+      "lastElement": 13
+    }
+  ],
+  "hash": "3e12a00efaec2f33ee9395563e78347e5c8a9b88",
+  "title": "Array memory layout and the two-pointer pair-sum walk"
+}

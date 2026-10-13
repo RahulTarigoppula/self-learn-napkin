@@ -1,0 +1,40 @@
+{
+  "name": "linked-lists",
+  "width": 520,
+  "height": 420,
+  "elements": 17,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Nodes joined by next pointers",
+      "firstElement": 0,
+      "lastElement": 5
+    },
+    {
+      "index": 1,
+      "caption": "Finding a node means walking from head",
+      "firstElement": 6,
+      "lastElement": 7
+    },
+    {
+      "index": 2,
+      "caption": "Insert after a known node: two pointer writes",
+      "firstElement": 8,
+      "lastElement": 11
+    },
+    {
+      "index": 3,
+      "caption": "Reverse: flip one pointer, then move on",
+      "firstElement": 12,
+      "lastElement": 14
+    },
+    {
+      "index": 4,
+      "caption": "Repeat until curr is None; prev is the new head",
+      "firstElement": 15,
+      "lastElement": 16
+    }
+  ],
+  "hash": "487cb5dacaebf282f806b76c13d6c7ec8eb3f8e9",
+  "title": "A singly linked list: walking, inserting after a node, and reversing 1→2→3 in place"
+}

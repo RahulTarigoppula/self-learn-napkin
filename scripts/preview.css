@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  padding: 16px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 13px system-ui;
+}
+.card {
+  background: var(--paper);
+  border-radius: 16px;
+  padding: 16px;
+  width: 640px;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.12);
+}
+.card.small {
+  width: 300px;
+  padding: 8px;
+}
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 1060px;
+}
+figure {
+  margin: 0;
+}
+figcaption {
+  padding: 4px;
+  font-weight: 600;
+}

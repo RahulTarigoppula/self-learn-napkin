@@ -1,0 +1,46 @@
+{
+  "name": "class-imbalance",
+  "width": 520,
+  "height": 420,
+  "elements": 17,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "99 to 1: accuracy lies",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "A useful model scores lower",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Measure the rare class: the PR curve",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Resample the training split only",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Class weights: make each class count equally",
+      "firstElement": 11,
+      "lastElement": 12
+    },
+    {
+      "index": 5,
+      "caption": "Move the threshold to match the costs",
+      "firstElement": 13,
+      "lastElement": 16
+    }
+  ],
+  "hash": "115bdc65182d522bf9aacd4356cfcb4f764573f4",
+  "title": "Class imbalance: accuracy lies, PR curve, resampling the training split, weights and thresholds"
+}

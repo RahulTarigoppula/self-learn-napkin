@@ -1,0 +1,46 @@
+{
+  "name": "search-indexing",
+  "width": 520,
+  "height": 420,
+  "elements": 19,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Three documents, and the slow way",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Tokenize: lowercase, split, strip punctuation",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "Inverted index: term → sorted doc ids",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "red AND dog: intersect two sorted lists",
+      "firstElement": 9,
+      "lastElement": 13
+    },
+    {
+      "index": 4,
+      "caption": "Rank: term frequency and rarity",
+      "firstElement": 14,
+      "lastElement": 16
+    },
+    {
+      "index": 5,
+      "caption": "Shard by document; query every shard",
+      "firstElement": 17,
+      "lastElement": 18
+    }
+  ],
+  "hash": "5a3e0062dcbc8bec26f3a5d7e72aa3246029eba9",
+  "title": "Search indexing: tokenize three documents, build an inverted index, intersect postings, rank, shard"
+}

@@ -1,0 +1,46 @@
+{
+  "name": "counting-and-radix-sort",
+  "width": 520,
+  "height": 420,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Small integer keys, 0 to 4",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Count how many of each key",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Prefix sums: where each key starts",
+      "firstElement": 4,
+      "lastElement": 5
+    },
+    {
+      "index": 3,
+      "caption": "Place left to right: equal keys keep order",
+      "firstElement": 6,
+      "lastElement": 7
+    },
+    {
+      "index": 4,
+      "caption": "Radix: stable sort by the last digit first",
+      "firstElement": 8,
+      "lastElement": 10
+    },
+    {
+      "index": 5,
+      "caption": "Then tens, then hundreds: sorted",
+      "firstElement": 11,
+      "lastElement": 13
+    }
+  ],
+  "hash": "a5e2d20c827d152eb337e5b65a1aea177d904940",
+  "title": "Counting sort with prefix sums, then LSD radix sort digit by digit"
+}

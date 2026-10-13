@@ -1,0 +1,40 @@
+{
+  "name": "ml-problem-framing",
+  "width": 520,
+  "height": 420,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Start from the business goal",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Fix the moment of prediction",
+      "firstElement": 3,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "One row per customer per date",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Offline metric vs business metric",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 4,
+      "caption": "Beat a simple baseline first",
+      "firstElement": 12,
+      "lastElement": 13
+    }
+  ],
+  "hash": "d02ab89641ec60193cd0e8910bb6a785375acc3a",
+  "title": "Framing churn as an ML task: goal, timeline, training table, metrics and baseline"
+}

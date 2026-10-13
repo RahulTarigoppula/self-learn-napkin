@@ -1,0 +1,46 @@
+{
+  "name": "acid-and-isolation",
+  "width": 520,
+  "height": 420,
+  "elements": 25,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "ACID in four words",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Two transactions read the same row",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "Both write: the deposit vanishes",
+      "firstElement": 7,
+      "lastElement": 11
+    },
+    {
+      "index": 3,
+      "caption": "The fix: lock, or abort and retry",
+      "firstElement": 12,
+      "lastElement": 13
+    },
+    {
+      "index": 4,
+      "caption": "Isolation levels: what each one blocks",
+      "firstElement": 14,
+      "lastElement": 19
+    },
+    {
+      "index": 5,
+      "caption": "MVCC: readers see a snapshot",
+      "firstElement": 20,
+      "lastElement": 24
+    }
+  ],
+  "hash": "1d2273d730f21d7e03a55bbc115c3c8e330b9e4f",
+  "title": "ACID, a lost update on a two-transaction timeline, isolation levels and MVCC snapshots"
+}

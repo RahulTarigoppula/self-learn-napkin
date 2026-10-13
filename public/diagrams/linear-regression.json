@@ -1,0 +1,46 @@
+{
+  "name": "linear-regression",
+  "width": 520,
+  "height": 420,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Five students: hours vs score",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Residuals from a guess",
+      "firstElement": 2,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Least squares: the smallest Σr²",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Solve it in one line",
+      "firstElement": 8,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "R²: how much of the spread it explains",
+      "firstElement": 10,
+      "lastElement": 11
+    },
+    {
+      "index": 5,
+      "caption": "One outlier drags the line",
+      "firstElement": 12,
+      "lastElement": 14
+    }
+  ],
+  "hash": "987d46eda2bded2c75cd1d41ae1f9bbcdd1ced44",
+  "title": "Least-squares line through five points, its squared residuals, R² and an outlier"
+}

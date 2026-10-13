@@ -1,0 +1,46 @@
+{
+  "name": "supervised-vs-unsupervised",
+  "width": 520,
+  "height": 420,
+  "elements": 21,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Labelled data vs unlabelled data",
+      "firstElement": 0,
+      "lastElement": 6
+    },
+    {
+      "index": 1,
+      "caption": "Classification: predict a category",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 2,
+      "caption": "Regression: predict a number",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "Clustering: find groups",
+      "firstElement": 11,
+      "lastElement": 14
+    },
+    {
+      "index": 4,
+      "caption": "Dimensionality reduction: fewer columns",
+      "firstElement": 15,
+      "lastElement": 17
+    },
+    {
+      "index": 5,
+      "caption": "In between: other ways to get a signal",
+      "firstElement": 18,
+      "lastElement": 20
+    }
+  ],
+  "hash": "507175cba1ea21f51f78cac2ee8dd3ea5fe86753",
+  "title": "Supervised learning (classification, regression) beside unsupervised learning (clustering, dimensionality reduction)"
+}

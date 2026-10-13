@@ -1,0 +1,305 @@
+/* Napkin — "Sketchbook" design tokens. The ONLY file with raw colours, shadows, durations and easings. */
+:root {
+  color-scheme: light;
+
+  /* ---- Ground & surfaces ---- */
+  --bg: #f6f3ee;
+  --bg-dot: rgb(22 24 29 / 0.075);
+  --bg-elevated: #fbf9f6;
+  --surface: #ffffff;
+  --surface-2: #f3efe8;
+  --surface-3: #e9e3d9;
+  --paper: #fffdf8;
+  --paper-grid: rgb(51 85 255 / 0.07);
+  --scrim: rgb(13 15 21 / 0.4);
+  --badge-bg: #b0320e;
+  --badge-ink: #ffffff;
+  /* thermal receipt paper: the same in both themes */
+  --receipt-bg: #fffdf8;
+  --receipt-ink: #16181d;
+  --receipt-faint: #6b7182;
+  /* tile thumbnails are always on light napkin paper */
+  --thumb-paper: #fffdf8;
+  --thumb-grid: rgb(51 85 255 / 0.06);
+
+  /* ---- Ink ---- */
+  --ink: #16181d;
+  --ink-muted: #565b6a;
+  --ink-faint: #6a7080;
+  --on-accent: #ffffff;
+
+  /* ---- Lines ---- */
+  --border: rgb(22 24 29 / 0.1);
+  --border-strong: rgb(22 24 29 / 0.2);
+
+  /* ---- Brand ---- */
+  --accent: #3355ff;
+  --accent-ink: #2541d6;
+  --accent-soft: #e5eaff;
+  --hl: #ffe45c;
+  --hl-ink: #16181d;
+  --code-bg: #ffffff;
+  --success: #12884a;
+  --warning: #b56f00;
+  --danger: #d93a3f;
+
+  /* ---- Tracks ---- */
+  --dsa: #f2542d;
+  --dsa-ink: #b0320e;
+  --dsa-soft: #ffe7de;
+  --sys: #3355ff;
+  --sys-ink: #2541d6;
+  --sys-soft: #e5eaff;
+  --ds: #0e9f6e;
+  --ds-ink: #066b48;
+  --ds-soft: #d7f5e8;
+
+  /* ---- Pens (diagrams) ---- */
+  --pen-ink: #16181d;
+  --pen-muted: #6b7182;
+  --pen-red: #e5484d;
+  --pen-blue: #3355ff;
+  --pen-green: #12a150;
+  --pen-orange: #f59e0b;
+  --pen-violet: #8b5cf6;
+  --pen-paper: #ffffff;
+  --wash-ink: #16181d;
+  --wash-muted: #ece7de;
+  --wash-red: #fde4e4;
+  --wash-blue: #e3e8ff;
+  --wash-green: #d9f5e5;
+  --wash-orange: #fff0d1;
+  --wash-violet: #ede5ff;
+  --wash-paper: #ffffff;
+  --text-orange: #b26b00;
+
+  /* ---- Ratings ---- */
+  --again: #e5484d;
+  --hard: #b56f00;
+  --good: #3355ff;
+  --easy: #12884a;
+
+  /* ---- Type ---- */
+  --font-display: "Bricolage Grotesque", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  --font-hand: "Excalifont", "Inter", "Segoe Print", cursive;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.625rem;
+  --text-4xl: 3.5rem;
+  --leading-tight: 1.08;
+  --leading-body: 1.6;
+
+  /* ---- Space & shape ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+
+  /* ---- Elevation ---- */
+  --shadow-1: 0 1px 2px rgb(22 24 29 / 0.06), 0 1px 1px rgb(22 24 29 / 0.04);
+  --shadow-2: 0 2px 4px rgb(22 24 29 / 0.04), 0 8px 24px -6px rgb(22 24 29 / 0.12);
+  --shadow-3: 0 4px 8px rgb(22 24 29 / 0.05), 0 24px 48px -12px rgb(22 24 29 / 0.22);
+  --ring: 0 0 0 3px rgb(51 85 255 / 0.35);
+
+  /* ---- Motion ---- */
+  --dur-fast: 120ms;
+  --dur-base: 240ms;
+  --dur-slow: 480ms;
+  --dur-draw: 700ms;
+  --stagger: 180ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: linear(
+    0,
+    0.006,
+    0.025 2.8%,
+    0.101 6.1%,
+    0.539 18.9%,
+    0.721 25.3%,
+    0.849 31.5%,
+    0.937 38.1%,
+    0.968 41.6%,
+    0.99 45.6%,
+    1.003 49.7%,
+    1.012 55%,
+    1.012 60.3%,
+    1.004 68.2%,
+    0.999 80.2%,
+    1
+  );
+  --ease-flip: cubic-bezier(0.45, 0, 0.2, 1);
+
+  /* ---- Layout ---- */
+  --content-max: 1120px;
+  --reading-max: 720px;
+  --topbar-h: 60px;
+  --tabbar-h: 66px;
+  --sidebar-w: 252px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ---- Night. Declared twice: the explicit choice, and the system preference when not pinned to light. ---- */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d0f15;
+  --bg-dot: rgb(255 255 255 / 0.055);
+  --bg-elevated: #12151d;
+  --surface: #161a23;
+  --surface-2: #1c212c;
+  --surface-3: #262c39;
+  --paper: #171b24;
+  --paper-grid: rgb(124 147 255 / 0.07);
+  --scrim: rgb(0 0 0 / 0.6);
+  --code-bg: #1c212c;
+  --badge-bg: #ff7a59;
+  --badge-ink: #0d0f15;
+  --ink: #eceef4;
+  --ink-muted: #a6acbb;
+  --ink-faint: #8e95a6;
+  --on-accent: #0d0f15;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.18);
+  --accent: #8197ff;
+  --accent-ink: #a5b4ff;
+  --accent-soft: rgb(129 151 255 / 0.16);
+  --success: #3ddc97;
+  --warning: #fbbf24;
+  --danger: #ff6b6f;
+  --dsa: #ff7a59;
+  --dsa-ink: #ff9b80;
+  --dsa-soft: rgb(255 122 89 / 0.15);
+  --sys: #8197ff;
+  --sys-ink: #a5b4ff;
+  --sys-soft: rgb(129 151 255 / 0.15);
+  --ds: #34d399;
+  --ds-ink: #6ee7b7;
+  --ds-soft: rgb(52 211 153 / 0.14);
+  --pen-ink: #e8eaf0;
+  --pen-muted: #8b92a3;
+  --pen-red: #ff6b6f;
+  --pen-blue: #8197ff;
+  --pen-green: #3ddc97;
+  --pen-orange: #fbbf24;
+  --pen-violet: #b39dff;
+  --pen-paper: #171b24;
+  --wash-ink: #e8eaf0;
+  --wash-muted: #232835;
+  --wash-red: color-mix(in srgb, var(--pen-red) 20%, var(--paper));
+  --wash-blue: color-mix(in srgb, var(--pen-blue) 20%, var(--paper));
+  --wash-green: color-mix(in srgb, var(--pen-green) 20%, var(--paper));
+  --wash-orange: color-mix(in srgb, var(--pen-orange) 20%, var(--paper));
+  --wash-violet: color-mix(in srgb, var(--pen-violet) 20%, var(--paper));
+  --wash-paper: #171b24;
+  --text-orange: #fbbf24;
+  --again: #ff6b6f;
+  --hard: #fbbf24;
+  --good: #8197ff;
+  --easy: #3ddc97;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 2px 4px rgb(0 0 0 / 0.3), 0 10px 28px -8px rgb(0 0 0 / 0.6);
+  --shadow-3: 0 6px 12px rgb(0 0 0 / 0.35), 0 28px 56px -12px rgb(0 0 0 / 0.7);
+  --ring: 0 0 0 3px rgb(129 151 255 / 0.45);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d0f15;
+    --bg-dot: rgb(255 255 255 / 0.055);
+    --bg-elevated: #12151d;
+    --surface: #161a23;
+    --surface-2: #1c212c;
+    --surface-3: #262c39;
+    --paper: #171b24;
+    --paper-grid: rgb(124 147 255 / 0.07);
+    --scrim: rgb(0 0 0 / 0.6);
+    --code-bg: #1c212c;
+  --code-bg: #1c212c;
+    --badge-bg: #ff7a59;
+    --badge-ink: #0d0f15;
+  --badge-bg: #ff7a59;
+  --badge-ink: #0d0f15;
+    --ink: #eceef4;
+    --ink-muted: #a6acbb;
+    --ink-faint: #8e95a6;
+    --on-accent: #0d0f15;
+    --border: rgb(255 255 255 / 0.08);
+    --border-strong: rgb(255 255 255 / 0.18);
+    --accent: #8197ff;
+    --accent-ink: #a5b4ff;
+    --accent-soft: rgb(129 151 255 / 0.16);
+    --success: #3ddc97;
+    --warning: #fbbf24;
+    --danger: #ff6b6f;
+    --dsa: #ff7a59;
+    --dsa-ink: #ff9b80;
+    --dsa-soft: rgb(255 122 89 / 0.15);
+    --sys: #8197ff;
+    --sys-ink: #a5b4ff;
+    --sys-soft: rgb(129 151 255 / 0.15);
+    --ds: #34d399;
+    --ds-ink: #6ee7b7;
+    --ds-soft: rgb(52 211 153 / 0.14);
+    --pen-ink: #e8eaf0;
+    --pen-muted: #8b92a3;
+    --pen-red: #ff6b6f;
+    --pen-blue: #8197ff;
+    --pen-green: #3ddc97;
+    --pen-orange: #fbbf24;
+    --pen-violet: #b39dff;
+    --pen-paper: #171b24;
+    --wash-ink: #e8eaf0;
+    --wash-muted: #232835;
+    --wash-red: color-mix(in srgb, var(--pen-red) 20%, var(--paper));
+    --wash-blue: color-mix(in srgb, var(--pen-blue) 20%, var(--paper));
+    --wash-green: color-mix(in srgb, var(--pen-green) 20%, var(--paper));
+    --wash-orange: color-mix(in srgb, var(--pen-orange) 20%, var(--paper));
+    --wash-violet: color-mix(in srgb, var(--pen-violet) 20%, var(--paper));
+    --wash-paper: #171b24;
+    --text-orange: #fbbf24;
+    --again: #ff6b6f;
+    --hard: #fbbf24;
+    --good: #8197ff;
+    --easy: #3ddc97;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 2px 4px rgb(0 0 0 / 0.3), 0 10px 28px -8px rgb(0 0 0 / 0.6);
+    --shadow-3: 0 6px 12px rgb(0 0 0 / 0.35), 0 28px 56px -12px rgb(0 0 0 / 0.7);
+    --ring: 0 0 0 3px rgb(129 151 255 / 0.45);
+  }
+}
+
+/* ---- Reduced motion: the system preference first (before any script), then the settings pin. ---- */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) {
+    --dur-fast: 1ms;
+    --dur-base: 1ms;
+    --dur-slow: 120ms;
+    --dur-draw: 1ms;
+    --stagger: 0ms;
+  }
+}
+[data-motion="reduced"] {
+  --dur-fast: 1ms;
+  --dur-base: 1ms;
+  --dur-slow: 120ms;
+  --dur-draw: 1ms;
+  --stagger: 0ms;
+}

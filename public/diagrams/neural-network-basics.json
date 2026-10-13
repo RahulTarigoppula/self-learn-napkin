@@ -1,0 +1,40 @@
+{
+  "name": "neural-network-basics",
+  "width": 520,
+  "height": 420,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One neuron: a weighted sum plus a bias",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "An activation bends the sum",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "A layer: many neurons side by side",
+      "firstElement": 7,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "The output layer: ŷ = σ(1) = 0.73",
+      "firstElement": 11,
+      "lastElement": 14
+    },
+    {
+      "index": 4,
+      "caption": "Without activations, layers collapse",
+      "firstElement": 15,
+      "lastElement": 17
+    }
+  ],
+  "hash": "629ddaac4e6ebc1fbd443fa1c6f9effb9e9b8582",
+  "title": "A 2-2-1 neural network computed by hand: weighted sums, ReLU, sigmoid"
+}

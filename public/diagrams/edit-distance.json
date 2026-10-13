@@ -1,0 +1,46 @@
+{
+  "name": "edit-distance",
+  "width": 520,
+  "height": 420,
+  "elements": 19,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "kitten → sitting: three kinds of edit",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Base row and column",
+      "firstElement": 2,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Each cell: the cheapest of three neighbours",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Fill the table: distance 3",
+      "firstElement": 9,
+      "lastElement": 13
+    },
+    {
+      "index": 4,
+      "caption": "Walk back: the edit script",
+      "firstElement": 14,
+      "lastElement": 16
+    },
+    {
+      "index": 5,
+      "caption": "Only two rows are ever needed",
+      "firstElement": 17,
+      "lastElement": 18
+    }
+  ],
+  "hash": "611952d9dd6af0847a061e710c6563df66d3e7ad",
+  "title": "Edit distance from kitten to sitting: base row and column, three neighbours, the filled table and the edit script"
+}

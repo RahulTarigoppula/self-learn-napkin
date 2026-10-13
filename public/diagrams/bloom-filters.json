@@ -1,0 +1,46 @@
+{
+  "name": "bloom-filters",
+  "width": 520,
+  "height": 420,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A bit array, all zeros",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Add \"cat\": set its 3 bits",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Add \"dog\": bits can be shared",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Query \"emu\": a 0 means definitely not",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 4,
+      "caption": "Query \"fox\": all 1s, but never added",
+      "firstElement": 12,
+      "lastElement": 14
+    },
+    {
+      "index": 5,
+      "caption": "How often it lies",
+      "firstElement": 15,
+      "lastElement": 17
+    }
+  ],
+  "hash": "e265cd8d6616428fd80d7651d0d7d46268faf8dd",
+  "title": "Bloom filter: a 16-bit array, adding cat and dog with three hashes, a definite miss and a false positive"
+}

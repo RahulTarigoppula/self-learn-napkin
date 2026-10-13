@@ -1,0 +1,262 @@
+---
+import Icon from '../Icon.astro';
+import { loadManifest, loadSvg } from './diagram';
+
+interface Scene {
+  title?: string | undefined;
+  text: string;
+}
+interface Props {
+  slug: string;
+  diagram: string;
+  title: string;
+  tldr: string;
+  story: Scene[];
+}
+const { slug, diagram, title, tldr, story } = Astro.props;
+const manifest = loadManifest(diagram);
+const svg = loadSvg(diagram, manifest.title ?? title, tldr);
+const scenes = story.map((s, i) => ({
+  title: s.title ?? manifest.steps[i]?.caption ?? `Scene ${i + 1}`,
+  text: s.text,
+}));
+const n = scenes.length;
+---
+
+<section class="story" data-story data-slug={slug} data-steps={n} aria-label={`The story of ${title}, in ${n} scenes`}>
+  <div class="story__stage paper">
+    <figure class="story__figure" style={`aspect-ratio:${manifest.width}/${manifest.height}`} set:html={svg} />
+    <div class="story__stage-bar">
+      <span class="story__hint hand" aria-hidden="true">tap Next to draw the next scene →</span>
+      <button class="story__mini" type="button" data-replay aria-label="Redraw this scene">
+        <Icon name="replay" size={16} />
+      </button>
+    </div>
+  </div>
+
+  <div class="story__panel">
+    <ol class="story__progress" aria-label="Scenes">
+      {
+        scenes.map((s, i) => (
+          <li>
+            <button type="button" data-go={i} aria-label={`Scene ${i + 1}: ${s.title}`}>
+              <span class="story__seg" />
+            </button>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="story__scenes" aria-live="polite">
+      {
+        scenes.map((s, i) => (
+          <article class="scene" data-scene={i}>
+            <p class="scene__count mono">
+              Scene {i + 1} <span>of {n}</span>
+            </p>
+            <h3 class="scene__title">{s.title}</h3>
+            <p class="scene__text">{s.text}</p>
+          </article>
+        ))
+      }
+    </div>
+    <div class="story__nav">
+      <button class="btn btn--ghost" type="button" data-prev aria-label="Previous scene">
+        <Icon name="arrowLeft" />
+        <span class="story__nav-label">Back</span>
+      </button>
+      <button class="btn" type="button" data-play aria-label="Play the story">
+        <span data-play-icon><Icon name="play" size={16} /></span>
+        <span data-pause-icon hidden><Icon name="pause" size={16} /></span>
+        <span data-play-label>Play</span>
+      </button>
+      <button class="btn btn--primary" type="button" data-next>
+        <span data-next-label>Next</span>
+        <Icon name="arrowRight" />
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initStories } from '../../features/story/story';
+  initStories();
+</script>
+
+<style>
+  .story {
+    display: grid;
+    gap: var(--space-4);
+    scroll-margin-top: calc(var(--topbar-h) + var(--safe-top) + 12px);
+  }
+  @media (min-width: 960px) {
+    .story {
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+      align-items: stretch;
+      gap: var(--space-5);
+    }
+  }
+  .story__stage {
+    position: relative;
+    padding: var(--space-4) var(--space-4) var(--space-2);
+    box-shadow: var(--shadow-2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    touch-action: pan-y;
+    overflow: hidden;
+  }
+  @media (min-width: 640px) {
+    .story__stage {
+      padding: var(--space-6) var(--space-6) var(--space-3);
+    }
+  }
+  .story__figure {
+    width: 100%;
+    margin: 0 auto;
+    max-width: 680px;
+  }
+  .story__stage-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-height: 36px;
+  }
+  .story__hint {
+    font-size: var(--text-sm);
+    color: var(--ink-faint);
+  }
+  :global(html:not(.js)) .story__hint,
+  :global(html:not(.js)) .story__mini {
+    visibility: hidden;
+  }
+  .story__mini {
+    margin-left: auto;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    color: var(--ink-muted);
+  }
+  .story__mini:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+
+  .story__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
+  }
+  .story__progress {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 6px;
+  }
+  .story__progress li {
+    flex: 1;
+  }
+  .story__progress button {
+    width: 100%;
+    height: 24px;
+    display: flex;
+    align-items: center;
+  }
+  .story__seg {
+    display: block;
+    width: 100%;
+    height: 5px;
+    border-radius: var(--radius-full);
+    background: var(--surface-3);
+    overflow: hidden;
+    position: relative;
+  }
+  .story__seg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--track, var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .story__progress button[data-state='done'] .story__seg::after,
+  .story__progress button[data-state='current'] .story__seg::after {
+    transform: scaleX(1);
+  }
+  .story__progress button[data-state='current'] .story__seg::after {
+    background: var(--ink);
+  }
+
+  .story__scenes {
+    display: grid;
+    flex: 1;
+  }
+  .scene {
+    grid-area: 1 / 1;
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+  :global(html.js) .story[data-ready] .scene {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity var(--dur-base) var(--ease-out),
+      transform var(--dur-base) var(--ease-out),
+      visibility 0s linear var(--dur-base);
+  }
+  :global(html.js) .story[data-ready] .scene[data-active] {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--dur-slow) var(--ease-out) 80ms,
+      transform var(--dur-slow) var(--ease-out) 80ms,
+      visibility 0s;
+  }
+  :global(html:not(.js)) .scene + .scene {
+    grid-area: auto;
+    margin-top: var(--space-4);
+  }
+  .scene__count {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--track-ink, var(--accent-ink));
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .scene__count span {
+    color: var(--ink-faint);
+  }
+  .scene__title {
+    font-size: var(--text-xl);
+  }
+  .scene__text {
+    font-size: var(--text-md);
+    color: var(--ink);
+    line-height: 1.65;
+  }
+  .story__nav {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+  .story__nav [data-next] {
+    margin-left: auto;
+    min-width: 120px;
+  }
+  @media (max-width: 380px) {
+    .story__nav-label {
+      display: none;
+    }
+  }
+</style>

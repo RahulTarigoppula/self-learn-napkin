@@ -1,0 +1,40 @@
+{
+  "name": "api-design",
+  "width": 520,
+  "height": 420,
+  "elements": 24,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "REST: nouns in the URL, verbs in the method",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Pagination: offset vs cursor",
+      "firstElement": 3,
+      "lastElement": 7
+    },
+    {
+      "index": 2,
+      "caption": "gRPC: typed calls over HTTP/2",
+      "firstElement": 8,
+      "lastElement": 14
+    },
+    {
+      "index": 3,
+      "caption": "GraphQL: the client shapes the response",
+      "firstElement": 15,
+      "lastElement": 20
+    },
+    {
+      "index": 4,
+      "caption": "The N+1 trap and its fix",
+      "firstElement": 21,
+      "lastElement": 23
+    }
+  ],
+  "hash": "183ddc9e6b119cc7820ec9d555b56fdb5879f467",
+  "title": "REST verbs and pagination, a gRPC call over HTTP/2, and a GraphQL query with the N+1 problem"
+}

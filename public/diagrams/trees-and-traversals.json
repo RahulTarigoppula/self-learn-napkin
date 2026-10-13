@@ -1,0 +1,40 @@
+{
+  "name": "trees-and-traversals",
+  "width": 520,
+  "height": 410,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Root, children, leaves, depth and height",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Pre-order: visit a node before its children",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "In-order: left subtree, node, right subtree",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Post-order: children first, node last",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Level-order: breadth-first with a queue",
+      "firstElement": 11,
+      "lastElement": 14
+    }
+  ],
+  "hash": "f49810cc00ead30931e5e89a53517ed6ab6dc0a9",
+  "title": "One 7-node tree walked four ways: pre-order, in-order, post-order and level-order"
+}

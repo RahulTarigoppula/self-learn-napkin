@@ -1,0 +1,46 @@
+{
+  "name": "cache-eviction",
+  "width": 520,
+  "height": 420,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A full cache must pick a victim",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "LRU: fill with A, B, C",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "A hit moves the key to the front",
+      "firstElement": 7,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "A miss on a full cache evicts the tail",
+      "firstElement": 11,
+      "lastElement": 13
+    },
+    {
+      "index": 4,
+      "caption": "FIFO ignores the hit and evicts A",
+      "firstElement": 14,
+      "lastElement": 16
+    },
+    {
+      "index": 5,
+      "caption": "A one-off scan flushes the hot keys",
+      "firstElement": 17,
+      "lastElement": 19
+    }
+  ],
+  "hash": "03ef425c9deb6d8b583059e9ee709243772b5fce",
+  "title": "Cache eviction traced with capacity 3: LRU, FIFO and a scan"
+}

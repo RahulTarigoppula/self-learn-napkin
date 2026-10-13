@@ -1,0 +1,64 @@
+---
+import '../styles/global.css';
+import { BASE, PLATFORM, withBase } from '../lib/base';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const {
+  title,
+  description = 'Interview prep sketched on a napkin: visual, story-driven study cards for DSA, System Design and Data Science. Works offline.',
+} = Astro.props;
+const fullTitle = title === 'Napkin' ? 'Napkin — visual interview prep' : `${title} · Napkin`;
+const isWeb = PLATFORM !== 'android';
+---
+
+<!doctype html>
+<html lang="en" data-platform={PLATFORM}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0f15" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href={withBase('icons/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={withBase('icons/icon-192.png')} />
+    {isWeb && <link rel="manifest" href={withBase('manifest.webmanifest')} />}
+    <meta name="napkin-base" content={BASE} />
+    <script is:inline>
+      // Pre-paint: apply the saved theme/motion before the first frame so nothing flashes.
+      (function () {
+        var r = document.documentElement;
+        r.classList.add('js');
+        try {
+          var s = JSON.parse(localStorage.getItem('napkin:settings') || '{}');
+          if (s.theme === 'light' || s.theme === 'dark') r.setAttribute('data-theme', s.theme);
+          if (s.motion === 'reduced' || s.motion === 'full') r.setAttribute('data-motion', s.motion);
+        } catch (e) {}
+        // A cross-document view transition can be skipped (fast clicks, hidden tab); that is not an error.
+        var quiet = function (e) {
+          var vt = e.viewTransition;
+          if (vt) {
+            vt.ready.catch(function () {});
+            vt.finished.catch(function () {});
+            vt.updateCallbackDone && vt.updateCallbackDone.catch(function () {});
+          }
+        };
+        addEventListener('pagereveal', quiet);
+        addEventListener('pageswap', quiet);
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+    <script>
+      import { registerServiceWorker } from '../features/pwa/register';
+      import { initPlatform } from '../platform/init';
+      registerServiceWorker();
+      initPlatform();
+    </script>
+  </body>
+</html>

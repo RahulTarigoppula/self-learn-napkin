@@ -1,0 +1,40 @@
+{
+  "name": "quicksort",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Pick the last value as the pivot",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Scan once: values ≤ 4 swap to the front",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Swap the pivot into slot i: it is final",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Recurse on each side",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Sorted input + last pivot = worst case",
+      "firstElement": 11,
+      "lastElement": 15
+    }
+  ],
+  "hash": "79062d8f5e5088b501f0b44bd5ae78de903e35c0",
+  "title": "Quicksort with Lomuto partition on [5,3,8,1,9,2,7,4]"
+}

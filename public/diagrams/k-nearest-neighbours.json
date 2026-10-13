@@ -1,0 +1,46 @@
+{
+  "name": "k-nearest-neighbours",
+  "width": 520,
+  "height": 420,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A new point: red or blue?",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "k = 3: the nearest three vote",
+      "firstElement": 4,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "k decides: 1 overfits, 13 underfits",
+      "firstElement": 6,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Distance: metric and scale",
+      "firstElement": 8,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "High dimensions: all points are far",
+      "firstElement": 13,
+      "lastElement": 17
+    },
+    {
+      "index": 5,
+      "caption": "Faster search: KD-trees and ANN",
+      "firstElement": 18,
+      "lastElement": 19
+    }
+  ],
+  "hash": "8c72d0c59b483b9018a8393b96f5fcdfc6a14a68",
+  "title": "k-nearest neighbours: a new point Q, its 3 nearest neighbours voting red, k = 1 flipping to blue, Euclidean vs Manhattan distance, the curse of dimensionality and KD-tree splits"
+}

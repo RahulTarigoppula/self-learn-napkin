@@ -1,0 +1,46 @@
+{
+  "name": "cache-invalidation",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A cache in front of the database",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Write: update the DB, then delete the key",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "The race: a slow reader re-fills old data",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 3,
+      "caption": "TTL: the stale copy dies on its own",
+      "firstElement": 10,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Stampede: a hot key expires",
+      "firstElement": 11,
+      "lastElement": 14
+    },
+    {
+      "index": 5,
+      "caption": "Fix: one rebuild, the rest wait",
+      "firstElement": 15,
+      "lastElement": 15
+    }
+  ],
+  "hash": "d72e3abed7759a28940e3214815eef3cddb3ed94",
+  "title": "Cache invalidation: the delete race, TTL and a stampede"
+}

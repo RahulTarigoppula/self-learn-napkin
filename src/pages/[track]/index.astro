@@ -1,0 +1,171 @@
+---
+import Icon from '../../components/Icon.astro';
+import NapkinTile from '../../components/NapkinTile.astro';
+import AppShell from '../../layouts/AppShell.astro';
+import { cardHref, href } from '../../lib/base';
+import { library, TRACK_IDS, type TrackId } from '../../lib/content';
+
+export function getStaticPaths() {
+  return TRACK_IDS.map((track) => ({ params: { track }, props: { track } }));
+}
+const { track: id } = Astro.props as { track: TrackId };
+const { tracks } = await library();
+const t = tracks.find((x) => x.id === id)!;
+const minutes = t.cards.reduce((s, c) => s + c.data.minutes, 0);
+const playgrounds = t.cards.filter((c) => c.data.griddle).length;
+const first = t.cards[0];
+---
+
+<AppShell title={t.subtitle} active="library" description={t.blurb}>
+  <div class:list={['container', 'course', `t-${id}`]}>
+    <header class="course__hero">
+      <p class="course__name hand">{t.name}</p>
+      <h1>{t.subtitle}</h1>
+      <p class="course__blurb">{t.blurb}</p>
+      <ul class="course__facts">
+        <li><b class="mono">{t.cards.length}</b> napkins</li>
+        <li><b class="mono">~{Math.round(minutes / 6) / 10}h</b> of reading</li>
+        <li><b class="mono">{playgrounds}</b> playgrounds</li>
+        <li><b class="mono" data-course-read>0</b> read</li>
+      </ul>
+      <div class="course__meter" aria-hidden="true"><span data-course-bar></span></div>
+      <div class="course__cta">
+        {first && <a class="btn btn--primary btn--lg" href={cardHref(first.id)} data-course-continue><Icon name="play" size={17} /> <span>Start the course</span></a>}
+        <a class="btn btn--lg" href={href(`review/?track=${id}`)}><Icon name="cards" /> Review this track</a>
+      </div>
+    </header>
+
+    <ol class="course__grid">
+      {
+        t.cards.map((c, i) => (
+          <li class="course__step">
+            <span class="course__n mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <NapkinTile card={c} index={i % 6} />
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</AppShell>
+
+<script>
+  import { lastStats, type ShellStats } from '../../features/shell/shell';
+  import { cardHref } from '../../lib/base';
+
+  const paint = (s: ShellStats | null) => {
+    if (!s) return;
+    const tiles = [...document.querySelectorAll<HTMLElement>('.course__grid [data-slug]')];
+    const ids = tiles.map((t) => t.dataset.slug ?? '');
+    const done = ids.filter((i) => s.read.has(i)).length;
+    const read = document.querySelector('[data-course-read]');
+    if (read) read.textContent = String(done);
+    const bar = document.querySelector<HTMLElement>('[data-course-bar]');
+    if (bar) bar.style.width = `${Math.round((done / Math.max(1, ids.length)) * 100)}%`;
+    const next = ids.find((i) => !s.read.has(i));
+    const cta = document.querySelector<HTMLAnchorElement>('[data-course-continue]');
+    if (cta && next && done > 0) {
+      cta.href = cardHref(next);
+      const label = cta.querySelector('span');
+      if (label) label.textContent = 'Continue the course';
+    }
+  };
+  paint(lastStats());
+  document.addEventListener('napkin:stats', (e) => paint((e as CustomEvent<ShellStats>).detail));
+</script>
+
+<style>
+  .course {
+    padding-top: var(--space-6);
+  }
+  .course__hero {
+    position: relative;
+    padding: var(--space-8) var(--space-6);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--track) 26%, transparent), transparent 60%),
+      radial-gradient(60% 80% at 0% 100%, color-mix(in srgb, var(--track) 12%, transparent), transparent 70%),
+      var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-2);
+    overflow: hidden;
+  }
+  @media (min-width: 720px) {
+    .course__hero {
+      padding: var(--space-10) var(--space-9);
+    }
+  }
+  .course__name {
+    font-size: 1.4rem;
+    color: var(--track-ink);
+  }
+  .course__hero h1 {
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    letter-spacing: -0.04em;
+  }
+  .course__blurb {
+    margin-top: var(--space-3);
+    max-width: 60ch;
+    font-size: var(--text-lg);
+    color: var(--ink-muted);
+  }
+  .course__facts {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-5);
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+  }
+  .course__facts b {
+    color: var(--ink);
+    font-size: var(--text-md);
+  }
+  .course__meter {
+    margin-top: var(--space-4);
+    height: 8px;
+    max-width: 480px;
+    border-radius: var(--radius-full);
+    background: var(--surface-3);
+    overflow: hidden;
+  }
+  .course__meter span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--track);
+    transition: width var(--dur-slow) var(--ease-out);
+  }
+  .course__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+  .course__grid {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-8);
+    display: grid;
+    gap: var(--space-6) var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .course__step {
+    position: relative;
+    display: grid;
+  }
+  .course__n {
+    position: absolute;
+    top: -12px;
+    left: 14px;
+    z-index: 2;
+    padding: 2px 9px;
+    border-radius: var(--radius-full);
+    background: var(--ink);
+    color: var(--bg);
+    font-size: var(--text-xs);
+    font-weight: 800;
+    box-shadow: var(--shadow-1);
+  }
+</style>

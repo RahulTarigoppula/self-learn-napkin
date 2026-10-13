@@ -1,0 +1,40 @@
+{
+  "name": "consistent-hashing",
+  "width": 520,
+  "height": 360,
+  "elements": 12,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A ring of hash values",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Hash each server onto the ring",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Hash the key onto the same ring",
+      "firstElement": 6,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Walk clockwise to the next server",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "Add a server: only one arc moves",
+      "firstElement": 9,
+      "lastElement": 11
+    }
+  ],
+  "hash": "4635e329ebb229a157ecd44f92793042c75d996e",
+  "title": "Consistent hashing ring"
+}

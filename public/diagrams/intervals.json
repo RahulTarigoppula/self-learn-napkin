@@ -1,0 +1,40 @@
+{
+  "name": "intervals",
+  "width": 520,
+  "height": 420,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Intervals sorted by start",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Overlap test",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Merge: extend while they overlap",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Meeting rooms: sweep and count",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "The peak is the answer",
+      "firstElement": 10,
+      "lastElement": 13
+    }
+  ],
+  "hash": "8b4867b9c236ee300a62c4846fc90d260c46b615",
+  "title": "Intervals on a timeline: overlap test, merging, and counting meeting rooms with a sweep"
+}

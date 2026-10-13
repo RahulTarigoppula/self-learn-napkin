@@ -1,0 +1,40 @@
+{
+  "name": "attention",
+  "width": 520,
+  "height": 420,
+  "elements": 11,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A sentence, and the words \"it\" could mean",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "\"it\" sends out a query",
+      "firstElement": 2,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Dot product with every key",
+      "firstElement": 6,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Softmax turns scores into weights",
+      "firstElement": 7,
+      "lastElement": 7
+    },
+    {
+      "index": 4,
+      "caption": "Output: a weighted mix of the values",
+      "firstElement": 8,
+      "lastElement": 10
+    }
+  ],
+  "hash": "21fc54ecab22971e9c6a45b88dc2966b1c54f809",
+  "title": "Attention: the word \"it\" queries every key, softmax weights, a weighted mix of values"
+}

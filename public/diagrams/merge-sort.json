@@ -1,0 +1,40 @@
+{
+  "name": "merge-sort",
+  "width": 520,
+  "height": 420,
+  "elements": 13,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Eight unsorted values",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "Halve until every piece has one value",
+      "firstElement": 1,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Merge neighbours: 1 compare per pair",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Merge sorted halves with two pointers",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Final merge: 17 compares in all",
+      "firstElement": 11,
+      "lastElement": 12
+    }
+  ],
+  "hash": "8ea9a08055316feafc7672b3bbfe12d49327d9fb",
+  "title": "Merge sort on [5,3,8,1,9,2,7,4]: split down, merge up"
+}

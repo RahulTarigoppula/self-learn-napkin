@@ -1,0 +1,46 @@
+{
+  "name": "cache-aside",
+  "width": 520,
+  "height": 410,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "An app, a cache and a database",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Ask the cache first",
+      "firstElement": 4,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Miss: read the database",
+      "firstElement": 6,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Copy the answer into the cache",
+      "firstElement": 8,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "The next read is a hit",
+      "firstElement": 10,
+      "lastElement": 12
+    },
+    {
+      "index": 5,
+      "caption": "A write invalidates the copy",
+      "firstElement": 13,
+      "lastElement": 14
+    }
+  ],
+  "hash": "9237f3054c997ae4f4c1c921ee950d7a07be2305",
+  "title": "Cache-aside read and write, as a sequence diagram"
+}

@@ -1,0 +1,46 @@
+{
+  "name": "insertion-sort",
+  "width": 520,
+  "height": 420,
+  "elements": 10,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One value is already a sorted prefix",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "Insert 3: shift the 5 right, drop 3 in",
+      "firstElement": 1,
+      "lastElement": 1
+    },
+    {
+      "index": 2,
+      "caption": "8 stays put; 1 slides past three values",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 3,
+      "caption": "9, then 2, then 7",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 4,
+      "caption": "Insert 4: sorted after 14 shifts",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 5,
+      "caption": "Nearly sorted input costs about n",
+      "firstElement": 9,
+      "lastElement": 9
+    }
+  ],
+  "hash": "f0a5b16f6387ddd1a48e445edf945c5251c3e196",
+  "title": "Insertion sort on [5,3,8,1,9,2,7,4], one insertion per row"
+}

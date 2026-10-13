@@ -1,0 +1,620 @@
+---
+import { render } from 'astro:content';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import Icon from '../../components/Icon.astro';
+import NapkinTile from '../../components/NapkinTile.astro';
+import BigOTable from '../../components/napkin/BigOTable.astro';
+import Flashcards from '../../components/napkin/Flashcards.astro';
+import Quiz from '../../components/napkin/Quiz.astro';
+import Story from '../../components/napkin/Story.astro';
+import Griddle from '../../features/griddle/Griddle';
+import AppShell from '../../layouts/AppShell.astro';
+import { cardHref, href } from '../../lib/base';
+import {
+  type Card,
+  cardById,
+  existing,
+  library,
+  numberOf,
+  pad3,
+  slugOf,
+  TRACK_SHORT,
+} from '../../lib/content';
+import { inlineMd } from '../../lib/inline-md';
+
+export async function getStaticPaths() {
+  const { cards } = await library();
+  return cards.map((card) => ({
+    params: { track: card.data.track, slug: slugOf(card) },
+    props: { id: card.id },
+  }));
+}
+
+const { id } = Astro.props as { id: string };
+const card: Card = await cardById(id);
+const d = card.data;
+const { tracks } = await library();
+const track = tracks.find((t) => t.id === d.track)!;
+const pos = track.cards.findIndex((c) => c.id === id);
+const prev = track.cards[pos - 1];
+const next = track.cards[pos + 1];
+const related = await existing(d.related);
+const prereqs = await existing(d.prereqs);
+const { Content, headings } = await render(card);
+const toc = headings.filter((h) => h.depth === 2);
+const n = numberOf(id);
+const source = readFileSync(join(process.cwd(), 'src', 'diagrams', `${d.diagram}.mjs`), 'utf8');
+const flashcardCount = d.flashcards.length;
+---
+
+<AppShell title={d.title} description={d.tldr} active="library">
+  <article class:list={['napkin', `t-${d.track}`]} data-napkin={id}>
+    <div class="container">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href={href('library/')}>Library</a>
+        <Icon name="chevronRight" size={14} />
+        <a href={href(`${d.track}/`)}>{track.subtitle}</a>
+      </nav>
+
+      <header class="hero">
+        <div class="hero__meta">
+          <span class="chip chip--track">{TRACK_SHORT[d.track]}</span>
+          <span class="hero__num mono">No. {pad3(n)}</span>
+          <span class="hero__dot" aria-hidden="true">·</span>
+          <span class="hero__min"><Icon name="clock" size={14} /> {d.minutes} min</span>
+          <span class="difficulty" role="img" aria-label={`difficulty ${d.difficulty} of 3`} title={`difficulty ${d.difficulty} of 3`}>
+            {[1, 2, 3].map((i) => <i class:list={{ on: i <= d.difficulty }} />)}
+          </span>
+        </div>
+        <h1 class="hero__title">{d.title}</h1>
+        <p class="hero__tldr">{d.tldr}</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#story"><Icon name="play" size={16} /> Start the story</a>
+          <a class="btn" href={href(`review/?topic=${encodeURIComponent(id)}`)}>
+            <Icon name="cards" size={17} /> Quiz me <span class="muted">({flashcardCount})</span>
+          </a>
+        </div>
+        {
+          prereqs.length > 0 && (
+            <p class="hero__prereq">
+              <span class="eyebrow">Helps to know</span>
+              {prereqs.map((p) => (
+                <a href={cardHref(p.id)}>{p.data.title}</a>
+              ))}
+            </p>
+          )
+        }
+      </header>
+
+      {
+        d.analogy && (
+          <aside class="analogy">
+            <span class="analogy__icon" aria-hidden="true">
+              <Icon name="bulb" size={20} />
+            </span>
+            <div>
+              <p class="analogy__label hand">Think of it like this</p>
+              <p class="analogy__text">{d.analogy}</p>
+            </div>
+          </aside>
+        )
+      }
+
+      <div id="story" class="block">
+        <Story slug={id} diagram={d.diagram} title={d.title} tldr={d.tldr} story={d.story} />
+      </div>
+
+      <div class="cols block">
+        <section id="key-ideas" class="ideas card" aria-labelledby="ideas-h">
+          <h2 id="ideas-h" class="block__title"><Icon name="sparkles" size={20} /> Key ideas</h2>
+          <ul class="ideas__list">
+            {d.keyIdeas.map((k) => <li set:html={inlineMd(k)} />)}
+          </ul>
+        </section>
+        {d.bigO && d.bigO.length > 0 && <BigOTable rows={d.bigO} title={d.bigOTitle ?? 'Complexity'} />}
+      </div>
+
+      <section id="deep-dive" class="deep block" aria-labelledby="deep-h">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">In detail</p>
+            <h2 id="deep-h" class="block__title"><Icon name="library" size={20} /> Deep dive</h2>
+          </div>
+        </div>
+        <div class="deep__grid">
+          {
+            toc.length > 2 && (
+              <nav class="toc" aria-label="On this napkin">
+                <p class="eyebrow">On this napkin</p>
+                <ol>
+                  {toc.map((h) => (
+                    <li>
+                      <a href={`#${h.slug}`}>{h.text}</a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            )
+          }
+          <div class="prose card"><Content /></div>
+        </div>
+      </section>
+
+      {
+        d.griddle && (
+          <section id="griddle" class="block griddle-block" aria-labelledby="try-h">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Hands on</p>
+                <h2 id="try-h" class="block__title">
+                  <Icon name="hand" size={20} /> Try it yourself
+                </h2>
+              </div>
+            </div>
+            <Griddle client:visible kind={d.griddle} />
+          </section>
+        )
+      }
+
+      <section id="check" class="block" aria-labelledby="check-h">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Did it click?</p>
+            <h2 id="check-h" class="block__title"><Icon name="target" size={20} /> Check your understanding</h2>
+          </div>
+        </div>
+        <Quiz items={d.quiz} slug={id} />
+      </section>
+
+      <section class="block" aria-labelledby="quiz-h">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Recall beats re-reading</p>
+            <h2 id="quiz-h" class="block__title"><Icon name="cards" size={20} /> Flashcards</h2>
+          </div>
+          <a class="btn btn--accent" href={href(`review/?topic=${encodeURIComponent(id)}`)}>Spaced review <Icon name="arrowRight" /></a>
+        </div>
+        <Flashcards cards={d.flashcards} />
+      </section>
+
+      {
+        related.length > 0 && (
+          <section class="block" aria-labelledby="rel-h">
+            <h2 id="rel-h" class="block__title section-head">Goes well with</h2>
+            <div class="related">
+              {related.map((r, i) => (
+                <NapkinTile card={r} size="sm" index={i} />
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <nav class="pager block" aria-label="More in this track">
+        {
+          prev ? (
+            <a class="pager__link" href={cardHref(prev.id)} rel="prev">
+              <span class="eyebrow"><Icon name="arrowLeft" size={14} /> Previous</span>
+              <span class="pager__title">{prev.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          next ? (
+            <a class="pager__link pager__link--next" href={cardHref(next.id)} rel="next">
+              <span class="eyebrow">Next <Icon name="arrowRight" size={14} /></span>
+              <span class="pager__title">{next.data.title}</span>
+            </a>
+          ) : (
+            <a class="pager__link pager__link--next" href={href(`${d.track}/`)}>
+              <span class="eyebrow">End of track <Icon name="arrowRight" size={14} /></span>
+              <span class="pager__title">Back to {track.subtitle}</span>
+            </a>
+          )
+        }
+      </nav>
+
+      <footer class="sources block">
+        <p>
+          <span class="eyebrow">Sources</span>
+          {
+            d.sources.map((s) => (
+              <span class="sources__item">
+                from <a href={s.url} rel="noopener" target="_blank">{s.name}</a>, {s.licence}
+                {s.note && <span class="muted"> — {s.note}</span>}
+              </span>
+            ))
+          }
+        </p>
+        <details class="behind">
+          <summary><Icon name="code" size={16} /> Behind the sketch — how this diagram is drawn</summary>
+          <p class="muted">
+            Every napkin drawing is plain code, rendered to hand-drawn SVG at build time with Rough.js. No diagram
+            library ships to your device.
+          </p>
+          <pre><code>{source}</code></pre>
+        </details>
+      </footer>
+    </div>
+  </article>
+</AppShell>
+
+<style>
+  .napkin {
+    padding-top: var(--space-4);
+  }
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    margin-bottom: var(--space-4);
+  }
+  .crumbs a {
+    padding: 6px 0;
+  }
+  .crumbs a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+  .hero {
+    max-width: 820px;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+  .hero__num {
+    font-size: var(--text-xs);
+  }
+  .hero__dot {
+    color: var(--ink-faint);
+  }
+  .hero__min {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .hero__title {
+    font-size: clamp(2.2rem, 6vw, var(--text-4xl));
+    letter-spacing: -0.035em;
+  }
+  .hero__tldr {
+    font-size: clamp(1.08rem, 2.4vw, 1.3rem);
+    color: var(--ink-muted);
+    max-width: 62ch;
+    line-height: 1.5;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+  .hero__prereq {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+  }
+  .hero__prereq a {
+    color: var(--track-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 6px 0;
+  }
+
+  .analogy {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+    margin-top: var(--space-7);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--track-soft);
+    border: 1px dashed color-mix(in srgb, var(--track) 45%, transparent);
+    max-width: 820px;
+  }
+  .analogy__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--track-ink);
+    box-shadow: var(--shadow-1);
+  }
+  .analogy__label {
+    font-size: 1.15rem;
+    color: var(--track-ink);
+    line-height: 1.2;
+  }
+  .analogy__text {
+    font-size: var(--text-md);
+  }
+
+  .block {
+    margin-top: var(--space-9);
+  }
+  #story {
+    margin-top: var(--space-6);
+  }
+  .block__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xl);
+  }
+  .cols {
+    display: grid;
+    gap: var(--space-5);
+    align-items: start;
+  }
+  @media (min-width: 960px) {
+    .cols {
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+    }
+  }
+  .ideas {
+    padding: var(--space-6);
+    scroll-margin-top: calc(var(--topbar-h) + var(--safe-top) + 12px);
+  }
+  .ideas__list {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-4);
+    display: grid;
+    gap: var(--space-3);
+    font-size: var(--text-md);
+  }
+  .ideas__list li {
+    position: relative;
+    padding-left: 28px;
+  }
+  .ideas__list li::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0.5em;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 2.5px solid var(--track);
+  }
+  .ideas__list :global(strong),
+  .prose :global(strong) {
+    font-weight: 700;
+    background: linear-gradient(transparent 62%, color-mix(in srgb, var(--hl) 50%, transparent) 62%);
+  }
+  .ideas__list :global(code),
+  .prose :global(:not(pre) > code) {
+    font-size: 0.88em;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--surface-2);
+  }
+
+  .deep__grid {
+    display: grid;
+    gap: var(--space-5);
+    align-items: start;
+  }
+  @media (min-width: 1100px) {
+    .deep__grid {
+      grid-template-columns: 210px minmax(0, 1fr);
+    }
+    .toc {
+      position: sticky;
+      top: var(--space-6);
+    }
+  }
+  .toc ol {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-2);
+    display: grid;
+    gap: 2px;
+    border-left: 2px solid var(--border);
+  }
+  .toc a {
+    display: block;
+    padding: 7px 12px;
+    margin-left: -2px;
+    border-left: 2px solid transparent;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.35;
+  }
+  .toc a:hover {
+    color: var(--ink);
+    border-left-color: var(--track);
+  }
+  @media (max-width: 1099px) {
+    .toc {
+      display: none;
+    }
+  }
+  .prose {
+    padding: var(--space-6) var(--space-5);
+    font-size: var(--text-md);
+    line-height: 1.72;
+    max-width: 860px;
+    min-width: 0;
+  }
+  @media (min-width: 720px) {
+    .prose {
+      padding: var(--space-8) var(--space-9);
+    }
+  }
+  .prose :global(h2) {
+    font-size: var(--text-xl);
+    margin: var(--space-8) 0 var(--space-3);
+    scroll-margin-top: calc(var(--topbar-h) + var(--safe-top) + 16px);
+  }
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .prose :global(h3) {
+    font-size: var(--text-lg);
+    margin: var(--space-6) 0 var(--space-2);
+  }
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol),
+  .prose :global(table),
+  .prose :global(pre),
+  .prose :global(blockquote) {
+    margin-top: var(--space-4);
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.4em;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .prose :global(li::marker) {
+    color: var(--track);
+    font-weight: 700;
+  }
+  .prose :global(a) {
+    color: var(--accent-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose :global(blockquote) {
+    padding: var(--space-3) var(--space-4);
+    border-left: 3px solid var(--track);
+    background: var(--track-soft);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+  .prose :global(blockquote p) {
+    margin: 0;
+  }
+  .prose :global(table) {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    max-width: 100%;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    padding: 9px 14px 9px 0;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .prose :global(th) {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    border-bottom: 2px solid var(--ink);
+  }
+  .prose :global(pre) {
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    font-size: 13.5px;
+    line-height: 1.6;
+    tab-size: 4;
+  }
+
+  .related {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+  .pager__link {
+    display: grid;
+    gap: 4px;
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition:
+      border-color var(--dur-fast) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
+  }
+  .pager__link:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+  }
+  .pager__link .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .pager__link--next {
+    text-align: right;
+  }
+  .pager__link--next .eyebrow {
+    justify-content: flex-end;
+  }
+  .pager__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-lg);
+  }
+  .sources {
+    display: grid;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .sources p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    align-items: baseline;
+  }
+  .sources a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .behind summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .behind pre {
+    margin-top: var(--space-3);
+    max-height: 420px;
+    overflow: auto;
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+</style>

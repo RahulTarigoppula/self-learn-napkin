@@ -1,0 +1,40 @@
+{
+  "name": "monotonic-stack",
+  "width": 520,
+  "height": 384,
+  "elements": 19,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "For each bar, find the first taller bar to its right",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Values going down just wait on the stack",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "A bigger value pops the waiters it beats",
+      "firstElement": 7,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "One big value can pop several",
+      "firstElement": 11,
+      "lastElement": 14
+    },
+    {
+      "index": 4,
+      "caption": "Leftovers get −1, and the whole pass is O(n)",
+      "firstElement": 15,
+      "lastElement": 18
+    }
+  ],
+  "hash": "af23d899bf58d6ad43d998a88f2d4c3b1bf94b48",
+  "title": "Next greater element on [2, 1, 2, 4, 3] with a decreasing stack"
+}

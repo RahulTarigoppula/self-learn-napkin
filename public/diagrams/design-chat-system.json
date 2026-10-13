@@ -1,0 +1,46 @@
+{
+  "name": "design-chat-system",
+  "width": 520,
+  "height": 420,
+  "elements": 28,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Every phone keeps a WebSocket open",
+      "firstElement": 0,
+      "lastElement": 7
+    },
+    {
+      "index": 1,
+      "caption": "Send: number it, store it, ack it",
+      "firstElement": 8,
+      "lastElement": 12
+    },
+    {
+      "index": 2,
+      "caption": "Deliver: find Bob’s gateway",
+      "firstElement": 13,
+      "lastElement": 17
+    },
+    {
+      "index": 3,
+      "caption": "Groups: one copy per member",
+      "firstElement": 18,
+      "lastElement": 19
+    },
+    {
+      "index": 4,
+      "caption": "Offline? Send a push notification",
+      "firstElement": 20,
+      "lastElement": 24
+    },
+    {
+      "index": 5,
+      "caption": "Presence: heartbeats say who is online",
+      "firstElement": 25,
+      "lastElement": 27
+    }
+  ],
+  "hash": "38693e8728822d64695b5b7a34bef6c818909a84",
+  "title": "Chat system: phones on WebSockets to gateways, a chat service, session registry, message store, push notifier and presence"
+}

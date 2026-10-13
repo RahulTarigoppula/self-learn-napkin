@@ -1,0 +1,46 @@
+{
+  "name": "bellman-ford",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A graph with one negative edge",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Pass 1: relax all 5 edges in order",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "Pass 2: the negative edge pays off",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Pass 3 = V − 1: all distances final",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 4,
+      "caption": "One extra pass: nothing changes",
+      "firstElement": 12,
+      "lastElement": 13
+    },
+    {
+      "index": 5,
+      "caption": "Add C→B −6: a negative cycle",
+      "firstElement": 14,
+      "lastElement": 15
+    }
+  ],
+  "hash": "2a128c2b2e8de0d2005addafe75b392e22de3061",
+  "title": "Bellman-Ford relaxing every edge in passes, with a negative edge and a negative cycle"
+}

@@ -1,0 +1,185 @@
+/* Hand-drawn diagrams: classes emitted by scripts/diagram-kit.mjs, coloured by tokens. */
+.dg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.dg path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+.dg .w-thick {
+  stroke-width: 2.6;
+}
+.dg .w-thin {
+  stroke-width: 1.1;
+}
+.dg text {
+  font-family: var(--font-hand);
+  stroke: none;
+}
+.dg .t-mono {
+  font-family: var(--font-mono);
+}
+.dg .t-bold {
+  font-weight: 700;
+}
+
+.dg .s-ink {
+  stroke: var(--pen-ink);
+}
+.dg .s-muted {
+  stroke: var(--pen-muted);
+}
+.dg .s-red {
+  stroke: var(--pen-red);
+}
+.dg .s-blue {
+  stroke: var(--pen-blue);
+}
+.dg .s-green {
+  stroke: var(--pen-green);
+}
+.dg .s-orange {
+  stroke: var(--pen-orange);
+}
+.dg .s-violet {
+  stroke: var(--pen-violet);
+}
+.dg .s-paper {
+  stroke: var(--pen-paper);
+}
+.dg .s-hl {
+  stroke: var(--hl);
+}
+
+.dg .f-ink {
+  fill: var(--wash-ink);
+}
+.dg .f-muted {
+  fill: var(--wash-muted);
+}
+.dg .f-red {
+  fill: var(--wash-red);
+}
+.dg .f-blue {
+  fill: var(--wash-blue);
+}
+.dg .f-green {
+  fill: var(--wash-green);
+}
+.dg .f-orange {
+  fill: var(--wash-orange);
+}
+.dg .f-violet {
+  fill: var(--wash-violet);
+}
+.dg .f-paper {
+  fill: var(--wash-paper);
+}
+.dg .f-hl {
+  fill: var(--hl);
+  opacity: 0.55;
+}
+
+.dg .h-ink {
+  stroke: var(--pen-ink);
+  opacity: 0.5;
+  stroke-width: 1;
+}
+.dg .h-muted {
+  stroke: var(--pen-muted);
+  opacity: 0.45;
+  stroke-width: 1;
+}
+.dg .h-red {
+  stroke: var(--pen-red);
+  opacity: 0.45;
+  stroke-width: 1;
+}
+.dg .h-blue {
+  stroke: var(--pen-blue);
+  opacity: 0.45;
+  stroke-width: 1;
+}
+.dg .h-green {
+  stroke: var(--pen-green);
+  opacity: 0.45;
+  stroke-width: 1;
+}
+.dg .h-orange {
+  stroke: var(--pen-orange);
+  opacity: 0.5;
+  stroke-width: 1;
+}
+.dg .h-violet {
+  stroke: var(--pen-violet);
+  opacity: 0.45;
+  stroke-width: 1;
+}
+.dg .h-hl {
+  stroke: var(--hl);
+  opacity: 0.8;
+  stroke-width: 3;
+}
+
+.dg .t-ink {
+  fill: var(--pen-ink);
+}
+.dg .t-muted {
+  fill: var(--pen-muted);
+}
+.dg .t-red {
+  fill: var(--pen-red);
+}
+.dg .t-blue {
+  fill: var(--pen-blue);
+}
+.dg .t-green {
+  fill: var(--pen-green);
+}
+.dg .t-orange {
+  fill: var(--text-orange);
+}
+.dg .t-violet {
+  fill: var(--pen-violet);
+}
+.dg .t-paper {
+  fill: var(--pen-paper);
+}
+
+/* ---- Story playback (the story island adds .is-story to the figure) ---- */
+.is-story .dg g[data-step] {
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.is-story .dg g.is-future {
+  opacity: 0;
+}
+.is-story .dg g.is-past {
+  opacity: 0.5;
+}
+.is-story .dg g.is-drawing path[pathLength] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: dg-draw var(--dur-draw) var(--ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+.is-story .dg g.is-drawing path:not([pathLength]),
+.is-story .dg g.is-drawing text {
+  opacity: 0;
+  animation: dg-fade var(--dur-slow) var(--ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * var(--stagger) + 160ms);
+}
+@keyframes dg-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes dg-fade {
+  to {
+    opacity: 1;
+  }
+}

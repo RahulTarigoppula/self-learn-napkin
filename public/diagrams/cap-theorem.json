@@ -1,0 +1,46 @@
+{
+  "name": "cap-theorem",
+  "width": 520,
+  "height": 392,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Two replicas, one value",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "A write, then the network splits",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 2,
+      "caption": "A reader asks B",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "Choose consistency: refuse",
+      "firstElement": 11,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "Choose availability: answer stale",
+      "firstElement": 13,
+      "lastElement": 14
+    },
+    {
+      "index": 5,
+      "caption": "PACELC: no partition, still a trade",
+      "firstElement": 15,
+      "lastElement": 15
+    }
+  ],
+  "hash": "4f3852c53ea97046cec81b0a5b22ceb69ed55b27",
+  "title": "A network partition forces a choice between consistency and availability"
+}

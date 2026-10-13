@@ -1,0 +1,40 @@
+{
+  "name": "stacks",
+  "width": 520,
+  "height": 420,
+  "elements": 33,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Last in, first out",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Opening brackets are pushed",
+      "firstElement": 5,
+      "lastElement": 10
+    },
+    {
+      "index": 2,
+      "caption": "Each closer must match the top",
+      "firstElement": 11,
+      "lastElement": 15
+    },
+    {
+      "index": 3,
+      "caption": "A mismatch fails immediately",
+      "firstElement": 16,
+      "lastElement": 22
+    },
+    {
+      "index": 4,
+      "caption": "Postfix: numbers in, operators pop two",
+      "firstElement": 23,
+      "lastElement": 32
+    }
+  ],
+  "hash": "56708611bc89fc95715473b2c57fdf066788a1e8",
+  "title": "A stack, the bracket-matching trace for {[()]} and ([)], and postfix evaluation"
+}

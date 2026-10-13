@@ -1,0 +1,40 @@
+{
+  "name": "fast-and-slow-pointers",
+  "width": 520,
+  "height": 420,
+  "elements": 17,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A list whose tail loops back",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "slow moves 1 node per step, fast moves 2",
+      "firstElement": 3,
+      "lastElement": 7
+    },
+    {
+      "index": 2,
+      "caption": "Inside the loop the gap shrinks by 1 per step",
+      "firstElement": 8,
+      "lastElement": 11
+    },
+    {
+      "index": 3,
+      "caption": "Reset one pointer to head to find the loop start",
+      "firstElement": 12,
+      "lastElement": 15
+    },
+    {
+      "index": 4,
+      "caption": "No loop: fast reaches the end with slow in the middle",
+      "firstElement": 16,
+      "lastElement": 16
+    }
+  ],
+  "hash": "6c242ef875bb3df4ce888fa29c56008837fdd390",
+  "title": "Floyd's tortoise and hare on a list 1→2→3→4→5→6 that loops back to 3"
+}

@@ -1,0 +1,34 @@
+{
+  "name": "bfs-vs-dfs",
+  "width": 520,
+  "height": 400,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A 5×5 grid with walls",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "BFS ripples out one ring at a time",
+      "firstElement": 2,
+      "lastElement": 11
+    },
+    {
+      "index": 2,
+      "caption": "DFS dives down one branch",
+      "firstElement": 12,
+      "lastElement": 15
+    },
+    {
+      "index": 3,
+      "caption": "BFS reaches G in the fewest edges",
+      "firstElement": 16,
+      "lastElement": 19
+    }
+  ],
+  "hash": "7bb3ad4f297176fe596411c9fea2c3dd7a6ae167",
+  "title": "BFS ripple versus DFS dive on a 5×5 grid with walls"
+}

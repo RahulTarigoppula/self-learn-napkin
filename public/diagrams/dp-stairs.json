@@ -1,0 +1,40 @@
+{
+  "name": "dp-stairs",
+  "width": 520,
+  "height": 410,
+  "elements": 13,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Climb 5 stairs, 1 or 2 at a time",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Recurse: the call tree",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "The same subproblems, again and again",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Memoise: solve each once, then look it up",
+      "firstElement": 8,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "Tabulate bottom-up instead",
+      "firstElement": 10,
+      "lastElement": 12
+    }
+  ],
+  "hash": "146301360739f730643bbd6f43abf4a5c771fe02",
+  "title": "Dynamic programming: climbing stairs, recursion tree, memo and table"
+}

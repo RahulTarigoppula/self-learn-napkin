@@ -1,0 +1,46 @@
+{
+  "name": "gradient-descent",
+  "width": 520,
+  "height": 420,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "The loss bowl",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "The slope says which way is downhill",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Step: w ← w − η · slope",
+      "firstElement": 6,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "η too small: it crawls",
+      "firstElement": 11,
+      "lastElement": 11
+    },
+    {
+      "index": 4,
+      "caption": "η too big: it overshoots",
+      "firstElement": 12,
+      "lastElement": 13
+    },
+    {
+      "index": 5,
+      "caption": "Mini-batches: noisy but cheap",
+      "firstElement": 14,
+      "lastElement": 17
+    }
+  ],
+  "hash": "57ef278471c299491326a3ce74978200f519dab8",
+  "title": "Gradient descent: a ball rolling down a loss bowl"
+}

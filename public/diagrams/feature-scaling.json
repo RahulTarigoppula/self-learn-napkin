@@ -1,0 +1,46 @@
+{
+  "name": "feature-scaling",
+  "width": 520,
+  "height": 420,
+  "elements": 19,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Two features in very different units",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Raw distance: income drowns age",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Standardise: z = (x − mean) / std",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Scaled distance: A is nearest",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 4,
+      "caption": "Fit the scaler on train only",
+      "firstElement": 12,
+      "lastElement": 15
+    },
+    {
+      "index": 5,
+      "caption": "Gradient descent: a round bowl",
+      "firstElement": 16,
+      "lastElement": 18
+    }
+  ],
+  "hash": "ab8c4e8af39cce1ea23025da1beb9f87af5179d9",
+  "title": "Nearest neighbour before and after standardising age and income, fitting the scaler on train only, and gradient descent on raw vs scaled features"
+}

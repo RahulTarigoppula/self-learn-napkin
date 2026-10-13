@@ -1,0 +1,46 @@
+{
+  "name": "token-bucket",
+  "width": 520,
+  "height": 410,
+  "elements": 13,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A bucket of 5 tokens, refilled 1 per second",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "A burst of 7 requests at once",
+      "firstElement": 3,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "r1–r5 each take a token",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "r6, r7 find it empty: 429",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "Three seconds later: 3 tokens back",
+      "firstElement": 10,
+      "lastElement": 11
+    },
+    {
+      "index": 5,
+      "caption": "Other limiters",
+      "firstElement": 12,
+      "lastElement": 12
+    }
+  ],
+  "hash": "97391e7dd5176b7672e9d18c79dbeea9d2d95495",
+  "title": "Token bucket rate limiter: capacity 5, refill 1 per second, burst of 7"
+}

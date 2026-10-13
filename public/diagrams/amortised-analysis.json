@@ -1,0 +1,40 @@
+{
+  "name": "amortised-analysis",
+  "width": 520,
+  "height": 420,
+  "elements": 12,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "An array that doubles when it is full",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Most appends cost 1",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "A full array copies everything",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Add it all up: under 3 per append",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "Banker’s view: charge 3, bank the rest",
+      "firstElement": 9,
+      "lastElement": 11
+    }
+  ],
+  "hash": "ee0f23de3ffc27180f3e5375b405b30a21ae98c9",
+  "title": "Dynamic array doubling: cost of each append and the amortised bound"
+}

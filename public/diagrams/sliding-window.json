@@ -1,0 +1,40 @@
+{
+  "name": "sliding-window",
+  "width": 520,
+  "height": 400,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Fixed window: add one, drop one",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Variable window: grow R while it is valid",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 2,
+      "caption": "A repeat: shrink from the left",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "Grow again: the best window",
+      "firstElement": 11,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "Both pointers only move right: O(n)",
+      "firstElement": 13,
+      "lastElement": 14
+    }
+  ],
+  "hash": "2221499fb2c51cbb38ed922f4c569aecb9b78b85",
+  "title": "Sliding windows: a fixed window of 3, and the longest substring without repeats in \"abcbad\""
+}

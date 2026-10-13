@@ -1,0 +1,40 @@
+{
+  "name": "sharding",
+  "width": 520,
+  "height": 390,
+  "elements": 21,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One table outgrows one machine",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Split by key range",
+      "firstElement": 2,
+      "lastElement": 7
+    },
+    {
+      "index": 2,
+      "caption": "The hot shard",
+      "firstElement": 8,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "Split by hash instead",
+      "firstElement": 11,
+      "lastElement": 17
+    },
+    {
+      "index": 4,
+      "caption": "Add a shard: most rows move",
+      "firstElement": 18,
+      "lastElement": 20
+    }
+  ],
+  "hash": "f3bced595097cc652760a0c68204bb83790e306d",
+  "title": "One users table split into shards by range and by hash"
+}

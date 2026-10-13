@@ -1,0 +1,46 @@
+{
+  "name": "balanced-trees",
+  "width": 520,
+  "height": 420,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Sorted inserts build a chain",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "AVL: every balance factor is −1, 0 or +1",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Insert 5: node 30 is out of balance",
+      "firstElement": 4,
+      "lastElement": 5
+    },
+    {
+      "index": 3,
+      "caption": "Rotate right at 30: 20 moves up",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "Red-black: colours instead of heights",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 5,
+      "caption": "B-tree: many keys per node, few levels",
+      "firstElement": 12,
+      "lastElement": 14
+    }
+  ],
+  "hash": "20c3c966c294d26921290ebad5b5d18ba901a7aa",
+  "title": "Balanced trees: a degenerate chain, an AVL right rotation, a red-black tree and a B-tree node"
+}

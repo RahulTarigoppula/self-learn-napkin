@@ -1,0 +1,40 @@
+{
+  "name": "lru-cache",
+  "width": 520,
+  "height": 410,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A map for finding, a list for ordering",
+      "firstElement": 0,
+      "lastElement": 5
+    },
+    {
+      "index": 1,
+      "caption": "put 1, then put 2 at the front",
+      "firstElement": 6,
+      "lastElement": 9
+    },
+    {
+      "index": 2,
+      "caption": "get 1: a hit moves it to the front",
+      "firstElement": 10,
+      "lastElement": 12
+    },
+    {
+      "index": 3,
+      "caption": "put 3: full, so evict the tail",
+      "firstElement": 13,
+      "lastElement": 15
+    },
+    {
+      "index": 4,
+      "caption": "Every operation is O(1)",
+      "firstElement": 16,
+      "lastElement": 17
+    }
+  ],
+  "hash": "a8a2247dd53ec22b1045c7619279b9c2987bff3d",
+  "title": "LRU cache: hash map plus doubly linked list, capacity 2"
+}

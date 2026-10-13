@@ -1,0 +1,46 @@
+{
+  "name": "blob-storage",
+  "width": 520,
+  "height": 420,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A bucket holds objects: key → bytes + metadata",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "The app hands out a pre-signed URL",
+      "firstElement": 3,
+      "lastElement": 8
+    },
+    {
+      "index": 2,
+      "caption": "Upload bytes directly, in parallel parts",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "Erasure coding: 6 data + 3 parity chunks",
+      "firstElement": 11,
+      "lastElement": 13
+    },
+    {
+      "index": 4,
+      "caption": "Lose any 3 disks: still readable",
+      "firstElement": 14,
+      "lastElement": 15
+    },
+    {
+      "index": 5,
+      "caption": "A CDN serves reads near the viewer",
+      "firstElement": 16,
+      "lastElement": 19
+    }
+  ],
+  "hash": "e395c08fef896c3fefc0b3d87cb352cc9e8644e4",
+  "title": "Blob storage: objects in a bucket, pre-signed multipart upload, 6+3 erasure coding and a CDN"
+}

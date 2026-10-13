@@ -1,0 +1,46 @@
+{
+  "name": "tries",
+  "width": 520,
+  "height": 410,
+  "elements": 19,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Insert \"car\": one node per letter",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "\"cart\" and \"cat\" reuse the prefix",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 2,
+      "caption": "\"dog\" starts a new branch",
+      "firstElement": 8,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "search vs startsWith for \"ca\"",
+      "firstElement": 11,
+      "lastElement": 13
+    },
+    {
+      "index": 4,
+      "caption": "Autocomplete: collect the words below",
+      "firstElement": 14,
+      "lastElement": 15
+    },
+    {
+      "index": 5,
+      "caption": "A compressed trie merges one-child chains",
+      "firstElement": 16,
+      "lastElement": 18
+    }
+  ],
+  "hash": "8a3a9d91863ae24ecff994188ca1a95c6d00f0c3",
+  "title": "A trie holding car, cart, cat and dog: shared prefixes, search, prefix search and a compressed trie"
+}

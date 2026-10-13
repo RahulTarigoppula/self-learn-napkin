@@ -1,0 +1,40 @@
+{
+  "name": "bst",
+  "width": 520,
+  "height": 400,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Smaller to the left, bigger to the right",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Each insert walks down to an empty spot",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "Insert 4, 7 and 13",
+      "firstElement": 7,
+      "lastElement": 11
+    },
+    {
+      "index": 3,
+      "caption": "Search for 6: one path, top to bottom",
+      "firstElement": 12,
+      "lastElement": 15
+    },
+    {
+      "index": 4,
+      "caption": "Sorted inserts build a chain",
+      "firstElement": 16,
+      "lastElement": 19
+    }
+  ],
+  "hash": "151cd29767ce70f76918bd8fbdb302f23fd279f2",
+  "title": "Binary search tree: inserts, a search path and a degenerate chain"
+}

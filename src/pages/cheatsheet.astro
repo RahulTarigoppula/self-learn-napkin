@@ -1,0 +1,148 @@
+---
+import Icon from '../components/Icon.astro';
+import AppShell from '../layouts/AppShell.astro';
+import { cardHref, href } from '../lib/base';
+import { library } from '../lib/content';
+import { inlineMd } from '../lib/inline-md';
+
+const { tracks } = await library();
+---
+
+<AppShell title="Cheat sheet" active="library" description="Every complexity table and key idea on one page — the night-before-the-interview sheet.">
+  <div class="container cs">
+    <header class="cs__head">
+      <p class="eyebrow">The night before</p>
+      <h1>Cheat sheet</h1>
+      <p class="muted">Every napkin's key ideas and complexity table on one page. Print it, or skim it on the train.</p>
+      <button class="btn" type="button" data-print><Icon name="download" size={17} /> Print / save as PDF</button>
+    </header>
+    {
+      tracks.map((t) => (
+        <section class:list={['cs__track', `t-${t.id}`]} aria-labelledby={`cs-${t.id}`}>
+          <h2 id={`cs-${t.id}`}>{t.subtitle}</h2>
+          <div class="cs__grid">
+            {t.cards.map((c) => (
+              <article class="cs__item card">
+                <h3>
+                  <a href={cardHref(c.id)}>{c.data.title}</a>
+                </h3>
+                <p class="cs__tldr">{c.data.tldr}</p>
+                {c.data.bigO && c.data.bigO.length > 0 && (
+                  <table>
+                    <caption class="sr-only">{c.data.title} — {c.data.bigOTitle ?? 'complexity'}</caption>
+                    <tbody>
+                      {c.data.bigO.map((r) => (
+                        <tr>
+                          <th scope="row">{r.op}</th>
+                          <td class="mono">{[r.best, r.avg, r.worst].filter(Boolean).join(' · ')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+                <ul>
+                  {c.data.keyIdeas.slice(0, 3).map((k) => (
+                    <li set:html={inlineMd(k)} />
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+    <p class="muted cs__foot"><a href={href('library/')}>Back to the library</a></p>
+  </div>
+</AppShell>
+
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+</script>
+
+<style>
+  .cs {
+    padding-top: var(--space-6);
+  }
+  .cs__head {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+  .cs__head h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+  .cs__track {
+    margin-top: var(--space-9);
+  }
+  .cs__track h2 {
+    font-size: var(--text-2xl);
+    padding-bottom: var(--space-2);
+    border-bottom: 3px solid var(--track);
+    margin-bottom: var(--space-4);
+  }
+  .cs__grid {
+    columns: 300px;
+    column-gap: var(--space-4);
+  }
+  .cs__item {
+    break-inside: avoid;
+    margin-bottom: var(--space-4);
+    padding: var(--space-4);
+    font-size: var(--text-sm);
+  }
+  .cs__item h3 {
+    font-size: var(--text-md);
+  }
+  .cs__item h3 a:hover {
+    text-decoration: underline;
+  }
+  .cs__tldr {
+    color: var(--ink-muted);
+    margin: 4px 0 var(--space-2);
+  }
+  .cs__item table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-2) 0;
+  }
+  .cs__item th {
+    text-align: left;
+    font-weight: 600;
+    padding: 4px 8px 4px 0;
+    vertical-align: top;
+  }
+  .cs__item td {
+    padding: 4px 0;
+    color: var(--track-ink);
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .cs__item tr + tr {
+    border-top: 1px solid var(--border);
+  }
+  .cs__item ul {
+    padding-left: 1.1em;
+    display: grid;
+    gap: 4px;
+  }
+  .cs__item :global(code) {
+    font-size: 0.92em;
+  }
+  .cs__foot {
+    margin-top: var(--space-8);
+  }
+  @media print {
+    :global(.sidebar),
+    :global(.topbar),
+    :global(.tabbar),
+    .cs__head button {
+      display: none !important;
+    }
+    :global(body) {
+      background: #fff;
+    }
+    .cs__item {
+      box-shadow: none;
+    }
+  }
+</style>

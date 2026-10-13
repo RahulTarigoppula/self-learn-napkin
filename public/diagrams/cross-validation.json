@@ -1,0 +1,46 @@
+{
+  "name": "cross-validation",
+  "width": 520,
+  "height": 416,
+  "elements": 12,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Cut the data into 5 folds",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Round 1: fold 1 validates",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Every fold takes a turn",
+      "firstElement": 4,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Average the five scores",
+      "firstElement": 8,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "Stratified: keep the class mix",
+      "firstElement": 10,
+      "lastElement": 10
+    },
+    {
+      "index": 5,
+      "caption": "Time series: never train on the future",
+      "firstElement": 11,
+      "lastElement": 11
+    }
+  ],
+  "hash": "afc54f342f1d2c4e16f8a56a2c39fdc5802aaf1f",
+  "title": "Five-fold cross-validation, stratified and time-series variants"
+}

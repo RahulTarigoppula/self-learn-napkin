@@ -1,0 +1,40 @@
+{
+  "name": "lsm-trees",
+  "width": 520,
+  "height": 420,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Write: append to the WAL, insert in the memtable",
+      "firstElement": 0,
+      "lastElement": 5
+    },
+    {
+      "index": 1,
+      "caption": "Flush: memtable becomes a sorted SSTable",
+      "firstElement": 6,
+      "lastElement": 10
+    },
+    {
+      "index": 2,
+      "caption": "Read: newest first, bloom filters skip files",
+      "firstElement": 11,
+      "lastElement": 14
+    },
+    {
+      "index": 3,
+      "caption": "Compaction: merge, keep the newest",
+      "firstElement": 15,
+      "lastElement": 17
+    },
+    {
+      "index": 4,
+      "caption": "Levels: each about 10× bigger",
+      "firstElement": 18,
+      "lastElement": 19
+    }
+  ],
+  "hash": "5680e89b93e07dc22ff4e5de6d4f8690fad02d65",
+  "title": "LSM-tree: writes to WAL and memtable, flush to SSTables, reads with bloom filters, compaction into levels"
+}

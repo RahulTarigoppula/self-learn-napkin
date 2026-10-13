@@ -1,0 +1,40 @@
+{
+  "name": "backpressure",
+  "width": 520,
+  "height": 420,
+  "elements": 13,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Producer faster than consumer",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Unbounded queue: memory and latency grow",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 2,
+      "caption": "Bound it: block, drop or shed",
+      "firstElement": 8,
+      "lastElement": 9
+    },
+    {
+      "index": 3,
+      "caption": "Pull: the consumer sets the pace",
+      "firstElement": 10,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Little's law: L = λW",
+      "firstElement": 11,
+      "lastElement": 12
+    }
+  ],
+  "hash": "ef22ef591638b8b1757273216bf56ac6315a4bf5",
+  "title": "Backpressure: a fast producer, a growing queue, a bounded buffer, pull-based demand and Little's law"
+}

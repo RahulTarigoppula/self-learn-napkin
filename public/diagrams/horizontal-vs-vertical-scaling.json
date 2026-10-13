@@ -1,0 +1,46 @@
+{
+  "name": "horizontal-vs-vertical-scaling",
+  "width": 520,
+  "height": 420,
+  "elements": 25,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One server, and it is full",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Scale up: buy a bigger box",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 2,
+      "caption": "Scale out: many boxes, one balancer",
+      "firstElement": 9,
+      "lastElement": 15
+    },
+    {
+      "index": 3,
+      "caption": "State on a box gets in the way",
+      "firstElement": 16,
+      "lastElement": 17
+    },
+    {
+      "index": 4,
+      "caption": "Move state out: stateless app tier",
+      "firstElement": 18,
+      "lastElement": 21
+    },
+    {
+      "index": 5,
+      "caption": "Auto-scaling adds boxes under load",
+      "firstElement": 22,
+      "lastElement": 24
+    }
+  ],
+  "hash": "534d1ec9fc93954cb2849c281c7dc43648b54360",
+  "title": "Scaling up to one bigger machine versus scaling out to many stateless machines that share a session store"
+}

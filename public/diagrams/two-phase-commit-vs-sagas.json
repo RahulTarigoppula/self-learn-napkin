@@ -1,0 +1,40 @@
+{
+  "name": "two-phase-commit-vs-sagas",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One trip, three databases",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "2PC phase 1: prepare, everyone votes yes",
+      "firstElement": 2,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Coordinator dies: participants are stuck",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Saga: local transactions, one after another",
+      "firstElement": 8,
+      "lastElement": 13
+    },
+    {
+      "index": 4,
+      "caption": "Compensate: cancel the flight",
+      "firstElement": 14,
+      "lastElement": 15
+    }
+  ],
+  "hash": "f34d71690a0cf5ba8e274c9a51524cac8e2276cd",
+  "title": "Two-phase commit blocks when the coordinator crashes; a saga books flight and hotel, then compensates"
+}

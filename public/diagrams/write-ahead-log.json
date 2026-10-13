@@ -1,0 +1,46 @@
+{
+  "name": "write-ahead-log",
+  "width": 520,
+  "height": 380,
+  "elements": 24,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Pages live in memory and on disk",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Log the change, fsync, then ack",
+      "firstElement": 5,
+      "lastElement": 11
+    },
+    {
+      "index": 2,
+      "caption": "Group commit: one fsync, many commits",
+      "firstElement": 12,
+      "lastElement": 14
+    },
+    {
+      "index": 3,
+      "caption": "Crash: memory is gone",
+      "firstElement": 15,
+      "lastElement": 16
+    },
+    {
+      "index": 4,
+      "caption": "Recovery: redo committed, undo the rest",
+      "firstElement": 17,
+      "lastElement": 20
+    },
+    {
+      "index": 5,
+      "caption": "Checkpoints bound replay; the log feeds replicas",
+      "firstElement": 21,
+      "lastElement": 23
+    }
+  ],
+  "hash": "f8a0c201101f3da101c9a369bf1135a8c13fa4cc",
+  "title": "Write-ahead log: log first, group commit, crash, replay from the checkpoint, and the log feeding replicas"
+}

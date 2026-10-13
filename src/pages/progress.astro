@@ -1,0 +1,32 @@
+---
+import Progress from '../features/progress/Progress';
+import AppShell from '../layouts/AppShell.astro';
+import { library } from '../lib/content';
+
+const { tracks } = await library();
+const totals = tracks.map((t) => ({ id: t.id, name: t.subtitle, total: t.cards.length }));
+---
+
+<AppShell title="Progress" active="progress" description="Your streak, review history and what's coming up.">
+  <div class="container progress-page">
+    <header>
+      <p class="eyebrow">Your progress</p>
+      <h1>Little and often.</h1>
+      <p class="muted">Ten minutes a day beats a three-hour cram. Here is how your habit is shaping up.</p>
+    </header>
+    <Progress client:load tracks={totals} />
+  </div>
+</AppShell>
+
+<style>
+  .progress-page {
+    padding-top: var(--space-6);
+  }
+  header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin: var(--space-2) 0;
+  }
+  header {
+    margin-bottom: var(--space-6);
+  }
+</style>

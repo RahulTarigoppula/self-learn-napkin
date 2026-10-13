@@ -1,0 +1,46 @@
+{
+  "name": "sql-vs-nosql",
+  "width": 520,
+  "height": 420,
+  "elements": 22,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Relational: tables joined by keys",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Document: nest what you read together",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "Key-value: a key and an opaque value",
+      "firstElement": 7,
+      "lastElement": 11
+    },
+    {
+      "index": 3,
+      "caption": "Wide-column: partition, then sorted rows",
+      "firstElement": 12,
+      "lastElement": 16
+    },
+    {
+      "index": 4,
+      "caption": "Graph: nodes and relationships",
+      "firstElement": 17,
+      "lastElement": 19
+    },
+    {
+      "index": 5,
+      "caption": "Pick by access pattern and scale",
+      "firstElement": 20,
+      "lastElement": 21
+    }
+  ],
+  "hash": "27fbbe8626d87bfd7a6faa9b8f9baf182158b07f",
+  "title": "One user and her orders modelled as relational tables, a document, key-value, wide-column and graph"
+}

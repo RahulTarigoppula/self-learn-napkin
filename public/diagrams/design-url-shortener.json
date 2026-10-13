@@ -1,0 +1,46 @@
+{
+  "name": "design-url-shortener",
+  "width": 520,
+  "height": 400,
+  "elements": 25,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Write path: shorten a URL",
+      "firstElement": 0,
+      "lastElement": 7
+    },
+    {
+      "index": 1,
+      "caption": "A key service hands out unique keys",
+      "firstElement": 8,
+      "lastElement": 11
+    },
+    {
+      "index": 2,
+      "caption": "Read path: a 302 redirect",
+      "firstElement": 12,
+      "lastElement": 14
+    },
+    {
+      "index": 3,
+      "caption": "Cache the hot links",
+      "firstElement": 15,
+      "lastElement": 17
+    },
+    {
+      "index": 4,
+      "caption": "Clicks go to a queue, not the DB",
+      "firstElement": 18,
+      "lastElement": 21
+    },
+    {
+      "index": 5,
+      "caption": "Shard the DB by key",
+      "firstElement": 22,
+      "lastElement": 24
+    }
+  ],
+  "hash": "05efa0730cf842f868eb738e96a3bdbc98796428",
+  "title": "URL shortener: load balancer, app servers, key service, cache, sharded database and an analytics queue"
+}

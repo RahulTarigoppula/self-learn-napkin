@@ -1,0 +1,40 @@
+{
+  "name": "read-repair",
+  "width": 520,
+  "height": 420,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Replicas drift apart",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "A quorum read sees two versions",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 2,
+      "caption": "Return the newest, write it back",
+      "firstElement": 8,
+      "lastElement": 11
+    },
+    {
+      "index": 3,
+      "caption": "Anti-entropy: compare Merkle roots",
+      "firstElement": 12,
+      "lastElement": 14
+    },
+    {
+      "index": 4,
+      "caption": "Descend only where hashes differ",
+      "firstElement": 15,
+      "lastElement": 17
+    }
+  ],
+  "hash": "c12438271dce75f301b9208f061c124a2ae80fad",
+  "title": "Read repair during a quorum read, and Merkle-tree anti-entropy"
+}

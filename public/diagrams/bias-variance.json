@@ -1,0 +1,46 @@
+{
+  "name": "bias-variance",
+  "width": 520,
+  "height": 420,
+  "elements": 15,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Axes: model complexity across, error up",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "Training error falls forever",
+      "firstElement": 1,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "Test error falls, then rises",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 3,
+      "caption": "The gap between them is variance",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "Left: underfit, high bias",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 5,
+      "caption": "Right: overfit, high variance",
+      "firstElement": 12,
+      "lastElement": 14
+    }
+  ],
+  "hash": "7762592ca33bcdec00ae863fb00bf7c89498eae1",
+  "title": "Training and test error against model complexity, with dartboards"
+}

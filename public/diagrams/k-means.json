@@ -1,0 +1,46 @@
+{
+  "name": "k-means",
+  "width": 520,
+  "height": 420,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Six points, two random starts",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Assign: each point to its nearest ×",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "Update: move each × to its mean",
+      "firstElement": 7,
+      "lastElement": 10
+    },
+    {
+      "index": 3,
+      "caption": "Repeat until nothing changes",
+      "firstElement": 11,
+      "lastElement": 14
+    },
+    {
+      "index": 4,
+      "caption": "Choosing k: elbow and silhouette",
+      "firstElement": 15,
+      "lastElement": 17
+    },
+    {
+      "index": 5,
+      "caption": "Failure modes and k-means++",
+      "firstElement": 18,
+      "lastElement": 19
+    }
+  ],
+  "hash": "466693603d014f2a0e409c564af1330529360cba",
+  "title": "k-means on six points: two random starts, assign to the nearest centroid, move centroids to the means, repeat until stable while inertia falls, the elbow for choosing k, and failure on rings"
+}

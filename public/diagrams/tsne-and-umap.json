@@ -1,0 +1,40 @@
+{
+  "name": "tsne-and-umap",
+  "width": 520,
+  "height": 420,
+  "elements": 23,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Three groups in 10-D",
+      "firstElement": 0,
+      "lastElement": 6
+    },
+    {
+      "index": 1,
+      "caption": "Distances become neighbour probabilities",
+      "firstElement": 7,
+      "lastElement": 11
+    },
+    {
+      "index": 2,
+      "caption": "Lay out in 2-D with heavy tails",
+      "firstElement": 12,
+      "lastElement": 15
+    },
+    {
+      "index": 3,
+      "caption": "The map: same sizes, same gaps",
+      "firstElement": 16,
+      "lastElement": 21
+    },
+    {
+      "index": 4,
+      "caption": "PCA and UMAP for comparison",
+      "firstElement": 22,
+      "lastElement": 22
+    }
+  ],
+  "hash": "4c299dbd63dde72ff509c98d58ddadb49bce3b31",
+  "title": "t-SNE: neighbour probabilities, a heavy-tailed 2-D map, equal-looking clusters"
+}

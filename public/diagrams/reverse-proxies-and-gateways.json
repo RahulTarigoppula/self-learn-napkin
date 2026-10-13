@@ -1,0 +1,46 @@
+{
+  "name": "reverse-proxies-and-gateways",
+  "width": 520,
+  "height": 420,
+  "elements": 28,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Forward proxy: speaks for the clients",
+      "firstElement": 0,
+      "lastElement": 5
+    },
+    {
+      "index": 1,
+      "caption": "Reverse proxy: speaks for the servers",
+      "firstElement": 6,
+      "lastElement": 11
+    },
+    {
+      "index": 2,
+      "caption": "API gateway: one door, many services",
+      "firstElement": 12,
+      "lastElement": 19
+    },
+    {
+      "index": 3,
+      "caption": "Every request is checked first",
+      "firstElement": 20,
+      "lastElement": 21
+    },
+    {
+      "index": 4,
+      "caption": "Aggregation: one call, three services",
+      "firstElement": 22,
+      "lastElement": 26
+    },
+    {
+      "index": 5,
+      "caption": "One door is also one point of failure",
+      "firstElement": 27,
+      "lastElement": 27
+    }
+  ],
+  "hash": "d09c3d44760e9ff23fbd925664d8618b849d686c",
+  "title": "Forward proxy versus reverse proxy, then an API gateway that authenticates, rate-limits, routes and aggregates requests"
+}

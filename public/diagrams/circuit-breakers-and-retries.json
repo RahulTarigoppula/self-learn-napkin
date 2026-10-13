@@ -1,0 +1,40 @@
+{
+  "name": "circuit-breakers-and-retries",
+  "width": 520,
+  "height": 420,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A slow dependency spreads",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Timeouts and a shared deadline",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Retry with backoff and full jitter",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Breaker trips: closed → open",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "Half-open: trial calls decide",
+      "firstElement": 10,
+      "lastElement": 13
+    }
+  ],
+  "hash": "eb3e50c43369156c651d6a4beae68c011ec3c3c7",
+  "title": "A cascading failure, deadlines, retries with jittered backoff, and the circuit breaker state machine"
+}

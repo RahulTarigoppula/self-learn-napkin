@@ -1,0 +1,40 @@
+{
+  "name": "load-balancer",
+  "width": 520,
+  "height": 390,
+  "elements": 25,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Many clients, one address",
+      "firstElement": 0,
+      "lastElement": 7
+    },
+    {
+      "index": 1,
+      "caption": "Spread requests over app servers",
+      "firstElement": 8,
+      "lastElement": 14
+    },
+    {
+      "index": 2,
+      "caption": "Health checks catch a dead server",
+      "firstElement": 15,
+      "lastElement": 17
+    },
+    {
+      "index": 3,
+      "caption": "Traffic reroutes to the healthy two",
+      "firstElement": 18,
+      "lastElement": 21
+    },
+    {
+      "index": 4,
+      "caption": "The balancer needs a partner",
+      "firstElement": 22,
+      "lastElement": 24
+    }
+  ],
+  "hash": "32a9cfb6290885df9e473963cf6864cb20de7960",
+  "title": "A load balancer spreading requests over three app servers"
+}

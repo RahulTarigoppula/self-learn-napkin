@@ -1,0 +1,40 @@
+{
+  "name": "longest-common-subsequence",
+  "width": 520,
+  "height": 420,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Two strings, letters matched in order",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "The table: prefixes of X against prefixes of Y",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Letters match: diagonal + 1",
+      "firstElement": 6,
+      "lastElement": 9
+    },
+    {
+      "index": 3,
+      "caption": "No match: the larger of up and left",
+      "firstElement": 10,
+      "lastElement": 14
+    },
+    {
+      "index": 4,
+      "caption": "Walk back to read the LCS",
+      "firstElement": 15,
+      "lastElement": 17
+    }
+  ],
+  "hash": "5101fa14098f466bffb41f0f56e78080765e526c",
+  "title": "Longest common subsequence of ABCBD and BDCAB: matching letters, the dp table, and walking back"
+}

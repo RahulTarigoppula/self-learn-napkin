@@ -1,0 +1,157 @@
+---
+import { cardHref, withBase } from '../lib/base';
+import { type Card, numberOf, pad3, TRACK_SHORT } from '../lib/content';
+import Icon from './Icon.astro';
+import { loadManifest } from './napkin/diagram';
+
+interface Props {
+  card: Card;
+  size?: 'md' | 'sm';
+  index?: number;
+}
+const { card, size = 'md', index = 0 } = Astro.props;
+const d = card.data;
+const n = numberOf(card.id);
+const m = loadManifest(d.diagram);
+const tilt = ((n * 37) % 7) / 10 - 0.3; // a stable, tiny tilt per napkin
+---
+
+<a
+  class:list={['tile', `tile--${size}`, `t-${d.track}`, 'reveal']}
+  href={cardHref(card.id)}
+  data-slug={card.id}
+  style={`--tilt:${tilt.toFixed(2)}deg;--d:${index}`}
+>
+  <div class="tile__art">
+    <img src={withBase(`thumbs/${d.diagram}.svg`)} alt="" width={m.width} height={m.height} loading="lazy" decoding="async" />
+  </div>
+  <div class="tile__body">
+    <div class="tile__meta">
+      <span class="tile__num mono">No. {pad3(n)}</span>
+      <span class="chip chip--track">{TRACK_SHORT[d.track]}</span>
+      {d.special && <span class="tile__pick">Pick</span>}
+    </div>
+    <h3 class="tile__title">{d.title}</h3>
+    {size === 'md' && <p class="tile__tldr">{d.tldr}</p>}
+    <div class="tile__foot">
+      <span class="tile__min"><Icon name="clock" size={14} /> {d.minutes} min</span>
+      <span class="difficulty" role="img" aria-label={`difficulty ${d.difficulty} of 3`}>
+        {[1, 2, 3].map((i) => <i class:list={{ on: i <= d.difficulty }} />)}
+      </span>
+      <span class="tile__read"><Icon name="check" size={14} stroke={3} /> Read</span>
+    </div>
+  </div>
+</a>
+
+<style>
+  .tile {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
+    transition:
+      transform var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out);
+    min-width: 0;
+  }
+  .tile:hover {
+    transform: translateY(-3px) rotate(var(--tilt));
+    box-shadow: var(--shadow-2);
+    border-color: var(--border-strong);
+  }
+  .tile:active {
+    transform: translateY(-1px) scale(0.99);
+  }
+  .tile__art {
+    background-color: var(--thumb-paper);
+    background-image:
+      linear-gradient(var(--thumb-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--thumb-grid) 1px, transparent 1px);
+    background-size: 18px 18px;
+    border-bottom: 1px solid var(--border);
+    aspect-ratio: 16 / 9;
+    display: grid;
+    place-items: center;
+    padding: 10px 14px;
+    overflow: hidden;
+  }
+  .tile__art img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .tile--sm .tile__art {
+    aspect-ratio: 2 / 1;
+  }
+  .tile__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--space-4);
+    flex: 1;
+  }
+  .tile__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+  .tile__num {
+    font-size: var(--text-xs);
+    color: var(--ink-faint);
+    font-weight: 600;
+  }
+  .tile__pick {
+    margin-left: auto;
+    font-family: var(--font-hand);
+    font-size: 0.95rem;
+    padding: 0 8px;
+    border-radius: 4px;
+    background: var(--hl);
+    color: var(--hl-ink);
+    transform: rotate(-4deg);
+  }
+  .tile__title {
+    font-size: 1.18rem;
+  }
+  .tile--sm .tile__title {
+    font-size: 1.02rem;
+  }
+  .tile__tldr {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .tile__foot {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+  .tile__min {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .tile__read {
+    display: none;
+    margin-left: auto;
+    align-items: center;
+    gap: 4px;
+    color: var(--success);
+  }
+  .tile[data-read='true'] .tile__read {
+    display: inline-flex;
+  }
+</style>

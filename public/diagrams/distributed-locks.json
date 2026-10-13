@@ -1,0 +1,40 @@
+{
+  "name": "distributed-locks",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Two clients, one lock, one storage",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Client 1 gets a 10 s lease, token 33",
+      "firstElement": 2,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "A GC pause outlives the lease",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Client 2 gets token 34 and writes",
+      "firstElement": 7,
+      "lastElement": 11
+    },
+    {
+      "index": 4,
+      "caption": "Client 1 wakes; its token 33 is rejected",
+      "firstElement": 12,
+      "lastElement": 15
+    }
+  ],
+  "hash": "08465bc906cf2e136745cb1880b6589d3ad5f51b",
+  "title": "Distributed lock timeline: a lease expires during a GC pause and a fencing token rejects the stale write"
+}

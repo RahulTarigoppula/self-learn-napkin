@@ -1,0 +1,46 @@
+{
+  "name": "train-val-test",
+  "width": 520,
+  "height": 414,
+  "elements": 19,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One dataset, shuffled",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Cut it 70 / 15 / 15",
+      "firstElement": 2,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Train: fit the weights",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Validation: tune and stop early",
+      "firstElement": 9,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "Test: open it once, at the end",
+      "firstElement": 13,
+      "lastElement": 15
+    },
+    {
+      "index": 5,
+      "caption": "No peeking: avoid leakage",
+      "firstElement": 16,
+      "lastElement": 18
+    }
+  ],
+  "hash": "74527a4e835974d344d1cd6e1b288e227f15b58d",
+  "title": "One dataset split into train, validation and test"
+}

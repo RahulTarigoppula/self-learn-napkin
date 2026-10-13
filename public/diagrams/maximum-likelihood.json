@@ -1,0 +1,46 @@
+{
+  "name": "maximum-likelihood",
+  "width": 520,
+  "height": 420,
+  "elements": 11,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "The data: 7 heads in 10 flips",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Score one guess: p = 0.5",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Try every p: the likelihood curve",
+      "firstElement": 4,
+      "lastElement": 5
+    },
+    {
+      "index": 3,
+      "caption": "The peak is the estimate",
+      "firstElement": 6,
+      "lastElement": 7
+    },
+    {
+      "index": 4,
+      "caption": "Take logs: same peak, easy maths",
+      "firstElement": 8,
+      "lastElement": 8
+    },
+    {
+      "index": 5,
+      "caption": "Minus log-likelihood is the training loss",
+      "firstElement": 9,
+      "lastElement": 10
+    }
+  ],
+  "hash": "597d18fb00d9c364f26a011920162bb37d3b75ae",
+  "title": "Maximum likelihood: the likelihood of 7 heads in 10 flips peaks at p = 0.7"
+}

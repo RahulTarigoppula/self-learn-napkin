@@ -1,0 +1,59 @@
+# Deploy Napkin to GitHub Pages on every push to main.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false # never cancel a live production deploy
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:unit
+      - name: Build (content lint → decks → astro → service worker → budgets)
+        run: npm run build
+        env:
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_PLATFORM: web
+          APP_VERSION: ${{ format('v1.0.{0}', github.run_number) }}
+      - name: Sanity — the files Pages must serve
+        run: |
+          test -f dist/index.html
+          test -f dist/404.html
+          test -f dist/offline/index.html
+          test -f dist/sw.js
+          test -f dist/manifest.webmanifest
+          test -f dist/search-index.json
+          test -f dist/decks/all.json
+          touch dist/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,105 @@
+---
+import Icon from '../../components/Icon.astro';
+import NapkinRow from '../../components/NapkinRow.astro';
+import AppShell from '../../layouts/AppShell.astro';
+import { cardHref, href } from '../../lib/base';
+import { library } from '../../lib/content';
+import { PATHS } from '../../lib/paths';
+
+export async function getStaticPaths() {
+  const { cards } = await library();
+  const ids = new Set(cards.map((c) => c.id));
+  return PATHS.filter((p) => p.ids.some((i) => ids.has(i))).map((p) => ({
+    params: { path: p.id },
+    props: { pid: p.id },
+  }));
+}
+const { pid } = Astro.props as { pid: string };
+const p = PATHS.find((x) => x.id === pid)!;
+const { cards } = await library();
+const steps = p.ids.map((i) => cards.find((c) => c.id === i)).filter((c) => c !== undefined);
+const minutes = steps.reduce((s, c) => s + c.data.minutes, 0);
+---
+
+<AppShell title={p.title} active="library" description={p.blurb}>
+  <div class="container pathpage">
+    <a class="back" href={href('')}><Icon name="arrowLeft" size={16} /> Home</a>
+    <header class="pathpage__head">
+      <span class="pathpage__icon"><Icon name={p.icon} size={26} /></span>
+      <p class="eyebrow">Learning path · {steps.length} napkins · ~{minutes} min</p>
+      <h1>{p.title}</h1>
+      <p class="muted">{p.blurb}</p>
+      <div class="pathpage__cta">
+        {steps[0] && <a class="btn btn--primary btn--lg" href={cardHref(steps[0].id)} data-path-next><Icon name="play" size={17} /> Start</a>}
+        <span class="mono muted"><span data-path-count>0</span>/{steps.length} done</span>
+      </div>
+    </header>
+    <ol class="pathpage__list card">
+      {steps.map((c, i) => <NapkinRow card={c} step={i + 1} />)}
+    </ol>
+  </div>
+</AppShell>
+
+<script>
+  import { lastStats, type ShellStats } from '../../features/shell/shell';
+  import { cardHref } from '../../lib/base';
+  const paint = (s: ShellStats | null) => {
+    if (!s) return;
+    const ids = [...document.querySelectorAll<HTMLElement>('.pathpage__list [data-slug]')].map((e) => e.dataset.slug ?? '');
+    const done = ids.filter((i) => s.read.has(i)).length;
+    const c = document.querySelector('[data-path-count]');
+    if (c) c.textContent = String(done);
+    const next = ids.find((i) => !s.read.has(i));
+    const a = document.querySelector<HTMLAnchorElement>('[data-path-next]');
+    if (a && next && done > 0) {
+      a.href = cardHref(next);
+      a.lastChild && (a.lastChild.textContent = ' Continue');
+    }
+  };
+  paint(lastStats());
+  document.addEventListener('napkin:stats', (e) => paint((e as CustomEvent<ShellStats>).detail));
+</script>
+
+<style>
+  .pathpage {
+    padding-top: var(--space-6);
+    max-width: 880px;
+  }
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: var(--text-sm);
+  }
+  .pathpage__head {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-4) 0 var(--space-6);
+  }
+  .pathpage__head h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+  .pathpage__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    margin-bottom: var(--space-2);
+  }
+  .pathpage__cta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+  }
+  .pathpage__list {
+    list-style: none;
+    padding: var(--space-2);
+  }
+</style>

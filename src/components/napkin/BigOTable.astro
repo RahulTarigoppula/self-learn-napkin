@@ -1,0 +1,102 @@
+---
+interface Row {
+  op: string;
+  best?: string | undefined;
+  avg: string;
+  worst?: string | undefined;
+  note?: string | undefined;
+}
+interface Props {
+  rows: Row[];
+  title: string;
+}
+const { rows, title } = Astro.props;
+const hasBest = rows.some((r) => r.best);
+const hasWorst = rows.some((r) => r.worst);
+const single = !hasBest && !hasWorst;
+---
+
+<section class="bigo card" aria-labelledby="bigo-h">
+  <h2 id="bigo-h" class="bigo__title">{title}</h2>
+  <div class="bigo__scroll">
+    <table>
+      <caption class="sr-only">{title}</caption>
+      <thead>
+        <tr>
+          <th scope="col">Operation</th>
+          {hasBest && <th scope="col">Best</th>}
+          <th scope="col">{single ? 'Cost' : 'Typical'}</th>
+          {hasWorst && <th scope="col">Worst</th>}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((r) => (
+            <tr>
+              <th scope="row">
+                {r.op}
+                {r.note && <span class="bigo__note">{r.note}</span>}
+              </th>
+              {hasBest && <td class="mono">{r.best ?? '—'}</td>}
+              <td class="mono bigo__avg">{r.avg}</td>
+              {hasWorst && <td class="mono">{r.worst ?? '—'}</td>}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .bigo {
+    padding: var(--space-5) var(--space-5) var(--space-3);
+  }
+  .bigo__title {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-3);
+  }
+  .bigo__scroll {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+  thead th {
+    text-align: left;
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    font-weight: 700;
+    padding: 0 var(--space-3) var(--space-2) 0;
+    border-bottom: 2px solid var(--ink);
+  }
+  tbody th {
+    text-align: left;
+    font-weight: 600;
+    padding: var(--space-3) var(--space-3) var(--space-3) 0;
+    vertical-align: top;
+  }
+  td {
+    padding: var(--space-3) var(--space-3) var(--space-3) 0;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+  tbody tr + tr {
+    border-top: 1px solid var(--border);
+  }
+  .bigo__avg {
+    font-weight: 700;
+    color: var(--track-ink, var(--ink));
+  }
+  .bigo__note {
+    display: block;
+    font-weight: 400;
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+    margin-top: 2px;
+  }
+</style>

@@ -1,0 +1,254 @@
+import { useEffect, useState } from 'preact/hooks';
+import { type DayStat, getDb, type Session } from '../../db/dexie';
+import { streakNow, tz } from '../../db/review';
+import { readSettings } from '../../db/settings';
+import { dayKey, State } from '../../engine/fsrs/scheduler';
+import { ringLabel } from '../../engine/progress/rings';
+import { shiftDay } from '../../engine/progress/streak';
+import { formatReceipt } from '../../engine/receipt/format';
+import { href } from '../../lib/base';
+import { Icon } from '../ui/Icon';
+
+interface TrackTotal {
+  id: 'dsa' | 'sysdesign' | 'ds';
+  name: string;
+  total: number;
+}
+
+interface Data {
+  streak: { current: number; best: number };
+  days: Map<string, DayStat>;
+  reviews: number;
+  learned: number;
+  mature: number;
+  retention: number | null;
+  read: Map<string, number>;
+  forecast: number[];
+  last: Session | undefined;
+  lastBackupAt: number | null;
+}
+
+const WEEKS = 18;
+
+export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
+  const [d, setD] = useState<Data | null>(null);
+  const [hover, setHover] = useState<string | null>(null);
+
+  useEffect(() => {
+    const db = getDb();
+    const now = new Date();
+    void (async () => {
+      const [days, cards, logs, reads, last, st] = await Promise.all([
+        db.days.toArray(),
+        db.cards.toArray(),
+        db.logs
+          .where('dayKey')
+          .aboveOrEqual(shiftDay(dayKey(now, tz()), -30))
+          .toArray(),
+        db.reads.toArray(),
+        db.sessions.orderBy('receiptNo').last(),
+        streakNow(db, now),
+      ]);
+      const read = new Map<string, number>();
+      for (const r of reads) {
+        const t = r.slug.split('/')[0] ?? '';
+        read.set(t, (read.get(t) ?? 0) + 1);
+      }
+      const forecast = Array.from({ length: 7 }, (_, i) => {
+        const end = new Date(now);
+        end.setHours(23, 59, 59, 999);
+        end.setDate(end.getDate() + i);
+        const start = new Date(end);
+        start.setDate(start.getDate() - 1);
+        return cards.filter(
+          (c) => c.orphan === 0 && c.state !== State.New && c.due <= end && (i === 0 || c.due > start),
+        ).length;
+      });
+      const graded = logs.filter((l) => l.rating >= 1);
+      setD({
+        streak: st,
+        days: new Map(days.map((x) => [x.dayKey, x])),
+        reviews: days.reduce((s, x) => s + x.reviews, 0),
+        learned: cards.filter((c) => c.state !== State.New).length,
+        mature: cards.filter((c) => c.scheduled_days >= 21).length,
+        retention: graded.length ? graded.filter((l) => l.rating >= 3).length / graded.length : null,
+        read,
+        forecast,
+        last,
+        lastBackupAt: readSettings().lastBackupAt,
+      });
+    })().catch((e: unknown) => console.error('progress failed', e));
+  }, []);
+
+  if (!d)
+    return (
+      <div class="pg pg--loading" aria-busy="true">
+        <p class="muted">Counting coffee rings…</p>
+      </div>
+    );
+
+  const today = dayKey(new Date(), tz());
+  const dow = (new Date(`${today}T12:00:00Z`).getUTCDay() + 6) % 7;
+  const start = shiftDay(today, -(WEEKS - 1) * 7 - dow);
+  const cells = Array.from({ length: WEEKS * 7 }, (_, i) => shiftDay(start, i));
+  const activity = (k: string) => {
+    const x = d.days.get(k);
+    return x ? x.reviews + x.napkinsRead * 3 : 0;
+  };
+  const tier = (n: number) => (n === 0 ? 0 : n < 5 ? 1 : n < 15 ? 2 : n < 30 ? 3 : 4);
+  const maxF = Math.max(1, ...d.forecast);
+  const backupDays = d.lastBackupAt ? Math.floor((Date.now() - d.lastBackupAt) / 86_400_000) : null;
+  const hovered = hover ? d.days.get(hover) : undefined;
+
+  return (
+    <div class="pg">
+      <div class="pg__stats">
+        <div class="pg__stat pg__stat--hot">
+          <Icon name="flame" size={22} />
+          <b class="mono">{d.streak.current}</b>
+          <span>day streak</span>
+          <small>best {d.streak.best}</small>
+        </div>
+        <div class="pg__stat">
+          <b class="mono">{d.reviews}</b>
+          <span>reviews</span>
+        </div>
+        <div class="pg__stat">
+          <b class="mono">{d.learned}</b>
+          <span>cards learned</span>
+          <small>{d.mature} long-term</small>
+        </div>
+        <div class="pg__stat">
+          <b class="mono">{d.retention === null ? '—' : `${Math.round(d.retention * 100)}%`}</b>
+          <span>recall, 30 days</span>
+        </div>
+      </div>
+
+      <section class="pg__card card" aria-labelledby="pg-heat">
+        <div class="pg__head">
+          <h2 id="pg-heat">Your last {WEEKS} weeks</h2>
+          <p class="muted pg__hover" aria-live="polite">
+            {hover
+              ? `${ringLabel(hover, hovered?.reviews ?? 0)}${hovered?.napkinsRead ? `, ${hovered.napkinsRead} napkin${hovered.napkinsRead === 1 ? '' : 's'} read` : ''}`
+              : 'Hover or tap a day'}
+          </p>
+        </div>
+        <div class="heat" role="group" aria-label="Daily activity calendar">
+          {cells.map((k) => {
+            const n = activity(k);
+            const future = k > today;
+            return (
+              <button
+                key={k}
+                type="button"
+                class={`heat__cell heat__cell--${tier(n)}${k === today ? ' is-today' : ''}`}
+                disabled={future}
+                aria-label={ringLabel(k, d.days.get(k)?.reviews ?? 0)}
+                onMouseEnter={() => setHover(k)}
+                onFocus={() => setHover(k)}
+                onClick={() => setHover(k)}
+              />
+            );
+          })}
+        </div>
+        <div class="heat__legend">
+          less <i class="heat__cell heat__cell--0" /> <i class="heat__cell heat__cell--1" />{' '}
+          <i class="heat__cell heat__cell--2" />
+          <i class="heat__cell heat__cell--3" /> <i class="heat__cell heat__cell--4" /> more
+        </div>
+      </section>
+
+      <div class="pg__two">
+        <section class="pg__card card" aria-labelledby="pg-tracks">
+          <h2 id="pg-tracks">Napkins read</h2>
+          <div class="rings">
+            {tracks.map((t) => {
+              const n = d.read.get(t.id) ?? 0;
+              const p = n / Math.max(1, t.total);
+              const C = 2 * Math.PI * 34;
+              return (
+                <a key={t.id} class={`ringc t-${t.id}`} href={href(`${t.id}/`)}>
+                  <svg viewBox="0 0 84 84" aria-hidden="true">
+                    <circle
+                      cx={42}
+                      cy={42}
+                      r={34}
+                      style={{ fill: 'none', stroke: 'var(--surface-3)', strokeWidth: 9 }}
+                    />
+                    <circle
+                      cx={42}
+                      cy={42}
+                      r={34}
+                      style={{
+                        fill: 'none',
+                        stroke: 'var(--track)',
+                        strokeWidth: 9,
+                        strokeLinecap: 'round',
+                        strokeDasharray: `${C * p} ${C}`,
+                        transform: 'rotate(-90deg)',
+                        transformOrigin: '42px 42px',
+                        transition: 'stroke-dasharray var(--dur-slow) var(--ease-out)',
+                      }}
+                    />
+                  </svg>
+                  <b class="mono">{Math.round(p * 100)}%</b>
+                  <span>{t.name}</span>
+                  <small class="mono">
+                    {n}/{t.total}
+                  </small>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+
+        <section class="pg__card card" aria-labelledby="pg-fc">
+          <h2 id="pg-fc">Coming up</h2>
+          <p class="muted pg__sub">Review cards due over the next week</p>
+          <ol class="fc7">
+            {d.forecast.map((n, i) => {
+              const date = new Date();
+              date.setDate(date.getDate() + i);
+              return (
+                <li key={i}>
+                  <span class="fc7__bar">
+                    <span style={{ height: `${Math.max(4, (n / maxF) * 100)}%` }} />
+                  </span>
+                  <b class="mono">{n}</b>
+                  <small>
+                    {i === 0 ? 'today' : date.toLocaleDateString(undefined, { weekday: 'short' })}
+                  </small>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      </div>
+
+      {d.last && (
+        <section class="pg__card card" aria-labelledby="pg-last">
+          <h2 id="pg-last">Last receipt</h2>
+          <figure class="receipt receipt--small">
+            <pre role="log">
+              {formatReceipt({
+                lines: d.last.lines,
+                order: d.last.receiptNo,
+                streak: d.streak.current,
+                now: new Date(d.last.endedAt ?? d.last.startedAt),
+                tz: tz(),
+              }).join('\n')}
+            </pre>
+          </figure>
+        </section>
+      )}
+
+      <p class={`pg__backup${backupDays !== null && backupDays < 14 ? '' : ' is-due'}`}>
+        <Icon name="download" size={16} />
+        {backupDays === null
+          ? 'Your progress lives only on this device. '
+          : `Last backup: ${backupDays} day${backupDays === 1 ? '' : 's'} ago. `}
+        <a href={href('settings/#backup')}>Back it up</a>
+      </p>
+    </div>
+  );
+}

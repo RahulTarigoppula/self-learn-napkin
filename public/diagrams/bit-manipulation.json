@@ -1,0 +1,46 @@
+{
+  "name": "bit-manipulation",
+  "width": 520,
+  "height": 420,
+  "elements": 21,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Every integer is a row of bits",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "AND, OR, XOR work column by column",
+      "firstElement": 1,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "x & (x − 1) clears the lowest 1",
+      "firstElement": 7,
+      "lastElement": 11
+    },
+    {
+      "index": 3,
+      "caption": "Two’s complement: −x = ~x + 1, and x & −x",
+      "firstElement": 12,
+      "lastElement": 16
+    },
+    {
+      "index": 4,
+      "caption": "XOR cancels pairs",
+      "firstElement": 17,
+      "lastElement": 18
+    },
+    {
+      "index": 5,
+      "caption": "A bitmask is a subset",
+      "firstElement": 19,
+      "lastElement": 20
+    }
+  ],
+  "hash": "8bd5d17b57817806178e9d8b23da236ca9a2199a",
+  "title": "Bits of 12, AND/OR/XOR tables, x & (x−1), two’s complement and x & −x, XOR pairs, and bitmask subsets"
+}

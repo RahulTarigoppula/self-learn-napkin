@@ -1,0 +1,30 @@
+[
+  {
+    "rating": 1,
+    "state": 1,
+    "due": "2026-09-06T09:42:00.000Z",
+    "stability": 0.212,
+    "difficulty": 6.4133
+  },
+  {
+    "rating": 2,
+    "state": 1,
+    "due": "2026-09-06T09:47:00.000Z",
+    "stability": 1.2931,
+    "difficulty": 5.1122
+  },
+  {
+    "rating": 3,
+    "state": 1,
+    "due": "2026-09-06T09:51:00.000Z",
+    "stability": 2.3065,
+    "difficulty": 2.1181
+  },
+  {
+    "rating": 4,
+    "state": 2,
+    "due": "2026-09-14T09:41:00.000Z",
+    "stability": 8.2956,
+    "difficulty": 1
+  }
+]

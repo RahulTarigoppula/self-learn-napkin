@@ -1,0 +1,46 @@
+{
+  "name": "indexes-and-b-trees",
+  "width": 520,
+  "height": 420,
+  "elements": 20,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "No index: scan every page",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "A B+tree: sorted pages, many keys each",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Lookup: root, inner page, leaf",
+      "firstElement": 5,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Fan-out: why 3–4 levels are enough",
+      "firstElement": 9,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "Range scan: walk the linked leaves",
+      "firstElement": 13,
+      "lastElement": 14
+    },
+    {
+      "index": 5,
+      "caption": "Writes: pages split, every index pays",
+      "firstElement": 15,
+      "lastElement": 19
+    }
+  ],
+  "hash": "1fcd48b6b2692840b41b1e2db787e9b18c2d9c32",
+  "title": "A B+tree index: full scan vs a three-level lookup, fan-out, range scan along linked leaves, and a page split"
+}

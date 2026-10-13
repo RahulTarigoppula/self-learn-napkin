@@ -1,0 +1,46 @@
+{
+  "name": "topological-sort",
+  "width": 520,
+  "height": 410,
+  "elements": 24,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Courses and their prerequisites",
+      "firstElement": 0,
+      "lastElement": 7
+    },
+    {
+      "index": 1,
+      "caption": "Count incoming arrows (in-degree)",
+      "firstElement": 8,
+      "lastElement": 10
+    },
+    {
+      "index": 2,
+      "caption": "Output Intro and Math, cut their arrows",
+      "firstElement": 11,
+      "lastElement": 13
+    },
+    {
+      "index": 3,
+      "caption": "DS hits zero: it frees Algo and DB",
+      "firstElement": 14,
+      "lastElement": 16
+    },
+    {
+      "index": 4,
+      "caption": "Algo, DB, then ML: all 6 are out",
+      "firstElement": 17,
+      "lastElement": 21
+    },
+    {
+      "index": 5,
+      "caption": "A cycle never reaches zero",
+      "firstElement": 22,
+      "lastElement": 23
+    }
+  ],
+  "hash": "9c63de1d2d0d81febbfc355a60de2673df1616c0",
+  "title": "Kahn's algorithm ordering six courses by their prerequisites"
+}

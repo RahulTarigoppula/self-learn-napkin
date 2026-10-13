@@ -1,0 +1,40 @@
+{
+  "name": "back-of-envelope",
+  "width": 520,
+  "height": 420,
+  "elements": 23,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A ladder of powers of ten",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Inside one machine",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "Leaving the machine",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Users per day → requests per second",
+      "firstElement": 9,
+      "lastElement": 16
+    },
+    {
+      "index": 4,
+      "caption": "Uploads → storage per year",
+      "firstElement": 17,
+      "lastElement": 22
+    }
+  ],
+  "hash": "27ab085f065f37d9383c8bd1a4a64c4dec03bd0b",
+  "title": "Latency numbers on a log scale, then a napkin estimate of QPS and storage for a photo app"
+}

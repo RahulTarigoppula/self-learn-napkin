@@ -1,0 +1,46 @@
+{
+  "name": "precision-recall-roc",
+  "width": 520,
+  "height": 420,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "The confusion matrix",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Precision: of what we flagged…",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Recall: of the real spam…",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 3,
+      "caption": "Slide the threshold: the PR curve",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 4,
+      "caption": "The ROC curve and its area",
+      "firstElement": 12,
+      "lastElement": 14
+    },
+    {
+      "index": 5,
+      "caption": "Rare positives: trust the PR curve",
+      "firstElement": 15,
+      "lastElement": 17
+    }
+  ],
+  "hash": "3c3812839400545954c919c3142ebb891ef1a008",
+  "title": "Confusion matrix, precision and recall, PR and ROC curves"
+}

@@ -1,0 +1,40 @@
+{
+  "name": "geo-replication",
+  "width": 520,
+  "height": 420,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Distance costs time",
+      "firstElement": 0,
+      "lastElement": 5
+    },
+    {
+      "index": 1,
+      "caption": "Active-passive: copies near users",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 2,
+      "caption": "Active-active: every region takes writes",
+      "firstElement": 9,
+      "lastElement": 13
+    },
+    {
+      "index": 3,
+      "caption": "Resolve conflicts: LWW or CRDT",
+      "firstElement": 14,
+      "lastElement": 14
+    },
+    {
+      "index": 4,
+      "caption": "Route users to the nearest region",
+      "firstElement": 15,
+      "lastElement": 17
+    }
+  ],
+  "hash": "1dd7ab49eb42223172efb7f9d52ade8a05ca6265",
+  "title": "Geo-replication: distance, active-passive, active-active and routing"
+}

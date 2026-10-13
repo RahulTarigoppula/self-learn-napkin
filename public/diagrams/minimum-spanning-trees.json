@@ -1,0 +1,46 @@
+{
+  "name": "minimum-spanning-trees",
+  "width": 520,
+  "height": 400,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Connect all six nodes as cheaply as possible",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Kruskal: sort the edges by weight",
+      "firstElement": 2,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "Take 1, 2, 3, 4: each joins two pieces",
+      "firstElement": 3,
+      "lastElement": 5
+    },
+    {
+      "index": 3,
+      "caption": "Skip A–E 5: it would close a cycle",
+      "firstElement": 6,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "B–C 6 joins the last piece: done",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 5,
+      "caption": "Why it works: the cut property",
+      "firstElement": 12,
+      "lastElement": 13
+    }
+  ],
+  "hash": "34ca6c49902946a47c93c46f156637958eeec387",
+  "title": "Kruskal's algorithm building a minimum spanning tree, and the cut property"
+}

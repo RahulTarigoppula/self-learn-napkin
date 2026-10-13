@@ -1,0 +1,40 @@
+{
+  "name": "binary-search-on-answer",
+  "width": 520,
+  "height": 400,
+  "elements": 12,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Packages in order, 3 days",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Check one capacity: load greedily",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Works / fails is monotone",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Binary search for the first ✓",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "lo meets hi: the answer",
+      "firstElement": 9,
+      "lastElement": 11
+    }
+  ],
+  "hash": "cc9261418417b4033d31929a85eec57a31be6f59",
+  "title": "Binary search on the answer: the smallest ship capacity that ships [3,2,2,4,1,4] in 3 days"
+}

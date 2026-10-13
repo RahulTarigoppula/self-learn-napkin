@@ -1,0 +1,404 @@
+---
+import Icon from '../components/Icon.astro';
+import NapkinTile from '../components/NapkinTile.astro';
+import HomeDashboard from '../features/home/HomeDashboard';
+import AppShell from '../layouts/AppShell.astro';
+import { href } from '../lib/base';
+import { library, numberOf } from '../lib/content';
+import { PATHS } from '../lib/paths';
+
+const { cards, tracks } = await library();
+const picks = cards.filter((c) => c.data.special).slice(0, 3);
+const lite = cards.map((c) => ({
+  id: c.id,
+  title: c.data.title,
+  track: c.data.track,
+  number: numberOf(c.id),
+  minutes: c.data.minutes,
+}));
+const ids = new Set(cards.map((c) => c.id));
+const paths = PATHS.map((p) => ({ ...p, ids: p.ids.filter((i) => ids.has(i)) })).filter(
+  (p) => p.ids.length > 0,
+);
+const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
+---
+
+<AppShell title="Napkin" active="home">
+  <div class="container home">
+    <section class="hero reveal">
+      <div class="hero__copy">
+        <p class="hero__kicker hand">interview prep, sketched on a napkin</p>
+        <h1 class="hero__title">Hard ideas, <span class="hero__scribble">drawn simply</span>.</h1>
+        <p class="hero__sub">
+          {cards.length} hand-drawn visual stories across algorithms, system design and machine learning — each one
+          builds the picture step by step, goes deep when you want it, then quizzes you until it sticks. Free, private and
+          it works offline.
+        </p>
+        <div class="hero__cta">
+          <a class="btn btn--primary btn--lg" href={href('library/')}><Icon name="library" /> Browse the library</a>
+          <a class="btn btn--lg" href={href('review/')}><Icon name="layers" /> Review cards</a>
+        </div>
+      </div>
+      <HomeDashboard client:load cards={lite} tracks={tracks.map((t) => ({ id: t.id, total: t.cards.length }))} />
+    </section>
+
+    {
+      picks.length > 0 && (
+        <section class="block">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Start here</p>
+              <h2>Today's picks</h2>
+            </div>
+            <a class="btn btn--ghost" href={href('library/')}>
+              All napkins <Icon name="arrowRight" />
+            </a>
+          </div>
+          <div class="grid3">
+            {picks.map((c, i) => (
+              <NapkinTile card={c} index={i} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="block">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Three tracks</p>
+          <h2>Pick a course</h2>
+        </div>
+      </div>
+      <div class="tracks">
+        {
+          tracks.map((t, i) => (
+            <a class:list={['track', `t-${t.id}`, 'reveal']} href={href(`${t.id}/`)} style={`--d:${i}`}>
+              <span class="track__name hand">{t.name}</span>
+              <span class="track__subtitle">{t.subtitle}</span>
+              <span class="track__blurb">{t.blurb}</span>
+              <span class="track__meter" aria-hidden="true">
+                <span data-track-bar={t.id} />
+              </span>
+              <span class="track__foot">
+                <span>
+                  <b data-track-read={t.id}>0</b> / {t.cards.length} read
+                </span>
+                <span class="track__go">
+                  Open <Icon name="arrowRight" size={16} />
+                </span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    {
+      paths.length > 0 && (
+        <section class="block">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Guided</p>
+              <h2>Learning paths</h2>
+            </div>
+          </div>
+          <div class="paths">
+            {paths.map((p, i) => (
+              <a class="path card reveal" href={href(`paths/${p.id}/`)} style={`--d:${i}`}>
+                <span class="path__icon">
+                  <Icon name={p.icon} size={22} />
+                </span>
+                <span class="path__title">{p.title}</span>
+                <span class="path__blurb">{p.blurb}</span>
+                <span class="path__meta mono">
+                  {p.ids.length} napkins · <span data-path-done={p.ids.join(',')}>0</span> done
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="block how">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">How Napkin works</p>
+          <h2>Learn it once. Keep it for good.</h2>
+        </div>
+      </div>
+      <ol class="how__steps">
+        <li>
+          <span class="how__icon"><Icon name="play" size={20} /></span>
+          <h3>Watch it drawn</h3>
+          <p>Every topic is a short story. The sketch draws itself one scene at a time, so you see the idea form.</p>
+        </li>
+        <li>
+          <span class="how__icon"><Icon name="library" size={20} /></span>
+          <h3>Go deep</h3>
+          <p>A full explanation follows: a worked example, clean code, the pitfalls, and what interviewers listen for.</p>
+        </li>
+        <li>
+          <span class="how__icon"><Icon name="hand" size={20} /></span>
+          <h3>Play with it</h3>
+          <p>Drag servers around a ring, race BFS against DFS, push a learning rate until it explodes.</p>
+        </li>
+        <li>
+          <span class="how__icon"><Icon name="cards" size={20} /></span>
+          <h3>Make it stick</h3>
+          <p>Quizzes check understanding; FSRS spaced repetition brings each card back just before you'd forget it.</p>
+        </li>
+      </ol>
+      <p class="how__foot muted">
+        {cards.length} napkins · about {Math.round(totalMinutes / 60)} hours of reading · no account, no tracking — your
+        progress never leaves this device.
+      </p>
+    </section>
+  </div>
+</AppShell>
+
+<script>
+  import { lastStats, type ShellStats } from '../features/shell/shell';
+
+  const paint = (s: ShellStats | null) => {
+    if (!s) return;
+    for (const el of document.querySelectorAll<HTMLElement>('[data-track-read]')) {
+      const t = el.dataset.trackRead;
+      const n = [...s.read].filter((id) => id.startsWith(`${t}/`)).length;
+      el.textContent = String(n);
+      const bar = document.querySelector<HTMLElement>(`[data-track-bar="${t}"]`);
+      const total = Number(el.parentElement?.textContent?.match(/\/\s*(\d+)/)?.[1] ?? '1');
+      if (bar) bar.style.width = `${Math.round((n / total) * 100)}%`;
+    }
+    for (const el of document.querySelectorAll<HTMLElement>('[data-path-done]')) {
+      const ids = (el.dataset.pathDone ?? '').split(',');
+      el.textContent = String(ids.filter((i) => s.read.has(i)).length);
+    }
+  };
+  paint(lastStats());
+  document.addEventListener('napkin:stats', (e) => paint((e as CustomEvent<ShellStats>).detail));
+</script>
+
+<style>
+  .home {
+    padding-top: var(--space-6);
+  }
+  .hero {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+    padding: var(--space-4) 0 var(--space-2);
+  }
+  @media (min-width: 960px) {
+    .hero {
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 1fr);
+      padding-top: var(--space-8);
+    }
+  }
+  .hero__kicker {
+    font-size: 1.25rem;
+    color: var(--accent-ink);
+    transform: rotate(-1.5deg);
+    display: inline-block;
+  }
+  .hero__title {
+    margin-top: var(--space-3);
+    font-size: clamp(2.6rem, 8vw, 4.6rem);
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+  }
+  .hero__scribble {
+    position: relative;
+    white-space: nowrap;
+  }
+  .hero__scribble::after {
+    content: '';
+    position: absolute;
+    left: -2%;
+    right: -2%;
+    bottom: 0.02em;
+    height: 0.34em;
+    z-index: -1;
+    background: color-mix(in srgb, var(--hl) 75%, transparent);
+    border-radius: 40% 60% 55% 45% / 60% 40% 60% 40%;
+    transform: rotate(-1.2deg);
+  }
+  .hero__sub {
+    margin-top: var(--space-5);
+    font-size: clamp(1.05rem, 2.2vw, 1.22rem);
+    color: var(--ink-muted);
+    max-width: 56ch;
+  }
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+  .block {
+    margin-top: var(--space-10);
+  }
+  .block h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+  }
+  .grid3 {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .tracks {
+    display: grid;
+    gap: var(--space-4);
+  }
+  @media (min-width: 860px) {
+    .tracks {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .track {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--track) 22%, transparent), transparent 60%),
+      var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
+    transition:
+      transform var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out);
+  }
+  .track:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-3);
+  }
+  .track__name {
+    font-size: 1.35rem;
+    color: var(--track-ink);
+  }
+  .track__subtitle {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.6rem;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  .track__blurb {
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+  }
+  .track__meter {
+    margin-top: var(--space-4);
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .track__meter span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--track);
+    border-radius: inherit;
+    transition: width var(--dur-slow) var(--ease-out);
+  }
+  .track__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .track__foot b {
+    font-family: var(--font-mono);
+    color: var(--ink);
+  }
+  .track__go {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    color: var(--track-ink);
+  }
+  .paths {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  .path {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    transition:
+      transform var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out);
+  }
+  .path:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+  }
+  .path__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+  .path__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-top: var(--space-2);
+  }
+  .path__blurb {
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+    flex: 1;
+  }
+  .path__meta {
+    font-size: var(--text-xs);
+    color: var(--ink-faint);
+  }
+  .how__steps {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    counter-reset: step;
+  }
+  .how__steps li {
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border-strong);
+  }
+  .how__steps h3 {
+    font-size: var(--text-lg);
+    margin: var(--space-3) 0 var(--space-1);
+  }
+  .how__steps p {
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+  }
+  .how__icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .how__foot {
+    margin-top: var(--space-5);
+    font-size: var(--text-sm);
+  }
+</style>

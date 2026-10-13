@@ -1,0 +1,279 @@
+---
+import { inlineMd } from '../../lib/inline-md';
+
+interface Item {
+  q: string;
+  options: string[];
+  answer: number;
+  why: string;
+}
+interface Props {
+  items: Item[];
+  slug: string;
+}
+const { items, slug } = Astro.props;
+const letters = ['A', 'B', 'C', 'D'];
+---
+
+<div class="quiz" data-quiz={slug} data-total={items.length}>
+  <ol class="quiz__list">
+    {
+      items.map((it, qi) => (
+        <li class="quiz__item" data-answer={it.answer}>
+          <p class="quiz__q" id={`q-${qi}`}>
+            <span class="quiz__n mono">{qi + 1}</span>
+            <span set:html={inlineMd(it.q)} />
+          </p>
+          <div class="quiz__options" role="group" aria-labelledby={`q-${qi}`}>
+            {it.options.map((o, oi) => (
+              <button type="button" class="quiz__opt" data-i={oi}>
+                <span class="quiz__letter mono">{letters[oi]}</span>
+                <span set:html={inlineMd(o)} />
+                <span class="quiz__mark" aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+          <p class="quiz__why" hidden aria-live="polite">
+            <strong class="quiz__verdict" />
+            <span set:html={inlineMd(it.why)} />
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+  <div class="quiz__score" hidden aria-live="polite">
+    <p class="quiz__score-num mono"></p>
+    <p class="quiz__score-text"></p>
+    <button type="button" class="btn" data-quiz-reset>Try again</button>
+  </div>
+</div>
+
+<script>
+  import { sound } from '../../platform/sound';
+  import { haptic } from '../../platform/haptics';
+
+  for (const quiz of document.querySelectorAll<HTMLElement>('[data-quiz]')) {
+    const total = Number(quiz.dataset.total);
+    let answered = 0;
+    let correct = 0;
+    const score = quiz.querySelector<HTMLElement>('.quiz__score');
+    const items = [...quiz.querySelectorAll<HTMLElement>('.quiz__item')];
+    const finish = () => {
+      if (!score) return;
+      score.hidden = false;
+      const num = score.querySelector('.quiz__score-num');
+      const text = score.querySelector('.quiz__score-text');
+      if (num) num.textContent = `${correct}/${total}`;
+      if (text)
+        text.textContent =
+          correct === total
+            ? 'Clean sweep. You own this one.'
+            : correct >= total / 2
+              ? 'Solid. Re-read the scene behind the one you missed.'
+              : 'Worth another pass through the story — then try again.';
+      try {
+        const key = `napkin:quiz:${quiz.dataset.quiz}`;
+        const best = Number(localStorage.getItem(key) ?? '0');
+        if (correct > best) localStorage.setItem(key, String(correct));
+      } catch {
+        /* storage unavailable: the score just isn't remembered */
+      }
+    };
+    for (const item of items) {
+      const answer = Number(item.dataset.answer);
+      const why = item.querySelector<HTMLElement>('.quiz__why');
+      const verdict = item.querySelector<HTMLElement>('.quiz__verdict');
+      const opts = [...item.querySelectorAll<HTMLButtonElement>('.quiz__opt')];
+      for (const b of opts) {
+        b.addEventListener('click', () => {
+          if (item.dataset.done) return;
+          item.dataset.done = '';
+          const i = Number(b.dataset.i);
+          const ok = i === answer;
+          if (ok) correct++;
+          answered++;
+          b.dataset.picked = ok ? 'right' : 'wrong';
+          opts[answer]?.setAttribute('data-correct', '');
+          for (const o of opts) o.setAttribute('aria-disabled', 'true');
+          if (verdict) verdict.textContent = ok ? 'Right. ' : 'Not quite. ';
+          if (why) why.hidden = false;
+          if (ok) {
+            sound.good();
+            void haptic.light();
+          } else void haptic.medium();
+          if (answered === total) finish();
+        });
+      }
+    }
+    quiz.querySelector('[data-quiz-reset]')?.addEventListener('click', () => {
+      answered = 0;
+      correct = 0;
+      if (score) score.hidden = true;
+      for (const item of items) {
+        delete item.dataset.done;
+        const why = item.querySelector<HTMLElement>('.quiz__why');
+        if (why) why.hidden = true;
+        for (const o of item.querySelectorAll<HTMLElement>('.quiz__opt')) {
+          delete o.dataset.picked;
+          o.removeAttribute('data-correct');
+          o.removeAttribute('aria-disabled');
+        }
+      }
+      items[0]?.querySelector<HTMLElement>('.quiz__opt')?.focus();
+    });
+  }
+</script>
+
+<style>
+  .quiz__list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .quiz__item {
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-1);
+  }
+  .quiz__q {
+    display: flex;
+    gap: var(--space-3);
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: 1.12rem;
+    line-height: 1.4;
+    margin-bottom: var(--space-4);
+  }
+  .quiz__n {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--track-soft, var(--surface-2));
+    color: var(--track-ink, var(--ink));
+    font-size: var(--text-sm);
+  }
+  .quiz__options {
+    display: grid;
+    gap: var(--space-2);
+  }
+  @media (min-width: 720px) {
+    .quiz__options {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .quiz__opt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 52px;
+    padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border);
+    background: var(--bg-elevated);
+    text-align: left;
+    font-size: var(--text-base);
+    transition:
+      border-color var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
+  }
+  .quiz__opt:hover:not([aria-disabled]) {
+    border-color: var(--ink-faint);
+    transform: translateY(-1px);
+  }
+  .quiz__opt[aria-disabled] {
+    cursor: default;
+  }
+  .quiz__letter {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: var(--surface-2);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+  .quiz__mark {
+    margin-left: auto;
+    flex: none;
+  }
+  .quiz__opt[data-correct] {
+    border-color: var(--success);
+    background: color-mix(in srgb, var(--success) 12%, var(--surface));
+  }
+  .quiz__opt[data-correct] .quiz__letter {
+    background: var(--success);
+    color: #fff;
+  }
+  .quiz__opt[data-correct] .quiz__mark::after {
+    content: '✓';
+    color: var(--success);
+    font-weight: 800;
+  }
+  .quiz__opt[data-picked='wrong'] {
+    border-color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 10%, var(--surface));
+    animation: shake 320ms var(--ease-out);
+  }
+  .quiz__opt[data-picked='wrong'] .quiz__letter {
+    background: var(--danger);
+    color: #fff;
+  }
+  .quiz__opt[data-picked='wrong'] .quiz__mark::after {
+    content: '✕';
+    color: var(--danger);
+    font-weight: 800;
+  }
+  @keyframes shake {
+    25% {
+      transform: translateX(-4px);
+    }
+    50% {
+      transform: translateX(4px);
+    }
+    75% {
+      transform: translateX(-2px);
+    }
+  }
+  .quiz__why {
+    margin-top: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+    font-size: var(--text-base);
+    animation: fade-up var(--dur-slow) var(--ease-out) both;
+  }
+  .quiz__why :global(code) {
+    font-size: 0.9em;
+  }
+  .quiz__score {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--track-soft, var(--surface-2));
+    animation: fade-up var(--dur-slow) var(--ease-spring) both;
+  }
+  .quiz__score-num {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    color: var(--track-ink, var(--ink));
+  }
+  .quiz__score-text {
+    flex: 1;
+    min-width: 200px;
+    font-weight: 600;
+  }
+</style>

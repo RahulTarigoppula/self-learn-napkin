@@ -1,0 +1,46 @@
+{
+  "name": "replication",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One leader, two followers",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Writes go to the leader",
+      "firstElement": 4,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Sync follower acks; async one lags",
+      "firstElement": 6,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Reading from a lagging follower",
+      "firstElement": 8,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Failover: promote a follower",
+      "firstElement": 11,
+      "lastElement": 12
+    },
+    {
+      "index": 5,
+      "caption": "Split brain: the old leader comes back",
+      "firstElement": 13,
+      "lastElement": 15
+    }
+  ],
+  "hash": "0b1b8b29cf75ca2c68b934fccca3b1c256aab2b2",
+  "title": "Leader-follower replication: sync, async, lag, failover and split brain"
+}

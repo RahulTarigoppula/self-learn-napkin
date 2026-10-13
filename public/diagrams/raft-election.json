@@ -1,0 +1,46 @@
+{
+  "name": "raft-election",
+  "width": 520,
+  "height": 400,
+  "elements": 19,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Five followers, each with a timer",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "A timer fires: S1 becomes a candidate",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "S1 asks everyone for a vote",
+      "firstElement": 5,
+      "lastElement": 9
+    },
+    {
+      "index": 3,
+      "caption": "A majority makes a leader",
+      "firstElement": 10,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "Heartbeats keep followers quiet",
+      "firstElement": 13,
+      "lastElement": 17
+    },
+    {
+      "index": 5,
+      "caption": "Split vote: nobody wins, retry",
+      "firstElement": 18,
+      "lastElement": 18
+    }
+  ],
+  "hash": "601ef1cf9d1c8d1c2532db080c3a618fada83c53",
+  "title": "Raft leader election among five servers"
+}
