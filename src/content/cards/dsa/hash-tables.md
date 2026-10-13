@@ -11,15 +11,15 @@ story:
   - title: An array of buckets
     text: "A hash table is an ordinary array — here 8 buckets, numbered 0 to 7. Arrays give O(1) access by index, so all we need is a way to turn any key, like the string \"cat\", into an index."
   - title: Hash, then take the remainder
-    text: "A hash function turns the key into a number; say hash(\"cat\") = 35 (real hashes are much bigger). 35 % 8 = 3, so cat goes in bucket 3. dog hashes to 14, and 14 % 8 = 6. Looking a key up repeats the same arithmetic, so we go straight to its bucket."
+    text: "A hash function turns the key into a number; say hash(\"cat\") = 35 (real hashes are much bigger). 35 mod 8 = 3 (the remainder of 35 ÷ 8), so cat goes in bucket 3. dog hashes to 14, and 14 mod 8 = 6. Looking a key up repeats the same arithmetic, so we go straight to its bucket."
   - title: Collisions are normal
-    text: "emu hashes to 27, and 27 % 8 is also 3. With more possible keys than buckets, collisions are guaranteed. Separate chaining keeps a small list in each bucket: cat → emu. A lookup for emu goes to bucket 3, then walks the chain comparing keys."
+    text: "emu hashes to 27, and 27 mod 8 is also 3. With more possible keys than buckets, collisions are guaranteed. Separate chaining keeps a small list in each bucket: cat → emu. A lookup for emu goes to bucket 3, then walks the chain comparing keys."
   - title: Load factor
     text: "After ant, owl and yak, six keys share eight buckets. The load factor is keys ÷ buckets = 0.75, and it — not n — sets the average chain length. Keep it bounded and every operation stays O(1) on average, however many keys you store."
   - title: Double and rehash
-    text: "Many tables (Java's HashMap, for example) resize once the load factor would pass 0.75. The next insert doubles the array to 16 buckets and re-hashes every key with % 16. emu moves to bucket 11 and the chain disappears. That copy is O(n), but it is rare enough to average out to O(1) per insert."
+    text: "Many tables (Java's HashMap, for example) resize once the load factor would pass 0.75. The next insert doubles the array to 16 buckets and re-hashes every key with mod 16. emu moves to bucket 11 and the chain disappears. That copy is O(n), but it is rare enough to average out to O(1) per insert."
 keyIdeas:
-  - "**index = hash(key) % buckets**: one arithmetic step takes you straight to the only bucket that can hold the key."
+  - "**index = hash(key) mod buckets**: one arithmetic step takes you straight to the only bucket that can hold the key."
   - "**Collisions are guaranteed** (more keys than buckets); chaining keeps a list per bucket, open addressing probes for another slot."
   - "**Load factor = keys ÷ buckets** sets the average chain length; keep it bounded and lookups stay O(1) on average."
   - "**Resizing doubles the array and rehashes every key** — O(n) once in a while, amortised O(1) per insert."
@@ -28,15 +28,15 @@ quiz:
   - q: "A table has 8 buckets. hash(\"fox\") = 43. Which bucket does fox go in?"
     options: ["Bucket 3", "Bucket 5", "Bucket 4", "Bucket 43"]
     answer: 0
-    why: "43 % 8 = 3, because 43 = 5 × 8 + 3. The bucket is the remainder, not the quotient."
+    why: "43 mod 8 = 3, because 43 = 5 × 8 + 3. The bucket is the remainder, not the quotient."
   - q: "A chained hash table holds 3,000 keys in 1,000 buckets with a good hash. Roughly how many keys does a lookup compare against?"
     options: ["About 1", "About 3", "About 1,000", "About 3,000"]
     answer: 1
     why: "The load factor is 3,000 ÷ 1,000 = 3, so chains hold about 3 keys on average. That is why tables resize: to pull the load factor back below a limit like 0.75."
   - q: "Why must a growing table rehash every key instead of copying each bucket to the same index?"
-    options: ["To remove duplicate keys", "Because the index is hash % capacity, and the capacity just changed", "Because hash values expire", "To sort the keys"]
+    options: ["To remove duplicate keys", "Because the index is hash mod capacity, and the capacity just changed", "Because hash values expire", "To sort the keys"]
     answer: 1
-    why: "emu has hash 27: 27 % 8 = 3 but 27 % 16 = 11. With the new capacity, many keys belong in different buckets, so each one is recomputed."
+    why: "emu has hash 27: 27 mod 8 = 3 but 27 mod 16 = 11. With the new capacity, many keys belong in different buckets, so each one is recomputed."
 bigO:
   - { op: "lookup", best: "O(1)", avg: "O(1)", worst: "O(n)", note: "worst = every key in one bucket" }
   - { op: "insert", avg: "O(1)", worst: "O(n)", note: "amortised over resizes" }
@@ -53,7 +53,7 @@ flashcards:
     text: "Most implementations resize when the load factor exceeds {{0.75}}, then rehash every key."
   - kind: qa
     q: "Why must a hash table rehash every key when it grows, instead of copying buckets across?"
-    a: "The bucket index is hash % capacity, so changing the capacity changes the index. A key in bucket 3 of 8 may belong in bucket 3 or 11 of 16."
+    a: "The bucket index is hash mod capacity, so changing the capacity changes the index. A key in bucket 3 of 8 may belong in bucket 3 or 11 of 16."
 sources:
   - { name: "Open Data Structures", url: "https://opendatastructures.org/", licence: "CC BY 2.5", note: "Hash tables chapter, redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -64,7 +64,7 @@ sources:
 A **hash table** (Python `dict`/`set`, Java `HashMap`, C++ `unordered_map`) stores key–value pairs so that looking a key up takes constant time on average. It is built from two ideas:
 
 1. **An array of buckets.** Arrays give O(1) access by index.
-2. **A hash function** that turns any key into an integer. The same key must always give the same number, and different keys should spread out evenly. The bucket is then `index = hash(key) % m`, where m is the number of buckets.
+2. **A hash function** that turns any key into an integer. The same key must always give the same number, and different keys should spread out evenly. The bucket is then `index = hash(key) mod m` (the remainder after dividing by m), where m is the number of buckets.
 
 To **insert**, compute the index and put the pair in that bucket. To **look up**, compute the same index and look only in that bucket. No other bucket can hold the key, so the rest of the table is never touched.
 
@@ -85,7 +85,7 @@ So tables **resize**: when an insert would push α past the limit (0.75 in Java'
 
 Eight buckets, made-up small hash values so the arithmetic is easy to check:
 
-| Key | hash | % 8 | % 16 (after resize) |
+| Key | hash | mod 8 | mod 16 (after resize) |
 |---|---|---|---|
 | cat | 35 | 3 | 3 |
 | dog | 14 | 6 | 14 |
@@ -95,11 +95,13 @@ Eight buckets, made-up small hash values so the arithmetic is easy to check:
 | yak | 21 | 5 | 5 |
 
 1. cat → bucket 3; dog → bucket 6.
-2. emu also → bucket 3. Chaining appends it: bucket 3 holds `cat → emu`. Looking up emu: compute 27 % 8 = 3, compare with cat (no), compare with emu (yes) — two comparisons.
+2. emu also → bucket 3. Chaining appends it: bucket 3 holds `cat → emu`. Looking up emu: compute 27 mod 8 = 3, compare with cat (no), compare with emu (yes) — two comparisons.
 3. After ant, owl and yak, 6 keys share 8 buckets: α = 0.75.
-4. The seventh insert would take α above 0.75, so the table doubles to 16 buckets and recomputes every index with % 16. emu moves to 11, cat stays at 3, and the collision is gone.
+4. The seventh insert would take α above 0.75, so the table doubles to 16 buckets and recomputes every index with mod 16. emu moves to 11, cat stays at 3, and the collision is gone.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here is a chained table in Python (`%` is Python's mod, and the built-in `hash()` supplies the hash).
 
 ```python
 class ChainedMap:
@@ -144,7 +146,7 @@ print(m.get("emu"), len(m.buckets))             # 3 16
 ## Edge cases and pitfalls
 
 - **Hash and equality must agree.** If `a == b` then `hash(a)` must equal `hash(b)`, or a lookup will search the wrong bucket. When you override equality on your own class, override the hash too.
-- **Never mutate a key** after inserting it. Its hash changes, so it now sits in the "wrong" bucket and can never be found. That is why Python refuses lists as dict keys.
+- **Never mutate a key** after inserting it. Its hash changes, so it now sits in the "wrong" bucket and can never be found. That is why Python, for example, refuses lists as dict keys.
 - **Adversarial keys.** An attacker who knows your hash function can send thousands of keys that all collide, turning every request into O(n) work (hash flooding). Defences: randomised hash seeds (Python and many others do this for strings) or tree-shaped buckets (Java 8+ turns a long chain into a balanced tree).
 - **Deleting with open addressing** cannot just empty a slot — that would break other keys' probe sequences. Implementations leave a "tombstone" marker instead.
 - **Iteration order** is not something to rely on in general (Python's `dict` happens to keep insertion order since 3.7, but a generic hash table does not).

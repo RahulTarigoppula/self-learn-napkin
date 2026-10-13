@@ -43,7 +43,7 @@ quiz:
     options: ["0.01 — tiny, so ignore it", "About 4.6 — confident mistakes dominate the loss", "0.99 — one minus p", "Infinite — the model is broken"]
     answer: 1
     why: "−ln(0.01) ≈ 4.61, versus 0.13 for a correct p = 0.88. Log-loss grows without limit as the probability of the true class goes to 0, so training works hardest to fix confident errors."
-related: [ds/gradient-descent, ds/precision-recall-roc]
+related: [ds/linear-regression, ds/loss-functions, ds/precision-recall-roc, ds/calibration]
 prereqs: [ds/gradient-descent]
 flashcards:
   - kind: qa
@@ -90,7 +90,17 @@ Two facts make training pleasant:
 - The average log-loss is **convex** in w and b — one bowl, no bad local minima.
 - Its gradient is tiny to write: **∂loss/∂w = (p − y)·x** and **∂loss/∂b = p − y**. The error (p − y) times the input, the same shape as linear regression's gradient.
 
-There is no closed-form solution, so libraries use gradient descent or quasi-Newton methods such as L-BFGS.
+There is no closed-form solution, so you iterate. Batch gradient descent in pseudocode:
+
+```text
+w = zeros;  b = 0
+repeat until the loss stops falling:
+    p = σ(X·w + b)                 # predicted P(y = 1) for every row
+    w = w − η · Xᵀ(p − y) / n      # mean of (p − y)·x
+    b = b − η · mean(p − y)
+```
+
+Libraries usually use faster quasi-Newton methods such as L-BFGS, but they minimise the same convex loss and land on the same answer.
 
 ## Worked example
 
@@ -105,9 +115,9 @@ Each extra link multiplies the odds of spam by e^0.8 ≈ 2.23.
 
 Now one gradient step on email A, whose true label is spam (y = 1): the error is p − y = 0.818 − 1 = −0.182. The gradients are −0.182 × 5 = −0.91 for the links weight, −0.182 × 0.5 = −0.091 for the CAPS weight and −0.182 for b. With learning rate 0.1, each parameter moves *against* its gradient: the links weight rises to 0.891, the CAPS weight to 3.009 and b to −3.982. The model now scores A slightly higher — exactly the nudge an under-confident correct answer should get.
 
-## In code
+## Implement it in Python
 
-From scratch with NumPy, checked against scikit-learn:
+The loop above is a dozen lines in any language, and every stats package ships a fitted version (R's `glm(family = binomial)`, Julia's GLM.jl, Spark MLlib…). Here it is from scratch with NumPy, checked against scikit-learn:
 
 ```python
 import numpy as np
@@ -140,7 +150,7 @@ sk = LogisticRegression(C=np.inf).fit(X, y)    # C=inf: no regularisation
 print("scikit-learn:", sk.coef_[0].round(2), sk.intercept_.round(2))
 ```
 
-Both print weights [2.0, 3.4] and bias 0.27 (log-loss 0.305, accuracy 0.872): the same convex problem has one answer, whichever optimiser finds it.
+Both print weights [2.0, 3.4] and bias 0.27 (log-loss 0.305, accuracy 0.872): the same convex problem has one answer, whichever optimiser finds it. Note that scikit-learn's `LogisticRegression` applies an L2 penalty with `C = 1.0` by default (smaller C = stronger penalty); `C=np.inf` switches it off to match the plain loss.
 
 ## More than two classes
 
@@ -148,7 +158,7 @@ Both print weights [2.0, 3.4] and bias 0.27 (log-loss 0.305, accuracy 0.872): th
 
 ## Edge cases and pitfalls
 
-- **scikit-learn regularises by default** (L2 with C = 1.0). Smaller C means stronger regularisation; scale your features so the penalty treats them fairly.
+- **Many libraries regularise by default**, usually with an L2 penalty. Know which penalty and strength you are getting, and scale your features so the penalty treats them fairly.
 - **Perfectly separable data** makes unregularised weights grow without bound: pushing p ever closer to 0 and 1 keeps shrinking the loss. Regularisation keeps them finite.
 - **Linear boundary only.** Add interaction or polynomial features, or use trees or neural networks, when the classes curl around each other.
 - **Imbalanced classes:** 0.5 is rarely the right threshold. Choose it from the precision–recall trade-off, or use class weights.

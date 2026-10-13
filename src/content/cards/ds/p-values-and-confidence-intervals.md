@@ -32,16 +32,16 @@ quiz:
     answer: 1
     why: "The p-value is computed assuming H₀ holds; it measures how surprising the data are under that assumption. Turning it into the probability that H₀ is true needs prior information (Bayes' theorem)."
   - q: "100 flips give 60 heads; the exact two-sided p-value is 0.057. At α = 0.05, what do you conclude?"
-    options: ["The coin is proven fair", "Fail to reject H₀: the data do not give strong evidence of bias", "The coin is biased with 94.3 % probability", "Reject H₀ because 60 is far from 50"]
-    answer: 1
+    options: ["The coin is proven fair", "The coin is biased with 94.3 % probability", "Reject H₀ because 60 is far from 50", "Fail to reject H₀: the data do not give strong evidence of bias"]
+    answer: 3
     why: "p > α, so we do not reject H₀. That is absence of evidence, not evidence of fairness: with only 100 flips a modest bias (say 0.55) would often go undetected."
   - q: "You test 10 independent hypotheses, all truly null, each at α = 0.05. What is the chance of at least one false positive?"
     options: ["5 %", "About 10 %", "About 40 %", "50 %"]
     answer: 2
     why: "1 − 0.95¹⁰ = 0.40. Bonferroni would test each at 0.05 / 10 = 0.005 to bring the family-wise error rate back to at most 5 %."
   - q: "A test on 10 million users finds a statistically significant lift of 0.01 percentage points (p < 0.001). What follows?"
-    options: ["Ship it: p < 0.001 proves a big effect", "The effect is real but probably too small to matter; judge it by its confidence interval and the cost", "The test must be broken", "Re-run it with fewer users"]
-    answer: 1
+    options: ["The effect is probably real but too small to matter; judge it by its confidence interval and the cost", "Ship it: p < 0.001 proves a big effect", "The test must be broken", "Re-run it with fewer users"]
+    answer: 0
     why: "With huge samples the standard error is tiny, so trivial effects become significant. Significance answers 'is it zero?'; the interval answers 'how big?', which is what the decision needs."
 related: [ds/ab-testing, ds/central-limit-theorem, ds/bayes-theorem]
 prereqs: [ds/central-limit-theorem]

@@ -119,7 +119,7 @@ Fixes: commit to the sample size and look once; or use a method built for repeat
 ## Reading the result
 
 1. **SRM check.** Compare the observed split with the plan using a chi-squared test. For 15,100 vs 14,400 against 14,750 each: χ² = (350² + 350²) / 14,750 = 16.6, p ≈ 0.00005. Platforms usually alarm at p < 0.001, because with this many users chance alone barely moves the split. Common causes: bots filtered in one arm only, redirects that lose users, a crash in the new version, or caching. Do not interpret the metrics until it is explained.
-2. **Primary metric.** Two-proportion z-test: pooled rate 3,075 / 29,500 = 0.1042, SE under H₀ = √(0.1042 × 0.8958 × 2 / 14,750) = 0.00356, z = 0.0085 / 0.00356 = 2.38, two-sided p = 0.017. The 95 % confidence interval for the lift is 0.0085 ± 1.96 × 0.00356 = **+0.15 to +1.54 pp**.
+2. **Primary metric.** Two-proportion z-test: pooled rate 3,075 / 29,500 = 0.1042, SE under H₀ = √(0.1042 × 0.8958 × 2 / 14,750) = 0.00356, z = 0.0085 / 0.00356 = 2.38, two-sided p = 0.017. The confidence interval does not assume H₀, so it uses the unpooled SE, √(0.100 × 0.900 / 14,750 + 0.1085 × 0.8915 / 14,750), which also comes to 0.00356 here. The 95 % interval for the lift is 0.0085 ± 1.96 × 0.00356 = **+0.15 to +1.54 pp**.
 3. **Practical significance.** The interval excludes 0, but its lower end is only 0.15 pp. Whether that justifies the change is a product decision, not a statistical one.
 4. **Guardrails.** Check that latency, refunds, error rates and so on have not moved in the wrong direction.
 

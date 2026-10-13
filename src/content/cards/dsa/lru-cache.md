@@ -9,7 +9,7 @@ analogy: "A short stack of papers on your desk: whatever you touch goes on top, 
 diagram: lru-cache
 story:
   - title: Two structures, one cache
-    text: "An LRU (least recently used) cache holds at most a fixed number of entries — here 2. A doubly linked list keeps them in order of use: most recent at the front, next to the sentinel H, least recent at the back, next to T. A hash map records which keys are present."
+    text: "An LRU (least recently used) cache holds at most a fixed number of entries — here 2. A doubly linked list keeps them in order of use: most recent at the front, next to the sentinel H, least recent at the back, next to T. A hash map takes each key straight to its node in the list."
   - title: put 1, put 2
     text: "put(1, A) creates a node and links it right after H. put(2, B) does the same, so 2 is now in front and 1 has slid towards the back. Every insert is a few pointer changes at the head, plus one map write: O(1)."
   - title: get 1 moves it to the front
@@ -96,7 +96,9 @@ Capacity 2. List shown from front (most recent) to back (least recent):
 | get(2) | −1 (miss) | 3, 1 | {1, 3} |
 | get(3) | C (hit) | 3, 1 | {1, 3} |
 
-## In code
+## Implement it in Python
+
+The same design works in any language; here it is in Python, with a dict as the hash map.
 
 ```python
 class Node:
@@ -138,11 +140,13 @@ class LRUCache:
         node = Node(key, val)
         self.map[key] = node
         self._push_front(node)
+
+c = LRUCache(2)
+c.put(1, "A"); c.put(2, "B"); c.get(1); c.put(3, "C")    # the worked example
+print(c.get(2), c.get(3), c.get(1))                     # -1 C A
 ```
 
-Replaying the worked example — `put(1)`, `put(2)`, `get(1)`, `put(3)` — and then calling `get(2)`, `get(3)`, `get(1)` returns −1, C and A.
-
-In Python you can also build it on `collections.OrderedDict` with `move_to_end(key)` and `popitem(last=False)` — worth mentioning, but interviewers usually want the hand-built version first.
+Many standard libraries already combine the two structures: Python's `OrderedDict` (`move_to_end`, `popitem(last=False)`) and Java's `LinkedHashMap` in access order (override `removeEldestEntry`). They are worth mentioning, but interviewers usually want the hand-built version first.
 
 ## Edge cases and pitfalls
 

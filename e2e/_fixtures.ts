@@ -5,7 +5,11 @@ export const test = base.extend<{ errors: string[] }>({
   errors: [
     async ({ page }, use) => {
       const errors: string[] = [];
-      page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
+      // A cross-document view transition aborted by a quick follow-up navigation is benign (browser-internal).
+      const benign = (m: string) => /Transition was (aborted|skipped)/.test(m);
+      page.on('pageerror', (e) => {
+        if (!benign(e.message)) errors.push(`pageerror: ${e.message}`);
+      });
       page.on('console', (m) => {
         if (m.type() === 'error' && !m.text().startsWith('Failed to load resource'))
           errors.push(`console: ${m.text()}`);

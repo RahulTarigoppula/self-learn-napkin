@@ -17,7 +17,7 @@ function key(d, name, h, b, fromRow, pen) {
     d.text(20, y0, name, { pen, size: 17, bold: true, anchor: 'start' });
     d.arrow(64, y0, BX - 6, ry(b), {
       pen,
-      label: `${h} % 8 = ${b}`,
+      label: `${h} mod 8 = ${b}`,
       size: 14,
       labelDy: fromRow === b ? -11 : 20,
       labelDx: fromRow === b ? 0 : 6,
@@ -82,15 +82,15 @@ export default (d) => {
   });
 
   d.step('Double to 16 buckets and rehash');
-  d.text(20, 344, 'next insert → 16 buckets, every key re-hashed with % 16:', {
+  d.text(20, 344, 'next insert → 16 buckets; every key re-hashed, mod 16:', {
     pen: 'orange',
     size: 15,
     anchor: 'start',
   });
   d.group(() => {
     const at = { 0: 'ant', 3: 'cat', 5: 'yak', 9: 'owl', 11: 'emu', 14: 'dog' };
-    const SW = 28;
-    const SX = 36;
+    const SW = 30;
+    const SX = 20;
     for (let i = 0; i < 16; i++) {
       const name = at[i];
       d.rect(SX + i * SW, 374, SW, 28, {
@@ -100,7 +100,6 @@ export default (d) => {
         single: true,
         label: name ?? '',
         size: 13,
-        bold: true,
       });
       d.text(SX + i * SW + SW / 2, 364, String(i), {
         pen: i === 11 || i === 3 ? 'orange' : 'muted',
