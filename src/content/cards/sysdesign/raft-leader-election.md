@@ -68,15 +68,15 @@ sources:
 
 ## Why elect a leader at all
 
-A replicated system — a configuration store, a database's metadata, a lock service — must agree on **one order of updates** across several machines even when some crash. Raft solves this with a **leader**: one server accepts every write, appends it to its log, and copies the log to the others. A write is **committed** once a majority stores it. That is simple as long as there is exactly one leader. Leader election is the part of Raft that picks a leader, replaces it when it fails, and guarantees there are never two leaders for the same term. (The authors' site, raft.github.io, has the paper and an interactive visualisation.)
+A replicated system (a configuration store, a database's metadata, a lock service) must agree on **one order of updates** across several machines even when some crash. Raft solves this with a **leader**: one server accepts every write, appends it to its log, and copies the log to the others. A write is **committed** once a majority stores it. That is simple as long as there is exactly one leader. Leader election is the part of Raft that picks a leader, replaces it when it fails, and guarantees there are never two leaders for the same term. (The authors' site, raft.github.io, has the paper and an interactive visualisation.)
 
 ## How it works
 
 Every server is in one of three **roles**:
 
-- **Follower** — passive. Answers requests from leaders and candidates. Holds an **election timer**.
-- **Candidate** — trying to become leader.
-- **Leader** — sends **heartbeats** and log entries to everyone.
+- **Follower**: passive. Answers requests from leaders and candidates. Holds an **election timer**.
+- **Candidate**: trying to become leader.
+- **Leader**: sends **heartbeats** and log entries to everyone.
 
 Time is divided into **terms**, numbered 1, 2, 3, … Each term starts with an election and has **at most one** leader. Every message carries the sender's term. Whenever a server sees a term higher than its own, it adopts that term and becomes a follower; messages with a lower term are rejected.
 
@@ -84,7 +84,7 @@ The election, step by step:
 
 1. A follower's timer expires without a heartbeat. It **increments its term**, becomes a candidate and **votes for itself**.
 2. It sends **RequestVote(term, lastLogIndex, lastLogTerm)** to every other server.
-3. A server grants its vote if (a) the request's term is not older than its own, (b) it has not already voted for someone else in this term, and (c) the candidate's log is **at least as up to date** — its last entry has a higher term, or the same term and an index at least as large.
+3. A server grants its vote if (a) the request's term is not older than its own, (b) it has not already voted for someone else in this term, and (c) the candidate's log is **at least as up to date** as its own, meaning its last entry has a higher term, or the same term and an index at least as large.
 4. With votes from a **majority** (3 of 5), the candidate becomes leader and immediately sends heartbeats.
 5. If instead it hears a heartbeat from a leader with a term at least as high, it steps down.
 6. If its timer expires again with no winner (a **split vote**), it starts a new election with term + 1.

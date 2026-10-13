@@ -26,10 +26,10 @@ describe('Kahn on the napkin courses', () => {
     expect(fr[0]?.caption).toBe('in-degree 0: Intro, Math → queue');
   });
 
-  it('outputs Intro, Math, DS, Algo, DB, ML — a valid order', () => {
+  it('outputs the valid order Intro, Math, DS, Algo, DB, ML', () => {
     expect(last?.step).toBe('done');
     expect(last?.state.order).toEqual(['Intro', 'Math', 'DS', 'Algo', 'DB', 'ML']);
-    expect(last?.caption).toBe('6 of 6 output — a valid order');
+    expect(last?.caption).toBe('6 of 6 output: a valid order');
     expect(isTopoOrder(COURSES, last?.state.order ?? [])).toBe(true);
     expect(last?.state.cut).toHaveLength(7);
   });
@@ -61,7 +61,7 @@ describe('extra arrows', () => {
     const last = kahnFrames(g).at(-1);
     expect(last?.step).toBe('stuck');
     expect(last?.state.order).toEqual(['Intro', 'Math']);
-    expect(last?.caption).toBe('queue empty with 4 left: DS, Algo, DB, ML — cycle!');
+    expect(last?.caption).toBe('queue empty with 4 left (DS, Algo, DB, ML): cycle!');
     const left = g.nodes.filter((n) => !last?.state.order.includes(n));
     expect(findCycle(g, left).map(arrowKey)).toEqual(['DS→Algo', 'Algo→ML', 'ML→DS']);
   });
@@ -96,9 +96,9 @@ describe('extra arrows', () => {
       ],
     };
     const fr = kahnFrames(g);
-    expect(fr[0]?.caption).toBe('no node has in-degree 0 — the queue starts empty');
+    expect(fr[0]?.caption).toBe('no node has in-degree 0, so the queue starts empty');
     expect(fr).toHaveLength(2);
-    expect(fr[1]?.caption).toBe('queue empty with 3 left: X, Y, Z — cycle!');
+    expect(fr[1]?.caption).toBe('queue empty with 3 left (X, Y, Z): cycle!');
     expect(findCycle(g, ['X', 'Y', 'Z'])).toHaveLength(3);
   });
 

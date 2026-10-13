@@ -9,11 +9,11 @@ analogy: "A panel discussion repeated over many rounds. In each round everyone l
 diagram: transformers
 story:
   - title: Tokens become vectors
-    text: "Text is split into tokens — words or word pieces — such as \"The\", \"cat\", \"sat\". Each token's ID selects a row of a learned embedding table, giving one vector per token (768 numbers in GPT-2 small). From here on, the model works only with these vectors."
+    text: "Text is split into tokens (words or word pieces) such as \"The\", \"cat\", \"sat\". Each token's ID selects a row of a learned embedding table, giving one vector per token (768 numbers in GPT-2 small). From here on, the model works only with these vectors."
   - title: Add position information
-    text: "Attention by itself ignores order: shuffle the tokens and each one's output is unchanged, just shuffled. So a position vector p is added to each embedding — fixed sine waves in the original Transformer, learned vectors in GPT-2, rotations of the queries and keys (RoPE) in many newer models."
+    text: "Attention by itself ignores order: shuffle the tokens and each one's output is unchanged, just shuffled. A position vector p is therefore added to each embedding: fixed sine waves in the original Transformer, learned vectors in GPT-2, rotations of the queries and keys (RoPE) in many newer models."
   - title: "Self-attention: tokens exchange information"
-    text: "In each block, multi-head self-attention lets every token gather information from the others with softmax(QKᵀ/√d)·V, several heads in parallel. The result is added back to the input — a residual connection; GPT-2 and most modern models normalise each sub-layer's input first (pre-norm). Every token scores every token, so this step costs O(n²) in sequence length."
+    text: "In each block, multi-head self-attention lets every token gather information from the others with softmax(QKᵀ/√d)·V, several heads in parallel. The result is added back to the input (a residual connection), and GPT-2 and most modern models normalise each sub-layer's input first (pre-norm). Every token scores every token, so this step costs O(n²) in sequence length."
   - title: "Feed-forward, then repeat N times"
     text: "Next, a small two-layer network is applied to each token separately (768 → 3,072 → 768 in GPT-2), again with a residual and layer norm. Attention mixes across tokens; the feed-forward layer transforms within each token. The block is stacked N times: 12 in GPT-2 small, 96 in GPT-3."
   - title: Predict the next token
@@ -68,7 +68,7 @@ sources:
 
 ## Why Transformers replaced RNNs
 
-Before 2017, sequence models were mostly **recurrent neural networks** (RNNs, LSTMs): they read one token at a time and carried a hidden state forward. Two problems followed. Training was **sequential** — step t needs the state from step t − 1, so a 1,000-token sequence takes 1,000 dependent steps, which GPUs cannot parallelise. And information from far back had to survive many state updates, so long-range dependencies faded. The Transformer ("Attention Is All You Need", Vaswani et al., 2017) dropped recurrence entirely: every layer lets every token look directly at every other token through **attention**, and the whole sequence is processed with a few large matrix multiplications.
+Before 2017, sequence models were mostly **recurrent neural networks** (RNNs, LSTMs): they read one token at a time and carried a hidden state forward. Two problems followed. Training was **sequential**: step t needs the state from step t − 1, so a 1,000-token sequence takes 1,000 dependent steps, which GPUs cannot parallelise. And information from far back had to survive many state updates, so long-range dependencies faded. The Transformer ("Attention Is All You Need", Vaswani et al., 2017) dropped recurrence entirely: every layer lets every token look directly at every other token through **attention**, and the whole sequence is processed with a few large matrix multiplications.
 
 ## How it works
 
@@ -95,7 +95,7 @@ A useful mental model: the vectors flowing up the stack form a **residual stream
 
 ## Causal masking and parallel training
 
-A decoder must not see the future, or predicting the next token would be trivial. The **causal mask** sets every score with key position j > query position i to −∞ before the softmax, so those weights become exactly 0. The payoff is that a whole training sequence of n tokens yields n prediction tasks — after "The", after "The cat", after "The cat sat" — computed in **one parallel forward pass** (teacher forcing). Generation is still sequential: produce one token, append it, run again. Inference engines cache each layer's keys and values for earlier tokens (the **KV cache**) so each new token costs one position's worth of computation instead of reprocessing the whole prefix.
+A decoder must not see the future, or predicting the next token would be trivial. The **causal mask** sets every score with key position j > query position i to −∞ before the softmax, so those weights become exactly 0. The payoff is that a whole training sequence of n tokens yields n prediction tasks (after "The", after "The cat", after "The cat sat"), all computed in **one parallel forward pass** (teacher forcing). Generation is still sequential: produce one token, append it, run again. Inference engines cache each layer's keys and values for earlier tokens (the **KV cache**) so each new token costs one position's worth of computation instead of reprocessing the whole prefix.
 
 ## Worked example: GPT-2 small by the numbers
 
@@ -110,7 +110,7 @@ d = 768, 12 heads of 64, 12 blocks, FFN width 3,072, context 1,024, vocabulary 5
 | position embeddings | 1,024 × 768 | 0.8 M |
 | **total** (ignoring biases and norms) | | **≈ 124 M** |
 
-At full context each attention head computes a 1,024 × 1,024 score matrix — about 1.05 million scores — and there are 12 heads in each of 12 layers: about 151 million scores per forward pass. Quadruple the context to 4,096 tokens and that becomes 16 times larger.
+At full context each attention head computes a 1,024 × 1,024 score matrix, which is about 1.05 million scores, and there are 12 heads in each of 12 layers: about 151 million scores per forward pass. Quadruple the context to 4,096 tokens and that becomes 16 times larger.
 
 ## Implement it in Python
 
@@ -172,4 +172,4 @@ The last line checks causality: changing the final token leaves the predictions 
 
 ## In the interview
 
-Expect "walk me through a Transformer", "encoder vs decoder?", "why the causal mask?", "why did Transformers beat RNNs?" and "what is the complexity?". A strong answer draws the stack from tokens to softmax, names both sub-layers with residuals and layer norm, explains positional encodings via permutation-equivariance, and states O(n²·d) attention versus O(n·d²) feed-forward. A likely follow-up: *"how is generation made fast?"* — the KV cache stores keys and values of past tokens, so each new token attends to cached keys instead of recomputing the whole prefix.
+Expect "walk me through a Transformer", "encoder vs decoder?", "why the causal mask?", "why did Transformers beat RNNs?" and "what is the complexity?". A strong answer draws the stack from tokens to softmax, names both sub-layers with residuals and layer norm, explains positional encodings via permutation-equivariance, and states O(n²·d) attention versus O(n·d²) feed-forward. A likely follow-up: *"how is generation made fast?"* The KV cache stores keys and values of past tokens, so each new token attends to cached keys instead of recomputing the whole prefix.

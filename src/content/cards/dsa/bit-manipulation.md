@@ -4,12 +4,12 @@ track: dsa
 tags: [bits, math, tricks]
 difficulty: 2
 minutes: 6
-tldr: "Treat an integer as a row of bits and change them all in one instruction. A few identities — x & (x−1), x & −x, a ^ a = 0, masks as subsets — solve a whole family of problems in O(1) memory."
+tldr: "Treat an integer as a row of bits and change them all in one instruction. A few identities (x & (x−1), x & −x, a ^ a = 0, masks as subsets) solve a whole family of problems in O(1) memory."
 analogy: "A row of light switches on a wall. AND, OR and XOR compare two rows switch by switch; a shift slides the whole row along by one place, doubling or halving the number it spells."
 diagram: bit-manipulation
 story:
   - title: Every integer is a row of bits
-    text: "Computers store integers in binary: each bit is worth twice the one to its right — 1, 2, 4, 8 and so on. 12 is 00001100 in 8 bits because 8 + 4 = 12. Bit tricks act on every bit of a number at once, in a single CPU instruction."
+    text: "Computers store integers in binary: each bit is worth twice the one to its right: 1, 2, 4, 8 and so on. 12 is 00001100 in 8 bits because 8 + 4 = 12. Bit tricks act on every bit of a number at once, in a single CPU instruction."
   - title: AND, OR, XOR column by column
     text: "Bitwise operators combine two numbers one column at a time. AND gives 1 only where both bits are 1; OR where at least one is; XOR where they differ. So 12 & 10 = 8, 12 | 10 = 14 and 12 ^ 10 = 6. NOT (~) flips every bit, and << and >> slide the row, multiplying or dividing by 2."
   - title: x & (x − 1) clears the lowest 1
@@ -17,7 +17,7 @@ story:
   - title: Two's complement and x & −x
     text: "Negative numbers use two's complement: −x is ~x + 1. Flipping 00001100 gives 11110011; adding 1 gives 11110100, which is −12 in 8 bits. −x agrees with x at the lowest 1 and the zeros below it, and is the opposite everywhere above, so x & −x keeps only the lowest 1: 00000100 = 4."
   - title: XOR cancels pairs
-    text: "XOR has two key properties: a ^ a = 0 and a ^ 0 = a, and the order of operands does not matter. XOR all of [4, 1, 2, 1, 2] together and each pair cancels, leaving the one number without a partner: 4. One pass and O(1) memory, with no hash set."
+    text: "XOR has two handy properties: a ^ a = 0 and a ^ 0 = a, and the order of operands does not matter. XOR all of [4, 1, 2, 1, 2] together and each pair cancels, leaving the one number without a partner: 4. One pass and O(1) memory, with no hash set."
   - title: A bitmask is a subset
     text: "Let bit i mean 'item i is in the set'. With items a, b, c and a as bit 0, mask 5 = 101 means {a, c}. Counting mask from 0 to 7 = 2³ − 1 visits each of the 8 subsets exactly once, and adding item i is just mask | (1 << i)."
 keyIdeas:
@@ -38,7 +38,7 @@ quiz:
   - q: "For x > 0, what does (x & (x − 1)) == 0 tell you?"
     options: ["x is even", "x is a power of two", "x is odd", "x has all bits set"]
     answer: 1
-    why: "x & (x − 1) clears the lowest 1 bit. The result is 0 only if that was the only 1 bit — exactly the powers of two: 1, 2, 4, 8, …"
+    why: "x & (x − 1) clears the lowest 1 bit. The result is 0 only if that was the only 1 bit, which is true exactly for the powers of two: 1, 2, 4, 8, …"
   - q: "In 8-bit two's complement, which value does 11111111 stand for?"
     options: ["255", "−1", "−127", "−128"]
     answer: 1
@@ -70,7 +70,7 @@ sources:
 
 ## How it works
 
-An integer is stored as a row of **bits** (binary digits). The rightmost bit is worth 1, the next 2, then 4, 8, 16 — each place is worth twice the one to its right. So `12 = 8 + 4 = 0b1100`. Most languages can show and parse this form: Python's `bin(12)` gives `'0b1100'`, Java's `Integer.toBinaryString(12)` gives `"1100"`, and `0b1100` is a valid literal in Python, Java, C++14 and JavaScript.
+An integer is stored as a row of **bits** (binary digits). The rightmost bit is worth 1, the next 2, then 4, 8, 16. Each place is worth twice the one to its right. So `12 = 8 + 4 = 0b1100`. Most languages can show and parse this form: Python's `bin(12)` gives `'0b1100'`, Java's `Integer.toBinaryString(12)` gives `"1100"`, and `0b1100` is a valid literal in Python, Java, C++14 and JavaScript.
 
 **Bitwise operators** treat the two numbers as columns of bits and combine each column on its own, all at once:
 
@@ -81,9 +81,9 @@ An integer is stored as a row of **bits** (binary digits). The rightmost bit is 
 | 1 | 0 | 0 | 1 | 1 |
 | 1 | 1 | 1 | 1 | 0 |
 
-- **AND** is 1 only when both bits are 1 — use it to *test* or *keep* bits.
-- **OR** is 1 when either bit is 1 — use it to *set* bits.
-- **XOR** is 1 when the bits differ — use it to *toggle* bits.
+- **AND** is 1 only when both bits are 1. Use it to *test* or *keep* bits.
+- **OR** is 1 when either bit is 1. Use it to *set* bits.
+- **XOR** is 1 when the bits differ. Use it to *toggle* bits.
 - **NOT** (`~x`) flips every bit.
 - **Shifts:** `x << k` moves every bit k places left, multiplying by 2ᵏ; `x >> k` moves them right, dividing by 2ᵏ and rounding down (`13 >> 1 == 6`, and `-13 >> 1 == -7` in Python).
 
@@ -99,7 +99,7 @@ Hardware stores negative integers in **two's complement**: in an 8-bit number th
 | ~12 | 1 | 1 | 1 | 1 | 0 | 0 | 1 | 1 | −13 |
 | −12 = ~12 + 1 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | −128 + 64 + 32 + 16 + 4 = −12 |
 
-Flipping all bits gives `~x = −x − 1` (for 12, −13), so **−x = ~x + 1**. 8 bits hold −128 to 127; 11111111 is −1. The beauty is that ordinary binary addition works unchanged for negative numbers. Python integers have no fixed width — they behave as if they had infinitely many copies of the sign bit — so `~12 == -13` and `-12 & 0xFF == 0b11110100` (244) when you want to see 8 bits.
+Flipping all bits gives `~x = −x − 1` (for 12, −13), so **−x = ~x + 1**. 8 bits hold −128 to 127; 11111111 is −1. The payoff is that ordinary binary addition works unchanged for negative numbers. Python integers have no fixed width. They behave as if they had infinitely many copies of the sign bit, so `~12 == -13` and `-12 & 0xFF == 0b11110100` (244) when you want to see 8 bits.
 
 ## The classic tricks
 
@@ -124,11 +124,11 @@ Count the 1 bits of 12 with Kernighan's loop:
 
 Two iterations for two 1 bits, not four for four bit positions. And `12 & -12`: `00001100 & 11110100 = 00000100 = 4`, the lowest 1.
 
-Subsets of `[a, b, c]` (a = bit 0): masks 0 to 7 give `[], [a], [b], [a,b], [c], [a,c], [b,c], [a,b,c]` — mask 5 = `101` is `[a, c]`.
+Subsets of `[a, b, c]` (a = bit 0): masks 0 to 7 give `[], [a], [b], [a,b], [c], [a,c], [b,c], [a,b,c]`, so mask 5 = `101` is `[a, c]`.
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+Each trick from above is a one- or two-line function. The last three lines print the numbers from the worked example.
 
 ```python
 def popcount(x):                      # Kernighan: one iteration per 1 bit (x >= 0)
@@ -165,11 +165,11 @@ Libraries usually have a built-in, hardware-backed popcount: Python 3.10+ `x.bit
 ## Edge cases and pitfalls
 
 - **Operator precedence.** In Python, `&`, `|` and `^` bind tighter than `==`, so `x & (x - 1) == 0` works. In C, C++ and Java, `==` binds tighter, and the same expression means `x & ((x - 1) == 0)`. Parenthesise every bit expression.
-- **Zero is not a power of two.** `0 & -1 == 0`, so the `x > 0` check is essential.
+- **Zero is not a power of two.** `0 & -1 == 0`, so the `x > 0` check is not optional.
 - **Negative numbers in Python.** `popcount(-1)` would never stop: `-1 & -2` is `-2`, and the loop keeps chasing an infinite row of 1s. Mask to a width first (`x & 0xFFFFFFFF`).
 - **Overflow in fixed-width languages.** `1 << 31` in a 32-bit signed int is negative, and shifting by the word size or more is undefined in C.
 - **Right shift of negatives** is arithmetic (copies the sign bit) in Python and Java's `>>`; Java's and JavaScript's `>>>` shift in zeros instead. In C and C++ before C++20 it is implementation-defined, so shift unsigned values.
 
 ## In the interview
 
-Expect: count the 1 bits, power of two (or of four: also check that the single 1 sits in an even position, `x & 0x55555555`), single number, missing number, reverse the bits of a 32-bit integer, generate all subsets, and add two integers without `+` (XOR gives the sum without carries, `(a & b) << 1` gives the carries; repeat until no carry). Name the identity you are using out loud — "x & (x − 1) drops the lowest set bit" — and trace it on a 4-bit example before writing code.
+Expect: count the 1 bits, power of two (or of four: also check that the single 1 sits in an even position, `x & 0x55555555`), single number, missing number, reverse the bits of a 32-bit integer, generate all subsets, and add two integers without `+` (XOR gives the sum without carries, `(a & b) << 1` gives the carries; repeat until no carry). Name the identity you are using out loud ("x & (x − 1) drops the lowest set bit") and trace it on a 4-bit example before writing code.

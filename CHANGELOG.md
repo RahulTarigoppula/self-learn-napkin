@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.1.0 — 2026-10-13
+## v1.1.0 (2026-10-13)
 
 - **31 playgrounds** (15 new): quicksort partitioning, two pointers, sliding window, monotonic stack, min-heap, union-find, Dijkstra (with a negative edge that fools it), topological sort with cycle detection, Kruskal, LCS, edit distance, 0/1 knapsack vs greedy, load balancing strategies, circuit breaker with retries and jitter, and attention weights.
 - **Play layer**: daily challenge on Home, XP and levels, 18 achievements, combos in Quick quiz, confetti for clean sweeps (skipped with reduced motion), "Surprise me".
@@ -8,7 +8,7 @@
 - Content review fixes across all tracks (see the commit log), every runnable Python example executed in CI, sketches that need a live service marked as such.
 - Design polish: rotating daily picks, aligned course cards, clearer cheat-sheet costs, contrast fixes, no leftover diner vocabulary.
 
-## v1.0.0 — 2026-10-13
+## v1.0.0 (2026-10-13)
 
 First public release.
 

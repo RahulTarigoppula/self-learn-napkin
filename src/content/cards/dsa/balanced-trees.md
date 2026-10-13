@@ -125,7 +125,7 @@ A **left-right** example: insert 30, 10, 20. Now 30 is +2 but 10 is −1, becaus
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+This AVL insert repairs balance on the way back up the recursion. Each call returns the new root of its subtree, and the parent re-links to whatever comes back.
 
 ```python
 class Node:

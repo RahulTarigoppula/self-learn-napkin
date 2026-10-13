@@ -45,7 +45,7 @@ export const LB_DEFAULTS: LbParams = {
 
 /**
  * Deterministic traffic: requests arrive every 0–100 ms (mean 50 ms); 80 % are quick (20–60 ms of work)
- * and 20 % are slow (200–400 ms) — "anywhere from 5 ms to 5 s" in miniature.
+ * and 20 % are slow (200–400 ms). That is "anywhere from 5 ms to 5 s" in miniature.
  */
 export function lbWorkload(seed: number, n: number): { arrive: number; work: number }[] {
   const r = rng(seed);

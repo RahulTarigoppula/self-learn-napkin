@@ -275,16 +275,16 @@ export default function Settings({ credits }: { credits: { name: string; url: st
               <a href={c.url} target="_blank" rel="noopener">
                 {c.name}
               </a>{' '}
-              <span class="muted">— {c.licence}</span>
+              <span class="muted">({c.licence})</span>
             </li>
           ))}
           <li>
             Fonts: Bricolage Grotesque, Inter, JetBrains Mono, Excalifont{' '}
-            <span class="muted">— SIL OFL 1.1</span>
+            <span class="muted">(SIL OFL 1.1)</span>
           </li>
           <li>
-            Hand-drawn strokes: Rough.js <span class="muted">— MIT</span> · icons: Lucide{' '}
-            <span class="muted">— ISC</span> · scheduling: ts-fsrs <span class="muted">— MIT</span>
+            Hand-drawn strokes: Rough.js <span class="muted">(MIT)</span> · icons: Lucide{' '}
+            <span class="muted">(ISC)</span> · scheduling: ts-fsrs <span class="muted">(MIT)</span>
           </li>
         </ul>
         <p>

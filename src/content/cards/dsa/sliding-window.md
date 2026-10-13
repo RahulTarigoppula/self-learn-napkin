@@ -66,7 +66,7 @@ griddle: sliding-window
 
 A **window** is a contiguous slice of an array or string, written `[L, R]` (both ends inclusive). Many questions ask for the best window: the largest sum of k consecutive values, the longest substring with some property, the shortest subarray that reaches a total. There are n(n + 1)/2 windows, so checking them all is at least O(n²).
 
-The sliding window avoids that by keeping a **running summary** of the current window — a sum, a count of each character, or a map of where each letter was last seen — and updating it in O(1) when one edge moves. Nothing inside the window is ever recomputed.
+The sliding window avoids that by keeping a **running summary** of the current window (a sum, a count of each character, or a map of where each letter was last seen) and updating it in O(1) when one edge moves. Nothing inside the window is ever recomputed.
 
 ### Fixed-size windows
 
@@ -100,7 +100,7 @@ The method needs the condition to be **monotone**, in the direction that matches
 
 ### Why it is O(n)
 
-R moves n times. L only moves right and never passes R, so across the *whole run* it moves at most n times — even if one iteration moves it several places. Total edge moves ≤ 2n, each O(1): **O(n)**. This is an amortised argument: a single step can be expensive, the total cannot.
+R moves n times. L only moves right and never passes R, so across the *whole run* it moves at most n times, even if one iteration moves it several places. Total edge moves ≤ 2n, each O(1): **O(n)**. This is an amortised argument: a single step can be expensive, the total cannot.
 
 ## Worked example
 
@@ -108,18 +108,18 @@ Longest substring without repeating characters in `"abcbad"`, using `last` = the
 
 | R | char | last[char] before | ≥ L? | L after | Window | Length | Best |
 |---|---|---|---|---|---|---|---|
-| 0 | a | — | — | 0 | a | 1 | 1 |
-| 1 | b | — | — | 0 | ab | 2 | 2 |
-| 2 | c | — | — | 0 | abc | 3 | 3 |
+| 0 | a | none | n/a | 0 | a | 1 | 1 |
+| 1 | b | none | n/a | 0 | ab | 2 | 2 |
+| 2 | c | none | n/a | 0 | abc | 3 | 3 |
 | 3 | b | 1 | yes | 2 | cb | 2 | 3 |
 | 4 | a | 0 | no (0 < 2) | 2 | cba | 3 | 3 |
-| 5 | d | — | — | 2 | cbad | 4 | **4** |
+| 5 | d | none | n/a | 2 | cbad | 4 | **4** |
 
 Row 4 is the trap: the map still remembers the a at index 0, but that a has already left the window. Moving L to 1 would move it *backwards* and re-admit the duplicate b.
 
 ## Implement it in Python
 
-The same idea works in any language; here are the three standard windows in Python.
+The three standard windows: fixed size, longest valid, shortest valid.
 
 ```python
 def max_sum_k(a: list[int], k: int) -> int:
@@ -158,7 +158,7 @@ assert shortest_with_sum([2, 3, 1, 2, 4, 3], 7) == 2
 
 ## Edge cases and pitfalls
 
-- **Moving L backwards.** The `last[ch] >= left` check (or `left = max(left, last[ch] + 1)`) is essential. Test with `"abba"`: the answer is 2.
+- **Moving L backwards.** The `last[ch] >= left` check (or `left = max(left, last[ch] + 1)`) is not optional. Test with `"abba"`: the answer is 2.
 - **Off-by-one in the length.** With inclusive ends the length is `R − L + 1`.
 - **Recording at the wrong moment.** For longest-valid, record *after* shrinking; for shortest-valid, record *before* each shrink step.
 - **Negative numbers.** Sum-based variable windows assume non-negative values. For arbitrary integers, use prefix sums with a hash map (exact sum k) or with a monotonic deque (shortest sum ≥ k).
@@ -167,7 +167,7 @@ assert shortest_with_sum([2, 3, 1, 2, 4, 3], 7) == 2
 
 ## When to use it
 
-Signals in the question: **contiguous** subarray or substring, **longest / shortest / maximum / minimum**, and a condition you can update incrementally (a sum, character counts, number of distinct values). If the elements need not be contiguous, it is not a window problem — think sorting, two pointers, or DP. If you need the max or min *inside* each window, pair the window with a **monotonic deque**.
+Signals in the question: **contiguous** subarray or substring, **longest / shortest / maximum / minimum**, and a condition you can update incrementally (a sum, character counts, number of distinct values). If the elements need not be contiguous, it is not a window problem. Think sorting, two pointers, or DP. If you need the max or min *inside* each window, pair the window with a **monotonic deque**.
 
 ## In the interview
 

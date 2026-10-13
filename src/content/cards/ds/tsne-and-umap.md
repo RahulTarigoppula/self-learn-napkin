@@ -4,14 +4,14 @@ track: ds
 tags: [unsupervised, visualisation, dimensionality-reduction, embeddings]
 difficulty: 2
 minutes: 5
-tldr: "t-SNE and UMAP squash high-dimensional data into a 2-D picture that keeps each point's neighbours close. They keep neighbourhoods, not distances — cluster sizes and gaps in the plot mean little."
-analogy: "A seating plan for a wedding. Everyone ends up next to the people they know best, so tables look like tidy groups — but how far apart two tables stand, or how big a table is, tells you nothing about how the families relate."
+tldr: "t-SNE and UMAP squash high-dimensional data into a 2-D picture that keeps each point's neighbours close. They keep neighbourhoods, not distances, so cluster sizes and gaps in the plot mean little."
+analogy: "A seating plan for a wedding. Everyone ends up next to the people they know best, so tables look like tidy groups. But how far apart two tables stand, or how big a table is, tells you nothing about how the families relate."
 diagram: tsne-and-umap
 story:
   - title: Three groups in 10-D
     text: "Take 300 points in 10 dimensions forming three groups. Along the first axis they sit at 0, 40 and 240, so the gaps are 40 and 200, and group B is five times wider than A and C. We want a 2-D picture, but no flat map can keep every 10-D distance, so something has to give."
   - title: Distances become neighbour probabilities
-    text: "t-SNE first asks, for each point i, who its neighbours are. It centres a Gaussian on i: with width σ = 1, neighbours at distance 1, 2, 3 and 10 get probabilities 0.81, 0.18, 0.015 and ≈ 0. Every point gets its own σ, tuned so its perplexity — roughly the effective number of neighbours, here 30 — is the same."
+    text: "t-SNE first asks, for each point i, who its neighbours are. It centres a Gaussian on i: with width σ = 1, neighbours at distance 1, 2, 3 and 10 get probabilities 0.81, 0.18, 0.015 and ≈ 0. Every point gets its own σ, tuned so its perplexity (roughly the effective number of neighbours, here 30) is the same."
   - title: Lay out in 2-D with heavy tails
     text: "Then it scatters the points in 2-D and moves them until the 2-D neighbour probabilities match the 10-D ones. In 2-D, similarity uses a Student-t curve with a much fatter tail: at distance 3 it gives 0.10 where the Gaussian gives 0.011. Moderately distant points can drift far apart cheaply, which carves clean gaps between groups."
   - title: "The map: same sizes, same gaps"
@@ -60,14 +60,14 @@ sources:
 
 **PCA** (principal component analysis) projects the data onto the few straight directions with the most variance. It is linear, fast, deterministic, and it keeps large distances: two groups far apart in the data stay far apart in the plot. Its weakness is curved structure. Data lying on a rolled-up sheet or a ring gets flattened by a straight projection, and points from different parts of the curve land on top of each other.
 
-**Non-linear embeddings** such as t-SNE (t-distributed stochastic neighbour embedding) and UMAP (uniform manifold approximation and projection) give up on keeping all distances and keep only the thing that matters most for a picture: **who is next to whom**. That makes them excellent for *looking* at data — images, word or customer embeddings, single-cell gene expression — and risky for *measuring* anything.
+**Non-linear embeddings** such as t-SNE (t-distributed stochastic neighbour embedding) and UMAP (uniform manifold approximation and projection) give up on keeping all distances and keep only the thing that matters most for a picture: **who is next to whom**. That makes them excellent for *looking* at data (images, word or customer embeddings, single-cell gene expression) and risky for *measuring* anything.
 
 ## How t-SNE works
 
 1. **Neighbour probabilities in the original space.** For each point i, turn distances into a probability distribution over the other points with a Gaussian of width σᵢ:
    p(j|i) = exp(−‖xᵢ − xⱼ‖² / 2σᵢ²) / Σₖ≠ᵢ exp(−‖xᵢ − xₖ‖² / 2σᵢ²).
    Near points get most of the probability; far points get essentially none.
-2. **Pick each σᵢ from the perplexity.** Perplexity is 2^H, where H = −Σⱼ p(j|i) log₂ p(j|i) is the entropy of point i's distribution in bits. A binary search finds the σᵢ that makes the perplexity equal to your setting (say 30). In dense regions σᵢ comes out small, in sparse regions large — so every point "sees" about 30 neighbours whatever the local density.
+2. **Pick each σᵢ from the perplexity.** Perplexity is 2^H, where H = −Σⱼ p(j|i) log₂ p(j|i) is the entropy of point i's distribution in bits. A binary search finds the σᵢ that makes the perplexity equal to your setting (say 30). In dense regions σᵢ comes out small, in sparse regions large, so every point "sees" about 30 neighbours whatever the local density.
 3. **Symmetrise:** pᵢⱼ = (p(j|i) + p(i|j)) / 2n, so the pairs sum to 1.
 4. **Similarities in 2-D with a heavy tail:** qᵢⱼ ∝ 1 / (1 + ‖yᵢ − yⱼ‖²), a Student-t with one degree of freedom, normalised over all pairs.
 5. **Move the 2-D points** yᵢ by gradient descent to minimise the KL divergence KL(P‖Q) = Σ pᵢⱼ log(pᵢⱼ / qᵢⱼ).
@@ -87,7 +87,7 @@ return y
 
 The KL divergence is lopsided. If two points are true neighbours (large pᵢⱼ) but far apart in 2-D (small qᵢⱼ), the cost is large, so neighbours are kept together. If they are not neighbours (tiny pᵢⱼ), it hardly matters where they go. That is why local structure is preserved and global structure is not.
 
-**The crowding problem** explains step 4. In 10 dimensions a point can have many neighbours all at roughly the same moderate distance; in 2 dimensions there is not enough room to place them all at that distance. The Student-t tail decays like 1/d² instead of exp(−d²/2), so moderately distant points can be pushed much farther out at almost no cost. This opens clean gaps between groups — and it is also why gap widths carry no reliable meaning.
+**The crowding problem** explains step 4. In 10 dimensions a point can have many neighbours all at roughly the same moderate distance; in 2 dimensions there is not enough room to place them all at that distance. The Student-t tail decays like 1/d² instead of exp(−d²/2), so moderately distant points can be pushed much farther out at almost no cost. This opens clean gaps between groups, and it is also why gap widths carry no reliable meaning.
 
 ## Worked example: from distances to perplexity
 
@@ -99,13 +99,13 @@ Point i has four neighbours at distances 1, 2, 3 and 10. Compute the Gaussian we
 | 1.5 | 0.801, 0.411, 0.135, 0.000 | 0.59, 0.31, 0.10, 0.00 | 1.30 | 2.47 |
 | 2.0 | 0.883, 0.607, 0.325, 0.000 | 0.49, 0.33, 0.18, 0.00 | 1.48 | 2.79 |
 
-Widening σ spreads the probability more evenly, so the effective number of neighbours rises towards 3 — the far point at distance 10 never counts. With real data and perplexity 30, the search runs over thousands of neighbours, but the logic is identical.
+Widening σ spreads the probability more evenly, so the effective number of neighbours rises towards 3. The far point at distance 10 never counts. With real data and perplexity 30, the search runs over thousands of neighbours, but the logic is identical.
 
 The story's numbers come from a real run: groups with 10-D spreads of 3.1, 16.1 and 3.1 and centre gaps of 40 and 200 became 2-D blobs with spreads 3.2, 3.1 and 3.1 and gaps of 35 and 36 (perplexity 30, one fixed random seed). PCA on the same data kept the gaps at 40 and 200.
 
 ## UMAP in one paragraph
 
-UMAP builds a weighted graph linking each point to its **n_neighbors** nearest neighbours (default 15). Edge weights are exp(−(d − ρᵢ) / σᵢ), where ρᵢ is the distance to i's closest neighbour and σᵢ is tuned per point — the same density-adapting idea as t-SNE's σᵢ. It then lays the graph out in 2-D by stochastic gradient descent on a cross-entropy loss: edges pull their ends together, randomly sampled non-edges push apart. **min_dist** (default 0.1) sets how tightly points may pack. It uses approximate nearest-neighbour search and negative sampling, so it is typically several times faster than t-SNE and scales to millions of points; it starts from a spectral layout of the graph, which is a large part of why it tends to keep more of the global arrangement. Its gaps and blob sizes are still not to be trusted.
+UMAP builds a weighted graph linking each point to its **n_neighbors** nearest neighbours (default 15). Edge weights are exp(−(d − ρᵢ) / σᵢ), where ρᵢ is the distance to i's closest neighbour and σᵢ is tuned per point (the same density-adapting idea as t-SNE's σᵢ). It then lays the graph out in 2-D by stochastic gradient descent on a cross-entropy loss: edges pull their ends together, randomly sampled non-edges push apart. **min_dist** (default 0.1) sets how tightly points may pack. It uses approximate nearest-neighbour search and negative sampling, so it is typically several times faster than t-SNE and scales to millions of points; it starts from a spectral layout of the graph, which is a large part of why it tends to keep more of the global arrangement. Its gaps and blob sizes are still not to be trusted.
 
 ## Implement it in Python
 
@@ -138,7 +138,7 @@ for name, Z in emb.items():
 
 Output: PCA 0.816, t-SNE 0.987, UMAP 0.976. Two linear directions cannot keep the digits' neighbourhoods; both non-linear methods nearly can. Plot `emb["t-SNE"]` coloured by `y` and the ten digits appear as mostly separate islands.
 
-Library notes: scikit-learn's `TSNE` has only `fit_transform` — no `transform` for new points — and has defaulted to `init="pca"` since version 1.2. `umap.UMAP` has both `fit_transform` and `transform`. `trustworthiness` lives in `sklearn.manifold`. For very large data, faster t-SNE implementations (openTSNE, FIt-SNE) exist.
+Library notes: scikit-learn's `TSNE` has only `fit_transform` (no `transform` for new points) and has defaulted to `init="pca"` since version 1.2. `umap.UMAP` has both `fit_transform` and `transform`. `trustworthiness` lives in `sklearn.manifold`. For very large data, faster t-SNE implementations (openTSNE, FIt-SNE) exist.
 
 ## Edge cases and pitfalls
 
@@ -161,4 +161,4 @@ Library notes: scikit-learn's `TSNE` has only `fit_transform` — no `transform`
 
 ## In the interview
 
-Typical prompts: "how would you visualise 512-dimensional embeddings?" or "what can you read from this t-SNE plot?". A strong answer starts with PCA as the baseline, explains that t-SNE and UMAP match neighbour probabilities so only local structure is trustworthy, names perplexity / n_neighbors as the locality knob, and warns against reading cluster sizes, gaps or using the plot as clustering proof. Expect the follow-up "why the Student-t?" — answer with the crowding problem.
+Typical prompts: "how would you visualise 512-dimensional embeddings?" or "what can you read from this t-SNE plot?". A strong answer starts with PCA as the baseline, explains that t-SNE and UMAP match neighbour probabilities so only local structure is trustworthy, names perplexity / n_neighbors as the locality knob, and warns against reading cluster sizes, gaps or using the plot as clustering proof. Expect the follow-up "why the Student-t?" Answer with the crowding problem.

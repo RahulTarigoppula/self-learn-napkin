@@ -4,20 +4,20 @@ track: ds
 tags: [evaluation, model-selection, resampling]
 difficulty: 2
 minutes: 4
-tldr: "Cut the data into k folds, let each fold take one turn as validation, and average the k scores — a steadier estimate than one split, at k times the training cost."
+tldr: "Cut the data into k folds, let each fold take one turn as validation, and average the k scores. You get a steadier estimate than one split, at k times the training cost."
 analogy: "Judging a baker on five batches instead of one. A single batch can be a fluke; the average of five rarely is, and how much the five differ tells you how consistent the baker really is."
 diagram: cross-validation
 story:
   - title: Cut the data into 5 folds
     text: "One train/validation split gives one score, and that score depends on which rows happened to land in validation. k-fold cross-validation fixes that. Shuffle the 1,000 training rows and cut them into k = 5 equal folds of 200."
   - title: "Round 1: fold 1 validates"
-    text: "Train a fresh model on folds 2–5 (800 rows) and score it on fold 1 (200 rows): accuracy 0.82. The model never saw fold 1, so the score is honest — just noisy, because 200 rows is a small sample."
+    text: "Train a fresh model on folds 2–5 (800 rows) and score it on fold 1 (200 rows): accuracy 0.82. The model never saw fold 1, so the score is honest. It is also noisy, because 200 rows is a small sample."
   - title: Every fold takes a turn
     text: "Repeat four more times, rotating which fold sits out: 0.85, 0.80, 0.84, 0.83. Five fresh models, five scores. Every row has now been used for validation exactly once and for training four times."
   - title: Average the five scores
     text: "Report the mean, (0.82 + 0.85 + 0.80 + 0.84 + 0.83) / 5 ≈ 0.83, with its spread: a standard deviation of about 0.02. Pick the model or hyperparameters with the best mean, then retrain that choice once on all the training rows."
   - title: "Stratified: keep the class mix"
-    text: "With imbalanced labels a random cut can leave a fold with too few positives, and its score swings. Stratified k-fold deals out each class separately, so every fold keeps the overall ratio — here 10 % spam, 20 of each fold's 200 rows."
+    text: "With imbalanced labels a random cut can leave a fold with too few positives, and its score swings. Stratified k-fold deals out each class separately, so every fold keeps the overall ratio: here 10 % spam, which is 20 of each fold's 200 rows."
   - title: "Time series: never train on the future"
     text: "Shuffling time-ordered data lets a model train on March and validate on January. Use forward chaining instead: train on blocks 1…t, validate on block t + 1, then grow the window and repeat. The model only ever predicts the future from the past."
 keyIdeas:
@@ -25,7 +25,7 @@ keyIdeas:
   - "Cross-validation is for **choosing** models and hyperparameters; a separate test set is still opened once at the end."
   - "Fit all preprocessing **inside** each fold (a pipeline), or the validation fold leaks into training."
   - "**Stratified** folds for imbalanced classes, **group** folds when one user has many rows, **forward chaining** for time series."
-  - "Report the **mean and the spread** — one split can be lucky."
+  - "Report the **mean and the spread**, because one split can be lucky."
 quiz:
   - q: "5-fold cross-validation on 1,000 rows: how many models are trained, and on how many rows each?"
     options: ["1 model on 1,000 rows", "5 models on 800 rows each", "5 models on 200 rows each", "4 models on 750 rows each"]
@@ -36,7 +36,7 @@ quiz:
     answer: 1
     why: "A's own folds range from 0.80 to 0.85, so one split can easily land at 0.85 by luck. Compare models on the same folds so the noise from the split affects both equally."
   - q: "You tried 100 configurations with 5-fold CV. Is the winner's mean CV score a fair estimate of its real performance?"
-    options: ["Yes, CV removes all bias", "No — choosing the best of 100 makes that score optimistic", "No — CV scores are always pessimistic", "Yes, as long as k = 10"]
+    options: ["Yes, CV removes all bias", "No: choosing the best of 100 makes that score optimistic", "No: CV scores are always pessimistic", "Yes, as long as k = 10"]
     answer: 1
     why: "The winner was selected partly for being lucky on these folds. Confirm it on an untouched test set, or use nested CV, where an outer loop scores the whole tuning procedure."
   - q: "You predict churn and each customer contributes 50 monthly rows. Which splitter fits best?"
@@ -53,12 +53,12 @@ prereqs: [ds/train-val-test]
 flashcards:
   - kind: qa
     q: "Why use k-fold cross-validation instead of a single validation split?"
-    a: "A single split's score depends on which rows landed in validation. k-fold validates on every row once and averages k scores, giving a steadier estimate plus its spread — at k times the cost."
+    a: "A single split's score depends on which rows landed in validation. k-fold validates on every row once and averages k scores, giving a steadier estimate plus its spread. The price is k times the cost."
   - kind: cloze
     text: "For imbalanced classes use {{stratified}} k-fold; for time-ordered data use {{forward-chaining}} (expanding-window) splits."
   - kind: qa
     q: "You standardise all features, then run 5-fold CV. What is wrong?"
-    a: "The scaler saw every validation fold before it was held out — leakage. Put preprocessing in a pipeline so it is refit on the training folds inside each round."
+    a: "The scaler saw every validation fold before it was held out, which is leakage. Put preprocessing in a pipeline so it is refit on the training folds inside each round."
 sources:
   - { name: "Stanford CS229 VIP cheatsheets (Amidi)", url: "https://github.com/afshinea/stanford-cs-229-machine-learning", licence: "MIT", note: "Machine-learning tips and tricks: cross-validation" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -66,7 +66,7 @@ sources:
 
 ## The problem with one validation split
 
-A validation score is a measurement, and measurements on small samples are noisy. With 200 validation rows and a true accuracy of 83 %, the standard error is √(0.83 × 0.17 / 200) ≈ 0.027 — so one split can easily read anywhere from about 0.78 to 0.88. If you choose between two models that differ by one point, a single split is mostly telling you which rows happened to fall where.
+A validation score is a measurement, and measurements on small samples are noisy. With 200 validation rows and a true accuracy of 83 %, the standard error is √(0.83 × 0.17 / 200) ≈ 0.027, so one split can easily read anywhere from about 0.78 to 0.88. If you choose between two models that differ by one point, a single split is mostly telling you which rows happened to fall where.
 
 **Cross-validation** (CV) gets more out of the same data by reusing it. Every row is used for validation once and for training k − 1 times, and you get k scores instead of one.
 
@@ -75,7 +75,7 @@ A validation score is a measurement, and measurements on small samples are noisy
 1. **Shuffle** the training data (skip this for time series) and cut it into **k folds** of equal size. A **fold** is just one of the k slices.
 2. **For each fold i = 1 … k:** train a *fresh* model on the other k − 1 folds, then score it on fold i.
 3. **Summarise** the k scores by their **mean** (the estimate) and **standard deviation** (how much the estimate depends on the split).
-4. **Use the mean to choose** between models or hyperparameter settings — every candidate evaluated on the same folds.
+4. **Use the mean to choose** between models or hyperparameter settings, evaluating every candidate on the same folds.
 5. **Retrain** the winning configuration on all the training data. The k fold models were only measuring instruments; you usually throw them away.
 
 The data you cross-validate on is everything *except* a final test set, which stays sealed exactly as in a plain train/validation/test split.
@@ -144,8 +144,8 @@ Stratification gives 20 or 21 positives per fold here because this synthetic set
 - **Groups:** if one patient or customer has many rows, use **group k-fold**: assign whole groups to folds so all their rows land in the same fold.
 - **Selection bias:** the best of many CV means is optimistic. Use a held-out test set or **nested CV** (an inner CV loop tunes, an outer loop scores the tuned result).
 - **Cost:** k × the training time. For deep networks that take days to train, a single validation split is often the practical choice.
-- **The spread is not a confidence interval for the final model** — folds overlap in their training data, so the k scores are not independent. Treat ± as a rough guide.
+- **The spread is not a confidence interval for the final model.** Folds overlap in their training data, so the k scores are not independent. Treat ± as a rough guide.
 
 ## In the interview
 
-Typical prompts: "how would you pick the regularisation strength?" or "your dataset has only 2,000 rows — how do you evaluate?". Describe k-fold with a pipeline inside, mention stratified, group and time-series variants, and say the final test set stays untouched. Expect the follow-up *what do you deploy after CV?* — one model retrained on all training data with the chosen settings.
+Typical prompts: "how would you pick the regularisation strength?" or "your dataset has only 2,000 rows; how do you evaluate?". Describe k-fold with a pipeline inside, mention stratified, group and time-series variants, and say the final test set stays untouched. Expect the follow-up *what do you deploy after CV?* One model, retrained on all the training data with the chosen settings.

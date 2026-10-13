@@ -9,7 +9,7 @@ analogy: "A diary of meetings. Laid out in start-time order, you only ever need 
 diagram: intervals
 story:
   - title: Intervals sorted by start
-    text: "Four meetings: [1,3], [2,6], [8,10], [15,18], drawn as bars on a timeline and sorted by start time. Sorting first costs O(n log n) and is the key move: after it, anything that overlaps the current bar must come right after it in the list."
+    text: "Four meetings: [1,3], [2,6], [8,10], [15,18], drawn as bars on a timeline and sorted by start time. Sorting first costs O(n log n) and does most of the work: after it, anything that overlaps the current bar must come right after it in the list."
   - title: The overlap test
     text: "Two intervals overlap exactly when each one starts before the other ends: a.start < b.end and b.start < a.end. For [1,3] and [2,6]: 1 < 6 and 2 < 3, so they share the stretch from 2 to 3. If either test fails, one interval is completely before the other."
   - title: Merge while they overlap
@@ -64,7 +64,7 @@ sources:
 
 ## How it works
 
-An **interval** is a pair `[start, end]` describing a stretch of time, positions on a line, or any other one-dimensional range. Interval questions — merge overlapping ranges, insert a new one, find the rooms a set of meetings needs — look different but share one recipe: **sort by start, then sweep left to right**.
+An **interval** is a pair `[start, end]` describing a stretch of time, positions on a line, or any other one-dimensional range. Interval questions (merge overlapping ranges, insert a new one, find the rooms a set of meetings needs) look different but share one recipe: **sort by start, then sweep left to right**.
 
 ### The overlap test
 
@@ -74,7 +74,7 @@ Two intervals `a` and `b` are **disjoint** exactly when one finishes before the 
 overlap(a, b)  ⇔  a.start < b.end  and  b.start < a.end
 ```
 
-Every case — partial overlap on either side, one inside the other, identical intervals — passes this test, and no disjoint pair does. No case analysis needed.
+Partial overlap on either side, one inside the other, identical intervals: every case passes this test, and no disjoint pair does. No case analysis needed.
 
 **Closed or half-open?** With **half-open** intervals `[start, end)`, the usual model for meetings, `[1,3)` and `[3,5)` do *not* overlap: one meeting ends as the next begins. With **closed** intervals `[1,3]` and `[3,5]` share the point 3, so use `<=`. Problems like "merge intervals" usually merge touching intervals; meeting-room problems usually do not count them as a clash. Ask, then be consistent.
 
@@ -95,7 +95,7 @@ If the list is already **sorted and disjoint**, inserting `[s, e]` needs no sort
 
 The fewest rooms that can host all meetings equals the **maximum number of meetings in progress at any instant**. Fewer rooms cannot work at that instant, and that many is always enough because a free room can be reused. Two ways to compute it:
 
-- **Sweep line:** make events `(start, +1)` and `(end, −1)`, sort them, and keep a running total. The peak is the answer (this is a prefix sum over the ±1 events). On ties, process ends before starts so back-to-back meetings share a room — sorting tuples does this for free because `−1 < +1`.
+- **Sweep line:** make events `(start, +1)` and `(end, −1)`, sort them, and keep a running total. The peak is the answer (this is a prefix sum over the ±1 events). On ties, process ends before starts so back-to-back meetings share a room. Sorting tuples does this for free because `−1 < +1`.
 - **Min-heap of end times:** sort meetings by start. Keep a min-heap holding the end time of every room in use. For each meeting, if the earliest end `≤` its start, that room is free: replace its end time. Otherwise push a new room. The heap's size at the end is the answer.
 
 ## Worked example
@@ -106,7 +106,7 @@ Input (unsorted): `[[8,10], [1,3], [15,18], [2,6]]`. Sorted by start: `[1,3], [2
 
 | Interval | Last block | Overlaps? | Blocks after |
 |---|---|---|---|
-| [1,3] | — | — | [1,3] |
+| [1,3] | (none) | n/a | [1,3] |
 | [2,6] | [1,3] | 2 ≤ 3 yes | [1,6] |
 | [8,10] | [1,6] | 8 > 6 no | [1,6], [8,10] |
 | [15,18] | [8,10] | 15 > 10 no | [1,6], [8,10], [15,18] |
@@ -117,7 +117,7 @@ Input (unsorted): `[[8,10], [1,3], [15,18], [2,6]]`. Sorted by start: `[1,3], [2
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+All three operations, with asserts that replay the worked example.
 
 ```python
 import heapq

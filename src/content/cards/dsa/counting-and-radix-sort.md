@@ -64,7 +64,7 @@ sources:
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 ---
 
-## Why sort without comparing?
+## Sorting without comparing
 
 Every comparison sort needs Ω(n log n) comparisons in the worst case (see the sorting overview). But if keys are **small non-negative integers**, there is a shortcut: use the key itself as an **array index**. An index lookup tells you where a value belongs without comparing it to anything else.
 
@@ -118,7 +118,7 @@ In the last pass 512 and 523 tie on the hundreds digit 5; they stay in the order
 
 ## Implement it in Python
 
-The same idea works in any language; here are both sorts in Python.
+Radix sort below is just a loop that calls counting sort once per digit, with a `key` function that pulls out that digit.
 
 ```python
 def counting_sort(a, k, key=lambda x: x):

@@ -105,7 +105,7 @@ In the union(4,1) step, attaching 0 under 4 instead would have pushed four eleme
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+The whole thing is about 20 lines. The prints replay the table above, step by step.
 
 ```python
 class DSU:

@@ -65,7 +65,7 @@ export default function RingGriddle() {
   return (
     <Shell
       title="Drag a new server around the ring"
-      hint="Add server D, then drag it. Only the keys in the arc just before D change owner — everything else stays put. Try more virtual nodes to even out the shares."
+      hint="Add server D, then drag it. Only the keys in the arc just before D change owner. Everything else stays put. Try more virtual nodes to even out the shares."
     >
       <div class="gd__stage paper ring">
         <svg

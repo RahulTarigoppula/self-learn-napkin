@@ -5,7 +5,7 @@ tags: [evaluation, classification, metrics, imbalance]
 difficulty: 2
 minutes: 5
 tldr: "Precision asks how many flagged items were right; recall asks how many right items were flagged. The threshold trades one for the other; ROC and PR curves show every trade at once."
-analogy: "A fishing net. Recall is the share of the fish in the lake you caught; precision is the share of your catch that is fish rather than old boots. A wider net catches more fish — and more boots."
+analogy: "A fishing net. Recall is the share of the fish in the lake you caught; precision is the share of your catch that is fish rather than old boots. A wider net catches more fish, and more boots too."
 diagram: precision-recall-roc
 griddle: threshold
 story:
@@ -18,13 +18,13 @@ story:
   - title: "Slide the threshold: the PR curve"
     text: "Move the threshold and both numbers move. At 0.8 we flag only 7 emails: precision 6 / 7 = 0.86, recall 0.60. At 0.2 we flag 25: recall 1.00, precision 10 / 25 = 0.40. Plot precision against recall for every threshold and you get the precision–recall (PR) curve."
   - title: The ROC curve and its area
-    text: "The ROC curve plots recall (TPR) against the false-positive rate, FPR = FP / (FP + TN): the share of good mail wrongly flagged — 1/90, 4/90 and 15/90 at our thresholds. The diagonal is random guessing. The area under it, AUC ≈ 0.97, is the chance a random spam email outscores a random good one."
+    text: "The ROC curve plots recall (TPR) against the false-positive rate, FPR = FP / (FP + TN): the share of good mail wrongly flagged (1/90, 4/90 and 15/90 at our thresholds). The diagonal is random guessing. The area under it, AUC ≈ 0.97, is the chance a random spam email outscores a random good one."
   - title: "Rare positives: trust the PR curve"
     text: "Run the same model where only 1 % of mail is spam: 100 among 10,000. TPR and FPR do not change, so the ROC curve looks just as good. But at threshold 0.5 an FPR of 4.4 % now means 440 false alarms against 80 catches: precision 80 / 520 = 0.15. The PR curve shows the collapse; ROC hides it."
 keyIdeas:
   - "**Precision** = TP / (TP + FP): how far you can trust a positive prediction."
   - "**Recall** (TPR) = TP / (TP + FN): how many real positives you catch."
-  - "The **threshold** trades one for the other — choose it from the cost of each kind of mistake."
+  - "The **threshold** trades one for the other. Choose it from the cost of each kind of mistake."
   - "**ROC AUC** is the probability a random positive scores above a random negative: 0.5 is a coin flip, 1.0 a perfect ranking."
   - "With **rare positives**, prefer the PR curve or average precision; ROC ignores how many negatives a given FPR represents."
   - "**F1** = 2PR / (P + R) when you need a single number that punishes a weak precision or recall."
@@ -50,7 +50,7 @@ prereqs: [ds/logistic-regression]
 flashcards:
   - kind: qa
     q: "When would you optimise for recall over precision? Give an example."
-    a: "When a missed positive is far costlier than a false alarm — cancer screening or fraud detection — accept more false positives to catch nearly every real case."
+    a: "When a missed positive is far costlier than a false alarm (cancer screening, fraud detection). You accept more false positives to catch nearly every real case."
   - kind: cloze
     text: "Precision = TP / ({{TP + FP}}); recall = TP / ({{TP + FN}})."
   - kind: qa
@@ -67,8 +67,8 @@ A binary classifier outputs a **score** (say, a probability of spam). A **thresh
 
 | | Predicted positive (flagged) | Predicted negative |
 |---|---|---|
-| **Actually positive** (spam) | **TP** — true positive | **FN** — false negative (a miss) |
-| **Actually negative** (good mail) | **FP** — false positive (a false alarm) | **TN** — true negative |
+| **Actually positive** (spam) | **TP**: true positive | **FN**: false negative (a miss) |
+| **Actually negative** (good mail) | **FP**: false positive (a false alarm) | **TN**: true negative |
 
 "True/false" says whether the prediction was right; "positive/negative" says what was predicted. Every metric below is a ratio of these four numbers.
 
@@ -105,13 +105,13 @@ The right threshold is a business decision. If a missed fraud costs £500 and a 
 
 The **ROC curve** (receiver operating characteristic, a name from radar engineering) plots TPR against FPR as the threshold sweeps from +∞ (flag nothing: point (0, 0)) to −∞ (flag everything: point (1, 1)). A useless model that scores at random hugs the diagonal; a perfect one goes straight up to (0, 1) and then across.
 
-The **area under the ROC curve (AUC)** has a precise meaning: pick one random positive and one random negative; AUC is the probability the positive gets the higher score (ties count half). Worked example with three spam scores [0.9, 0.8, 0.4] and three good-mail scores [0.7, 0.3, 0.2]: of the 3 × 3 = 9 pairs, 0.9 beats all three, 0.8 beats all three, and 0.4 beats 0.3 and 0.2 — 8 wins out of 9, so AUC = 0.889.
+The **area under the ROC curve (AUC)** has a precise meaning: pick one random positive and one random negative; AUC is the probability the positive gets the higher score (ties count half). Worked example with three spam scores [0.9, 0.8, 0.4] and three good-mail scores [0.7, 0.3, 0.2]: of the 3 × 3 = 9 pairs, 0.9 beats all three, 0.8 beats all three, and 0.4 beats 0.3 and 0.2. That is 8 wins out of 9, so AUC = 0.889.
 
 Because AUC depends only on the **order** of the scores, it is unchanged by any transformation that preserves order and says nothing about whether the probabilities are calibrated.
 
 ## Why PR beats ROC for rare positives
 
-FPR divides by the number of negatives. With 9,900 good emails, an FPR of 4.4 % is 440 false alarms — tiny on the ROC plot, overwhelming next to 80 caught spam emails. Precision compares false alarms with true positives directly, so it collapses (0.67 → 0.15 in the story) while the ROC curve does not move at all. The baseline of a PR curve is the positive rate (0.01 here), not 0.5. **Average precision** (AP), roughly the area under the PR curve, is the usual single-number summary.
+FPR divides by the number of negatives. With 9,900 good emails, an FPR of 4.4 % is 440 false alarms. That looks tiny on the ROC plot and is overwhelming next to 80 caught spam emails. Precision compares false alarms with true positives directly, so it collapses (0.67 → 0.15 in the story) while the ROC curve does not move at all. The baseline of a PR curve is the positive rate (0.01 here), not 0.5. **Average precision** (AP), roughly the area under the PR curve, is the usual single-number summary.
 
 ## Implement it in Python
 
@@ -153,4 +153,4 @@ Output: TP = 2, FP = 1, FN = 1, TN = 2; precision, recall and F1 all 0.667; ROC 
 
 ## In the interview
 
-Expect "your fraud model is 99 % accurate — is it good?" or "precision or recall for cancer screening?". A strong answer draws the confusion matrix, defines both metrics in words, ties the threshold to the cost of each error, and switches from ROC AUC to PR curves when positives are rare. Common follow-up: *how would you pick the threshold?* — maximise expected value using the costs of FP and FN, or fix a required recall and take the highest precision that achieves it, all on validation data.
+Expect "your fraud model is 99 % accurate; is it good?" or "precision or recall for cancer screening?". A strong answer draws the confusion matrix, defines both metrics in words, ties the threshold to the cost of each error, and switches from ROC AUC to PR curves when positives are rare. Common follow-up: *how would you pick the threshold?* Maximise expected value using the costs of FP and FN, or fix a required recall and take the highest precision that achieves it, all on validation data.

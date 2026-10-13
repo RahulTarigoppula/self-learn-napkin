@@ -77,7 +77,7 @@ The client is configured to send its traffic to the proxy (by browser settings, 
 
 ### Reverse proxy
 
-Clients connect to what they believe is the server — `shop.com` resolves to the proxy. The proxy picks a back-end server and forwards the request. The back ends are on a private network and never exposed directly. A reverse proxy is useful even with a single back end because of what it can do on the way through:
+Clients connect to what they believe is the server, because `shop.com` resolves to the proxy. The proxy picks a back-end server and forwards the request. The back ends are on a private network and never exposed directly. A reverse proxy is useful even with a single back end because of what it can do on the way through:
 
 | Job | What it means | Why at the proxy |
 |---|---|---|
@@ -96,7 +96,7 @@ Because the back end now sees the proxy as its client, the proxy adds headers su
 
 An **API gateway** is a layer-7 reverse proxy specialised for APIs, usually in front of microservices. On top of the reverse-proxy jobs it typically handles:
 
-- **Authentication:** verify an API key or a signed token such as a JWT (check signature and expiry — no database call), then pass the user id to services in a header.
+- **Authentication:** verify an API key or a signed token such as a JWT (check signature and expiry, with no database call), then pass the user id to services in a header.
 - **Rate limiting and quotas:** e.g. 100 requests per minute per API key, answering `429 Too Many Requests` with a `Retry-After` header beyond it.
 - **Routing and versioning:** `/v1/orders` to the old service, `/v2/orders` to the new one; canary 5 % of traffic to a new build.
 - **Aggregation (composition):** one client call, many internal calls in parallel, one combined response.
@@ -113,7 +113,7 @@ A phone calls `GET /v2/home` with `Authorization: Bearer <JWT>`; mobile RTT is 8
 
 1. A layer-4 load balancer picks gateway instance 2 of 3.
 2. The gateway terminates TLS and verifies the JWT signature and expiry: user 42.
-3. Rate limiter: user 42 has used 37 of 100 requests this minute — allowed.
+3. Rate limiter: user 42 has used 37 of 100 requests this minute, so the request is allowed.
 4. Route `/v2/home` to the home aggregator, which calls users (20 ms), orders (35 ms) and recommendations (50 ms) **in parallel**: ~50 ms total.
 5. The combined 120 KB JSON is gzipped to ~20 KB and returned, with the trace id logged.
 
@@ -150,7 +150,7 @@ Dedicated gateways (Kong, Envoy-based gateways, cloud API gateways) add token va
 
 ## Edge cases and pitfalls
 
-- **Single point of failure.** Run at least two instances in different availability zones behind a load balancer, DNS or anycast. Keep instances **stateless** — rate-limit counters live in a shared store such as Redis — so any one can die.
+- **Single point of failure.** Run at least two instances in different availability zones behind a load balancer, DNS or anycast. Keep instances **stateless**, with rate-limit counters in a shared store such as Redis, so any one can die.
 - **A bad config is a global outage.** One wrong route rule breaks every service at once. Validate configs and roll them out gradually.
 - **Business logic creep.** A gateway that knows about discounts and order rules becomes a monolith that every team must change. Keep it to cross-cutting concerns.
 - **Forged headers.** Clients can send their own `X-Forwarded-For`. Services must trust it only from known proxies, and the gateway should overwrite identity headers such as `X-User-Id`.

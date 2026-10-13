@@ -9,23 +9,23 @@ analogy: "DNS is directory enquiries that remembers every number it has looked u
 diagram: dns-and-cdns
 story:
   - title: Who knows img.shop.com?
-    text: "Your browser needs the IP address for img.shop.com. It does not search the internet itself; it asks a recursive resolver — usually run by your ISP or a public service like 1.1.1.1 — which does the legwork and remembers the answers."
+    text: "Your browser needs the IP address for img.shop.com. It does not search the internet itself; it asks a recursive resolver (usually run by your ISP, or a public service like 1.1.1.1), which does the legwork and remembers the answers."
   - title: Walk down the hierarchy
     text: "With an empty cache the resolver starts at a root server, which does not know the answer but says 'ask the .com servers'. The .com TLD server says 'ask ns1.shop.com'. Each step is a referral one level down the name, read right to left."
   - title: The authoritative answer, cached for its TTL
     text: "The authoritative server for shop.com finally answers: 203.0.113.7, valid for 300 seconds. The resolver caches it for that TTL and returns it, so the next user asking within five minutes gets an instant answer and nobody bothers the root or .com servers."
   - title: That IP is a nearby CDN edge
-    text: "For a site behind a CDN, the name is usually aliased (a CNAME) to the CDN, whose DNS hands back the IP of an edge server close to you rather than the origin. You request /logo.png from 10 ms away. If the edge already has it — a cache hit — it answers immediately, and the origin never sees the request."
+    text: "For a site behind a CDN, the name is usually aliased (a CNAME) to the CDN, whose DNS hands back the IP of an edge server close to you rather than the origin. You request /logo.png from 10 ms away. If the edge already has it, that's a cache hit: it answers immediately, and the origin never sees the request."
   - title: A miss goes to the origin once
-    text: "If the edge does not have the file — a miss — it fetches it from the origin, perhaps 150 ms away, returns it to you and keeps a copy for as long as the Cache-Control max-age allows. Every later user near that edge gets a hit."
+    text: "On a miss, when the edge does not have the file, it fetches it from the origin, perhaps 150 ms away, returns it to you and keeps a copy for as long as the Cache-Control max-age allows. Every later user near that edge gets a hit."
   - title: "Changing a file: purge or rename"
-    text: "The hard part is updates. Edges keep serving the old logo until its max-age expires. Either purge it from every edge through the CDN's API, or — better — publish the new file under a new name like logo.v2.png so old and new can never be confused."
+    text: "The hard part is updates. Edges keep serving the old logo until its max-age expires. You can purge it from every edge through the CDN's API. Better still, publish the new file under a new name like logo.v2.png so old and new can never be confused."
 keyIdeas:
   - "**Resolution is a chain of referrals:** recursive resolver → root → TLD → authoritative. Caching means most lookups stop at the resolver."
   - "**TTL is a trade-off:** short TTLs make changes and failover fast but cost more lookups; long TTLs are cheap but slow to change."
   - "**A CDN cuts round-trip time and origin load**: hits are served from an edge near the user; only misses reach the origin."
   - "**Pull CDN** fetches on first miss; **push CDN** is loaded by you in advance. Pull is the common default."
-  - "**Cache key = what makes two requests 'the same'** (usually host + path + query). Put too much in it and the cache fragments; leave out something that changes the response and users get the wrong — or another user's — page."
+  - "**Cache key = what makes two requests 'the same'** (usually host + path + query). Put too much in it and the cache fragments; leave out something that changes the response and users get the wrong page, or even another user's."
   - "**Best invalidation is no invalidation:** fingerprinted file names with long max-age; purge only for mistakes."
 quiz:
   - q: "A resolver with an empty cache looks up img.shop.com. Which server does it ask second?"
@@ -37,7 +37,7 @@ quiz:
     answer: 1
     why: "Resolvers may keep the old answer for up to the TTL they received. Lower it at least one old-TTL in advance so that at switch time caches hold the record for only a minute."
   - q: "Edge hit ratio goes from 95 % to 99 % at 10,000 requests/s. How does origin traffic change?"
-    options: ["Drops by 4 %", "Halves", "Drops from 500 to 100 requests/s — five times less", "Does not change"]
+    options: ["Drops by 4 %", "Halves", "Drops five-fold, from 500 to 100 requests/s", "Does not change"]
     answer: 2
     why: "The origin sees only misses: 5 % of 10,000 = 500/s versus 1 % = 100/s. Small gains in hit ratio are large cuts in origin load."
   - q: "Why do teams name static files like app.3f9a1c.js?"
@@ -61,7 +61,7 @@ flashcards:
     text: "A {{pull}} CDN fetches from the origin on the first miss; a {{push}} CDN is uploaded to in advance."
   - kind: qa
     q: "What goes wrong if a CDN's cache key ignores the session cookie on a personalised page?"
-    a: "The first user's page is cached and served to everyone who requests that URL — a data leak. Personalised responses must be marked private or no-store."
+    a: "The first user's page is cached and served to everyone who requests that URL. That's a data leak. Personalised responses must be marked private or no-store."
   - kind: cloze
     text: "With a hit ratio of 99 %, only {{1 %}} of requests reach the {{origin}}."
 sources:
@@ -75,10 +75,10 @@ The **Domain Name System** is a distributed, cached database that maps names to 
 
 1. **Stub resolver.** Your OS has a tiny client that checks the local cache and the hosts file, then sends the question (usually over UDP port 53, or encrypted with DNS over HTTPS/TLS) to a configured **recursive resolver**.
 2. **Recursive resolver.** It answers from cache if it can. Otherwise it resolves *iteratively*:
-   - asks a **root server** — there are 13 root server names (a–m), each served by many machines worldwide via anycast. The root replies with a *referral*: the nameservers for `.com`.
+   - asks a **root server**. There are 13 root server names (a–m), each served by many machines worldwide via anycast. The root replies with a *referral*: the nameservers for `.com`.
    - asks a **TLD server** for `.com`, which refers it to the nameservers listed for `shop.com`.
    - asks shop.com's **authoritative nameserver**, which holds the actual records and answers.
-3. The resolver caches each answer — including the referrals — for its **TTL** (time to live, in seconds) and returns the final record to the client.
+3. The resolver caches each answer, referrals included, for its **TTL** (time to live, in seconds) and returns the final record to the client.
 
 Because referrals are cached too (the `.com` nameserver records have a TTL of two days), a busy resolver almost never talks to the root; most lookups are one hop to a warm resolver.
 
@@ -93,13 +93,13 @@ Because referrals are cached too (the `.com` nameserver records have a TTL of tw
 
 ### TTL trade-offs
 
-A **short TTL** (30–300 s) lets you fail over or move traffic quickly, at the cost of more queries and a little more latency for users. A **long TTL** (hours to a day) is cheap and fast but means a change can take that long to reach everyone, because resolvers keep the old answer until it expires. The standard move before a migration: lower the TTL at least one old-TTL in advance, switch, then raise it again. Note also that failed lookups (`NXDOMAIN`) are cached — *negative caching* — so a typo'd record can linger after you fix it.
+A **short TTL** (30–300 s) lets you fail over or move traffic quickly, at the cost of more queries and a little more latency for users. A **long TTL** (hours to a day) is cheap and fast but means a change can take that long to reach everyone, because resolvers keep the old answer until it expires. The standard move before a migration: lower the TTL at least one old-TTL in advance, switch, then raise it again. Note also that failed lookups (`NXDOMAIN`) are cached too. This *negative caching* means a typo'd record can linger after you fix it.
 
 DNS can also do coarse traffic steering. **GeoDNS** answers differently depending on where the resolver is. **Anycast** announces the *same* IP from many locations and lets internet routing (BGP) deliver each packet to the nearest one. CDNs use both.
 
 ## How a CDN works
 
-A **content delivery network** is a fleet of caching reverse proxies, grouped into **points of presence (PoPs)** in many cities. You point a hostname at it — typically `img.shop.com CNAME shop.cdn-provider.net` — and the CDN's DNS or anycast routes each user to a nearby edge.
+A **content delivery network** is a fleet of caching reverse proxies, grouped into **points of presence (PoPs)** in many cities. You point a hostname at it, typically with `img.shop.com CNAME shop.cdn-provider.net`, and the CDN's DNS or anycast routes each user to a nearby edge.
 
 - **Hit:** the edge has a fresh copy and responds directly. The round trip is to a server maybe 10 ms away instead of 150 ms.
 - **Miss:** the edge forwards the request to your **origin**, returns the response, and stores it if the headers allow. Many CDNs add an **origin shield** (a mid-tier cache) so a miss in 200 edges becomes one request to the origin, not 200.
@@ -118,7 +118,7 @@ Even uncacheable requests benefit: the edge terminates TCP and TLS close to the 
 
 ### Cache keys
 
-The **cache key** decides when two requests are the same object. The default is roughly host + path + query string. Add too much (every query parameter, tracking tags such as `utm_source`, cookies) and identical content is stored under thousands of keys — the hit ratio collapses. Leave out something that changes the response (the `Accept-Encoding` that chose gzip vs brotli, the user's session) and the CDN serves the wrong variant, or another user's private page. The `Vary` header tells caches which request headers matter.
+The **cache key** decides when two requests are the same object. The default is roughly host + path + query string. Add too much (every query parameter, tracking tags such as `utm_source`, cookies) and identical content is stored under thousands of keys, and the hit ratio collapses. Leave out something that changes the response (the `Accept-Encoding` that chose gzip vs brotli, the user's session) and the CDN serves the wrong variant, or another user's private page. The `Vary` header tells caches which request headers matter.
 
 ## Worked example
 
@@ -159,4 +159,4 @@ img.shop.com.    300 IN A  203.0.113.7           <- the answer, TTL 300 s
 
 ## In the interview
 
-When a design serves images, video or any static file to a global audience, say "put it behind a CDN" and justify it with numbers: RTT to edge versus origin, and origin load = requests × (1 − hit ratio). Mention TTLs, versioned URLs for invalidation, and what must never be cached (personalised responses). A common follow-up: *"How does the user get routed to the nearest edge?"* — GeoDNS or anycast.
+When a design serves images, video or any static file to a global audience, say "put it behind a CDN" and justify it with numbers: RTT to edge versus origin, and origin load = requests × (1 − hit ratio). Mention TTLs, versioned URLs for invalidation, and what must never be cached (personalised responses). A common follow-up: *"How does the user get routed to the nearest edge?"* Answer: GeoDNS or anycast.

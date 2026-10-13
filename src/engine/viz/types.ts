@@ -88,7 +88,7 @@ export const count = (events: Iterable<TraceEvent>, t: TraceEvent['t']): number 
   return n;
 };
 
-/** Deterministic PRNG (mulberry32) — never Math.random in the engine. */
+/** Deterministic PRNG (mulberry32). The engine never calls Math.random. */
 export function rng(seed: number): () => number {
   let a = seed >>> 0;
   return () => {

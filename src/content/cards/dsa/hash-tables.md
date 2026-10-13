@@ -9,20 +9,20 @@ analogy: "A cloakroom with numbered hooks: a rule turns your name into a hook nu
 diagram: hash-chaining
 story:
   - title: An array of buckets
-    text: "A hash table is an ordinary array — here 8 buckets, numbered 0 to 7. Arrays give O(1) access by index, so all we need is a way to turn any key, like the string \"cat\", into an index."
+    text: "A hash table is an ordinary array, here with 8 buckets numbered 0 to 7. Arrays give O(1) access by index, so all we need is a way to turn any key, like the string \"cat\", into an index."
   - title: Hash, then take the remainder
     text: "A hash function turns the key into a number; say hash(\"cat\") = 35 (real hashes are much bigger). 35 mod 8 = 3 (the remainder of 35 ÷ 8), so cat goes in bucket 3. dog hashes to 14, and 14 mod 8 = 6. Looking a key up repeats the same arithmetic, so we go straight to its bucket."
   - title: Collisions are normal
     text: "emu hashes to 27, and 27 mod 8 is also 3. With more possible keys than buckets, collisions are guaranteed. Separate chaining keeps a small list in each bucket: cat → emu. A lookup for emu goes to bucket 3, then walks the chain comparing keys."
   - title: Load factor
-    text: "After ant, owl and yak, six keys share eight buckets. The load factor is keys ÷ buckets = 0.75, and it — not n — sets the average chain length. Keep it bounded and every operation stays O(1) on average, however many keys you store."
+    text: "After ant, owl and yak, six keys share eight buckets. The load factor is keys ÷ buckets = 0.75, and that ratio (not n) sets the average chain length. Keep it bounded and every operation stays O(1) on average, however many keys you store."
   - title: Double and rehash
     text: "Many tables (Java's HashMap, for example) resize once the load factor would pass 0.75. The next insert doubles the array to 16 buckets and re-hashes every key with mod 16. emu moves to bucket 11 and the chain disappears. That copy is O(n), but it is rare enough to average out to O(1) per insert."
 keyIdeas:
   - "**index = hash(key) mod buckets**: one arithmetic step takes you straight to the only bucket that can hold the key."
-  - "**Collisions are unavoidable** — likely even in a sparse table (23 keys in 365 buckets already collide more than half the time); chaining keeps a list per bucket, open addressing probes for another slot."
+  - "**Collisions are unavoidable**, and likely even in a sparse table (23 keys in 365 buckets already collide more than half the time). Chaining keeps a list per bucket; open addressing probes for another slot."
   - "**Load factor = keys ÷ buckets** sets the average chain length; keep it bounded and lookups stay O(1) on average."
-  - "**Resizing doubles the array and rehashes every key** — O(n) once in a while, amortised O(1) per insert."
+  - "**Resizing doubles the array and rehashes every key.** That costs O(n) once in a while, which is amortised O(1) per insert."
   - "**Worst case is O(n)**: a bad hash or adversarial keys can pile everything into one bucket."
 quiz:
   - q: "A table has 8 buckets. hash(\"fox\") = 43. Which bucket does fox go in?"
@@ -48,7 +48,7 @@ griddle: hash-chaining
 flashcards:
   - kind: qa
     q: "What makes a hash table degrade to O(n) lookups?"
-    a: "Collisions concentrating in one bucket — a poor hash, adversarial keys, or a load factor left too high."
+    a: "Collisions piling up in one bucket, because of a poor hash, adversarial keys, or a load factor left too high."
   - kind: cloze
     text: "Java's HashMap resizes when the load factor exceeds {{0.75}}, then rehashes every key."
   - kind: qa
@@ -70,14 +70,14 @@ To **insert**, compute the index and put the pair in that bucket. To **look up**
 
 ### Collisions
 
-There are far more possible keys than buckets, so two keys will sometimes land in the same bucket — a **collision**. (With just 23 random keys in 365 buckets, the chance of at least one collision is already over 50 % — the birthday paradox.) There are two classic ways to cope:
+There are far more possible keys than buckets, so two keys will sometimes land in the same bucket. That is a **collision**. (With just 23 random keys in 365 buckets, the chance of at least one collision is already over 50 %. This is the birthday paradox.) There are two classic ways to cope:
 
 - **Separate chaining**: each bucket holds a small list. Collisions append to the list; a lookup walks it, comparing keys with `==`.
 - **Open addressing**: everything lives in the array itself. On a collision, probe the next slot (`index + 1`, `+ 2`, …, called linear probing) until a free one is found. Lookups follow the same probe sequence. Python's `dict` uses a variant of this.
 
 ### Load factor and resizing
 
-The **load factor** α = (number of keys) ÷ (number of buckets). With a good hash, the average chain length is α, so a lookup costs about 1 + α steps. If α stays below a fixed limit, that is O(1) — independent of how many keys you have.
+The **load factor** α = (number of keys) ÷ (number of buckets). With a good hash, the average chain length is α, so a lookup costs about 1 + α steps. If α stays below a fixed limit, that is O(1), however many keys you have.
 
 So tables **resize**: when an insert would push α past the limit (0.75 in Java's `HashMap`), allocate an array twice as big and **rehash** every key into it. That single resize is O(n), but because the capacity doubles each time, resizes get rarer as the table grows, and the total copying for n inserts is under 2n moves: **amortised O(1)** per insert, the same argument as a dynamic array.
 
@@ -95,13 +95,13 @@ Eight buckets, made-up small hash values so the arithmetic is easy to check:
 | yak | 21 | 5 | 5 |
 
 1. cat → bucket 3; dog → bucket 6.
-2. emu also → bucket 3. Chaining appends it: bucket 3 holds `cat → emu`. Looking up emu: compute 27 mod 8 = 3, compare with cat (no), compare with emu (yes) — two comparisons.
+2. emu also → bucket 3. Chaining appends it: bucket 3 holds `cat → emu`. Looking up emu: compute 27 mod 8 = 3, compare with cat (no), compare with emu (yes). Two comparisons.
 3. After ant, owl and yak, 6 keys share 8 buckets: α = 0.75.
 4. The seventh insert would take α above 0.75, so the table doubles to 16 buckets and recomputes every index with mod 16. emu moves to 11, cat stays at 3, and the collision is gone.
 
 ## Implement it in Python
 
-The same idea works in any language; here is a chained table in Python (`%` is Python's mod, and the built-in `hash()` supplies the hash).
+Here is a chained table. `%` is Python's mod, and the built-in `hash()` supplies the hash.
 
 ```python
 class ChainedMap:
@@ -148,7 +148,7 @@ print(m.get("emu"), len(m.buckets))             # 3 16
 - **Hash and equality must agree.** If `a == b` then `hash(a)` must equal `hash(b)`, or a lookup will search the wrong bucket. When you override equality on your own class, override the hash too.
 - **Never mutate a key** after inserting it. Its hash changes, so it now sits in the "wrong" bucket and can never be found. That is why Python, for example, refuses lists as dict keys.
 - **Adversarial keys.** An attacker who knows your hash function can send thousands of keys that all collide, turning every request into O(n) work (hash flooding). Defences: randomised hash seeds (Python and many others do this for strings) or tree-shaped buckets (Java 8+ turns a long chain into a balanced tree).
-- **Deleting with open addressing** cannot just empty a slot — that would break other keys' probe sequences. Implementations leave a "tombstone" marker instead.
+- **Deleting with open addressing** cannot just empty a slot, because that would break other keys' probe sequences. Implementations leave a "tombstone" marker instead.
 - **Iteration order** is not something to rely on in general (Python's `dict` happens to keep insertion order since 3.7, but a generic hash table does not).
 
 ## Trade-offs
@@ -163,4 +163,4 @@ Hash tables also use extra memory for empty buckets and chain pointers, and thei
 
 ## In the interview
 
-Hash maps are the most common tool in coding interviews: "have I seen this before?" (duplicates, two-sum on unsorted data), counting frequencies, and grouping (anagrams by sorted letters). Say "O(1) average, O(n) worst" rather than just "O(1)". If asked to design one, cover the hash function, collision strategy, load factor and resizing — and mention that resizing is amortised.
+Hash maps are the most common tool in coding interviews: "have I seen this before?" (duplicates, two-sum on unsorted data), counting frequencies, and grouping (anagrams by sorted letters). Say "O(1) average, O(n) worst" rather than just "O(1)". If asked to design one, cover the hash function, collision strategy, load factor and resizing, and mention that resizing is amortised.

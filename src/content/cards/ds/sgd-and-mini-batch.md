@@ -34,7 +34,7 @@ quiz:
   - q: "You raise the batch size from 64 to 256 and keep everything else fixed. Roughly what happens to the noise (standard deviation) of each gradient estimate?"
     options: ["It falls to a quarter", "It halves", "It stays the same", "It doubles"]
     answer: 1
-    why: "The standard deviation of an average of B independent samples scales like 1/√B. 4× the batch gives 1/√4 = 1/2 the noise — at 4× the compute per step."
+    why: "The standard deviation of an average of B independent samples scales like 1/√B. 4× the batch gives 1/√4 = 1/2 the noise, at 4× the compute per step."
   - q: "Why use learning-rate warmup?"
     options: ["To make the final model smaller", "Early gradients from random weights are large and unreliable, and a full-size step can blow training up", "Warmup replaces the need for decay", "It makes the batch size larger"]
     answer: 1
@@ -68,7 +68,7 @@ sources:
 
 ## Why not use all the data every step?
 
-Training minimises an **average loss** over N examples, L(w) = (1/N) Σᵢ ℓᵢ(w), so its gradient is also an average: ∇L = (1/N) Σᵢ ∇ℓᵢ. Computing it exactly (**batch gradient descent**) touches every example for a single update. With 10 million images that is one step per hour — and the first steps, taken from random weights, do not need that precision.
+Training minimises an **average loss** over N examples, L(w) = (1/N) Σᵢ ℓᵢ(w), so its gradient is also an average: ∇L = (1/N) Σᵢ ∇ℓᵢ. Computing it exactly (**batch gradient descent**) touches every example for a single update. With 10 million images that is one step per hour. Worse, the first steps are taken from random weights and do not need that precision anyway.
 
 The fix is statistical. Pick a random subset of B rows, a **mini-batch**, and average just their gradients. That estimate is **unbiased** (right on average) and its standard deviation shrinks like σ/√B, where σ measures how much individual-example gradients disagree. So:
 
@@ -118,15 +118,15 @@ The price: with a constant η the weights keep jittering in a "noise ball" aroun
 ## Learning-rate schedules
 
 - **Step decay:** multiply η by 0.1 at fixed epochs (e.g. 30, 60, 90).
-- **Cosine decay:** ηₜ = η_min + ½(η_max − η_min)(1 + cos(π t / T)) — smooth from η_max at step 0 to η_min at step T.
+- **Cosine decay:** ηₜ = η_min + ½(η_max − η_min)(1 + cos(π t / T)), which slides smoothly from η_max at step 0 to η_min at step T.
 - **Warmup:** ramp η linearly from near 0 to η_max over the first few hundred to few thousand steps (often 1–10 % of training). Random initial weights give large, unreliable gradients, and Adam's running averages are poorly estimated after a handful of steps; a full-size η then can blow training up. Warmup matters most with large batches and transformers.
-- **Batch size and η go together.** The **linear scaling rule** — multiply η by k when you multiply B by k — works well up to a point, usually combined with warmup. Beyond some batch size, extra rows stop buying faster training.
+- **Batch size and η go together.** The **linear scaling rule** (multiply η by k when you multiply B by k) works well up to a point, usually combined with warmup. Beyond some batch size, extra rows stop buying faster training.
 
 ## Momentum and Adam
 
 **Momentum.** Keep a velocity v ← βv + g and step w ← w − ηv, with β ≈ 0.9. If the gradient is constant, v grows 1, 1.9, 2.71, 3.44, … towards g / (1 − β) = 10g: a 10× speed-up on a steady slope. If a component flips sign every step (zig-zagging across a valley), it largely cancels. Momentum also averages away part of the mini-batch noise.
 
-**Adam** keeps two running averages per weight: m of the gradient (β₁ = 0.9) and v of the squared gradient (β₂ = 0.999). Because both start at 0, it divides them by (1 − βᵗ) — **bias correction** — and steps w ← w − η · m̂ / (√v̂ + ε). Dividing by √v̂ gives each weight its own step size: a weight whose gradients are consistently large and one whose gradients are consistently tiny both move by roughly η per step, while a weight whose gradients keep flipping sign (small m̂ relative to √v̂) moves less. On the very first step m̂ = g and v̂ = g², so every weight moves by about η regardless of the gradient's scale. **AdamW** applies weight decay directly to the weights instead of through the gradient, and is the default for transformers.
+**Adam** keeps two running averages per weight: m of the gradient (β₁ = 0.9) and v of the squared gradient (β₂ = 0.999). Because both start at 0, it divides them by (1 − βᵗ), which is called **bias correction**, and steps w ← w − η · m̂ / (√v̂ + ε). Dividing by √v̂ gives each weight its own step size: a weight whose gradients are consistently large and one whose gradients are consistently tiny both move by roughly η per step, while a weight whose gradients keep flipping sign (small m̂ relative to √v̂) moves less. On the very first step m̂ = g and v̂ = g², so every weight moves by about η regardless of the gradient's scale. **AdamW** applies weight decay directly to the weights instead of through the gradient, and is the default for transformers.
 
 ## Implement it in Python
 
@@ -167,7 +167,7 @@ for batch in (10_000, 100, 1):
     print(f"batch {batch:>6}: {steps:>6} steps in 5 epochs, final MSE {mse:.4f}")
 ```
 
-Output: full batch gets only 5 steps and stalls at MSE 10.63; B = 100 takes 500 steps and reaches 0.2473; B = 1 takes 50,000 steps and reaches 0.2475. The noise added to y has variance 0.25, so both mini-batch runs are at the floor — with B = 100 doing 100× fewer, well-vectorised updates than B = 1.
+Output: full batch gets only 5 steps and stalls at MSE 10.63; B = 100 takes 500 steps and reaches 0.2473; B = 1 takes 50,000 steps and reaches 0.2475. The noise added to y has variance 0.25, so both mini-batch runs are at the floor. B = 100 gets there with 100× fewer, well-vectorised updates than B = 1.
 
 ## Edge cases and pitfalls
 

@@ -1,4 +1,4 @@
-// npm run icons — render the app icon (our own SVG) to every PNG the web app and the APK need.
+// npm run icons: render the app icon (our own SVG) to every PNG the web app and the APK need.
 // Output is committed: public/icons/* and resources/* (inputs for `npx capacitor-assets generate`).
 import { mkdir, writeFile } from 'node:fs/promises';
 import { chromium } from '@playwright/test';

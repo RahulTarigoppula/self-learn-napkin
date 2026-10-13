@@ -166,7 +166,7 @@ export default function Review() {
         document.dispatchEvent(new CustomEvent('napkin:progress'));
       } catch (e) {
         console.error(e);
-        toast("Couldn't save that rating — tap again to retry.", { danger: true });
+        toast("Couldn't save that rating. Tap again to retry.", { danger: true });
         setBusy(false);
       }
     },
@@ -261,7 +261,7 @@ export default function Review() {
         <p class="muted">
           {scope.topic
             ? 'No cards left for this napkin right now.'
-            : 'Nothing is due. Spaced repetition works best a little every day — come back tomorrow, or learn a few new cards now.'}
+            : 'Nothing is due. Spaced repetition works best a little every day, so come back tomorrow or learn a few new cards now.'}
         </p>
         <div class="rv__row">
           {!scope.topic && (
@@ -391,7 +391,7 @@ export default function Review() {
             class={`rv__btn rv__btn--${n}`}
             disabled={!revealed || busy}
             aria-disabled={!revealed || busy}
-            aria-label={`${LABEL[n]} — ${spokenInterval(pv[n])}`}
+            aria-label={`${LABEL[n]}, ${spokenInterval(pv[n])}`}
             onClick={() => void doRate(n)}
           >
             <span class="rv__btn-label">{LABEL[n]}</span>
@@ -404,7 +404,7 @@ export default function Review() {
       </div>
       <p class="rv__tip muted">
         {revealed
-          ? 'Be honest — the schedule adapts to you. Swipe right for Good, left for Again.'
+          ? 'Be honest. The schedule adapts to you. Swipe right for Good, left for Again.'
           : 'Recall the answer in your head first, then reveal.'}
       </p>
     </div>

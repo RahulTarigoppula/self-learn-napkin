@@ -14,15 +14,15 @@ story:
     text: "A client writes x = 2 to A. Before A can copy it to B, the link between them breaks: a network partition. A now holds x = 2, B still holds x = 1, and neither can tell whether the other is down or only unreachable."
   - title: A reader asks B
     text: "Another client reads x from B. B has no way to check with A. It must decide now, and only two answers are possible. This forced choice is the whole theorem."
-  - title: Choose consistency, refuse
+  - title: "Choose consistency: refuse"
     text: "A CP system has B return an error or time out rather than risk a stale answer. Every successful read is up to date, but the system is unavailable to clients that can only reach B until the partition heals. Coordination stores such as etcd and ZooKeeper choose this."
-  - title: Choose availability, answer stale
+  - title: "Choose availability: answer stale"
     text: "An AP system has B answer x = 1. The client gets a reply, but an old one. When the link heals, the replicas reconcile, for example last-write-wins or merging versions. Shopping carts and social feeds often prefer this."
-  - title: PACELC, the rest of the time
+  - title: "PACELC: the rest of the time"
     text: "Partitions are rare, so CAP alone says little about normal days. PACELC adds: Else, with no partition, you still trade Latency against Consistency, because waiting for a remote replica to confirm every write makes each request slower."
 keyIdeas:
   - "**C** = every read sees the latest write, as if there were one copy. **A** = every request to a live node gets a non-error answer."
-  - "**P is not optional** — networks drop packets — so the real choice is CP or AP *during* a partition."
+  - "**P is not optional**, because networks drop packets. The real choice is CP or AP *during* a partition."
   - "**PACELC**: if Partitioned, A or C; Else, Latency or Consistency."
   - "**AP needs conflict resolution**: last-write-wins (simple, loses updates), version vectors, or CRDTs."
   - "Choose **per feature**, not per company: a like count can be stale, a payment cannot."
@@ -59,7 +59,7 @@ sources:
 The CAP theorem (conjectured by Eric Brewer in 2000, proved by Gilbert and Lynch in 2002) is about a data store **replicated** across machines that talk over a network.
 
 - **Consistency (C)** here means **linearisability**: the system behaves as if there were a single copy of the data. Once a write completes, every later read, from any client and any replica, returns that value or a newer one.
-- **Availability (A)** means every request received by a replica that has not crashed gets a **non-error response** — eventually, and without being told to try elsewhere.
+- **Availability (A)** means every request received by a replica that has not crashed gets a **non-error response** eventually, and is not told to go and try another replica.
 - **Partition tolerance (P)** means the system keeps operating even when the network drops or delays messages between replicas, splitting them into groups that cannot talk to each other (a **partition**).
 
 The theorem: when a partition happens, a system cannot provide both C and A.
@@ -82,11 +82,11 @@ There is no third option: B cannot learn about the write without the network. Th
 | Inventory at checkout, payments | Refuse rather than sell the last item twice | CP |
 | Usernames (must be unique) | Refuse new registrations on the minority side | CP |
 
-One application usually contains both kinds of data. The design question is not "is our company CP or AP?" but "which operations can tolerate stale answers?"
+One application usually contains both kinds of data. So don't ask "is our company CP or AP?" Ask "which operations can tolerate stale answers?"
 
 ## How real systems behave
 
-- **CP:** leader-based stores that need a majority to make progress — etcd, ZooKeeper, Consul — and databases configured for synchronous replication. Replicas cut off from the majority refuse writes (and often reads).
+- **CP:** leader-based stores that need a majority to make progress (etcd, ZooKeeper, Consul), and databases configured for synchronous replication. Replicas cut off from the majority refuse writes (and often reads).
 - **AP:** Dynamo-style stores such as Cassandra and Riak with low consistency levels keep accepting reads and writes on both sides and reconcile later.
 - Many systems are **tunable**: in a quorum store, requiring R + W > N acknowledgements leans towards C; requiring only one replica leans towards A.
 
@@ -118,4 +118,4 @@ on read(key):
 
 ## In the interview
 
-Do not recite "pick two". Say: partitions will happen, so for each piece of data decide whether you would rather **refuse** or **serve stale**, and justify it with the business cost of each failure. Then mention PACELC to show you know the everyday trade-off is latency vs consistency. Expect the follow-up "how does the AP side reconcile?" — last-write-wins, version vectors or CRDTs — and "how does a CP system decide who may write?" — a majority quorum or an elected leader.
+Do not recite "pick two". Say: partitions will happen, so for each piece of data decide whether you would rather **refuse** or **serve stale**, and justify it with the business cost of each failure. Then mention PACELC to show you know the everyday trade-off is latency vs consistency. Expect the follow-ups "how does the AP side reconcile?" (last-write-wins, version vectors or CRDTs) and "how does a CP system decide who may write?" (a majority quorum or an elected leader).

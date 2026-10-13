@@ -90,7 +90,7 @@ describe('edited weights', () => {
   it('a disconnected graph gives a forest', () => {
     const g: MstGraph = { nodes: ['P', 'Q', 'R'], edges: [{ u: 'P', v: 'Q', w: 3 }] };
     const last = kruskalFrames(g).at(-1);
-    expect(last?.caption).toBe('only 1 of 2 edges — the graph is disconnected (a forest)');
+    expect(last?.caption).toBe('only 1 of 2 edges, so the graph is disconnected (a forest)');
     expect(last?.state.total).toBe(3);
   });
 

@@ -41,6 +41,6 @@
       "lastElement": 19
     }
   ],
-  "hash": "08da0240661bedfa95d38f1553aa5edc3daa6483",
+  "hash": "eef4f66bea603e8e05aec0aa36bf77d6d8b8f78a",
   "title": "SVM: many separating lines, the maximum-margin street with its support vectors, an outlier paying hinge loss, the kernel trick lifting 1-D points to (x, x²), and RBF gamma"
 }

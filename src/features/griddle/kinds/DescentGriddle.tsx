@@ -35,7 +35,7 @@ export default function DescentGriddle() {
   const caption =
     k === 0
       ? `start at x = ${x0.toFixed(2)}, loss ${loss.f(x0).toFixed(3)}`
-      : `step ${k}: slope ${g.toFixed(3)} → x = ${x.toFixed(3)}, loss ${loss.f(x).toFixed(3)}${outside ? ' (off the chart — diverging!)' : ''}`;
+      : `step ${k}: slope ${g.toFixed(3)} → x = ${x.toFixed(3)}, loss ${loss.f(x).toFixed(3)}${outside ? ' (off the chart and diverging!)' : ''}`;
 
   return (
     <Shell
@@ -119,7 +119,7 @@ export default function DescentGriddle() {
       </div>
       {diverged || outside ? (
         <p class="gd__verdict gd__verdict--bad">
-          The steps overshoot more each time — the learning rate is too large for this curve.
+          The steps overshoot more each time because the learning rate is too large for this curve.
         </p>
       ) : null}
       <Controls

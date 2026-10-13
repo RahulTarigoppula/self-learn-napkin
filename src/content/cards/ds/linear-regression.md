@@ -10,11 +10,11 @@ diagram: linear-regression
 griddle: linear-fit
 story:
   - title: Five students, hours vs score
-    text: "Five students report hours studied and a test score out of 10: (1, 2), (2, 4), (3, 5), (4, 4), (5, 5). We want a rule ŷ = b + w·x that predicts the score from the hours — a straight line through the cloud."
+    text: "Five students report hours studied and a test score out of 10: (1, 2), (2, 4), (3, 5), (4, 4), (5, 5). We want a rule ŷ = b + w·x that predicts the score from the hours: a straight line through the cloud."
   - title: Residuals from a guess
     text: "Any line makes mistakes. The residual is actual minus predicted, r = y − ŷ. Start with the laziest guess, ŷ = 4 (the mean score) for everyone: residuals −2, 0, 1, 0, 1. Squared and summed, Σr² = 4 + 0 + 1 + 0 + 1 = 6."
   - title: "Least squares: the smallest Σr²"
-    text: "Least squares picks the line with the smallest sum of squared residuals — the total area of the red squares. Here it is ŷ = 2.2 + 0.6x with Σr² = 2.4. No other straight line scores lower. Squaring makes every miss count as positive and big misses count a lot."
+    text: "Least squares picks the line with the smallest sum of squared residuals, which is the total area of the red squares. Here it is ŷ = 2.2 + 0.6x with Σr² = 2.4. No other straight line scores lower. Squaring makes every miss count as positive and big misses count a lot."
   - title: Solve it in one line
     text: "No search is needed. The best slope is Σ(x − x̄)(y − ȳ) / Σ(x − x̄)² = 6 / 10 = 0.6, and the line always passes through the point of means (3, 4), so b = 4 − 0.6 × 3 = 2.2. Read it as: each extra hour adds 0.6 points on average."
   - title: "R²: how much of the spread it explains"
@@ -23,7 +23,7 @@ story:
     text: "Add a sixth student who studied 6 hours and scored 1. Because errors are squared, that single far point pulls hard: the slope flips from +0.6 to −0.09 and R² falls to 0.01. Always plot the data and the residuals before trusting the line."
 keyIdeas:
   - "**Least squares** minimises Σ(y − ŷ)². With features in a matrix X it has a closed form, the **normal equation** `w = (XᵀX)⁻¹Xᵀy`; gradient descent reaches the same answer."
-  - "A **coefficient** is the change in ŷ per unit of that feature, **holding the other features fixed** — an association, not proof of cause."
+  - "A **coefficient** is the change in ŷ per unit of that feature, **holding the other features fixed**. It is an association, not proof of cause."
   - "**R² = 1 − SSE/SST**: the share of variance explained. It never falls when you add features, so judge models on held-out data."
   - "Assumptions: **linearity, independent errors, constant error variance, normal errors**. Breaking them mostly breaks the error bars and p-values, not the fitting."
   - "Squared error makes the fit **sensitive to outliers**, above all to points with extreme x (high leverage)."
@@ -39,7 +39,7 @@ quiz:
   - q: "Plotting residuals against predictions shows a funnel: small spread for small predictions, large spread for large ones. Which assumption is broken?"
     options: ["Linearity", "Homoscedasticity (constant error variance)", "Independence", "No multicollinearity"]
     answer: 1
-    why: "A funnel means the error variance grows with the prediction — heteroscedasticity. The coefficients stay unbiased, but standard errors and p-values are wrong. Use robust standard errors, model log(y) or use weighted least squares."
+    why: "A funnel means the error variance grows with the prediction, which is called heteroscedasticity. The coefficients stay unbiased, but standard errors and p-values are wrong. Use robust standard errors, model log(y) or use weighted least squares."
   - q: "Which single new point changes the fitted slope the most?"
     options: ["A point at the mean x, far above the line", "A point at an extreme x, far from the line", "A point exactly on the line", "A point at the mean x and mean y"]
     answer: 1
@@ -70,7 +70,7 @@ sources:
 
 ŷ = b + w₁x₁ + w₂x₂ + … + wₚxₚ
 
-b is the **intercept** (the prediction when every feature is 0) and each wⱼ is a **coefficient** or weight. With one feature this is a straight line; with two, a flat plane; with more, a hyperplane. "Linear" means linear in the *weights* — you may feed in x², log x or x₁·x₂ as features, and it is still linear regression.
+b is the **intercept** (the prediction when every feature is 0) and each wⱼ is a **coefficient** or weight. With one feature this is a straight line; with two, a flat plane; with more, a hyperplane. "Linear" means linear in the *weights*. You may feed in x², log x or x₁·x₂ as features and it is still linear regression.
 
 ## How it works
 
@@ -132,10 +132,10 @@ Two more conditions: errors must not be correlated with the features (otherwise,
 
 Squaring means one residual of 5 costs as much as 25 residuals of 1, so a single far-off point can dominate. How much it moves the slope depends on its x:
 
-- **High leverage** — an extreme x. The line pivots around (x̄, ȳ), so a far-out x has a long lever arm. Adding (6, 1) to the example turns the slope from 0.6 into −0.086 and R² from 0.6 into 0.01.
-- **Low leverage** — an x near the mean. Adding (3, 10) leaves the slope at exactly 0.6 and only lifts the intercept from 2.2 to 3.2.
+- **High leverage**: an extreme x. The line pivots around (x̄, ȳ), so a far-out x has a long lever arm. Adding (6, 1) to the example turns the slope from 0.6 into −0.086 and R² from 0.6 into 0.01.
+- **Low leverage**: an x near the mean. Adding (3, 10) leaves the slope at exactly 0.6 and only lifts the intercept from 2.2 to 3.2.
 
-Find influential points with residual-vs-leverage plots or **Cook's distance**. Then fix the data error, or use a robust loss such as Huber (see loss functions) that grows linearly for big residuals.
+Find influential points with residual-vs-leverage plots or **Cook's distance**. Then fix the data error, or use an outlier-resistant loss such as Huber (see loss functions) that grows linearly for big residuals.
 
 ## Implement it in Python
 
@@ -175,4 +175,4 @@ print(model.intercept_, model.coef_, 1 - sse / sst)   # 2.2 [0.6] 0.6
 
 ## In the interview
 
-Typical prompts: "derive the least-squares solution", "what are the assumptions of linear regression?", "how do you interpret a coefficient?", "what is R² and can it be negative?". A strong answer writes the loss, the normal equation and the gradient; lists the assumptions together with *what breaks* when each fails (mostly inference, not prediction); and mentions outliers, multicollinearity and regularisation. Expect the follow-up "normal equation or gradient descent?" — the closed form costs O(np² + p³), so with millions of features or streaming data, use gradient descent.
+Typical prompts: "derive the least-squares solution", "what are the assumptions of linear regression?", "how do you interpret a coefficient?", "what is R² and can it be negative?". A strong answer writes the loss, the normal equation and the gradient; lists the assumptions together with *what breaks* when each fails (mostly inference, not prediction); and mentions outliers, multicollinearity and regularisation. Expect the follow-up "normal equation or gradient descent?" The closed form costs O(np² + p³), so with millions of features or streaming data, use gradient descent.

@@ -5,7 +5,7 @@ tags: [statistics, probability, estimation]
 difficulty: 2
 minutes: 5
 tldr: "Pick the parameter values under which the data you actually saw would have been most probable. 7 heads in 10 flips → p̂ = 0.7. Minimising most ML losses is doing exactly this."
-analogy: "A detective with several suspects asks, for each one, how likely the clues would be if that suspect did it — and names the suspect who makes the clues least surprising."
+analogy: "A detective with several suspects asks, for each one, how likely the clues would be if that suspect did it. Then they name the suspect who makes the clues least surprising."
 diagram: maximum-likelihood
 story:
   - title: "The data: 7 heads in 10 flips"
@@ -13,7 +13,7 @@ story:
   - title: "Score one guess: p = 0.5"
     text: "If the coin were fair, the chance of this exact sequence is 0.5 multiplied ten times, about 0.00098. That number, the probability of the observed data under a guessed parameter, is the likelihood L(p). It scores the guess, not the data."
   - title: "Try every p: the likelihood curve"
-    text: "Do the same for every p from 0 to 1: L(p) = p⁷(1 − p)³, seven heads and three tails. The curve is the likelihood function. It is not a probability distribution over p — its area need not be 1. Near p = 0 or 1 it is almost zero: such coins would rarely give 7 heads."
+    text: "Do the same for every p from 0 to 1: L(p) = p⁷(1 − p)³, seven heads and three tails. The curve is the likelihood function. It is not a probability distribution over p, and its area need not be 1. Near p = 0 or 1 it is almost zero: such coins would rarely give 7 heads."
   - title: The peak is the estimate
     text: "The curve peaks at p = 0.7, where L ≈ 0.0022, about 2.3 times the value for a fair coin. That peak is the maximum likelihood estimate, p̂ = 0.7 = 7/10: exactly the fraction of heads, which is what intuition suggests."
   - title: "Take logs: same peak, easy maths"
@@ -67,12 +67,12 @@ sources:
 
 ## Probability versus likelihood
 
-A statistical model is a family of probability distributions indexed by **parameters** θ — a coin with chance of heads p, a Gaussian with mean μ and standard deviation σ, a neural network with millions of weights. Two different questions can be asked of it:
+A statistical model is a family of probability distributions indexed by **parameters** θ: a coin with chance of heads p, a Gaussian with mean μ and standard deviation σ, a neural network with millions of weights. Two different questions can be asked of it:
 
 - **Probability:** the parameters are known, what data should I expect? "A fair coin gives 7 heads in 10 flips with probability 0.117."
 - **Likelihood:** the data are known, how well does each parameter value explain them? "This particular sequence of 7 heads and 3 tails is 2.3 times more probable under p = 0.7 than under p = 0.5."
 
-Both use the same formula, P(data | θ). The difference is which part is held fixed. The **likelihood function** L(θ) = P(data | θ) treats the observed data as fixed and θ as the variable. It is not a probability distribution over θ: integrated over θ it does not have to give 1, and it does not tell you "the probability that p = 0.7" (that needs a prior — see Bayes' theorem).
+Both use the same formula, P(data | θ). The difference is which part is held fixed. The **likelihood function** L(θ) = P(data | θ) treats the observed data as fixed and θ as the variable. It is not a probability distribution over θ: integrated over θ it does not have to give 1, and it does not tell you "the probability that p = 0.7" (that needs a prior; see Bayes' theorem).
 
 ## How it works
 
@@ -98,7 +98,7 @@ Ten flips, H H T H H H T H H T: h = 7 heads, t = 3 tails. Each flip has probabil
 | 0.7 | **0.00222** | **−6.11** |
 | 0.9 | 0.00048 | −7.65 |
 
-In general p̂ = h / n: the observed fraction. The same calculation for a Bernoulli model with features — p = sigmoid(w·x) — is exactly logistic regression.
+In general p̂ = h / n: the observed fraction. The same calculation for a Bernoulli model with features, where p = sigmoid(w·x), is exactly logistic regression.
 
 ## Worked example: the Gaussian mean
 
@@ -106,7 +106,7 @@ Data x = 2, 4, 6, 8, modelled as draws from a Gaussian N(μ, σ²). The log-dens
 
 > −log L(μ, σ) = (n/2) log(2πσ²) + Σ (xᵢ − μ)² / (2σ²)
 
-For μ only the second term matters: **minimise the sum of squared deviations**, giving μ̂ = mean = 5. Solving for σ² gives σ̂² = (1/n) Σ (xᵢ − μ̂)² = 20 / 4 = 5.0. That estimate is **biased** — on average it is too small, because μ̂ was fitted to the same data — which is why the sample variance usually divides by n − 1 (giving 6.67).
+For μ only the second term matters: **minimise the sum of squared deviations**, giving μ̂ = mean = 5. Solving for σ² gives σ̂² = (1/n) Σ (xᵢ − μ̂)² = 20 / 4 = 5.0. That estimate is **biased**: on average it is too small, because μ̂ was fitted to the same data. That is why the sample variance usually divides by n − 1 (giving 6.67).
 
 ## Losses are negative log-likelihoods
 
@@ -123,11 +123,11 @@ So choosing a loss is choosing an assumption about the noise. MSE assumes symmet
 
 ## MAP: MLE plus a prior
 
-MLE trusts the data completely. With 3 heads in 3 flips it says p̂ = 1 — the coin can never land tails. **Maximum a posteriori (MAP)** estimation adds a prior belief P(θ) and maximises the posterior instead:
+MLE trusts the data completely. With 3 heads in 3 flips it says p̂ = 1: the coin can never land tails. **Maximum a posteriori (MAP)** estimation adds a prior belief P(θ) and maximises the posterior instead:
 
 > θ̂_MAP = argmax [ log P(data | θ) + log P(θ) ]
 
-With a Beta(2, 2) prior on p (roughly "pretend you saw one extra head and one extra tail"), θ̂_MAP = (h + 1)/(n + 2): 8/12 ≈ 0.667 for 7 of 10 and 4/5 = 0.8 for 3 of 3. For model weights, a Gaussian prior adds −λ‖w‖² — **L2 regularisation (ridge)** — and a Laplace prior adds −λ‖w‖₁ — **L1 (lasso)**. As data grow, the likelihood term dominates and MAP approaches MLE.
+With a Beta(2, 2) prior on p (roughly "pretend you saw one extra head and one extra tail"), θ̂_MAP = (h + 1)/(n + 2): 8/12 ≈ 0.667 for 7 of 10 and 4/5 = 0.8 for 3 of 3. For model weights, a Gaussian prior adds −λ‖w‖², which is **L2 regularisation (ridge)**, and a Laplace prior adds −λ‖w‖₁, which is **L1 (lasso)**. As data grow, the likelihood term dominates and MAP approaches MLE.
 
 ## Implement it in Python
 
@@ -166,11 +166,11 @@ print((h + 1) / (n + 2))                                 # MAP with a Beta(2, 2)
 ## Edge cases and pitfalls
 
 - **Small samples overfit.** 3 of 3 heads gives p̂ = 1; a word never seen in training gets probability 0. Use a prior (MAP, Laplace smoothing) or more data.
-- **MLE can be biased** — the Gaussian variance is the classic example. Unbiasedness and maximum likelihood are different goals.
+- **MLE can be biased.** The Gaussian variance is the classic example. Unbiasedness and maximum likelihood are different goals.
 - **Wrong model, confident answer.** MLE finds the best parameters *within* the model you chose. If the noise is not Gaussian, minimising MSE is still possible but no longer "maximum likelihood" for the true process.
 - **Unbounded likelihoods.** In a Gaussian mixture, a component collapsing onto one point (σ → 0) drives the likelihood to infinity. Constrain σ or use a prior.
 - **Likelihood is not a posterior.** L(0.7) = 0.0022 does not mean "p = 0.7 with probability 0.0022".
 
 ## In the interview
 
-Typical prompts: "derive the MLE for a coin / a Gaussian", "why log?", "why does linear regression use squared error?", "how is MAP related to regularisation?". A strong answer writes the likelihood as a product over independent examples, takes logs, differentiates, and then connects it to practice: −log-likelihood is the loss, MSE ↔ Gaussian noise, log-loss ↔ Bernoulli, and an L2 penalty is a Gaussian prior. Expect the follow-up *"is the MLE of the variance unbiased?"* — no, it divides by n; the n − 1 version is unbiased.
+Typical prompts: "derive the MLE for a coin / a Gaussian", "why log?", "why does linear regression use squared error?", "how is MAP related to regularisation?". A strong answer writes the likelihood as a product over independent examples, takes logs, differentiates, and then connects it to practice: −log-likelihood is the loss, MSE ↔ Gaussian noise, log-loss ↔ Bernoulli, and an L2 penalty is a Gaussian prior. Expect the follow-up *"is the MLE of the variance unbiased?"* No. It divides by n; the n − 1 version is unbiased.

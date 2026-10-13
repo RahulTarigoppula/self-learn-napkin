@@ -13,11 +13,11 @@ story:
   - title: Take the meeting that ends first
     text: "Greedy rule: sort by finish time and take the meeting that ends earliest, A at hour 4. Walking on in finish order, B and C start before 4, so they clash with A and are crossed out. Taking A leaves the room free as early as possible."
   - title: Next one starting at or after 4
-    text: "Repeat the same rule on what is left. D starts at 5, after A ends, and finishes at 7 — the earliest finish among the compatible meetings. E and F start before 7 and are crossed out."
-  - title: Then G — 3 meetings, the maximum
+    text: "Repeat the same rule on what is left. D starts at 5, after A ends, and finishes at 7, the earliest finish among the compatible meetings. E and F start before 7 and are crossed out."
+  - title: "Then G: 3 meetings, the maximum"
     text: "G starts at 8 and ends at 11. The answer is A, D, G: three meetings, after one sort and one pass, O(n log n). Choosing by earliest start instead would take C first and fit only 2."
   - title: "Exchange argument: swapping in A is safe"
-    text: "Why is this optimal? Take any best plan, say B, D, G. Swap its first meeting for A. A ends no later than B, so A clashes with nothing that B did not clash with. The plan stays valid and just as large, so some best plan starts with A — and the same argument repeats for the rest."
+    text: "Why is this optimal? Take any best plan, say B, D, G. Swap its first meeting for A. A ends no later than B, so A clashes with nothing that B did not clash with. The plan stays valid and just as large, so some best plan starts with A. The same argument then repeats for the rest."
   - title: "But greedy can fail: coins {1, 3, 4}, make 6"
     text: "Greedy is not always right. To pay 6 with coins 1, 3 and 4, 'largest coin first' takes 4, then 1, then 1: three coins. The best answer is 3 + 3, two coins. Here an early greedy choice blocks a better finish, so you need dynamic programming."
 keyIdeas:
@@ -65,7 +65,7 @@ sources:
 
 ## What "greedy" means
 
-An optimisation problem asks for the best solution among many: the most meetings, the fewest coins, the cheapest network. A **greedy algorithm** builds the solution in steps, and at each step makes the choice that looks best right now — the meeting that ends soonest, the biggest coin, the cheapest edge — **commits to it for good**, and then solves the smaller problem that remains. There is no backtracking and no table of sub-results, which is why greedy algorithms are short and fast (often just a sort and a loop).
+An optimisation problem asks for the best solution among many: the most meetings, the fewest coins, the cheapest network. A **greedy algorithm** builds the solution in steps, and at each step makes the choice that looks best right now (the meeting that ends soonest, the biggest coin, the cheapest edge), **commits to it for good**, and then solves the smaller problem that remains. There is no backtracking and no table of sub-results, which is why greedy algorithms are short and fast (often just a sort and a loop).
 
 The catch: a locally best choice can be globally wrong. A greedy algorithm is only correct when two properties hold:
 
@@ -86,7 +86,7 @@ Other natural rules fail. **Earliest start** can pick one long meeting that bloc
 
 ## Worked example
 
-Meetings (start, end): A (1, 4), B (3, 5), C (0, 6), D (5, 7), E (3, 9), F (6, 10), G (8, 11) — already sorted by end.
+Meetings (start, end): A (1, 4), B (3, 5), C (0, 6), D (5, 7), E (3, 9), F (6, 10), G (8, 11). They are already sorted by end.
 
 | Meeting | Start | End | Room free at | Decision |
 |---|---|---|---|---|
@@ -98,17 +98,17 @@ Meetings (start, end): A (1, 4), B (3, 5), C (0, 6), D (5, 7), E (3, 9), F (6, 1
 | F | 6 | 10 | 7 | skip |
 | G | 8 | 11 | 7 | 8 ≥ 7, take → free at 11 |
 
-Result **A, D, G: 3 meetings**. A brute-force check of all 128 subsets confirms 3 is the maximum. B, D, G is another optimal schedule — and swapping its B for A is exactly the exchange argument. Earliest-start greedy would take C (0–6), then F (6–10), and stop at 2.
+Result **A, D, G: 3 meetings**. A brute-force check of all 128 subsets confirms 3 is the maximum. B, D, G is another optimal schedule, and swapping its B for A is exactly the exchange argument. Earliest-start greedy would take C (0–6), then F (6–10), and stop at 2.
 
 ## When greedy fails: coin change
 
-Pay an amount with the fewest coins. "Take the largest coin that fits" works for coins like {1, 5, 10, 25} (such systems are called **canonical**), but not in general. With coins **{1, 3, 4}** and amount **6**, greedy takes 4, leaving 2, then 1 and 1: **3 coins**. The optimum is 3 + 3: **2 coins**. The greedy-choice property is false — no optimal solution uses the coin 4 — so committing to it was a mistake that can never be undone.
+Pay an amount with the fewest coins. "Take the largest coin that fits" works for coins like {1, 5, 10, 25} (such systems are called **canonical**), but not in general. With coins **{1, 3, 4}** and amount **6**, greedy takes 4, leaving 2, then 1 and 1: **3 coins**. The optimum is 3 + 3: **2 coins**. The greedy-choice property is false here, because no optimal solution uses the coin 4. Committing to it was a mistake that can never be undone.
 
 The fix is **dynamic programming**: `best[a] = 1 + min(best[a − c])` over all coins c ≤ a, which considers every first coin rather than one.
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+The meeting scheduler, plus both coin-change versions so you can watch greedy lose to DP on {1, 3, 4}.
 
 ```python
 def max_meetings(meetings):
@@ -160,4 +160,4 @@ print(min_coins([1, 3, 4], 6))      # 2          (3 + 3)
 
 ## In the interview
 
-Say the greedy rule in one sentence, then justify it — interviewers care about the *why*. A crisp exchange argument ("swap the greedy choice into any optimal answer; it is no worse") is the strongest signal. If you cannot prove it, try a small counter-example out loud; finding one and pivoting to DP is also a good answer. State the cost, usually O(n log n) for the sort plus O(n) for the scan. Expect follow-ups like "now meetings have weights" (weighted interval scheduling: greedy fails, use DP with binary search) or "how many rooms do you need for all meetings?" (sort the start and end times and sweep, or use a min-heap of end times).
+Say the greedy rule in one sentence, then justify it. Interviewers care about the *why*. A crisp exchange argument ("swap the greedy choice into any optimal answer; it is no worse") is the strongest signal. If you cannot prove it, try a small counter-example out loud; finding one and pivoting to DP is also a good answer. State the cost, usually O(n log n) for the sort plus O(n) for the scan. Expect follow-ups like "now meetings have weights" (weighted interval scheduling: greedy fails, use DP with binary search) or "how many rooms do you need for all meetings?" (sort the start and end times and sweep, or use a min-heap of end times).

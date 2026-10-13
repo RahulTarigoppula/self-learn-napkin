@@ -14,11 +14,11 @@ story:
     text: "Isolation is the hard one. A balance x = 100. Transaction T1 will deposit 50 and T2 will withdraw 20, both written as read-then-write. They overlap in time: T1 reads 100, then T2 also reads 100. Nothing is wrong yet."
   - title: Both write, and the deposit vanishes
     text: "T1 writes 100 + 50 = 150 and commits. T2 writes 100 − 20 = 80, computed from its stale read, and commits. The final balance is 80; it should be 130. This anomaly is a lost update: T2 overwrote a change it never saw."
-  - title: The fix, lock or abort and retry
+  - title: "The fix: lock, or abort and retry"
     text: "Three cures. Let the database do the arithmetic (UPDATE … SET x = x − 20). Lock the row when reading (SELECT … FOR UPDATE) so T2 waits for T1. Or run at an isolation level that detects the conflict and aborts T2; the application retries, reads 150 and writes 130."
   - title: Isolation levels and what each one blocks
     text: "The SQL standard defines four levels by the anomalies they forbid. Read committed stops dirty reads (seeing uncommitted data). Repeatable read also stops non-repeatable reads (a row changing between two reads). Serializable also stops phantoms (new rows appearing in a repeated query) and every other anomaly."
-  - title: MVCC, readers see a snapshot
+  - title: "MVCC: readers see a snapshot"
     text: "Most databases implement this with multi-version concurrency control. A write creates a new version of the row stamped with its transaction; old versions stay. A reader that started at time 10 sees the newest version committed before 10 (100) and ignores the one from time 12, so readers never block writers."
 keyIdeas:
   - "**ACID**: atomic (all or nothing), consistent (rules hold), isolated (as if alone), durable (committed means safe on disk)."
@@ -70,10 +70,10 @@ sources:
 
 A **transaction** is a group of reads and writes that the database treats as one unit, started with `BEGIN` and ended with `COMMIT` (keep the changes) or `ROLLBACK` (discard them).
 
-- **Atomicity** — either every write in the transaction takes effect or none does. If the server crashes after debiting account A but before crediting account B, recovery undoes the debit. "Abortability" would be a better name: atomicity is what makes it safe to give up halfway.
-- **Consistency** — the transaction moves the database from one valid state to another: `UNIQUE`, `FOREIGN KEY` and `CHECK` constraints hold, and so do the application's own invariants ("debits equal credits"). The database enforces the constraints you declare; the rest is the application's job. This is *not* the C of CAP, which is about replicas agreeing.
-- **Isolation** — concurrently running transactions do not interfere. The ideal, **serializability**, means the result is the same as if the transactions had run one after another in *some* order.
-- **Durability** — once `COMMIT` returns, the data survives a crash or power cut. In practice: the change is in a write-ahead log flushed to disk (and, in replicated systems, copied to other machines) before the commit is acknowledged.
+- **Atomicity**: either every write in the transaction takes effect or none does. If the server crashes after debiting account A but before crediting account B, recovery undoes the debit. "Abortability" would be a better name: atomicity is what makes it safe to give up halfway.
+- **Consistency**: the transaction moves the database from one valid state to another: `UNIQUE`, `FOREIGN KEY` and `CHECK` constraints hold, and so do the application's own invariants ("debits equal credits"). The database enforces the constraints you declare; the rest is the application's job. This is *not* the C of CAP, which is about replicas agreeing.
+- **Isolation**: concurrently running transactions do not interfere. The ideal, **serializability**, means the result is the same as if the transactions had run one after another in *some* order.
+- **Durability**: once `COMMIT` returns, the data survives a crash or power cut. In practice: the change is in a write-ahead log flushed to disk (and, in replicated systems, copied to other machines) before the commit is acknowledged.
 
 Atomicity and durability are mostly solved by logging. Isolation is where the real trade-offs are, because full serializability costs throughput.
 
@@ -114,9 +114,9 @@ Lost update and write skew are not in the standard's table. Under **snapshot iso
 
 **Serializable** is built one of three ways:
 
-1. **Actually serial execution** — one thread runs transactions one at a time (VoltDB, Redis scripts). Works when transactions are short and the data fits in memory.
-2. **Two-phase locking (2PL)** — readers take shared locks, writers exclusive locks, all held until commit, plus range or predicate locks to stop phantoms. Correct but readers and writers block each other and deadlocks happen.
-3. **Serializable snapshot isolation (SSI)** — run on snapshots optimistically, track read/write dependencies, and abort a transaction at commit when a dangerous cycle could form. Used by PostgreSQL's serializable level; CockroachDB uses a related optimistic scheme.
+1. **Actually serial execution.** One thread runs transactions one at a time (VoltDB, Redis scripts). Works when transactions are short and the data fits in memory.
+2. **Two-phase locking (2PL).** Readers take shared locks, writers exclusive locks, all held until commit, plus range or predicate locks to stop phantoms. Correct but readers and writers block each other and deadlocks happen.
+3. **Serializable snapshot isolation (SSI).** Run on snapshots optimistically, track read/write dependencies, and abort a transaction at commit when a dangerous cycle could form. Used by PostgreSQL's serializable level; CockroachDB uses a related optimistic scheme.
 
 ## Worked example: the lost update, four ways
 
@@ -158,12 +158,12 @@ def transfer(conn, src, dst, amount, attempts=5):
 - **"Repeatable read" means different things.** PostgreSQL's is snapshot isolation (no phantoms, catches lost updates). MySQL's uses snapshots for plain reads but next-key locks for locking reads, and lets read-then-write lost updates through. Oracle's "serializable" is really snapshot isolation and allows write skew. Always check what your database does.
 - **Retries must rerun the whole transaction**, including the reads, and must not repeat side effects outside the database (sending an email) unless they are idempotent.
 - **Long transactions hurt**: they hold locks, keep MVCC versions alive and raise abort rates at serializable.
-- **Write skew fixes** without serializable: lock the rows you read with `FOR UPDATE`, or turn the invariant into a constraint (a unique index, or a single row you both update so the conflict becomes visible — "materialising the conflict").
+- **Write skew fixes** without serializable: lock the rows you read with `FOR UPDATE`, or turn the invariant into a constraint (a unique index, or a single row you both update so the conflict becomes visible, a trick called "materialising the conflict").
 
 ## ACID vs BASE
 
-Many NoSQL and replicated stores trade ACID guarantees for availability and scale, summarised as **BASE**: *Basically Available* (answer even during failures), *Soft state* (replicas may differ for a while), *Eventually consistent* (they converge if writes stop). Transactions are typically limited to a single key or document. The cost is pushed to the application: it must tolerate stale reads and resolve conflicts. Modern systems blur the line — DynamoDB and MongoDB offer multi-item transactions, and distributed SQL databases (Spanner, CockroachDB) offer serializable transactions across machines at the price of extra latency.
+Many NoSQL and replicated stores trade ACID guarantees for availability and scale, summarised as **BASE**: *Basically Available* (answer even during failures), *Soft state* (replicas may differ for a while), *Eventually consistent* (they converge if writes stop). Transactions are typically limited to a single key or document. The cost is pushed to the application: it must tolerate stale reads and resolve conflicts. Modern systems blur the line. DynamoDB and MongoDB offer multi-item transactions, and distributed SQL databases (Spanner, CockroachDB) offer serializable transactions across machines at the price of extra latency.
 
 ## In the interview
 
-When a design touches money, inventory or unique names, say which isolation level you need and why. A strong answer names the anomaly ("two checkouts could both see 1 item left and both sell it — a write skew/lost update"), then picks the cheapest fix: an atomic conditional update (`UPDATE stock SET n = n - 1 WHERE id = ? AND n > 0`), a row lock, or serializable with retries. Expect the follow-ups "what does MVCC store?" (row versions with creating-transaction ids; snapshots pick the visible one) and "why not run everything at serializable?" (more aborts or blocking under contention, so lower throughput).
+When a design touches money, inventory or unique names, say which isolation level you need and why. A strong answer names the anomaly ("two checkouts could both see 1 item left and both sell it: a write skew, or a lost update"), then picks the cheapest fix: an atomic conditional update (`UPDATE stock SET n = n - 1 WHERE id = ? AND n > 0`), a row lock, or serializable with retries. Expect the follow-ups "what does MVCC store?" (row versions with creating-transaction ids; snapshots pick the visible one) and "why not run everything at serializable?" (more aborts or blocking under contention, so lower throughput).

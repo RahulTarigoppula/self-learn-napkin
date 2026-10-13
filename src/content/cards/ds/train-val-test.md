@@ -9,19 +9,19 @@ analogy: "Homework, mock exam, final exam. You learn from homework (train), use 
 diagram: train-val-test
 story:
   - title: One dataset, shuffled
-    text: "Start with 1,000 labelled rows — say, emails marked spam or not spam. Each square here is 50 rows. Shuffle first, so every slice looks like the whole: the same spam rate, no runs of rows sorted by date or source."
+    text: "Start with 1,000 labelled rows, say emails marked spam or not spam. Each square here is 50 rows. Shuffle first, so every slice looks like the whole: the same spam rate, no runs of rows sorted by date or source."
   - title: Cut it 70 / 15 / 15
-    text: "Cut once, before any modelling: 700 rows to train, 150 to validate, 150 to test. Each slice answers a different question, so no row may sit in two of them. With millions of rows the held-out slices can be far smaller in percentage — 1 % of 10 million is still 100,000 rows."
+    text: "Cut once, before any modelling: 700 rows to train, 150 to validate, 150 to test. Each slice answers a different question, so no row may sit in two of them. With millions of rows the held-out slices can be far smaller in percentage: 1 % of 10 million is still 100,000 rows."
   - title: "Train: fit the weights"
     text: "Only the 700 training rows ever touch the weights. The training algorithm keeps lowering the training error with every pass over the data (an epoch), so training loss alone cannot tell you when the model has started memorising noise."
   - title: "Validation: tune and stop early"
-    text: "After every epoch, score the model on the 150 validation rows. Validation loss falls, bottoms out, then climbs as the model overfits — stop at the bottom (early stopping). The same slice chooses hyperparameters such as depth or learning rate. Because you pick by it, its score is optimistic."
+    text: "After every epoch, score the model on the 150 validation rows. Validation loss falls, bottoms out, then climbs as the model overfits. Stop at the bottom (early stopping). The same slice chooses hyperparameters such as depth or learning rate. Because you pick by it, its score is optimistic."
   - title: "Test: open it once"
     text: "The test slice stays sealed until every decision is made. Open it once and report that number. If you go back and tweak after seeing it, the test set has quietly become a second validation set and the estimate is biased upward."
   - title: "No peeking: avoid leakage"
     text: "Leakage is test information sneaking into training. Classic case: fitting a scaler on all 1,000 rows lets the test rows' mean and spread shape the features. Fit it on train, then only transform val and test. For time-ordered data, split by date: train on the past, test on the future."
 keyIdeas:
-  - "**Train** fits parameters, **validation** chooses hyperparameters and the stopping point, **test** estimates real-world performance — once."
+  - "**Train** fits parameters, **validation** chooses hyperparameters and the stopping point, **test** estimates real-world performance, and you look at it once."
   - "Ratios scale with data size: 70/15/15 or 80/10/10 for thousands of rows; 98/1/1 is fine for millions."
   - "**Leakage** hides in preprocessing fitted on all rows, duplicates across splits, the same user on both sides, and features computed from the future."
   - "Use a **stratified** split for imbalanced labels so every slice keeps the same class ratio."
@@ -61,9 +61,9 @@ sources:
 
 ## Why one dataset needs three jobs
 
-A model is only useful if it works on data it has never seen — **generalisation**. You cannot measure that on the rows the model learned from: a model that memorised them scores perfectly and tells you nothing. So you hold some labelled rows back and pretend they are the future.
+A model is only useful if it works on data it has never seen, a property called **generalisation**. You cannot measure that on the rows the model learned from: a model that memorised them scores perfectly and tells you nothing. So you hold some labelled rows back and pretend they are the future.
 
-But a model has two kinds of knobs. **Parameters** (weights, split points) are learned by the training algorithm. **Hyperparameters** (learning rate, tree depth, regularisation strength, number of epochs) are chosen by *you*, usually by trying several and keeping the best. Every choice you make by looking at a score uses that score up a little. That is why one held-out slice is not enough — you need two:
+But a model has two kinds of knobs. **Parameters** (weights, split points) are learned by the training algorithm. **Hyperparameters** (learning rate, tree depth, regularisation strength, number of epochs) are chosen by *you*, usually by trying several and keeping the best. Every choice you make by looking at a score uses that score up a little. That is why one held-out slice is not enough. You need two:
 
 | Slice | Who looks at it | What it answers |
 |---|---|---|
@@ -73,22 +73,22 @@ But a model has two kinds of knobs. **Parameters** (weights, split points) are l
 
 ## How it works
 
-1. **Shuffle** the rows (unless they are ordered in time — see below), so each slice is a fair sample of the whole.
+1. **Shuffle** the rows (unless they are ordered in time; see below), so each slice is a fair sample of the whole.
 2. **Split once, before any exploration.** 70/15/15 is a common default for a few thousand rows. What matters is the *absolute* size of the held-out slices, not the percentage: 10,000 test rows is plenty, so with 10 million rows a 98/1/1 split is fine.
 3. **Fit** every candidate model on the training set only.
-4. **Score each candidate on validation** and keep the best. Neural networks also check validation loss after each epoch and stop when it stops improving — **early stopping**.
+4. **Score each candidate on validation** and keep the best. Neural networks also check validation loss after each epoch and stop when it stops improving, which is called **early stopping**.
 5. **Optionally retrain** the chosen configuration on train + validation, so the final model sees more data.
 6. **Score the final model on the test set exactly once** and report that number.
 
 ### Why validation becomes optimistic
 
-Suppose ten settings are all truly 85 % accurate. On 150 rows, each measured score wobbles by about ±3 points just by chance, so the best of the ten might read 89 %. Choosing the maximum selects for lucky noise. The test set was not involved in the choice, so it gives an unbiased estimate — but only the *first* time you look. Every further tweak made after reading it turns it into a second validation set.
+Suppose ten settings are all truly 85 % accurate. On 150 rows, each measured score wobbles by about ±3 points just by chance, so the best of the ten might read 89 %. Choosing the maximum selects for lucky noise. The test set was not involved in the choice, so it gives an unbiased estimate, but only the *first* time you look. Every further tweak made after reading it turns it into a second validation set.
 
 ## Worked example: a leak you would not notice
 
 A feature `income` has mean 50 (thousand) in the 700 training rows and the 150 validation rows. The 150 test rows come from a richer region, mean 80.
 
-- **Leaky:** fit the scaler on all 1,000 rows. The mean it subtracts is 0.70 × 50 + 0.15 × 50 + 0.15 × 80 = 54.5 instead of 50 — the test rows have pulled it upward, and the model's inputs now carry a trace of the test distribution.
+- **Leaky:** fit the scaler on all 1,000 rows. The mean it subtracts is 0.70 × 50 + 0.15 × 50 + 0.15 × 80 = 54.5 instead of 50. The test rows have pulled it upward, and the model's inputs now carry a trace of the test distribution.
 - **Correct:** fit the scaler on the 700 training rows (mean 50), then *transform* validation and test with that same mean and spread. The test rows then look to the model exactly as unseen production data will: possibly shifted, which is what you need to find out.
 
 The same rule applies to every step that learns something from the data before the model does: imputers, encoders, vocabularies, feature selection and PCA.
@@ -123,7 +123,7 @@ print("C =", best_C, "validation:", best_acc, "test (look once):", final.score(X
 # C = 1 validation: 0.973... test (look once): 0.986...
 ```
 
-`stratify=y` keeps the 10 % positive rate in every slice. Notice the test score is *higher* than validation here: 148 versus 146 correct out of 150 — two rows, well inside the ±3-point noise of a 150-row slice. Read small differences between slices as noise, not as signal.
+`stratify=y` keeps the 10 % positive rate in every slice. Notice the test score is *higher* than validation here: 148 versus 146 correct out of 150. That is two rows, well inside the ±3-point noise of a 150-row slice. Read small differences between slices as noise, not as signal.
 
 ## Edge cases and pitfalls
 
@@ -136,4 +136,4 @@ print("C =", best_C, "validation:", best_acc, "test (look once):", final.score(X
 
 ## In the interview
 
-Expect "how would you evaluate this model?" or "your offline metric was great but production is bad — why?". A strong answer names the three slices and their jobs, says the test set is touched once, and lists leakage sources: preprocessing fitted on all rows, random splits of temporal data, the same entity on both sides, and future information in features. Follow-up to expect: *how big should the test set be?* — big enough that its standard error is smaller than the differences you care about.
+Expect "how would you evaluate this model?" or "your offline metric was great but production is bad; why?". A strong answer names the three slices and their jobs, says the test set is touched once, and lists leakage sources: preprocessing fitted on all rows, random splits of temporal data, the same entity on both sides, and future information in features. Follow-up to expect: *how big should the test set be?* Big enough that its standard error is smaller than the differences you care about.

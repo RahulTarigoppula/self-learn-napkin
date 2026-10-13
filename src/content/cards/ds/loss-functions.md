@@ -19,10 +19,10 @@ story:
   - title: "Mean vs median: one late delivery"
     text: "Predict one number for delivery times 10, 12, 14, 16 and 48 minutes. MSE is minimised by the mean, 20; MAE by the median, 14. The single late order drags the MSE answer 6 minutes away from every typical delivery."
   - title: "Classification: log-loss and hinge"
-    text: "For classes, the margin m = y·score (y = ±1) is positive when the model is right. Log-loss, ln(1 + e^(−m)) = −ln p(true class), keeps rewarding more confidence and explodes on confident mistakes. Hinge, max(0, 1 − m), is zero once m ≥ 1 — the SVM loss."
+    text: "For classes, the margin m = y·score (y = ±1) is positive when the model is right. Log-loss, ln(1 + e^(−m)) = −ln p(true class), keeps rewarding more confidence and explodes on confident mistakes. Hinge, max(0, 1 − m), is the SVM loss: zero once m ≥ 1."
 keyIdeas:
   - "**The loss defines the target:** squared error estimates the conditional **mean**, absolute error the **median**, pinball loss any chosen quantile."
-  - "**MSE** squares errors: smooth, but one outlier can dominate. **MAE** is robust but has a kink at 0. **Huber** gets both."
+  - "**MSE** squares errors: smooth, but one outlier can dominate. **MAE** shrugs off outliers but has a kink at 0. **Huber** gets both."
   - "**Log-loss (cross-entropy)** is −ln of the probability given to the true class: 0.11 at p = 0.9, 4.6 at p = 0.01."
   - "**Hinge** stops caring once a point is correct by a margin of 1, which is why SVMs depend only on support vectors."
   - "Train on a smooth **surrogate** (log-loss, hinge) because accuracy has no useful gradient; report the metric the business cares about."
@@ -42,11 +42,11 @@ quiz:
   - q: "Why do SVMs ignore points that are correctly classified with margin ≥ 1?"
     options: ["They are deleted from the data", "Hinge loss is exactly zero there, so they add no gradient", "Log-loss is zero there", "Because of regularisation"]
     answer: 1
-    why: "max(0, 1 − m) = 0 once m ≥ 1, so those points do not affect the solution. Only points on or inside the margin — the support vectors — shape the boundary. Log-loss is never exactly zero, so every point still pulls a little."
+    why: "max(0, 1 − m) = 0 once m ≥ 1, so those points do not affect the solution. Only points on or inside the margin (the support vectors) shape the boundary. Log-loss is never exactly zero, so every point still pulls a little."
 bigO:
   - { op: "squared r²", avg: "gradient 2r", note: "estimates the mean; outlier-sensitive" }
   - { op: "absolute |r|", avg: "gradient ±1", note: "estimates the median; kink at 0" }
-  - { op: "Huber (δ)", avg: "gradient r, capped at ±δ", note: "robust and smooth" }
+  - { op: "Huber (δ)", avg: "gradient r, capped at ±δ", note: "outlier-resistant and smooth" }
   - { op: "log-loss", avg: "gradient p − y", note: "with respect to the logit" }
   - { op: "hinge", avg: "gradient −y if m < 1, else 0", note: "SVM; no probabilities" }
 bigOTitle: "Key numbers"
@@ -70,7 +70,7 @@ sources:
 
 A **loss function** L(y, ŷ) takes the true value y and the prediction ŷ for one example and returns a non-negative cost. Training minimises the **average loss** over the training set (often plus a regularisation penalty). The optimiser only ever sees this number and its gradient, so the loss is how you tell the model *what kind of wrong matters*.
 
-Two related words: a **cost** or **objective** is the averaged (and possibly regularised) loss; a **metric** is what you report, such as accuracy or revenue. They need not be the same — accuracy has a zero gradient almost everywhere, so you train on a smooth **surrogate** like log-loss and report accuracy.
+Two related words: a **cost** or **objective** is the averaged (and possibly regularised) loss; a **metric** is what you report, such as accuracy or revenue. They need not be the same. Accuracy has a zero gradient almost everywhere, so you train on a smooth **surrogate** like log-loss and report accuracy.
 
 ## Regression losses
 
@@ -83,9 +83,9 @@ Write the error as r = y − ŷ.
 | Huber with threshold δ | ½r² if \|r\| ≤ δ, else δ(\|r\| − ½δ) | −r, capped at ±δ | between the two |
 | Pinball / quantile τ | τr if r ≥ 0, else (τ − 1)r | −τ or 1 − τ | the τ-quantile |
 
-**Why the mean for squared error.** Predict one constant c for every row. The loss Σ(yᵢ − c)² has derivative −2Σ(yᵢ − c), which is zero when c = Σyᵢ / n — the mean.
+**Why the mean for squared error.** Predict one constant c for every row. The loss Σ(yᵢ − c)² has derivative −2Σ(yᵢ − c), which is zero when c = Σyᵢ / n, which is the mean.
 
-**Why the median for absolute error.** The derivative of Σ|yᵢ − c| is (number of points below c) − (number above c). Moving c up helps while more points lie above it than below, so the minimum sits where the counts balance — the median.
+**Why the median for absolute error.** The derivative of Σ|yᵢ − c| is (number of points below c) − (number above c). Moving c up helps while more points lie above it than below, so the minimum sits where the counts balance, which is the median.
 
 The same logic holds for full models: a model trained with squared error estimates the **conditional mean** of y given x; with absolute error, the **conditional median**. Pick the one that matches the question. Delivery-time promises ("90 % of orders arrive within…") call for the 0.9 quantile, not the mean.
 
@@ -100,7 +100,7 @@ Delivery times y = [10, 12, 14, 16, 48] minutes. Compare predicting the median (
 | 14 (median) | −4, −2, 0, 2, 34 | (16 + 4 + 0 + 4 + 1156) / 5 = **236** | 42 / 5 = **8.4** | 33.9 |
 | 20 (mean) | −10, −8, −6, −4, 28 | (100 + 64 + 36 + 16 + 784) / 5 = **200** | 56 / 5 = **11.2** | 43.6 |
 
-Each loss prefers its own answer: MSE likes 20, MAE likes 14. Huber with δ = 5 is minimised at 14.25 — at that point the four normal errors (−4.25, −2.25, −0.25, 1.75) sum to −5, exactly balanced by the outlier's capped pull of +5. The 48-minute order moves the MSE answer by 6 minutes but Huber's by a quarter of a minute.
+Each loss prefers its own answer: MSE likes 20, MAE likes 14. Huber with δ = 5 is minimised at 14.25. There, the four normal errors (−4.25, −2.25, −0.25, 1.75) sum to −5, exactly balanced by the outlier's capped pull of +5. The 48-minute order moves the MSE answer by 6 minutes but Huber's by a quarter of a minute.
 
 ## Classification losses
 
@@ -125,11 +125,11 @@ It is the negative log-likelihood of a Bernoulli model, so minimising it is **ma
 
 ## Choosing a loss = choosing what wrong costs
 
-- **Are big errors disproportionately bad?** (a bridge load estimate) — squared error. **Is a 20-minute miss just twice as bad as 10?** — absolute error.
-- **Dirty labels or heavy tails?** — Huber, or MAE.
-- **Under- and over-prediction cost differently?** (stocking shelves: an empty shelf loses more than leftover stock) — pinball loss at the right quantile, or a custom asymmetric loss.
-- **Need probabilities to rank, threshold or price risk?** — log-loss. **Only need the boundary?** — hinge works.
-- **Imbalanced classes?** — weight the loss per class, or use focal loss, rather than letting the majority class dominate the average.
+- **Are big errors disproportionately bad** (a bridge load estimate)? Use squared error. **Is a 20-minute miss just twice as bad as 10?** Use absolute error.
+- **Dirty labels or heavy tails?** Huber, or MAE.
+- **Under- and over-prediction cost differently** (stocking shelves: an empty shelf loses more than leftover stock)? Pinball loss at the right quantile, or a custom asymmetric loss.
+- **Need probabilities to rank, threshold or price risk?** Log-loss. **Only need the boundary?** Hinge works.
+- **Imbalanced classes?** Weight the loss per class, or use focal loss, rather than letting the majority class dominate the average.
 
 ## Implement it in Python
 
@@ -161,11 +161,11 @@ print(np.maximum(0, 1 - m), hinge_loss(labels, z))  # [0, 0.6, 0, 5.6], mean 1.5
 ## Edge cases and pitfalls
 
 - **MAE's kink at zero** makes plain gradient descent jitter around the optimum; Huber or a decaying learning rate fixes it.
-- **Log-loss and p = 0 or 1:** −ln 0 is infinite. Libraries clip p to [ε, 1 − ε]. Better still, compute the loss straight from the score z as ln(1 + e^(−m)) — most frameworks offer a "with logits" version — which never forms a p of exactly 0 or 1.
+- **Log-loss and p = 0 or 1:** −ln 0 is infinite. Libraries clip p to [ε, 1 − ε]. Better still, compute the loss straight from the score z as ln(1 + e^(−m)), which never forms a p of exactly 0 or 1. Most frameworks offer this as a "with logits" version.
 - **Scale matters.** MSE is in squared target units, so it is not comparable across datasets; compare RMSE, MAE or R².
-- **Outliers vs signal:** a robust loss is right when the extremes are errors, wrong when they are exactly the cases you must predict (fraud, peak load).
+- **Outliers vs signal:** an outlier-resistant loss is right when the extremes are errors, wrong when they are exactly the cases you must predict (fraud, peak load).
 - **Squared error on probabilities** (Brier score) is a fine metric, but as a training loss for logistic models its gradients vanish on confident mistakes; cross-entropy does not.
 
 ## In the interview
 
-Common prompts: "MSE vs MAE?", "why cross-entropy for classification?", "what does hinge loss do?". A strong answer ties each loss to what it estimates (mean, median, quantile, probability), shows the outlier effect with a tiny example, and mentions gradients (2r grows; ±1 is constant; p − y for log-loss). Expect a follow-up like "your target has a few huge values — what do you do?": Huber or MAE, a log transform of y, or check whether those values are errors.
+Common prompts: "MSE vs MAE?", "why cross-entropy for classification?", "what does hinge loss do?". A strong answer ties each loss to what it estimates (mean, median, quantile, probability), shows the outlier effect with a tiny example, and mentions gradients (2r grows; ±1 is constant; p − y for log-loss). Expect a follow-up like "your target has a few huge values; what do you do?" Reach for Huber or MAE, try a log transform of y, or check whether those values are errors.

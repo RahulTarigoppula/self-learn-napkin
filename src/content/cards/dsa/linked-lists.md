@@ -9,15 +9,15 @@ analogy: "A treasure hunt: each clue tells you where the next clue is hidden. Ad
 diagram: linked-lists
 story:
   - title: Nodes joined by next pointers
-    text: "A linked list stores each value in its own node, together with a pointer — a reference — to the next node. The list itself is just a pointer to the first node, called head; the last node points to null (nothing). Nodes can live anywhere in memory: only the pointers keep them in order."
+    text: "A linked list stores each value in its own node, together with a pointer (a reference) to the next node. The list itself is just a pointer to the first node, called head; the last node points to null (nothing). Nodes can live anywhere in memory: only the pointers keep them in order."
   - title: Finding a node means walking
-    text: "There is no index arithmetic. To reach the node holding 2 you start at head and follow next pointers one hop at a time. Finding a value, or the k-th node, is O(n) — an array gets a[k] in O(1)."
+    text: "There is no index arithmetic. To reach the node holding 2 you start at head and follow next pointers one hop at a time. Finding a value, or the k-th node, is O(n). An array gets a[k] in O(1)."
   - title: Insert after a known node
     text: "Once you hold a reference to node 2, inserting 9 after it takes two pointer writes: 9.next = 2.next, then 2.next = 9. Nothing shifts, so it is O(1) however long the list is. The order matters: overwrite 2.next first and you lose the rest of the list."
   - title: "Reverse: flip one pointer at a time"
     text: "To reverse 1→2→3 in place, walk with two pointers: prev starts at null, curr at head. Each step saves nxt = curr.next, points curr.next back at prev, then moves prev and curr one node forward. After step 1, node 1 points to null and the walk continues at 2."
   - title: prev ends up as the new head
-    text: "Step 2 points 2 back at 1; step 3 points 3 back at 2. Now curr is null, the loop stops, and prev — node 3 — is the new head: 3→2→1. Each node was visited once: O(n) time and O(1) extra space, because no node was copied."
+    text: "Step 2 points 2 back at 1; step 3 points 3 back at 2. Now curr is null, the loop stops, and prev (node 3) is the new head: 3→2→1. Each node was visited once: O(n) time and O(1) extra space, because no node was copied."
 keyIdeas:
   - "A node holds a **value and a pointer** to the next node; the list is just a pointer to the **head**."
   - "**Insert or delete next to a node you hold: O(1).** Reaching that node, or searching: **O(n)**."
@@ -51,13 +51,13 @@ related: [dsa/fast-and-slow-pointers, dsa/lru-cache, dsa/arrays-and-pointers, ds
 prereqs: [dsa/arrays-and-pointers]
 flashcards:
   - kind: qa
-    q: "Reverse a singly linked list in place — what are the three moves in each iteration?"
+    q: "Reverse a singly linked list in place: what are the three moves in each iteration?"
     a: "nxt = curr.next (save the rest); curr.next = prev (flip); prev = curr, curr = nxt (advance). When curr is null, prev is the new head."
   - kind: cloze
     text: "A {{dummy (sentinel) head}} node gives the first real node a predecessor, so deleting or inserting at the front needs {{no special case}}."
   - kind: qa
     q: "When is a linked list better than an array?"
-    a: "When you insert and delete a lot at positions you already hold (front, or next to a known node) and rarely need index access — e.g. LRU caches, free lists, queues."
+    a: "When you insert and delete a lot at positions you already hold (front, or next to a known node) and rarely need index access. LRU caches, free lists and queues are the classic cases."
 sources:
   - { name: "Open Data Structures", url: "https://opendatastructures.org/", licence: "CC BY 2.5", note: "SLList and DLList, redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -72,11 +72,11 @@ Because each node knows only its successor, nodes do not need to sit next to eac
 - **No random access.** An array finds `a[k]` by arithmetic (`base + k × size`). A linked list must start at `head` and follow `k` pointers: O(n) to reach a position or to search for a value.
 - **Cheap surgery.** Inserting or deleting next to a node you already hold only rewrites a pointer or two. Nothing shifts, so it is O(1) however long the list is. (An array insert in the middle shifts every later element: O(n).)
 
-The catch hides in "a node you already hold". If you first have to *find* the spot, that search is O(n), and the overall operation is O(n) too. Linked lists shine when the position comes for free: the front of the list, or a node you saved a reference to earlier — which is exactly how an LRU cache uses one.
+The catch hides in "a node you already hold". If you first have to *find* the spot, that search is O(n), and the overall operation is O(n) too. Linked lists shine when the position comes for free: the front of the list, or a node you saved a reference to earlier. That is exactly how an LRU cache uses one.
 
 ### Singly and doubly linked
 
-In a **singly linked** list each node has only `next`. To delete node X you must set `pred.next = X.next`, but X does not know its predecessor, so you walk from head to find it — O(n).
+In a **singly linked** list each node has only `next`. To delete node X you must set `pred.next = X.next`, but X does not know its predecessor, so you walk from head to find it: O(n).
 
 A **doubly linked** list gives every node a `prev` pointer as well. Now X can unlink itself in O(1): `X.prev.next = X.next` and `X.next.prev = X.prev`. You can also walk backwards and keep a `tail` pointer for O(1) appends and removals at both ends. The cost is one extra pointer per node and more pointers to keep consistent on every change.
 
@@ -90,16 +90,16 @@ Keep `prev` (the already-reversed part) and `curr` (the next node to flip). Each
 
 | Step | nxt saved | Pointer flipped | prev | curr | Lists at this moment |
 |---|---|---|---|---|---|
-| start | — | — | null | 1 | 1→2→3 |
+| start | (none) | (none) | null | 1 | 1→2→3 |
 | 1 | 2 | 1.next = null | 1 | 2 | 1→null · 2→3 |
 | 2 | 3 | 2.next = 1 | 2 | 3 | 2→1→null · 3 |
 | 3 | null | 3.next = 2 | 3 | null | 3→2→1→null |
 
-`curr` is null, so the loop ends and `prev` (node 3) is the new head. Three nodes, three iterations, and only three extra variables however long the list is: O(n) time, O(1) space. The step people forget is saving `nxt` — once `curr.next` is overwritten, the rest of the list is unreachable.
+`curr` is null, so the loop ends and `prev` (node 3) is the new head. Three nodes, three iterations, and only three extra variables however long the list is: O(n) time, O(1) space. The step people forget is saving `nxt`. Once `curr.next` is overwritten, the rest of the list is unreachable.
 
 ## Implement it in Python
 
-The same idea works in any language; here it is in Python, where null is spelled `None`.
+In Python, null is spelled `None`. The two helpers at the bottom just turn plain lists into linked ones and back, so you can try things.
 
 ```python
 class Node:
@@ -157,4 +157,4 @@ Big-O treats every step as equal, but the hardware does not. A CPU reads memory 
 
 ## In the interview
 
-Linked-list questions test pointer discipline, not knowledge. Draw boxes and arrows, name your pointers (`prev`, `curr`, `nxt`), and write the pointer updates in the order you drew them. Common asks: reverse a list (iteratively, then recursively), merge two sorted lists (use a dummy head), remove the n-th node from the end (two pointers n apart), find the middle or detect a cycle (fast and slow pointers). Mention the dummy-head trick early — it removes most edge cases.
+Linked-list questions test pointer discipline, not knowledge. Draw boxes and arrows, name your pointers (`prev`, `curr`, `nxt`), and write the pointer updates in the order you drew them. Common asks: reverse a list (iteratively, then recursively), merge two sorted lists (use a dummy head), remove the n-th node from the end (two pointers n apart), find the middle or detect a cycle (fast and slow pointers). Mention the dummy-head trick early, because it removes most edge cases.

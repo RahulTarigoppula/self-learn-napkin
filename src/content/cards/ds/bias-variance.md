@@ -9,20 +9,20 @@ analogy: "Train the same model on many different samples and throw each one like
 diagram: bias-variance
 story:
   - title: Model complexity against error
-    text: "Picture fitting a curve to 20 noisy points. Across: how flexible the model is — a straight line on the left, a degree-9 polynomial on the right. Up: error. We will draw two curves, one measured on the training points and one on fresh test points."
+    text: "Picture fitting a curve to 20 noisy points. Across: how flexible the model is, from a straight line on the left to a degree-9 polynomial on the right. Up: error. We will draw two curves, one measured on the training points and one on fresh test points."
   - title: Training error falls forever
-    text: "Every extra degree of freedom lets the model bend closer to the training points, so training error only goes down. A flexible enough model can drive it to zero by memorising every point — noise included. Training error alone cannot tell you when to stop."
+    text: "Every extra degree of freedom lets the model bend closer to the training points, so training error only goes down. A flexible enough model can drive it to zero by memorising every point, noise and all. Training error alone cannot tell you when to stop."
   - title: Test error falls, then rises
-    text: "On fresh data the story changes. Error falls at first as the model captures the real pattern, bottoms out at the sweet spot, then climbs as the model starts fitting noise. That minimum — not the lowest training error — is the model you want."
+    text: "On fresh data the story changes. Error falls at first as the model captures the real pattern, bottoms out at the sweet spot, then climbs as the model starts fitting noise. That minimum is the model you want, not the one with the lowest training error."
   - title: The gap signals variance
     text: "The widening gap between the curves is the signature of variance: the fitted model changes a lot depending on which sample it saw. The dashed line is irreducible noise. For squared error, expected test error = bias² + variance + noise, so no model's test error gets below the noise."
   - title: "Left: underfit, high bias"
-    text: "Left of the sweet spot the model is too simple — a straight line through a curve. It makes the same mistake whatever sample it trains on: darts tightly grouped but off-centre. Symptom: training and test error both high and close together. Fix: a richer model or better features."
+    text: "Left of the sweet spot the model is too simple, like a straight line through a curve. It makes the same mistake whatever sample it trains on: darts tightly grouped but off-centre. Symptom: training and test error both high and close together. Fix: a richer model or better features."
   - title: "Right: overfit, high variance"
     text: "Right of the sweet spot the model is too flexible. Retrain it on a new sample and it lands somewhere else: darts centred on average but scattered. Symptom: tiny training error, much larger test error. Fix: more data, regularisation, a simpler model or early stopping."
 keyIdeas:
   - "**Bias** is error from wrong assumptions; **variance** is sensitivity to the particular training sample."
-  - "**Irreducible noise** sets the floor — no model beats it."
+  - "**Irreducible noise** sets the floor. No model beats it."
   - "More data reduces variance, not bias."
   - "**Regularisation** deliberately buys bias to sell variance."
   - "Diagnose from two gaps: training error vs the target (bias), validation error vs training error (variance)."
@@ -30,7 +30,7 @@ quiz:
   - q: "Training error 15 %, validation error 16 %, and a human expert manages 2 %. What is the main problem?"
     options: ["High bias (underfitting)", "High variance (overfitting)", "Data leakage", "The validation set is too small"]
     answer: 0
-    why: "Training and validation errors are close, so the model generalises what it learned — it just learned too little. The 13-point gap to the expert is bias. Fix it with a richer model or better features, not more data."
+    why: "Training and validation errors are close, so the model generalises what it learned. It just learned too little. The 13-point gap to the expert is bias. Fix it with a richer model or better features, not more data."
   - q: "Which change usually lowers variance but raises bias?"
     options: ["Adding more input features", "Increasing the L2 regularisation strength (a penalty on large weights)", "Training for more epochs", "Letting a decision tree grow deeper"]
     answer: 1
@@ -48,7 +48,7 @@ prereqs: []
 flashcards:
   - kind: qa
     q: "You see 2 % training error and 18 % validation error. Bias or variance, and what do you do?"
-    a: "Variance (overfitting). Get more data, regularise harder, simplify the model, or add augmentation (extra training variants, such as flipped images) — not a bigger model."
+    a: "Variance (overfitting). Get more data, regularise harder, simplify the model, or add augmentation (extra training variants, such as flipped images). A bigger model is the wrong move."
   - kind: cloze
     text: "Underfitting shows as {{high bias}}: training and validation error are both high and close together."
   - kind: qa
@@ -65,18 +65,18 @@ Bias and variance are not properties of one trained model. They describe what ha
 
 - The **true value** at x is f(x). Real labels are y = f(x) + noise, where the noise has variance σ² and nothing can predict it.
 - The predictions f̂(x) differ from one training set to the next. Their **average** is written E[f̂(x)].
-- **Bias** = E[f̂(x)] − f(x): how far the *average* prediction is from the truth. It comes from the model's built-in assumptions — a straight line cannot follow a sine wave however much data it gets.
-- **Variance** = the average of (f̂(x) − E[f̂(x)])²: how much the predictions *swing* between training sets. It comes from flexibility — a model that can bend anywhere bends towards whatever noise its sample happened to have.
+- **Bias** = E[f̂(x)] − f(x): how far the *average* prediction is from the truth. It comes from the model's built-in assumptions: a straight line cannot follow a sine wave however much data it gets.
+- **Variance** = the average of (f̂(x) − E[f̂(x)])²: how much the predictions *swing* between training sets. It comes from flexibility. A model that can bend anywhere bends towards whatever noise its sample happened to have.
 
 For squared-error loss these add up exactly:
 
 > expected test error at x = bias² + variance + σ²
 
-Why it adds up: write the error y − f̂(x) as three pieces — the noise, the fixed offset of the average prediction from the truth (bias), and the model's random wobble around its own average. Square and average. The cross terms vanish: the noise is independent of the training set, and the wobble averages to zero around its own mean. Only the three squares survive. For other losses (like 0–1 classification error) the decomposition is messier, but the trade-off behaves the same way.
+Why it adds up: write the error y − f̂(x) as three pieces: the noise, the fixed offset of the average prediction from the truth (bias), and the model's random wobble around its own average. Square and average. The cross terms vanish: the noise is independent of the training set, and the wobble averages to zero around its own mean. Only the three squares survive. For other losses (like 0–1 classification error) the decomposition is messier, but the trade-off behaves the same way.
 
 ## How the trade-off arises
 
-Making a model more flexible — more features, higher polynomial degree, deeper trees, more layers, weaker regularisation — lets it represent more patterns, so bias falls. But it also gives it room to fit accidents of the sample, so variance rises. Test error, their sum plus noise, therefore falls and then rises: the U-shape in the diagram. Training error does not have a variance penalty (the model is scored on the very points it bent towards), so it only falls.
+Making a model more flexible (more features, higher polynomial degree, deeper trees, more layers, weaker regularisation) lets it represent more patterns, so bias falls. But it also gives it room to fit accidents of the sample, so variance rises. Test error, their sum plus noise, therefore falls and then rises: the U-shape in the diagram. Training error does not have a variance penalty (the model is scored on the very points it bent towards), so it only falls.
 
 ## Worked example
 
@@ -147,7 +147,7 @@ Output:
 | 3 | 0.07 | 0.11 | 0.000 | 0.016 |
 | 9 | 0.05 | 0.33 | 0.000 | 0.119 |
 
-The cubic sits just above the noise floor of 0.09. Degree 9 has the lowest training error and the worst test error. The test column uses the median because a few degree-9 fits swing so wildly near the edges of the data that their mean error is enormous — variance in its rawest form.
+The cubic sits just above the noise floor of 0.09. Degree 9 has the lowest training error and the worst test error. The test column uses the median because a few degree-9 fits swing so wildly near the edges of the data that their mean error is enormous. That is variance in its rawest form.
 
 ## Diagnosing and fixing
 
@@ -163,9 +163,9 @@ Note what is *not* in the bias row: more data. If a straight line cannot represe
 
 - **"Bias" here is not fairness bias** and not the `b` term of a linear model. Same word, different meanings.
 - **Very large neural networks** can show "double descent": test error rises near the point where the model can just interpolate the data, then falls again as it grows further. The classic U is still the right mental model for most tabular problems and for regularisation decisions.
-- **You never see the decomposition directly** on real data — you see training and validation error. Use the gaps between them as proxies.
+- **You never see the decomposition directly** on real data. You see training and validation error, and you use the gaps between them as proxies.
 - **Noise is not always irreducible in practice:** label errors can be cleaned and missing features added. The floor is fixed only for a given set of inputs.
 
 ## In the interview
 
-Expect "explain the bias–variance trade-off" or a diagnosis question with two numbers. Strong answers define both terms as properties *across training sets*, write the decomposition, and map each symptom to its fixes. A good follow-up to anticipate: *where does regularisation sit?* — it deliberately adds bias to cut variance, and its strength is a hyperparameter you tune on validation data.
+Expect "explain the bias–variance trade-off" or a diagnosis question with two numbers. Strong answers define both terms as properties *across training sets*, write the decomposition, and map each symptom to its fixes. A good follow-up to anticipate: *where does regularisation sit?* It deliberately adds bias to cut variance, and its strength is a hyperparameter you tune on validation data.

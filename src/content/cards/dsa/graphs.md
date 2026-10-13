@@ -110,7 +110,7 @@ In the directed, weighted graph (S → A 4, S → B 1, B → A 2, A → T 5, B �
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+The same five-vertex graph built both ways, then a weighted DAG and a grid whose neighbours are computed on the fly.
 
 ```python
 n = 5
@@ -165,7 +165,7 @@ print(list(neighbours(1, 1)))             # [(0, 1), (1, 2), (1, 0)]: the wall b
 
 - **Forgetting the reverse edge** in an undirected graph: add both `adj[u].append(v)` and `adj[v].append(u)`.
 - **Disconnected graphs**: a single BFS from vertex 0 misses other components; loop over all vertices and start a new search from each unvisited one.
-- **Cycle detection differs by direction**: in an undirected graph, revisiting a vertex other than your parent means a cycle. In a directed graph you need a vertex that is still on the current DFS path, not just one visited earlier.
+- **Cycle detection differs by direction**: in an undirected graph, revisiting a vertex other than your parent means a cycle. In a directed graph you need a vertex that is still on the current DFS path; reaching one from an already finished branch proves nothing.
 - **Self-loops and parallel edges**: check whether the input allows them; they change degree counts and matrix contents.
 - **Vertex labels** that are strings or coordinates: use a dict of lists, or map labels to indices 0..V−1 first.
 

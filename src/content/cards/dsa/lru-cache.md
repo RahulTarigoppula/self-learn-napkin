@@ -9,11 +9,11 @@ analogy: "A short stack of papers on your desk: whatever you touch goes on top, 
 diagram: lru-cache
 story:
   - title: Two structures, one cache
-    text: "An LRU (least recently used) cache holds at most a fixed number of entries — here 2. A doubly linked list keeps them in order of use: most recent at the front, next to the sentinel H, least recent at the back, next to T. A hash map takes each key straight to its node in the list."
+    text: "An LRU (least recently used) cache holds at most a fixed number of entries, here 2. A doubly linked list keeps them in order of use: most recent at the front, next to the sentinel H, least recent at the back, next to T. A hash map takes each key straight to its node in the list."
   - title: put 1, put 2
     text: "put(1, A) creates a node and links it right after H. put(2, B) does the same, so 2 is now in front and 1 has slid towards the back. Every insert is a few pointer changes at the head, plus one map write: O(1)."
   - title: get 1 moves it to the front
-    text: "get(1) is a hit: the map gives us node 1 directly, we return A, and because 1 was just used we unlink it and relink it after H. Now 2 is the least recently used entry. No scanning — the node's prev and next pointers make the unlink O(1)."
+    text: "get(1) is a hit: the map gives us node 1 directly, we return A, and because 1 was just used we unlink it and relink it after H. Now 2 is the least recently used entry. No scanning: the node's prev and next pointers make the unlink O(1)."
   - title: put 3 evicts the tail
     text: "put(3, C) finds the cache full. The victim is whatever sits just before T: key 2, the entry untouched for longest. Unlink it, delete key 2 from the map, then insert 3 at the front. The cache now holds 3 and 1."
   - title: Why it is O(1)
@@ -21,18 +21,18 @@ story:
 keyIdeas:
   - "**Hash map: key → node** gives O(1) lookup; **doubly linked list** gives O(1) move-to-front and remove."
   - "**Front = most recently used, back = least recently used**; evict the node just before the tail sentinel."
-  - "**Both get and put count as a use** — a hit or an update moves the node to the front."
+  - "**Both get and put count as a use.** A hit or an update moves the node to the front."
   - "**Store the key inside each node**, so that after evicting the tail you can delete it from the map."
   - "**Sentinel head and tail nodes** remove every empty-list and end-of-list special case."
 quiz:
   - q: "Capacity 2. Operations: put(1), put(2), get(1), put(3). Which key is evicted?"
-    options: ["1", "2", "3", "None — the cache grows"]
+    options: ["1", "2", "3", "None, the cache grows"]
     answer: 1
     why: "get(1) made 1 the most recent, leaving 2 as the least recently used. put(3) on a full cache evicts 2."
   - q: "Why does the list need to be doubly linked?"
     options: ["To traverse it backwards when printing", "To unlink a node in O(1) you need its predecessor, and only a prev pointer gives you that", "Singly linked lists cannot hold integers", "To make the hash map faster"]
     answer: 1
-    why: "Removing a node means pointing its predecessor at its successor. With a singly linked list you would have to walk from the head to find the predecessor — O(n)."
+    why: "Removing a node means pointing its predecessor at its successor. With a singly linked list you would have to walk from the head to find the predecessor, which is O(n)."
   - q: "Capacity 2: put(1), put(2), put(1, new value), put(3). Which key is evicted?"
     options: ["1", "2", "3", "Both 1 and 2"]
     answer: 1
@@ -74,7 +74,7 @@ The trick is to use a map **and** a list together, and to make the map's values 
 
 ## How it works
 
-Keep a **doubly linked list** where each node holds `key`, `value`, `prev` and `next`. Put two dummy **sentinel** nodes at the ends, `head` and `tail`, so the real nodes always have a neighbour on both sides — this removes all the "is the list empty?" special cases. The node right after `head` is the most recently used; the node right before `tail` is the least recently used.
+Keep a **doubly linked list** where each node holds `key`, `value`, `prev` and `next`. Put two dummy **sentinel** nodes at the ends, `head` and `tail`, so the real nodes always have a neighbour on both sides. That removes all the "is the list empty?" special cases. The node right after `head` is the most recently used; the node right before `tail` is the least recently used.
 
 Keep a **hash map** from key to node.
 
@@ -89,8 +89,8 @@ Capacity 2. List shown from front (most recent) to back (least recent):
 
 | Operation | Result | List after | Map keys |
 |---|---|---|---|
-| put(1, A) | — | 1 | {1} |
-| put(2, B) | — | 2, 1 | {1, 2} |
+| put(1, A) | (none) | 1 | {1} |
+| put(2, B) | (none) | 2, 1 | {1, 2} |
 | get(1) | A (hit) | 1, 2 | {1, 2} |
 | put(3, C) | evicts 2 | 3, 1 | {1, 3} |
 | get(2) | −1 (miss) | 3, 1 | {1, 3} |
@@ -98,7 +98,7 @@ Capacity 2. List shown from front (most recent) to back (least recent):
 
 ## Implement it in Python
 
-The same design works in any language; here it is in Python, with a dict as the hash map.
+A Python dict plays the hash map. The list is hand-built so you can see every pointer move.
 
 ```python
 class Node:
@@ -151,7 +151,7 @@ Many standard libraries already combine the two structures: Python's `OrderedDic
 ## Edge cases and pitfalls
 
 - **Forgetting to delete from the map** on eviction: the map then points at a node that is no longer in the list, and the size check goes wrong.
-- **Not moving on update**: `put` on an existing key must refresh its recency, not just its value.
+- **Not moving on update**: `put` on an existing key must refresh its recency as well as its value.
 - **Updating without growing**: an update must not count as a new entry, or you will evict something needlessly.
 - **Capacity 0**: with the guard above, nothing is stored; without it, the code would try to evict a sentinel.
 - **Concurrency**: a real cache shared by threads needs a lock (or sharded locks) around each operation, because a get also writes (it reorders the list).

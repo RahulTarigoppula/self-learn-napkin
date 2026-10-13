@@ -90,7 +90,7 @@ Training rows: A (22, £55,000), B (34, £35,000), C (40, £50,000), D (46, £65
 | C | 40 | 50,000 | 6,000 | 0.00 | 0.00 | 1.46 |
 | D | 46 | 65,000 | 21,000 | +0.50 | +1.50 | 2.79 |
 | E | 58 | 45,000 | **1,001** | +1.50 | −0.50 | 2.84 |
-| Q | 24 | 44,000 | — | −1.33 | −0.60 | — |
+| Q | 24 | 44,000 | n/a | −1.33 | −0.60 | n/a |
 
 Raw: E wins, because √(34² + 1000²) ≈ 1,000.6 and the 34-year age gap contributes almost nothing. Scaled: Q's z-scores are (24 − 40) / 12 = −1.33 and (44 − 50) / 10 = −0.60. For A, √((−1.50 + 1.33)² + (0.50 + 0.60)²) = √(0.028 + 1.21) ≈ 1.11, the smallest. Min-max scaling (age range 36, income range £30,000) agrees: distances 0.37 (A), 0.41 (B), 0.49 (C), 0.93 (D), 0.95 (E).
 

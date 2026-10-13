@@ -5,21 +5,21 @@ tags: [ensembles, trees, regression]
 difficulty: 3
 minutes: 6
 tldr: "Build trees one after another, each fitted to the mistakes (negative gradients) of the model so far, and add each with a small learning rate. Stop when validation error stops improving."
-analogy: "Golf putting. The first shot gets near the hole; each next shot aims at where the ball actually is, correcting what is left. A cautious golfer hits each putt a bit softer than needed — slower, but less likely to overshoot."
+analogy: "Golf putting. The first shot gets near the hole; each next shot aims at where the ball actually is, correcting what is left. A cautious golfer hits each putt a bit softer than needed. It takes more shots but is less likely to overshoot."
 diagram: gradient-boosting
 story:
   - title: Start with the mean
     text: "Six points: (1, 1), (2, 1), (3, 4), (4, 7), (5, 4), (6, 1). Boosting builds its model F in steps. Step 0 is the best single constant under squared error, the mean: F₀ = 3 for every x."
   - title: "Residuals: what is left to explain"
-    text: "The residuals y − F₀ are −2, −2, 1, 4, 1, −2 — what the model still gets wrong. For the loss ½(y − F)² they are exactly the negative gradient of the loss with respect to the prediction. Fitting them is a gradient-descent step, hence the name."
+    text: "The residuals y − F₀ are −2, −2, 1, 4, 1, −2: what the model still gets wrong. For the loss ½(y − F)² they are exactly the negative gradient of the loss with respect to the prediction. Fitting them is a gradient-descent step, hence the name."
   - title: Tree 1 fits the residuals
-    text: "Fit a small tree — here a one-split stump — to the residuals, not to y. The best split is x < 2.5. Its leaves predict the mean residual on each side: −2 on the left, and (1 + 4 + 1 − 2) / 4 = +1 on the right."
+    text: "Fit a small tree (here a one-split stump) to the residuals, not to y. The best split is x < 2.5. Its leaves predict the mean residual on each side: −2 on the left, and (1 + 4 + 1 − 2) / 4 = +1 on the right."
   - title: "Add it, shrunk by η = 0.5"
     text: "Add the tree, scaled by the learning rate η = 0.5: F₁ = F₀ + 0.5 × tree 1, which is 2 on the left and 3.5 on the right. The squared error falls from 30 to 21. Taking half a step leaves later trees room to correct, which generalises better."
   - title: Tree 2 fits the new residuals
-    text: "Recompute the residuals against F₁ (orange) and fit tree 2 to them. The biggest pattern left is the drop at the right end, so it splits at x < 5.5. F₂ = F₁ + 0.5 × tree 2 is a two-level step — low, high, then low again at the right end — with error 15.4."
+    text: "Recompute the residuals against F₁ (orange) and fit tree 2 to them. The biggest pattern left is the drop at the right end, so it splits at x < 5.5. F₂ = F₁ + 0.5 × tree 2 goes low, high, then low again at the right end, and its error is 15.4."
   - title: "Many small steps, stop early"
-    text: "Repeat hundreds of times. Training error keeps falling — after 30 stumps it is 0.07 — but eventually the trees fit noise and validation error turns up. Early stopping keeps the number of trees where validation error is lowest."
+    text: "Repeat hundreds of times. Training error keeps falling (after 30 stumps it is 0.07), but eventually the trees fit noise and validation error turns up. Early stopping keeps the number of trees where validation error is lowest."
 keyIdeas:
   - "**Additive model:** F(x) = F₀ + η·h₁(x) + η·h₂(x) + …, each hₘ a small tree trained on the current **pseudo-residuals**."
   - "**Pseudo-residual = negative gradient** of the loss at the current prediction: y − F for squared error, y − p for log-loss. Any differentiable loss works."
@@ -38,7 +38,7 @@ quiz:
   - q: "Which statement about bagging (random forests) vs boosting is correct?"
     options: ["Both train trees in parallel", "Boosting trains trees sequentially on the previous model's errors and can overfit if you add too many", "Bagging uses shallow trees and boosting deep ones", "Boosting cannot be used for classification"]
     answer: 1
-    why: "Boosting is sequential and keeps reducing training error, so with enough trees it overfits — hence early stopping. Forests train independent deep trees in parallel and do not overfit from more trees."
+    why: "Boosting is sequential and keeps reducing training error, so with enough trees it overfits. That is what early stopping is for. Forests train independent deep trees in parallel and do not overfit from more trees."
   - q: "For binary log-loss with predicted probability p, what is the pseudo-residual for a positive example (y = 1) with p = 0.8?"
     options: ["0.8", "0.2", "−0.2", "ln 0.8"]
     answer: 1
@@ -55,7 +55,7 @@ prereqs: [ds/decision-trees, ds/gradient-descent]
 flashcards:
   - kind: qa
     q: "Why is it called gradient boosting?"
-    a: "Each tree is fitted to the negative gradient of the loss with respect to the current predictions, and added with a step size η — gradient descent carried out in the space of functions."
+    a: "Each tree is fitted to the negative gradient of the loss with respect to the current predictions, and added with a step size η. It is gradient descent carried out in the space of functions."
   - kind: cloze
     text: "Boosting mainly reduces {{bias}} by adding trees sequentially; bagging mainly reduces {{variance}} by averaging independent trees."
   - kind: qa
@@ -82,7 +82,7 @@ F₀ is a constant starting guess, each hₘ is a small regression tree, and η 
    2. **Fit a small regression tree** hₘ to predict rᵢ from xᵢ.
    3. **Set the leaf values** to the best constant step for each leaf (for squared error, the mean residual in the leaf; for other losses, a one-dimensional line search or Newton step).
    4. **Update** Fₘ(x) = F_{m−1}(x) + η·hₘ(x).
-3. Stop after M trees — ideally chosen by early stopping on validation data.
+3. Stop after M trees, ideally with M chosen by early stopping on validation data.
 
 ### Why "gradient"
 
@@ -136,7 +136,7 @@ Stumps can only add one-feature step functions, so a boosted model of stumps is 
 | Mainly reduces | variance | bias (and some variance via shrinkage) |
 | More trees | never overfits, just slower | eventually overfits; use early stopping |
 | Tuning effort | low | moderate (η, trees, depth, subsampling) |
-| Noisy labels / outliers | robust | sensitive with squared error; use Huber |
+| Noisy labels / outliers | fairly tolerant | sensitive with squared error; use Huber |
 
 ## Implement it in Python
 
@@ -173,13 +173,13 @@ print(clf.n_iter_, round(clf.score(X_te, y_te), 3))   # 216 trees used of 1000; 
 
 ## Edge cases and pitfalls
 
-- **Overfitting with many trees** — always use early stopping or cross-validated M.
+- **Overfitting with many trees.** Always use early stopping or a cross-validated M.
 - **Tuning order:** fix η, find M by early stopping, then tune depth / leaves and the minimum rows per leaf, then subsampling; lower η at the end for a last gain.
 - **Outliers and label noise** pull hard under squared error because their residuals stay large tree after tree; consider Huber or absolute loss.
-- **Leakage** through target encoding or features computed with the label inflates validation scores — boosting is very good at exploiting leaks.
+- **Leakage** through target encoding or features computed with the label inflates validation scores, and boosting is very good at exploiting leaks.
 - **Extrapolation:** like all tree models, predictions are flat outside the training range of the features.
 - **Sequential training** cannot be parallelised across trees (only within a tree's split search), so very large M is slow.
 
 ## In the interview
 
-Typical prompts: "explain gradient boosting", "why is it called gradient?", "bagging vs boosting?", "how do you stop it overfitting?". A strong answer writes the additive model, says each tree fits the negative gradient (residuals for squared error), explains η and early stopping, and contrasts bias reduction (boosting) with variance reduction (bagging). Expect "what does XGBoost add?" — second-order steps, regularised leaves, histograms, missing-value handling.
+Typical prompts: "explain gradient boosting", "why is it called gradient?", "bagging vs boosting?", "how do you stop it overfitting?". A strong answer writes the additive model, says each tree fits the negative gradient (residuals for squared error), explains η and early stopping, and contrasts bias reduction (boosting) with variance reduction (bagging). Expect "what does XGBoost add?" too. The answer: second-order steps, regularised leaves, histograms, missing-value handling.

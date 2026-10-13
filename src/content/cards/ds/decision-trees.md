@@ -9,13 +9,13 @@ analogy: "The game of twenty questions. A good first question (\"is it alive?\")
 diagram: decision-trees
 story:
   - title: Fourteen loans
-    text: "Fourteen past loans, each with the borrower's debt and income (in $10k). Seven were repaid (blue), seven defaulted (red). We want simple rules — a flowchart of yes/no questions — that sort a new applicant into the right group."
+    text: "Fourteen past loans, each with the borrower's debt and income (in $10k). Seven were repaid (blue), seven defaulted (red). We want a flowchart of simple yes/no questions that sorts a new applicant into the right group."
   - title: "Measure the mix: Gini impurity"
     text: "First we need a score for how mixed a group is. Gini impurity is 1 − Σ p², where p is the share of each class. A pure group scores 0; a 50/50 group scores 1 − 0.5² − 0.5² = 0.5, the worst case for two classes. All 14 loans together: 0.5."
   - title: "Try every split, keep the purest"
     text: "Try every feature and every threshold between neighbouring values. Debt < 4 sends 6 loans left (5 repaid, 1 not: Gini 0.28) and 8 right (2:6, Gini 0.375). Weighted by size: 6/14 × 0.28 + 8/14 × 0.375 = 0.33. No other split beats it; income ≥ 7 only reaches 0.42."
   - title: Recurse on each side
-    text: "Repeat inside each child. On the right, income ≥ 7 separates the 2 repaid loans from the 6 defaults — both leaves are pure. To classify a new loan, walk down: debt 6, income 8 → not under 4 → income at least 7 → repaid."
+    text: "Repeat inside each child. On the right, income ≥ 7 separates the 2 repaid loans from the 6 defaults, and both leaves are pure. To classify a new loan, walk down: debt 6, income 8 → not under 4 → income at least 7 → repaid."
   - title: "Too deep: it memorises noise"
     text: "Keep splitting and the tree carves a sliver, debt 1.9 to 2.4, around the one default among the low-debt loans. Training accuracy hits 100 %, but that rule is noise. Capping the depth, the minimum rows per leaf or the number of leaves keeps the 5:1 leaf, which predicts repaid with p = 5/6."
 keyIdeas:
@@ -23,7 +23,7 @@ keyIdeas:
   - "**Gini** = 1 − Σ pₖ²; **entropy** = −Σ pₖ log₂ pₖ. Both are 0 for a pure node; they almost always pick the same split."
   - "**Regression trees** split to minimise squared error, and each leaf predicts the **mean** of its rows."
   - "Unlimited trees **overfit** (low bias, high variance). Regularise with a **maximum depth, a minimum number of rows per leaf, a maximum number of leaves** or cost-complexity pruning."
-  - "Pluses: readable rules, no feature scaling, mixed feature types. Minuses: **unstable**, axis-aligned staircase boundaries — fixed by forests and boosting."
+  - "Pluses: readable rules, no feature scaling, mixed feature types. Minuses: **unstable**, with axis-aligned staircase boundaries. Forests and boosting fix most of that."
 quiz:
   - q: "A node holds 8 cats and 2 dogs. What is its Gini impurity?"
     options: ["0.20", "0.32", "0.50", "0.72"]
@@ -40,7 +40,7 @@ quiz:
   - q: "What does a leaf of a regression tree predict?"
     options: ["The median of the whole dataset", "The mean target of the training rows in that leaf", "A straight-line fit through the leaf's rows", "The most common target value"]
     answer: 1
-    why: "Squared-error splitting makes the mean the best constant per leaf, so the tree is a piecewise-constant function — a staircase."
+    why: "Squared-error splitting makes the mean the best constant per leaf, so the tree is a piecewise-constant function: a staircase."
 bigO:
   - { op: "train (CART, balanced tree)", avg: "O(p · n log n · depth)", note: "sort-based search over p features and n rows" }
   - { op: "predict one row", avg: "O(depth)", note: "about log₂ n for a balanced tree" }
@@ -83,7 +83,7 @@ For a node where class k makes up a share pₖ of the rows:
 
 - **Gini impurity:** G = 1 − Σ pₖ². It is the chance that two rows drawn at random (with replacement) from the node have different labels.
 - **Entropy:** H = −Σ pₖ log₂ pₖ, in bits. The drop in entropy is the **information gain**.
-- **Misclassification error**, 1 − max pₖ, is too coarse for choosing splits — many splits tie — but fine for pruning.
+- **Misclassification error**, 1 − max pₖ, is too coarse for choosing splits (many splits tie) but fine for pruning.
 
 | Class shares | Gini | Entropy |
 |---|---|---|
@@ -106,7 +106,7 @@ Fourteen loans, 7 repaid and 7 defaulted. Root Gini 0.5, root entropy 1 bit.
 
 Debt < 4 wins under both measures: Gini falls from 0.5 to 0.333 (decrease 0.167) and entropy from 1 to 0.742 (information gain 0.258 bits). Notice that "debt < 1.9" has a perfectly pure child and still loses: purity in a tiny child counts for little when the big child stays mixed.
 
-Inside the right child (2 : 6), income ≥ 7 separates the two repaid loans from the six defaults — weighted Gini 0, so it is the best split there. The left child (5 : 1) can only improve by isolating the single default; with a limit of three leaves the tree stops and that leaf predicts **repaid with probability 5/6 ≈ 0.83**. That three-leaf tree gets 13 of 14 training loans right. Grown to purity, the tree needs depth 3 and five leaves and gets 14 of 14 — by fencing off debt 1.9–2.4, a rule no one would trust.
+Inside the right child (2 : 6), income ≥ 7 separates the two repaid loans from the six defaults. Weighted Gini is 0, so it is the best split there. The left child (5 : 1) can only improve by isolating the single default; with a limit of three leaves the tree stops and that leaf predicts **repaid with probability 5/6 ≈ 0.83**. That three-leaf tree gets 13 of 14 training loans right. Grown to purity, the tree needs depth 3 and five leaves and gets 14 of 14. It does that by fencing off debt 1.9–2.4, a rule no one would trust.
 
 ## Regression trees
 
@@ -114,13 +114,13 @@ For a numeric target the same algorithm splits to minimise the **sum of squared 
 
 ## Controlling overfitting
 
-An unconstrained tree keeps splitting until every leaf is pure — low bias, very high variance. The knobs:
+An unconstrained tree keeps splitting until every leaf is pure: low bias, very high variance. These knobs rein it in:
 
-- **Maximum depth** — limit the number of questions on any path.
-- **Minimum rows per leaf / per split** — every leaf must hold, or every split must start from, at least this many rows.
-- **Maximum number of leaves** — grow best-first and stop at this many leaves.
-- **Minimum impurity decrease** — skip splits that barely help.
-- **Cost-complexity pruning** — grow fully, then cut back subtrees whose impurity reduction is not worth a penalty α per extra leaf.
+- **Maximum depth**: limit the number of questions on any path.
+- **Minimum rows per leaf / per split**: every leaf must hold, or every split must start from, at least this many rows.
+- **Maximum number of leaves**: grow best-first and stop at this many leaves.
+- **Minimum impurity decrease**: skip splits that barely help.
+- **Cost-complexity pruning**: grow fully, then cut back subtrees whose impurity reduction is not worth a penalty α per extra leaf.
 
 Pick them by cross-validation.
 

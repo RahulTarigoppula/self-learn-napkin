@@ -4,25 +4,25 @@ track: sysdesign
 tags: [case-study, interview, fan-out, caching, pagination]
 difficulty: 3
 minutes: 6
-tldr: "Store each post once and push its id into every follower's cached feed list — but pull celebrities' posts at read time and merge. Rank, page with cursors, serve media from a CDN."
+tldr: "Store each post once and push its id into every follower's cached feed list. Celebrities are the exception: pull their posts at read time and merge. Rank, page with cursors, serve media from a CDN."
 analogy: "A newsagent who pre-packs a bundle for every subscriber as each paper arrives, so pick-up is instant. For the one magazine half the town reads, he keeps a single stack at the counter and slips a copy in as each person collects."
 diagram: design-news-feed
 story:
   - title: "Post path: save the post once"
-    text: "Ana shares a photo. Her request goes through the load balancer to the post service, which stores it once in the posts table as post 91, with her id, text and a link to the photo. Nothing else about the post is ever copied — everything else refers to it by id."
+    text: "Ana shares a photo. Her request goes through the load balancer to the post service, which stores it once in the posts table as post 91, with her id, text and a link to the photo. The post itself is never copied again. Everything else refers to it by id."
   - title: "Fan-out on write: push to followers"
     text: "The post service drops a job on a queue and replies to Ana straight away. Fan-out workers look up her followers and add id 91 to the front of each follower's list in the feed cache. That is one small write per follower: 200 followers, 200 writes."
   - title: "Read path: fetch the ready-made list"
-    text: "Ben opens the app. The feed service reads feed:Ben from the cache — a list of the newest post ids, already built — in about a millisecond. It then fetches the posts behind those ids in one batch. Reads are cheap because the work was done when the posts were written."
+    text: "Ben opens the app. The feed service reads feed:Ben from the cache in about a millisecond. It's a list of the newest post ids, already built. It then fetches the posts behind those ids in one batch. Reads are cheap because the work was done when the posts were written."
   - title: "Celebrities: pull at read time"
-    text: "Pushing a post from a star with 50 million followers means 50 million cache writes — minutes of work for one post. So accounts above a threshold are not fanned out. When Ben reads, the feed service fetches recent posts from the few stars he follows and merges them in. This mix of push and pull is the hybrid model."
+    text: "Pushing a post from a star with 50 million followers means 50 million cache writes, which is minutes of work for one post. So accounts above a threshold are not fanned out. When Ben reads, the feed service fetches recent posts from the few stars he follows and merges them in. This mix of push and pull is the hybrid model."
   - title: "Rank, then page with a cursor"
-    text: "The merged candidates are scored — how recent, how often Ben interacts with the author, how much engagement the post has — and returned 20 at a time. The cursor names a position in this session's ranked snapshot (for a purely chronological feed, simply the last post id seen), so new posts arriving at the top never shift or duplicate a page."
+    text: "The merged candidates are scored on recency, how often Ben interacts with the author and how much engagement the post has, then returned 20 at a time. The cursor names a position in this session's ranked snapshot (for a purely chronological feed, simply the last post id seen), so new posts arriving at the top never shift or duplicate a page."
   - title: Photos come from a CDN
     text: "The feed response carries only text and media URLs, a few kilobytes. The photos themselves were uploaded once to blob storage and are served by a CDN edge server close to Ben, so the heavy bytes never pass through the feed service."
 keyIdeas:
-  - "**Fan-out on write (push):** cheap reads, expensive writes — one cache write per follower per post."
-  - "**Fan-out on read (pull):** cheap writes, slow reads — gather posts from everyone you follow on every open."
+  - "**Fan-out on write (push):** cheap reads, expensive writes (one cache write per follower per post)."
+  - "**Fan-out on read (pull):** cheap writes, slow reads. Every open gathers posts from everyone you follow."
   - "**Hybrid:** push for normal accounts, pull for celebrities and merge at read time. Skip inactive users too."
   - "The feed cache holds **post ids only**; bodies, counts and media are fetched (hydrated) per page."
   - "**Cursor pagination** keeps pages stable while new posts arrive; media goes via **blob storage + CDN**."
@@ -30,7 +30,7 @@ quiz:
   - q: "100 million posts a day, each author has 200 followers on average. Roughly how many feed-cache writes per second does push cause?"
     options: ["About 1,200", "About 23,000", "About 230,000", "About 20 million"]
     answer: 2
-    why: "100 M × 200 = 20 billion inserts a day. 2 × 10^10 ÷ 86,400 s ≈ 231,000 writes per second — far more than the ~1,160 posts per second that cause them."
+    why: "100 M × 200 = 20 billion inserts a day. 2 × 10^10 ÷ 86,400 s ≈ 231,000 writes per second. That's far more than the ~1,160 posts per second that cause them."
   - q: "Why are celebrity posts usually pulled at read time instead of pushed?"
     options: ["Celebrities post more often", "One post would need tens of millions of cache writes and delay everyone's feeds", "Their posts are larger", "Pull is always faster for readers"]
     answer: 1
@@ -48,7 +48,7 @@ bigO:
   - { op: "new posts", avg: "~1,160/s", note: "100 M per day" }
   - { op: "fan-out writes (push)", avg: "~230,000/s", note: "100 M posts × 200 followers" }
   - { op: "feed cache size", avg: "~800 GB", note: "200 M users × 500 ids × 8 B, before overhead" }
-  - { op: "one celebrity post, pushed", avg: "~4 min", note: "50 M writes at 200 k/s — so pull instead" }
+  - { op: "one celebrity post, pushed", avg: "~4 min", note: "50 M writes at 200 k/s, so pull instead" }
   - { op: "new media per day", avg: "~5 TB", note: "10 M photos × 500 KB, served by a CDN" }
 bigOTitle: "Key numbers"
 related: [sysdesign/dns-and-cdns, sysdesign/consistency-models, sysdesign/design-url-shortener, sysdesign/design-chat-system]
@@ -56,7 +56,7 @@ prereqs: [sysdesign/back-of-envelope, sysdesign/api-design, sysdesign/load-balan
 flashcards:
   - kind: qa
     q: "Compare fan-out on write and fan-out on read in one sentence each."
-    a: "Write (push): copy each new post id into every follower's feed — fast reads, write cost grows with follower count. Read (pull): build the feed from followees' posts when it is opened — cheap writes, slow reads."
+    a: "Write (push): copy each new post id into every follower's feed, so reads are fast but write cost grows with follower count. Read (pull): build the feed from followees' posts when it is opened, so writes are cheap but reads are slow."
   - kind: cloze
     text: "A hybrid feed {{pushes}} posts from normal accounts and {{pulls}} posts from celebrities at read time."
   - kind: qa
@@ -79,7 +79,7 @@ A **news feed** is the scrolling list of posts from the people and pages you fol
 
 **Non-functional:**
 
-- **Fast feed loads** — under ~200 ms for the first page, since this is the app's main screen.
+- **Fast feed loads**: under ~200 ms for the first page, since this is the app's main screen.
 - **Highly available**, and **eventually consistent** is fine: a post may take a few seconds to reach followers (see **Consistency Models**).
 - **Read-heavy**: people scroll far more than they post.
 
@@ -113,7 +113,7 @@ POST /media                 → a short-lived upload URL for blob storage
 
 ## 4. High-level design
 
-**Post path.** The client uploads any photo straight to blob storage first (see **Blob Storage**), then calls `POST /posts`. Behind the load balancer (**Load Balancing**), the post service writes one row to the posts table — `post_id, author_id, text, media_urls, created_at` — and publishes a "new post" event to a queue (**Message Queues**). Post ids come from a time-sortable generator, so sorting by id is sorting by time (see **Unique ID Generation**).
+**Post path.** The client uploads any photo straight to blob storage first (see **Blob Storage**), then calls `POST /posts`. Behind the load balancer (**Load Balancing**), the post service writes one row to the posts table (`post_id, author_id, text, media_urls, created_at`) and publishes a "new post" event to a queue (**Message Queues**). Post ids come from a time-sortable generator, so sorting by id is sorting by time (see **Unique ID Generation**).
 
 **Fan-out.** Workers consume the event, read the author's follower list from the social-graph store (a `follows(follower_id, followee_id)` table indexed both ways), and push the post id into each follower's feed list. In Redis that is a sorted set `feed:{user}` scored by time and trimmed to the newest ~500 entries.
 
@@ -121,7 +121,7 @@ POST /media                 → a short-lived upload URL for blob storage
 
 **Media.** The JSON contains only media URLs; the client fetches the images from a CDN edge near the user (**DNS and CDNs**), in a size suited to the screen.
 
-**Storage choices.** The posts table is large (tens of TB a year) but only ever read by id, so a key-value or wide-column store sharded by `post_id` fits well (**SQL vs NoSQL**). The follow graph is two lookups — "who follows Ana?" for fan-out and "whom does Ben follow?" for the celebrity merge — so store both directions, each partitioned by its first column. The feed cache is a derived copy: if it is lost, it can be rebuilt from the other two.
+**Storage choices.** The posts table is large (tens of TB a year) but only ever read by id, so a key-value or wide-column store sharded by `post_id` fits well (**SQL vs NoSQL**). The follow graph serves two lookups: "who follows Ana?" for fan-out and "whom does Ben follow?" for the celebrity merge. Store both directions, each partitioned by its first column. The feed cache is a derived copy: if it is lost, it can be rebuilt from the other two.
 
 ## Sketch it
 
@@ -149,28 +149,28 @@ get_feed(user, cursor, limit = 20):
 | Freshness | after the fan-out delay | immediate |
 | Breaks on | celebrities, inactive users | users who follow thousands |
 
-Neither alone survives real traffic. **Push** fails on celebrities: one post from an account with 50 M followers is 50 M writes — about four minutes even if the whole 200,000 writes/s fan-out fleet did nothing else, and other people's posts queue behind it. It also wastes work on users who never log in. **Pull** fails on readers: Ben follows 300 accounts, so every open becomes 300 lookups plus a merge, 23,000 times a second.
+Neither alone survives real traffic. **Push** fails on celebrities: one post from an account with 50 M followers is 50 M writes. That takes about four minutes even if the whole 200,000 writes/s fan-out fleet does nothing else, and other people's posts queue behind it. It also wastes work on users who never log in. **Pull** fails on readers: Ben follows 300 accounts, so every open becomes 300 lookups plus a merge, 23,000 times a second.
 
 The **hybrid** used in practice:
 
 1. Push for ordinary accounts (say, under 100,000 followers).
-2. Do **not** push for celebrity accounts. Each keeps a short "recent posts" list that millions of readers share — a hot key, so replicate it across cache nodes.
+2. Do **not** push for celebrity accounts. Each keeps a short "recent posts" list that millions of readers share. That makes it a hot key, so replicate it across cache nodes.
 3. At read time, merge Ben's pushed list with the recent posts of the few celebrities he follows.
 4. Skip fan-out to users inactive for, say, 30 days; rebuild their feed by pull when they return.
 
 ## 6. Deep dive: ranking and pagination
 
-**Ranking basics.** A chronological feed simply sorts by time. A ranked feed takes a few hundred **candidates** (the merged ids), computes features for each — post age, how often the reader interacts with the author, likes and comments so far, media type — and scores them. A simple score is a weighted sum with a time decay; large products train a model that predicts the chance the reader engages. Sort by score and return the top 20. For example, with `score = (likes + 5 × comments + 1) × affinity ÷ (age_hours + 2)^1.5`, a 1-hour-old post with 10 likes from a close friend (affinity 3) scores 33 ÷ 5.2 ≈ 6.4, while a 10-hour-old post with 100 likes from a stranger (affinity 1) scores 101 ÷ 41.6 ≈ 2.4 — freshness and closeness beat raw popularity. The exact formula matters less in an interview than naming the inputs and the decay.
+**Ranking basics.** A chronological feed simply sorts by time. A ranked feed takes a few hundred **candidates** (the merged ids), computes features for each (post age, how often the reader interacts with the author, likes and comments so far, media type) and scores them. A simple score is a weighted sum with a time decay; large products train a model that predicts the chance the reader engages. Sort by score and return the top 20. For example, with `score = (likes + 5 × comments + 1) × affinity ÷ (age_hours + 2)^1.5`, a 1-hour-old post with 10 likes from a close friend (affinity 3) scores 33 ÷ 5.2 ≈ 6.4, while a 10-hour-old post with 100 likes from a stranger (affinity 1) scores 101 ÷ 41.6 ≈ 2.4. Freshness and closeness beat raw popularity. The exact formula matters less in an interview than naming the inputs and the decay.
 
 **Cursor pagination.** Offsets break on a live feed: if three posts arrive while Ben reads page 1, `offset=20` now starts three items earlier and he sees duplicates. A **cursor** names the last item he saw. For a chronological feed it is the last post id, and the next page is "ids less than 52". For a ranked feed, store the ranked list for the session briefly and let the cursor be a position in that snapshot, so scores changing mid-scroll cannot reorder pages.
 
 ## 7. Bottlenecks and trade-offs
 
-- **Fan-out lag** — a backlog on the queue delays posts. Scale workers horizontally, partition the queue by author, and prioritise followers who are online now.
-- **Feed cache memory** — ~800 GB of ids is a sharded cache cluster (**Sharding**, **Consistent Hashing**). If a feed is evicted or lost, rebuild it by pull; the cache is derived data.
-- **Hot posts** — like and comment counters for a viral post are written thousands of times a second; batch increments or use sharded counters.
-- **Unfollow and delete** — remove lazily: filter at hydration time instead of editing millions of lists.
-- **Consistency** — eventual is acceptable, but authors should see their own post at once: insert it into their own feed synchronously (read-your-writes).
+- **Fan-out lag.** A backlog on the queue delays posts. Scale workers horizontally, partition the queue by author, and prioritise followers who are online now.
+- **Feed cache memory.** About 800 GB of ids calls for a sharded cache cluster (**Sharding**, **Consistent Hashing**). If a feed is evicted or lost, rebuild it by pull; the cache is derived data.
+- **Hot posts.** Like and comment counters for a viral post are written thousands of times a second; batch increments or use sharded counters.
+- **Unfollow and delete.** Remove lazily: filter at hydration time instead of editing millions of lists.
+- **Consistency.** Eventual is acceptable, but authors should see their own post at once: insert it into their own feed synchronously (read-your-writes).
 
 ## 8. What I'd say in the last 5 minutes
 

@@ -12,13 +12,13 @@ story:
     text: "A database changes data in pages cached in memory (the buffer pool) and writes them back to data files later. Transaction T7 moves 50 from A to B: A 100 → 50, B 0 → 50. If the power fails after A is written but before B, the disk says the money vanished."
   - title: Log the change, fsync, then ack
     text: "So T7 first appends what it intends to do to the write-ahead log: records 101 and 102 with old and new values, then a COMMIT record. The log is fsynced, forced to stable storage, and only then is the client told 'committed'. The pages are changed in memory only and written later."
-  - title: Group commit, one fsync for many commits
+  - title: "Group commit: one fsync, many commits"
     text: "An fsync takes from tens of microseconds to milliseconds, so one per commit caps throughput. Group commit gathers the commit records of every transaction that arrives during one flush, here T7 and T8, and makes them durable with a single fsync. Meanwhile T10 has logged a change but not committed."
-  - title: Crash, memory is gone
+  - title: "Crash: memory is gone"
     text: "The machine crashes. The buffer pool, with the new values of A and B, is lost. The data file still says A = 100 and B = 0: stale, but that is fine. Everything needed to rebuild the truth is in the log, which was flushed before anyone was told 'committed'."
-  - title: Recovery, redo committed and undo the rest
+  - title: "Recovery: redo committed, undo the rest"
     text: "On restart the database replays the log. T7 has a COMMIT record, so its changes are redone: A = 50, B = 50. T10 never committed, so any of its changes that reached disk are undone. The result is exactly the committed transactions: atomic and durable."
-  - title: Checkpoints bound replay, the log feeds replicas
+  - title: Checkpoints bound replay; the log feeds replicas
     text: "A checkpoint flushes dirty pages and records a position in the log; replay starts there, not at the start of time, and older log can be recycled. The same ordered log stream is shipped to replicas, which apply it to stay in sync, and read by change-data-capture tools."
 keyIdeas:
   - "**The WAL rule**: a change's log record must be on disk before the changed page is, and the COMMIT record before the client is acknowledged."
@@ -82,9 +82,9 @@ Two policies make this fast, and they are exactly what require both redo and und
 
 The classic algorithm, **ARIES** (used in spirit by SQL Server, DB2 and InnoDB), has three passes:
 
-1. **Analysis** — scan from the last checkpoint to find which transactions were active at the crash and which pages may be dirty.
-2. **Redo** — replay every logged change from the earliest needed LSN, but skip a record if the page's stored LSN shows it is already applied. This makes replay **idempotent**: running recovery twice is safe.
-3. **Undo** — roll back transactions with no commit record, newest change first, logging each undo step so a crash during recovery is also recoverable.
+1. **Analysis.** Scan from the last checkpoint to find which transactions were active at the crash and which pages may be dirty.
+2. **Redo.** Replay every logged change from the earliest needed LSN, but skip a record if the page's stored LSN shows it is already applied. This makes replay **idempotent**: running recovery twice is safe.
+3. **Undo.** Roll back transactions with no commit record, newest change first, logging each undo step so a crash during recovery is also recoverable.
 
 PostgreSQL does redo only: with MVCC, row versions written by a transaction that never committed are simply invisible, because the transaction is not marked committed.
 

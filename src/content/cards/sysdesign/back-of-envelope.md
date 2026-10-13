@@ -5,15 +5,15 @@ tags: [estimation, latency, capacity, interview]
 difficulty: 1
 minutes: 5
 tldr: "Know a handful of latency numbers by order of magnitude, round a day to 10^5 seconds, and multiply your way from daily users to QPS, storage and bandwidth in under two minutes."
-analogy: "Like planning a road trip by knowing 'motorway ≈ 100 km/h, city ≈ 30 km/h': you never need the exact minute, only whether it is two hours or two days — that decides whether you drive or fly."
+analogy: "Like planning a road trip by knowing 'motorway ≈ 100 km/h, city ≈ 30 km/h': you never need the exact minute, only whether it is two hours or two days. That decides whether you drive or fly."
 diagram: back-of-envelope
 story:
   - title: A ladder of powers of ten
-    text: "Draw time on a log scale: every tick is ten times slower than the one before, from one nanosecond to one second. On this scale only the order of magnitude matters — 2× differences vanish, 1000× differences jump out. That is exactly the precision a design needs."
+    text: "Draw time on a log scale: every tick is ten times slower than the one before, from one nanosecond to one second. On this scale only the order of magnitude matters: 2× differences vanish and 1000× differences jump out. That is exactly the precision a design needs."
   - title: Inside one machine
-    text: "Reading main memory takes about 100 ns. A random read from an SSD takes about 100 µs — a thousand times slower. A spinning-disk seek takes about 10 ms, a hundred times slower again. This is why caches live in RAM and why random I/O on spinning disks is avoided."
+    text: "Reading main memory takes about 100 ns. A random read from an SSD takes about 100 µs, which is a thousand times slower. A spinning-disk seek takes about 10 ms, a hundred times slower again. This is why caches live in RAM and why random I/O on spinning disks is avoided."
   - title: Leaving the machine
-    text: "A round trip to another server in the same data centre costs about 0.5 ms — cheaper than a disk seek. Crossing an ocean costs roughly 70–150 ms (New York–London ~70, US–Asia 150 or more), because light in fibre only goes about 200,000 km/s. A user far away pays that on every round trip, so you count round trips."
+    text: "A round trip to another server in the same data centre costs about 0.5 ms. That's cheaper than a disk seek. Crossing an ocean costs roughly 70–150 ms (New York–London ~70, US–Asia 150 or more), because light in fibre only goes about 200,000 km/s. A user far away pays that on every round trip, so you count round trips."
   - title: Users per day → requests per second
     text: "A photo app has 10 million daily active users who each view 100 photos: 1 billion views a day. A day has 86,400 seconds; round it to 10^5. So 10^9 ÷ 10^5 = 10,000 requests per second on average. Traffic is bursty, so plan for a peak of 2–3×, about 30,000."
   - title: Uploads → storage per year
@@ -22,7 +22,7 @@ keyIdeas:
   - "**Memory ≈ 100 ns, SSD random read ≈ 100 µs, same-DC round trip ≈ 0.5 ms, disk seek ≈ 10 ms, across an ocean ≈ 70–150 ms.** Learn the order, not the digits."
   - "**1 day ≈ 10^5 s** (really 86,400). So 1 M requests/day ≈ 12 QPS and 1 B/day ≈ 12 k QPS. Peak ≈ 2–3× average."
   - "**Powers of two:** 2^10 ≈ a thousand (KB), 2^20 ≈ a million (MB), 2^30 ≈ a billion (GB), 2^40 ≈ a trillion (TB)."
-  - "Estimate **reads, writes, storage and bandwidth separately** — they lead to different components."
+  - "Estimate **reads, writes, storage and bandwidth separately**, because they lead to different components."
   - "Round hard and say your assumptions out loud; the point is the order of magnitude, not the third digit."
 quiz:
   - q: "A service gets 50 million requests a day. Roughly what is its average QPS?"
@@ -69,7 +69,7 @@ sources:
 
 ## Why estimate at all
 
-Before you choose a database, a cache or a number of servers, you need to know **how big the problem is**. Is it 10 requests a second or 100,000? 10 GB of data or 10 PB? Those answers pick the architecture: 10 GB fits in one machine's RAM, 10 PB needs a distributed object store. A **back-of-the-envelope estimate** is a quick calculation with deliberately rounded numbers that tells you the *order of magnitude* — the power of ten — and nothing more precise. That is enough to rule designs in or out.
+Before you choose a database, a cache or a number of servers, you need to know **how big the problem is**. Is it 10 requests a second or 100,000? 10 GB of data or 10 PB? Those answers pick the architecture: 10 GB fits in one machine's RAM, 10 PB needs a distributed object store. A **back-of-the-envelope estimate** is a quick calculation with deliberately rounded numbers that tells you the *order of magnitude* (the power of ten) and nothing more precise. That is enough to rule designs in or out.
 
 ## The numbers to carry in your head
 
@@ -170,4 +170,4 @@ print(estimate(10_000_000, 100, 0.2, 2, 200))
 
 ## In the interview
 
-Estimation is usually step two of a design interview, right after clarifying requirements. A strong answer: states assumptions first, splits **read and write** traffic, gives **average and peak** QPS, storage per year **with replication**, and bandwidth — then says what each number implies ("1.5 PB a year means object storage", "30 k reads a second means a cache and a CDN"). Spend two to three minutes, not ten. Expect a follow-up like *"How many servers?"*: state an assumed per-server capacity (for example, "a stateless app server handles ~1,000–5,000 simple requests a second") and divide, then add headroom for failures.
+Estimation is usually step two of a design interview, right after clarifying requirements. A strong answer: states assumptions first, splits **read and write** traffic, gives **average and peak** QPS, storage per year **with replication**, and bandwidth. Then it says what each number implies ("1.5 PB a year means object storage", "30 k reads a second means a cache and a CDN"). Spend two to three minutes, not ten. Expect a follow-up like *"How many servers?"*: state an assumed per-server capacity (for example, "a stateless app server handles ~1,000–5,000 simple requests a second") and divide, then add headroom for failures.

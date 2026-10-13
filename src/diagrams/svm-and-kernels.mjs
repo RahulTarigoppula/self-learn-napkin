@@ -69,7 +69,7 @@ export default (d) => {
   });
   d.line(...P(1.2, 4.4), ...P(3.4, 0), { pen: 'muted', thin: true, single: true });
   d.line(...P(0, 3.2), ...P(4.4, 0.9), { pen: 'muted', thin: true, single: true });
-  d.text(290, 44, 'both thin lines separate\nblue from red —\nwhich one is best?', {
+  d.text(290, 44, 'both thin lines separate\nblue from red.\nWhich one is best?', {
     pen: 'muted',
     size: 15,
     anchor: 'start',

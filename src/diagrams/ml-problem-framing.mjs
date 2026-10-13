@@ -98,5 +98,5 @@ export default (d) => {
     size: 16,
     anchor: 'start',
   });
-  d.text(22, 402, 'precision 0.18 — the model must beat this', { pen: 'red', size: 15, anchor: 'start' });
+  d.text(22, 402, 'precision 0.18: the model must beat this', { pen: 'red', size: 15, anchor: 'start' });
 };

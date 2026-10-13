@@ -1,19 +1,19 @@
 # Authoring a napkin
 
-A napkin = **one topic, taught in layers** so anyone — from a beginner to someone cramming for an interview — can learn it properly:
+A napkin = **one topic, taught in layers** so anyone can learn it properly, from a beginner to someone cramming for an interview:
 
-1. **TL;DR + analogy** — the idea in one breath, and an everyday picture that makes it click.
-2. **The story** — a hand-drawn diagram that draws itself scene by scene, with 2–4 plain sentences per scene. Concrete example first.
-3. **Key ideas** — 3–6 crisp bullets to remember.
-4. **Deep dive** — the full, careful explanation (markdown body): how it works, a fully worked example, code, edge cases/pitfalls, trade-offs, when to use it, interview angles. This is where depth lives. Explain *why*, not just *what*.
+1. **TL;DR + analogy.** The idea in one breath, and an everyday picture that makes it click.
+2. **The story.** A hand-drawn diagram that draws itself scene by scene, with 2–4 plain sentences per scene. Concrete example first.
+3. **Key ideas.** 3–6 short bullets to remember.
+4. **Deep dive.** The full, careful explanation (markdown body): how it works, a fully worked example, code, edge cases/pitfalls, trade-offs, when to use it, interview angles. This is where depth lives. Explain *why* as well as *what*.
 5. **Complexity / key numbers**, an optional interactive **playground**, a **quiz** (multiple choice with explanations) and **flashcards** for spaced repetition.
 
 Two files:
 
-1. `src/content/cards/<track>/<slug>.md` — frontmatter (data + story) and a short markdown body (key ideas).
-2. `src/diagrams/<name>.mjs` — the hand-drawn diagram, written in code with the diagram kit. Each `d.step()` in the diagram is one **scene** of the story.
+1. `src/content/cards/<track>/<slug>.md`: frontmatter (data + story) and a short markdown body (key ideas).
+2. `src/diagrams/<name>.mjs`: the hand-drawn diagram, written in code with the diagram kit. Each `d.step()` in the diagram is one **scene** of the story.
 
-The app shows the diagram on a paper card with the story beside it. The learner taps **Next**: the next scene's text appears and that scene's strokes draw themselves in, while earlier scenes stay visible (slightly faded). So the story text for scene *k* must describe exactly what scene *k* of the diagram draws.
+The app shows the diagram on a paper card with the story beside it. When the learner taps **Next**, the next scene's text appears and that scene's strokes draw themselves in, while earlier scenes stay visible (slightly faded). That means the story text for scene *k* must describe exactly what scene *k* of the diagram draws.
 
 ## Workflow
 
@@ -41,7 +41,7 @@ story:                               # EXACTLY one entry per d.step() in the dia
   - title: The problem with hash % N # ≤ 60 chars, optional (defaults to the diagram step caption)
     text: "20–420 chars. 2–4 plain sentences. Explain what this scene draws and WHY it matters."
 keyIdeas:                            # 3–6 bullets, ≤ 280 chars each; **bold** and `code` allowed
-  - "**Only ~K/N keys move** when a node joins — the rest of the cache stays warm."
+  - "**Only ~K/N keys move** when a node joins, so the rest of the cache stays warm."
 quiz:                                # 2–5 multiple-choice checks with an explanation of the right answer
   - q: "A ring has servers at 40°, 160° and 280°. Which server owns a key hashed to 300°?"
     options: ["The one at 280°", "The one at 40°", "The one at 160°", "It depends on the key"]
@@ -67,22 +67,22 @@ sources:
 
 **Body = the deep dive** (markdown after the frontmatter), 250–1800 words (code blocks don't count), organised with `##` headings. Use the sections that fit the topic, typically:
 
-- `## How it works` — the mechanism, step by step, with the reasoning behind each step.
-- `## Worked example` — trace a small concrete input all the way through (tables or numbered steps are great).
-- `## Implement it in Python` — a clean, correct, idiomatic **Python** implementation (open with one line saying the idea works in any language) (```python fenced; comments on the non-obvious lines). For system design use `## Sketch it` with a small sketch: pseudo-code, a config, or a request flow. Keep it short (≤ 40 lines) and runnable where it's an algorithm. `npm run test:python` executes every ```python block of a napkin, in order, in one interpreter (CI installs `scripts/requirements-examples.txt`); a block that needs a live service (a database, Kafka, S3) is fenced as ```python sketch, which skips it and labels it on the page.
-- `## Edge cases and pitfalls` — what people get wrong in practice and in interviews.
+- `## How it works`: the mechanism, step by step, with the reasoning behind each step.
+- `## Worked example`: trace a small concrete input all the way through (tables or numbered steps are great).
+- `## Implement it in Python`: a clean, correct, idiomatic **Python** implementation (open with one line saying the idea works in any language) (```python fenced; comments on the non-obvious lines). For system design use `## Sketch it` with a small sketch: pseudo-code, a config, or a request flow. Keep it short (≤ 40 lines) and runnable where it's an algorithm. `npm run test:python` executes every ```python block of a napkin, in order, in one interpreter (CI installs `scripts/requirements-examples.txt`); a block that needs a live service (a database, Kafka, S3) is fenced as ```python sketch, which skips it and labels it on the page.
+- `## Edge cases and pitfalls`: what people get wrong in practice and in interviews.
 - `## Trade-offs` / `## When to use it` (vs the alternatives).
-- `## In the interview` — how the question is usually asked, what a strong answer mentions, a follow-up you should expect.
+- `## In the interview`: how the question is usually asked, what a strong answer mentions, a follow-up you should expect.
 
 **Napkin is programming-language agnostic.** Explain every idea in plain words, pictures and language-neutral pseudocode; Python appears only inside the implementation section. If you mention a library or language feature, frame it as one example among languages.
 
 Write for someone smart who has never seen the topic: define every term the first time, no hand-waving, no "simply/obviously". Markdown tables, `inline code`, **bold** for key terms and `> **Tip:**` / `> **Pitfall:**` callouts are all supported.
 
-The story layer (tldr + analogy + story + keyIdeas) must stay ≤ 700 words — the lint counts both layers.
+The story layer (tldr + analogy + story + keyIdeas) must stay ≤ 700 words. The lint counts both layers.
 
-### Writing the story — the most important part
+### Writing the story (the most important part)
 
-- Teach like a great senior engineer at a whiteboard: **concrete first, abstract second**. Start from a problem or a tiny example, then reveal the mechanism, then the payoff/trade-off.
+- Teach like a good senior engineer at a whiteboard: **concrete first, abstract second**. Start from a problem or a tiny example, then reveal the mechanism, then the payoff/trade-off.
 - Each scene adds **one** new idea. Use the same concrete example across scenes (e.g. the key `cart:42`, the array `[1,3,5,7,9,11,13,15]`).
 - Numbers beat adjectives ("about 80 % of keys move", "20 probes for a million items").
 - Plain, precise English. No jokes in the prose, no hype, no "simply". British or American spelling, but be consistent within a card.
@@ -102,7 +102,7 @@ For your own explanation use `{ name: "Napkin (own explanation)", url: "https://
 export const meta = { title: 'Accessible title of the drawing', width: 520, height: 360 };
 
 export default (d) => {
-  d.step('Scene caption');      // starts scene 0 — must come before drawing
+  d.step('Scene caption');      // starts scene 0; must come before drawing
   d.rect(x, y, w, h, { pen: 'blue', fill: 'blue', label: 'LB', size: 17, bold: true });
   d.step('Next scene');
   d.arrow(x1, y1, x2, y2, { pen: 'red', bend: 20, label: 'request', thick: true });
@@ -144,3 +144,7 @@ Colours (`pen`/`fill`): `ink` (default), `muted`, `red`, `blue`, `green`, `orang
 - Look at the `-dark.png` too: muted text must still be readable.
 
 See `src/diagrams/consistent-hashing.mjs` and `src/content/cards/sysdesign/consistent-hashing.md` for the reference napkin.
+
+## Voice
+
+Write like a person explaining at a whiteboard: plain words, short sentences, "you" is fine. No em-dashes (use a full stop, a colon, parentheses or "because"), and none of the stock phrases that make text read as machine-made (see the list in `scripts/check-voice.mjs`). `npm run lint` runs `scripts/check-voice.mjs`, which fails the build on either.

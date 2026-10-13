@@ -8,15 +8,15 @@ tldr: "SQL stores normalised tables you can join and query any way, with ACID tr
 analogy: "A library catalogue (SQL) lets you search by author, title or subject because everything is cross-referenced. A coat check (key-value) hands your coat back instantly for ticket 42, but cannot tell you who owns a red scarf."
 diagram: sql-vs-nosql
 story:
-  - title: Relational, tables joined by keys
+  - title: "Relational: tables joined by keys"
     text: "Take one user, Ana (id 42), with two orders. A relational database stores each fact once: a users table and an orders table whose uid column points at users.id. A JOIN reassembles them at read time, so any question can be asked later, in SQL, inside ACID transactions."
-  - title: Document, nest what you read together
+  - title: "Document: nest what you read together"
     text: "A document store keeps Ana and her orders in one JSON document. Fetching her profile page is a single read with no join, and documents in one collection may have different fields. The cost: data shared between documents gets copied, and many-to-many relationships are awkward."
-  - title: Key-value, a key and an opaque value
+  - title: "Key-value: a key and an opaque value"
     text: "A key-value store is a giant distributed hash map: put('user:42', bytes) and get('user:42'). The store does not look inside the value, so lookups by key are very fast and easy to spread across machines, but you cannot ask 'which users ordered over £20?'"
-  - title: Wide-column, partition then sorted rows
+  - title: "Wide-column: partitions of sorted rows"
     text: "A wide-column store such as Cassandra groups rows into partitions by a partition key (user 42) and keeps rows inside a partition sorted by a clustering key (date). 'Ana's orders, newest first' becomes one sequential read on one node. You design one table per query."
-  - title: Graph, nodes and relationships
+  - title: "Graph: nodes and relationships"
     text: "A graph database stores nodes (Ana, Ben, a book) and edges with names (follows, bought). Queries walk edges, so 'books bought by people Ana follows' is a two-hop traversal instead of a chain of self-joins. Best when the relationships are the data."
   - title: Pick by access pattern and scale
     text: "SQL: flexible queries, joins and strong transactions; scale a big node up, add read replicas, and shard only when you must. NoSQL: list your queries first, shape the data so each is one key lookup, and partitioning across many nodes comes built in."

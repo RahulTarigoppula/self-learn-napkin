@@ -70,11 +70,11 @@ griddle: topological-sort
 
 You have tasks and "must happen before" rules between them: courses and prerequisites, build targets and their dependencies, spreadsheet cells and the cells their formulas read. Draw each task as a node and each rule "A before B" as an arrow **A → B**. A **topological order** (or topological sort) is a list of all nodes in which every arrow points forward: for every arrow u → v, u comes before v.
 
-Such an order exists **if and only if the graph has no directed cycle**. If X → Y → Z → X, then X must come before Y, which comes before Z, which comes before X — impossible. Conversely, every **DAG** (directed acyclic graph) has at least one node with no incoming arrows (otherwise, walking arrows backwards forever would revisit a node and reveal a cycle), so you can always start somewhere.
+Such an order exists **if and only if the graph has no directed cycle**. If X → Y → Z → X, then X must come before Y, which comes before Z, which comes before X. Impossible. Conversely, every **DAG** (directed acyclic graph) has at least one node with no incoming arrows (otherwise, walking arrows backwards forever would revisit a node and reveal a cycle), so you can always start somewhere.
 
 ## How Kahn's algorithm works
 
-The **in-degree** of a node is the number of arrows pointing into it — how many prerequisites it still waits for.
+The **in-degree** of a node is the number of arrows pointing into it, which is how many prerequisites it still waits for.
 
 1. Compute every node's in-degree by scanning all arrows once.
 2. Put every node with in-degree 0 into a queue. These have no prerequisites.
@@ -83,7 +83,7 @@ The **in-degree** of a node is the number of arrows pointing into it — how man
 
 **Why the output is valid.** A node is pushed only when its in-degree reaches 0, which happens only after *every* node pointing into it has been output. So for every arrow u → v, u is output before v.
 
-**Why a short output means a cycle.** If the graph is a DAG, the not-yet-output nodes always form a smaller DAG, which has a node with no incoming arrows from unprocessed nodes — that node has in-degree 0 and is in the queue. So the algorithm cannot stall until everything is out. If it does stall, the leftover nodes each still have an incoming arrow from another leftover node; following those arrows backwards must eventually repeat a node, which is a cycle.
+**Why a short output means a cycle.** If the graph is a DAG, the not-yet-output nodes always form a smaller DAG, which has a node with no incoming arrows from unprocessed nodes. That node has in-degree 0 and is in the queue. So the algorithm cannot stall until everything is out. If it does stall, the leftover nodes each still have an incoming arrow from another leftover node; following those arrows backwards must eventually repeat a node, which is a cycle.
 
 **Cost.** Counting in-degrees touches every arrow once; each node is pushed and popped once; each arrow is decremented once. Total **O(V + E)** time, O(V) extra space.
 
@@ -93,27 +93,27 @@ Arrows: Intro → DS, Math → DS, Math → Algo, DS → Algo, DS → DB, Algo �
 
 | Step | Pop | In-degree changes | Queue after | Output so far |
 |---|---|---|---|---|
-| start | — | — | Intro, Math | — |
+| start | (none) | (none) | Intro, Math | (empty) |
 | 1 | Intro | DS 2→1 | Math | Intro |
 | 2 | Math | DS 1→0, Algo 2→1 | DS | Intro, Math |
 | 3 | DS | Algo 1→0, DB 1→0 | Algo, DB | …, DS |
 | 4 | Algo | ML 2→1 | DB | …, Algo |
 | 5 | DB | ML 1→0 | ML | …, DB |
-| 6 | ML | — | empty | …, ML |
+| 6 | ML | (none) | empty | …, ML |
 
-All 6 nodes are output: **Intro, Math, DS, Algo, DB, ML**. Had we put Math in the queue first, or popped DB before Algo, we would get a different order that is just as valid. A graph has a *unique* topological order only when the order is a single chain — when each consecutive pair in it is joined by an arrow.
+All 6 nodes are output: **Intro, Math, DS, Algo, DB, ML**. Had we put Math in the queue first, or popped DB before Algo, we would get a different order that is just as valid. A graph has a *unique* topological order only when the order is a single chain, with each consecutive pair joined by an arrow.
 
 ## The DFS alternative
 
-Run a depth-first search and record each node in **post-order** — at the moment its recursive call *finishes*, after all nodes reachable from it are finished. For an arrow u → v in a DAG, v always finishes before u: either the search reaches v from u (so v's call ends inside u's), or v was already finished. So post-order lists every arrow backwards, and **reversing it** gives a topological order.
+Run a depth-first search and record each node in **post-order**: at the moment its recursive call *finishes*, after all nodes reachable from it are finished. For an arrow u → v in a DAG, v always finishes before u: either the search reaches v from u (so v's call ends inside u's), or v was already finished. So post-order lists every arrow backwards, and **reversing it** gives a topological order.
 
-To detect cycles with DFS, colour nodes **white** (unvisited), **grey** (on the current recursion path) and **black** (finished). Meeting a grey node means you followed an arrow back into your own path — a cycle. Meeting a black node is fine; it is just a shared dependency.
+To detect cycles with DFS, colour nodes **white** (unvisited), **grey** (on the current recursion path) and **black** (finished). Meeting a grey node means you followed an arrow back into your own path, which means a cycle. Meeting a black node is fine; it is just a shared dependency.
 
-On the example, starting from Intro, DFS finishes ML, Algo, DB, DS, Intro, then Math; reversed, that is **Math, Intro, DS, DB, Algo, ML** — different from Kahn's result, and equally valid.
+On the example, starting from Intro, DFS finishes ML, Algo, DB, DS, Intro, then Math; reversed, that is **Math, Intro, DS, DB, Algo, ML**. That differs from Kahn's result and is equally valid.
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+Kahn first, then the DFS version with three colours. The last line shows Kahn returning `None` on a cycle.
 
 ```python
 from collections import deque
@@ -163,8 +163,8 @@ print(kahn({"X": ["Y"], "Y": ["Z"], "Z": ["X"]}))   # None
 
 ## Edge cases and pitfalls
 
-- **Arrow direction.** "Course 1 requires course 0" is the arrow **0 → 1** (prerequisite first). Reversing every arrow gives you the order backwards — a classic interview bug.
-- **Nodes with no arrows** still belong in the order. Build the in-degree map from the full node list, not just from the edge list.
+- **Arrow direction.** "Course 1 requires course 0" is the arrow **0 → 1** (prerequisite first). Reversing every arrow gives you the order backwards, a classic interview bug.
+- **Nodes with no arrows** still belong in the order. Build the in-degree map from the full node list; the edge list alone misses them.
 - **Two-colour DFS is wrong for directed graphs.** A plain "visited" set cannot tell a cycle from two paths that meet at a shared node (A → C and B → C). You need the grey "on the current path" state.
 - **Deep recursion.** Recursive DFS on a long dependency chain can overflow the call stack (Python's default limit is about 1,000 frames); use Kahn or an explicit stack.
 - **Self-loops** (A → A) are cycles: A's in-degree never reaches 0.

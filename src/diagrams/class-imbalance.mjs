@@ -35,7 +35,7 @@ export default (d) => {
     d.text(24, 148, 'always legit', { pen: 'ink', size: 15, anchor: 'start' });
     d.text(208, 148, '99.0 %', { pen: 'ink', size: 15, mono: true });
     d.text(310, 148, '0.00', { pen: 'red', size: 15, mono: true });
-    d.text(414, 148, '—', { pen: 'ink', size: 15, mono: true });
+    d.text(414, 148, 'n/a', { pen: 'ink', size: 15, mono: true });
   });
   d.group(() => {
     d.text(24, 174, 'our model', { pen: 'green', size: 15, anchor: 'start', bold: true });

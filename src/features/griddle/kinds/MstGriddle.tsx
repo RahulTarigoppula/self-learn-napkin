@@ -116,7 +116,7 @@ export default function MstGriddle() {
           {order.map((i) => {
             const e = g.edges[i] as MstGraph['edges'][number];
             const st = status(i);
-            const mark = { keep: '✓', skip: '✗ cycle', current: '▶', unused: '—', idle: '' }[st];
+            const mark = { keep: '✓', skip: '✗ cycle', current: '▶', unused: '·', idle: '' }[st];
             return (
               <li key={i}>
                 <button
@@ -152,8 +152,8 @@ export default function MstGriddle() {
           ✓ MST complete: {final.kept} edges, total {final.total}
           {edited
             ? final.total === NAPKIN_TOTAL
-              ? ' — same total as the napkin.'
-              : ` — ${final.total < NAPKIN_TOTAL ? 'cheaper' : 'dearer'} than the napkin's ${NAPKIN_TOTAL}.`
+              ? ', the same total as the napkin.'
+              : `, ${final.total < NAPKIN_TOTAL ? 'cheaper' : 'dearer'} than the napkin's ${NAPKIN_TOTAL}.`
             : ' = 1 + 2 + 3 + 4 + 6. A–E was skipped: A and E were already joined.'}
         </p>
       )}

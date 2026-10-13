@@ -8,7 +8,7 @@ import { inlineMd } from '../lib/inline-md';
 const { tracks } = await library();
 ---
 
-<AppShell title="Cheat sheet" active="cheatsheet" description="Every complexity table and key idea on one page — the night-before-the-interview sheet.">
+<AppShell title="Cheat sheet" active="cheatsheet" description="Every complexity table and key idea on one page. Read it the night before the interview.">
   <div class="container cs">
     <header class="cs__head">
       <p class="eyebrow">The night before</p>
@@ -29,7 +29,7 @@ const { tracks } = await library();
                 <p class="cs__tldr">{c.data.tldr}</p>
                 {c.data.bigO && c.data.bigO.length > 0 && (
                   <table>
-                    <caption class="sr-only">{c.data.title} — {c.data.bigOTitle ?? 'complexity'}</caption>
+                    <caption class="sr-only">{c.data.title}: {c.data.bigOTitle ?? 'complexity'}</caption>
                     <tbody>
                       {c.data.bigO.map((r) => (
                         <tr>

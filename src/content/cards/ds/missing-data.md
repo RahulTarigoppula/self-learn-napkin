@@ -40,7 +40,7 @@ quiz:
     answer: 2
     why: "Every imputed row sits exactly at the mean, which adds zero spread and ignores the other columns. The variance shrinks and the column's correlations with other features are pulled toward 0."
   - q: "You fill each column's gaps with its median computed over the full dataset, then split into train and test. What is wrong?"
-    options: ["Nothing; medians are robust", "Test rows influenced the fill values, which is leakage", "The median cannot be used for imputation", "You must use the mean instead"]
+    options: ["Nothing; medians resist outliers", "Test rows influenced the fill values, which is leakage", "The median cannot be used for imputation", "You must use the mean instead"]
     answer: 1
     why: "The fill value is a learned parameter. Computing it with test rows lets the test set shape training. Fit on the training rows, or better, put the imputer in a pipeline."
 related: [ds/feature-scaling, ds/categorical-encoding, ds/train-val-test, ds/k-nearest-neighbours]
@@ -89,7 +89,7 @@ Ages 21, 25, 28, 33, 37, 41, 45, 49, 53, 57, 61, 64 with incomes (£k) 30, 36, 3
 | Approach | Values filled for ages 21 / 25 / 28 | Mean income | SD income |
 |---|---|---|---|
 | Truth (all 12 known) | 30 / 36 / 33 | 48.5 | 11.7 |
-| Drop rows (9 left) | — | 53.7 | 8.5 |
+| Drop rows (9 left) | none (rows removed) | 53.7 | 8.5 |
 | Mean imputation | 53.7 / 53.7 / 53.7 | 53.7 | 7.4 |
 | Regression on age | 31.8 / 34.9 / 37.3 | 48.9 | 11.1 |
 
@@ -119,7 +119,7 @@ Every data stack has imputers (R's mice and missForest, Julia's Impute.jl, Spark
 
 ```python
 import numpy as np
-from sklearn.experimental import enable_iterative_imputer  # noqa: F401  (unlocks IterativeImputer)
+from sklearn.experimental import enable_iterative_imputer  # noqa: F401  (enables IterativeImputer)
 from sklearn.impute import SimpleImputer, KNNImputer, IterativeImputer
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline

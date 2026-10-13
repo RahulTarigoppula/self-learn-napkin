@@ -9,21 +9,21 @@ analogy: "REST is a library with a fixed shelf for every book. gRPC is an intern
 diagram: api-design
 story:
   - title: "REST: nouns in the URL, verbs in the method"
-    text: "In REST the URL names a resource — /orders/7 — and the HTTP method says what to do: GET reads, POST creates, PUT replaces, DELETE removes. Status codes report the outcome. GET, PUT and DELETE are idempotent: repeating them has the same effect, so clients can retry safely. POST is not."
+    text: "In REST the URL names a resource (/orders/7) and the HTTP method says what to do: GET reads, POST creates, PUT replaces, DELETE removes. Status codes report the outcome. GET, PUT and DELETE are idempotent: repeating them has the same effect, so clients can retry safely. POST is not."
   - title: "Pagination: offset vs cursor"
-    text: "A list of orders, newest first, comes back 3 at a time. With ?offset=3, a new order arriving between page loads shifts everything down one, so order 104 appears twice. A cursor — ?after=104 — says 'continue after the last item I saw', which stays correct and stays fast even deep into the list."
+    text: "A list of orders, newest first, comes back 3 at a time. With ?offset=3, a new order arriving between page loads shifts everything down one, so order 104 appears twice. A cursor such as ?after=104 says 'continue after the last item I saw'. That stays correct, and it stays fast even deep into the list."
   - title: "gRPC: typed calls over HTTP/2"
     text: "Between your own services, gRPC feels like calling a function: checkout calls Charge(ChargeRequest) on payments. Request and reply types are defined in a .proto file, sent as compact protobuf binary, over one long-lived HTTP/2 connection that carries many calls and streams at once."
   - title: "GraphQL: the client shapes the response"
-    text: "GraphQL exposes a single endpoint. The client sends a query listing exactly the fields it wants — 50 posts with title and author name — and the JSON comes back in that same shape: no extra fields, and no second request for authors."
+    text: "GraphQL exposes a single endpoint. The client sends a query listing exactly the fields it wants (say, 50 posts with title and author name), and the JSON comes back in that same shape: no extra fields, and no second request for authors."
   - title: The N+1 trap and its fix
-    text: "Behind the scenes, each field has a resolver. Done naively, fetching 50 posts is 1 query, then each post's author is another — 51 database queries. Batching the author lookups into one WHERE id IN (…) query brings it down to 2."
+    text: "Behind the scenes, each field has a resolver. Done naively, fetching 50 posts is 1 query, then each post's author is another query. That's 51 trips to the database. Batching the author lookups into one WHERE id IN (…) query brings it down to 2."
 keyIdeas:
-  - "**REST:** resources as URLs, HTTP verbs, status codes; cacheable and universal — the default for public APIs."
-  - "**Idempotent:** GET, PUT, DELETE (safe to retry). **POST is not** — add an `Idempotency-Key` header for retries."
+  - "**REST:** resources as URLs, HTTP verbs, status codes; cacheable and universal. It's the default for public APIs."
+  - "**Idempotent:** GET, PUT, DELETE (safe to retry). **POST is not**, so add an `Idempotency-Key` header for retries."
   - "**Cursor pagination** (`WHERE id < last ORDER BY id DESC LIMIT n`) is stable and O(page); **offset** is simple but slows with depth and skips or repeats items."
-  - "**gRPC:** contract-first protobuf, HTTP/2 multiplexing, streaming, generated clients — best for internal service-to-service calls."
-  - "**GraphQL:** one endpoint, client-chosen fields, no over- or under-fetching — but watch **N+1 resolvers**, caching and query cost."
+  - "**gRPC:** contract-first protobuf, HTTP/2 multiplexing, streaming, generated clients. Best for internal service-to-service calls."
+  - "**GraphQL:** one endpoint, client-chosen fields, no over- or under-fetching. Watch out for **N+1 resolvers**, caching and query cost."
   - "**Version by addition:** add fields freely; never remove or rename one without a new version."
 quiz:
   - q: "A client's POST /payments times out. What makes a retry safe?"
@@ -78,7 +78,7 @@ sources:
 
 ### Idempotency
 
-An operation is **idempotent** if doing it twice leaves the server in the same state as doing it once. `GET`, `PUT` and `DELETE` are idempotent by definition — a second `DELETE /orders/7` may return `404`, but the order is just as deleted. `POST` is not: two `POST /payments` can mean two charges. Networks time out, and the client cannot tell whether the first attempt landed, so payment-style APIs accept an `Idempotency-Key` header: the server remembers the key with the first result and returns that result for any repeat.
+An operation is **idempotent** if doing it twice leaves the server in the same state as doing it once. `GET`, `PUT` and `DELETE` are idempotent by definition. A second `DELETE /orders/7` may return `404`, but the order is just as deleted. `POST` is not: two `POST /payments` can mean two charges. Networks time out, and the client cannot tell whether the first attempt landed, so payment-style APIs accept an `Idempotency-Key` header: the server remembers the key with the first result and returns that result for any repeat.
 
 ### Pagination
 
@@ -88,7 +88,7 @@ Never return an unbounded list. Two common designs:
 |---|---|---|
 | Request | `?offset=40&limit=20` | `?limit=20&cursor=eyJpZCI6MTA0fQ` |
 | Query | `ORDER BY id DESC LIMIT 20 OFFSET 40` | `WHERE id < 104 ORDER BY id DESC LIMIT 20` |
-| Cost at depth | grows with offset — skipped rows are still read | constant — an index seek, then 20 rows |
+| Cost at depth | grows with offset (skipped rows are still read) | constant: an index seek, then 20 rows |
 | New rows inserted | items shift: repeats or skips | stable |
 | Jump to page 37 | yes | no, only next/previous |
 
@@ -96,7 +96,7 @@ At page 5,000 with 20 per page, `OFFSET 99980` makes the database read ~100,000 
 
 ### Versioning and errors
 
-- **Add, don't change.** Adding a field or endpoint is safe; removing or renaming a field, changing a type, or making an optional field required breaks clients. For breaking changes, publish a new version — usually in the path (`/v2/orders`), sometimes in a header — and give the old one a deprecation date.
+- **Add, don't change.** Adding a field or endpoint is safe; removing or renaming a field, changing a type, or making an optional field required breaks clients. For breaking changes, publish a new version and give the old one a deprecation date. The version usually goes in the path (`/v2/orders`), sometimes in a header.
 - **One error shape everywhere.** A standard is *problem details* (RFC 9457): `{"type": "...", "title": "Out of stock", "status": 409, "detail": "Item 31 has 0 left"}`. Never return `200` with an error inside.
 
 ## How gRPC works
@@ -174,11 +174,11 @@ Many systems use all three: REST at the public edge, gRPC inside, GraphQL as a b
 
 ## Edge cases and pitfalls
 
-- **Chatty APIs:** a screen that needs 12 REST calls is a design smell — add a composite endpoint or a BFF.
+- **Chatty APIs:** a screen that needs 12 REST calls is a design smell. Add a composite endpoint or a BFF.
 - **Leaking the database:** expose stable resources, not table rows; internal renames should not break clients.
 - **Floating-point money:** send integer minor units (`amount_cents`) plus a currency code.
 - **Unbounded GraphQL queries:** enforce depth and cost limits, or one query can take down the database.
 
 ## In the interview
 
-Write out the endpoints for the core use cases with method, path, request and response — that alone shows fluency. Mention pagination (and why cursor), idempotency keys on create/payment calls, rate limiting, and versioning. If asked "REST or gRPC or GraphQL?", answer by audience: public clients → REST, internal hops → gRPC, diverse front ends → GraphQL.
+Write out the endpoints for the core use cases with method, path, request and response. That alone shows fluency. Mention pagination (and why cursor), idempotency keys on create/payment calls, rate limiting, and versioning. If asked "REST or gRPC or GraphQL?", answer by audience: public clients → REST, internal hops → gRPC, diverse front ends → GraphQL.

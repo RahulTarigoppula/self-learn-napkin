@@ -13,17 +13,17 @@ story:
   - title: Probe the middle
     text: "Look at the middle of the range: mid = (0 + 7) / 2 = 3, rounding down. a[3] is 7, which is less than 11. One comparison, but because the array is sorted it tells us about far more than one element."
   - title: Discard the left half
-    text: "Everything at or left of index 3 is at most 7, so 11 cannot be there. Four candidates vanish without being looked at: set lo = mid + 1 = 4. Sortedness is what makes this legal — on an unsorted array, the comparison would tell us nothing about the neighbours."
+    text: "Everything at or left of index 3 is at most 7, so 11 cannot be there. Four candidates vanish without being looked at: set lo = mid + 1 = 4. Sortedness is what makes this legal. On an unsorted array, the comparison would tell us nothing about the neighbours."
   - title: Probe what is left
     text: "The range is now indices 4 to 7. The new middle is (4 + 7) / 2 = 5, and a[5] is 11. Had it been bigger than 11, we would have set hi = mid − 1 and kept going on the left."
   - title: Found it
-    text: "Found at index 5 after two probes. Each probe halves the range — 8, 4, 2, 1 — so eight items never need more than 4 probes, and a million need at most 20. If lo passes hi, the value is absent and lo is where it would be inserted."
+    text: "Found at index 5 after two probes. Each probe halves the range (8, 4, 2, 1), so eight items never need more than 4 probes, and a million need at most 20. If lo passes hi, the value is absent and lo is where it would be inserted."
 keyIdeas:
-  - "**The array must be sorted** — that precondition *is* the algorithm: one comparison rules out a whole half."
+  - "**The array must be sorted.** That precondition *is* the algorithm, because it lets one comparison rule out a whole half."
   - "**Invariant:** if the target exists, it is inside [lo, hi]. Every update must keep that true."
   - "**At most ⌊log₂ n⌋ + 1 probes**: 4 for 8 items, 20 for a million, 30 for a billion."
   - "**Compute mid as `lo + (hi − lo) / 2`** (integer division) in languages with fixed-size integers: `lo + hi` can overflow."
-  - "**Binary search on the answer** applies the same halving to any yes/no question that flips once, not just to arrays."
+  - "**Binary search on the answer** applies the same halving to any yes/no question that flips once, whether or not there is an array."
 quiz:
   - q: "lo = 4, hi = 7, and a[mid] is bigger than the target. What is the next range?"
     options: ["lo = 4, hi = 5", "lo = 4, hi = 4", "lo = 6, hi = 7", "lo = 5, hi = 7"]
@@ -46,11 +46,11 @@ griddle: binary-search
 flashcards:
   - kind: qa
     q: "What is the worst-case time complexity of binary search?"
-    a: "O(log n) — each probe halves the remaining range."
+    a: "O(log n), because each probe halves the remaining range."
   - kind: cloze
     text: "Writing `mid = lo + (hi - lo) / 2` instead of `(lo + hi) / 2` avoids {{integer overflow}}."
   - kind: qa
-    q: "Binary search on [1,3,5,7,9,11,13,15] for 4 — which indices are probed, and what is returned?"
+    q: "Binary search on [1,3,5,7,9,11,13,15] for 4: which indices are probed, and what is returned?"
     a: "Indices 3, 1 and 2 (values 7, 3, 5). Then lo = 2 > hi = 1, so it returns −1 (not found), and lo = 2 is the insertion point."
 sources:
   - { name: "OpenDSA", url: "https://github.com/OpenDSA/OpenDSA", licence: "MIT", note: "Binary search module, redrawn" }
@@ -61,13 +61,13 @@ sources:
 
 Binary search finds a value in a **sorted** array by repeatedly halving the part of the array that could still contain it.
 
-Keep two indices, `lo` and `hi`, for the first and last candidate positions (both **inclusive** in this version). The rule you must never break — the **loop invariant** — is: *if the target is in the array at all, it is somewhere in `a[lo..hi]`.* At the start, `lo = 0` and `hi = n − 1`, so the invariant holds trivially.
+Keep two indices, `lo` and `hi`, for the first and last candidate positions (both **inclusive** in this version). The rule you must never break, the **loop invariant**, is: *if the target is in the array at all, it is somewhere in `a[lo..hi]`.* At the start, `lo = 0` and `hi = n − 1`, so the invariant holds trivially.
 
 Each round:
 
 1. Pick the middle, `mid = ⌊(lo + hi) / 2⌋` (integer division, rounding down).
 2. If `a[mid]` equals the target, return `mid`.
-3. If `a[mid]` is **less** than the target, then because the array is sorted every element at or left of `mid` is also too small. Set `lo = mid + 1` — the invariant still holds.
+3. If `a[mid]` is **less** than the target, then because the array is sorted every element at or left of `mid` is also too small. Set `lo = mid + 1`, and the invariant still holds.
 4. If `a[mid]` is **greater**, every element at or right of `mid` is too big. Set `hi = mid − 1`.
 5. Stop when `lo > hi`: the range is empty, so by the invariant the target is not in the array.
 
@@ -93,13 +93,13 @@ Search for **4**, which is missing:
 | 1 | 0 | 7 | 3 | 7 | 7 > 4 → hi = 2 |
 | 2 | 0 | 2 | 1 | 3 | 3 < 4 → lo = 2 |
 | 3 | 2 | 2 | 2 | 5 | 5 > 4 → hi = 1 |
-| — | 2 | 1 | | | lo > hi: not found, return −1 |
+| end | 2 | 1 | | | lo > hi: not found, return −1 |
 
 Notice where `lo` stopped: index 2, exactly where 4 would have to be inserted to keep the array sorted. That "insertion point" is often the real answer interviewers want.
 
 ## Variant: the lower bound
 
-Often the real question is not "is x here?" but "where is the **first element ≥ x**?" That position, the **lower bound**, gives the first occurrence among duplicates, the insertion point, and the number of elements smaller than x, all at once.
+Often "is x here?" is the wrong question. What you want is "where is the **first element ≥ x**?" That position, the **lower bound**, gives the first occurrence among duplicates, the insertion point, and the number of elements smaller than x, all at once.
 
 Use a half-open range `[lo, hi)` with `lo = 0` and `hi = n`, where `hi = n` stands for "every element is smaller". While `lo < hi`, probe `mid`. If `a[mid] < x`, the answer is to the right: `lo = mid + 1`. Otherwise `a[mid]` might itself be the answer, so keep it in range: `hi = mid`. When `lo == hi` the range has shrunk to a single position, and that is the answer. For x = 4 in the array above: `[0, 8)` probes index 4 (9 ≥ 4) → `hi = 4`; `[0, 4)` probes index 2 (5 ≥ 4) → `hi = 2`; `[0, 2)` probes index 1 (3 < 4) → `lo = 2`; now `lo == hi`, so the answer is 2.
 
@@ -107,7 +107,7 @@ The **upper bound** (first element > x) is the same loop with `a[mid] ≤ x` as 
 
 ## Implement it in Python
 
-The same idea works in any language; here are the exact-match search and the lower-bound variant in Python.
+Here are the exact-match search and the lower-bound variant side by side. Watch how the two differ in `hi` and in the loop condition.
 
 ```python
 def binary_search(a, target):
@@ -150,8 +150,8 @@ Standard libraries ship these: C++'s `std::lower_bound` and Python's `bisect.bis
 
 ## Binary search on the answer
 
-The same halving works on any yes/no question whose answer flips exactly once as a number grows — a **monotone predicate**. "Can we ship all parcels within 5 days using a truck of capacity c?" is false for small c and true for every c above some threshold. Binary search over c finds the smallest capacity that works, checking each guess in O(n). This pattern hides behind many "minimise the maximum" questions.
+The same halving works on any yes/no question whose answer flips exactly once as a number grows (a **monotone predicate**). "Can we ship all parcels within 5 days using a truck of capacity c?" is false for small c and true for every c above some threshold. Binary search over c finds the smallest capacity that works, checking each guess in O(n). This pattern hides behind many "minimise the maximum" questions.
 
 ## In the interview
 
-Say the invariant out loud — "if the target exists, it is inside [lo, hi]" — and check that both updates keep it. Trace a two-element array by hand before you finish; that is where off-by-one bugs live. Expect follow-ups: first and last occurrence, searching a rotated sorted array, finding the square root of a number, or the smallest capacity that satisfies a constraint.
+Say the invariant out loud ("if the target exists, it is inside [lo, hi]") and check that both updates keep it. Trace a two-element array by hand before you finish; that is where off-by-one bugs live. Expect follow-ups: first and last occurrence, searching a rotated sorted array, finding the square root of a number, or the smallest capacity that satisfies a constraint.

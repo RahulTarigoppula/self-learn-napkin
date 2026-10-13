@@ -100,7 +100,7 @@ An **inversion** is a pair of positions i < j with a[i] > a[j]. When the key mov
 
 ## Implement it in Python
 
-The same idea works in any language; here it is in Python.
+Eight lines. The strict `>` in the inner loop is what keeps it stable.
 
 ```python
 def insertion_sort(a):

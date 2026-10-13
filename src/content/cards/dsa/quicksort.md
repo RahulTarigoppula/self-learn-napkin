@@ -126,7 +126,7 @@ Every level of recursion partitions ranges that together hold at most n values, 
 
 ## Implement it in Python
 
-The same idea works in any language; here it is in Python, with the smaller-side-first trick that bounds the stack.
+Lomuto partition plus the smaller-side-first loop, which keeps the recursion stack at O(log n) even on bad input.
 
 ```python
 def partition(a, lo, hi):

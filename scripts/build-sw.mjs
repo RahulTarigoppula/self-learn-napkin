@@ -6,7 +6,7 @@ import { generateSW } from 'workbox-build';
 
 export function manifest(base) {
   return {
-    name: 'Napkin — visual interview prep',
+    name: 'Napkin: visual interview prep',
     short_name: 'Napkin',
     id: base,
     start_url: base,

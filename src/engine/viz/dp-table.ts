@@ -1,6 +1,6 @@
 /**
  * Dynamic-programming tables as "fill, then walk back" frames: LCS, edit distance and 0/1 knapsack.
- * Pure and deterministic — the UI only replays `fills` (one cell per frame) and then `trace`.
+ * Pure and deterministic. The UI only replays `fills` (one cell per frame) and then `trace`.
  */
 export type Cell = readonly [number, number];
 
@@ -182,7 +182,7 @@ export function lcsRun(x: string, y: string): LcsRun {
   trace.push({
     r: i,
     c: j,
-    caption: len > 0 ? `stop — LCS = ${lcs} (length ${len})` : 'stop — nothing in common',
+    caption: len > 0 ? `stop: LCS = ${lcs} (length ${len})` : 'stop: nothing in common',
     mark: false,
   });
   return { ...run, trace, lcs };
@@ -307,9 +307,7 @@ export function editRun(a: string, b: string): EditRun {
     r: 0,
     c: 0,
     caption:
-      distance === 0
-        ? 'done — already equal, 0 edits'
-        : `done — ${distance} edit${distance === 1 ? '' : 's'}`,
+      distance === 0 ? 'done: already equal, 0 edits' : `done: ${distance} edit${distance === 1 ? '' : 's'}`,
     mark: false,
   });
   return { ...run, trace, distance, ops, script: ops.filter((e) => e.op !== 'keep') };
@@ -408,7 +406,7 @@ export function knapsackRun(items: readonly KnapItem[], cap: number): KnapRun {
     c,
     caption: chosen.length
       ? `bag = {${names(items, chosen)}}: ${weight} kg, $${value}`
-      : 'bag is empty — nothing fits',
+      : 'nothing fits, so the bag is empty',
     mark: false,
   });
   return { ...run, trace, chosen, value, weight };

@@ -9,21 +9,21 @@ analogy: "Lining up children by height, but each child may only swap with the on
 diagram: bubble-sort
 story:
   - title: Eight values in a row
-    text: "Take [5,3,8,1,9,2,7,4]. Bubble sort only ever does one thing: look at two neighbours and swap them if the left one is bigger. No jumping, no extra array — everything happens in place."
+    text: "Take [5,3,8,1,9,2,7,4]. Bubble sort only ever does one thing: look at two neighbours and swap them if the left one is bigger. No jumping, no extra array. Everything happens in place."
   - title: Compare the first pair
     text: "Start at the left: 5 > 3, so swap them. Then step one place right and compare 5 with 8, then 8 with 1, and so on to the end. One sweep from left to right is called a pass; for 8 values it makes 7 comparisons."
   - title: The 9 rides to the end
     text: "Watch the 9. Once a pass reaches it, the 9 is bigger than every neighbour it meets, so it wins every comparison and is carried all the way right. After pass 1 the largest value is parked in its final place, after 5 swaps."
   - title: Each pass parks one more
-    text: "Pass 2 carries the 8 next to the 9, pass 3 the 7, pass 4 the 5. Each pass can stop one place earlier because the green tail is already final, so the passes make 7, 6, 5, 4 … comparisons — about n²/2 in total, which is O(n²)."
+    text: "Pass 2 carries the 8 next to the 9, pass 3 the 7, pass 4 the 5. Each pass can stop one place earlier because the green tail is already final, so the passes make 7, 6, 5, 4 … comparisons, about n²/2 in total, which is O(n²)."
   - title: A clean pass means stop
-    text: "Pass 5 makes 3 comparisons and no swaps, so the array must be sorted and we stop early. Total: 25 comparisons and 14 swaps — exactly the number of out-of-order pairs. That swapped flag is why already-sorted input costs only O(n)."
+    text: "Pass 5 makes 3 comparisons and no swaps, so the array must be sorted and we stop early. Total: 25 comparisons and 14 swaps, exactly the number of out-of-order pairs. That swapped flag is why already-sorted input costs only O(n)."
 keyIdeas:
   - "**Each pass parks one more maximum** at the end, so the inner loop shrinks by one every pass."
-  - "**Swaps = inversions**: every swap fixes exactly one out-of-order pair — 14 for `[5,3,8,1,9,2,7,4]`."
+  - "**Swaps = inversions**: every swap fixes exactly one out-of-order pair, and there are 14 in `[5,3,8,1,9,2,7,4]`."
   - "**Early exit**: a pass with no swaps proves the array is sorted, giving an O(n) best case."
   - "**Stable and in place**: equal values never swap (the test is a strict `>`), and only O(1) extra memory is used."
-  - "**Never use it in production** — it is O(n²) on average; it exists to teach invariants, stability and inversions."
+  - "**Never use it in production.** It is O(n²) on average and exists to teach invariants, stability and inversions."
 quiz:
   - q: "After the first pass of bubble sort over [4, 1, 3, 2], what does the array look like?"
     options: ["[1, 2, 3, 4]", "[1, 3, 2, 4]", "[1, 4, 3, 2]", "[4, 3, 2, 1]"]
@@ -32,7 +32,7 @@ quiz:
   - q: "How many swaps does bubble sort make on [3, 2, 1]?"
     options: ["1", "2", "3", "6"]
     answer: 2
-    why: "Swaps equal inversions — out-of-order pairs. (3,2), (3,1) and (2,1) are all inverted, so exactly 3 swaps."
+    why: "Swaps equal inversions, which are out-of-order pairs. (3,2), (3,1) and (2,1) are all inverted, so exactly 3 swaps."
   - q: "Why is bubble sort stable?"
     options: ["It uses extra memory to remember positions", "It only swaps when the left value is strictly bigger, so equal values never pass each other", "It sorts from right to left", "It always makes n² comparisons"]
     answer: 1
@@ -63,7 +63,7 @@ sources:
 
 Bubble sort repeatedly walks through the array comparing **adjacent** elements, swapping any pair where the left one is bigger. One left-to-right walk is a **pass**.
 
-Why does that sort anything? Follow the largest value. Wherever it starts, once the pass reaches it, it is bigger than its right-hand neighbour, so it swaps; then it is compared with the next neighbour, swaps again, and so on to the end. So after pass 1 the maximum is in the last slot — its final position.
+Why does that sort anything? Follow the largest value. Wherever it starts, once the pass reaches it, it is bigger than its right-hand neighbour, so it swaps; then it is compared with the next neighbour, swaps again, and so on to the end. So after pass 1 the maximum is in the last slot, which is its final position.
 
 That gives the **invariant**: *after pass k, the last k positions hold the k largest values in sorted order.* Pass k + 1 therefore only needs to run over the first n − k elements. After n − 1 passes everything is in place.
 
@@ -92,7 +92,7 @@ An **inversion** is a pair of positions i < j with a[i] > a[j]. Swapping two out
 
 ## Implement it in Python
 
-The same idea works in any language; here it is in Python, with the shrinking boundary and the early-exit flag.
+This version has both improvements: the shrinking boundary and the early-exit flag.
 
 ```python
 def bubble_sort(a):
@@ -113,10 +113,10 @@ print(bubble_sort([5, 3, 8, 1, 9, 2, 7, 4]))   # [1, 2, 3, 4, 5, 7, 8, 9]
 
 ## Complexity
 
-- **Worst case** — a reversed array: every pair is an inversion, so there are n(n − 1)/2 comparisons and the same number of swaps. O(n²).
-- **Average case** — a random array has n(n − 1)/4 inversions on average, so still O(n²) swaps.
-- **Best case** — an already-sorted array: one pass of n − 1 comparisons, no swaps, exit. O(n), but **only with the early-exit flag**.
-- **Space** — O(1): it sorts in place.
+- **Worst case** (a reversed array): every pair is an inversion, so there are n(n − 1)/2 comparisons and the same number of swaps. O(n²).
+- **Average case**: a random array has n(n − 1)/4 inversions on average, so still O(n²) swaps.
+- **Best case** (an already-sorted array): one pass of n − 1 comparisons, no swaps, exit. O(n), but **only with the early-exit flag**.
+- **Space**: O(1), because it sorts in place.
 
 ## Edge cases and pitfalls
 

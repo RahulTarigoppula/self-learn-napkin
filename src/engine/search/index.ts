@@ -36,7 +36,7 @@ export const terms = (q: string): string[] => [
 
 const words = (s: string): string[] => normalize(s).split(' ').filter(Boolean);
 
-/** Score one field: exact word 3, prefix 2, substring 1 — per query term, best match only. */
+/** Score one field: exact word 3, prefix 2, substring 1. Per query term, best match only. */
 function fieldScore(fieldWords: readonly string[], t: string): number {
   let best = 0;
   for (const w of fieldWords) {

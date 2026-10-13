@@ -1,4 +1,4 @@
-// npm run diagrams — render every src/diagrams/<name>.mjs into public/diagrams/<name>.svg + <name>.json.
+// npm run diagrams: render every src/diagrams/<name>.mjs into public/diagrams/<name>.svg + <name>.json.
 // Output is committed (CI's diagrams-fresh job re-runs this and fails on any diff), so `npm run build`
 // never needs to run it. Usage: node scripts/build-diagrams.mjs [name ...]
 import { createHash } from 'node:crypto';

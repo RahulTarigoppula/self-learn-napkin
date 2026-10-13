@@ -13,7 +13,7 @@ story:
   - title: The reliability diagram
     text: "To check, group predictions into bins (0–0.2, 0.2–0.4, …) and plot each bin's average predicted probability against the share that was actually positive. A calibrated model lies on the diagonal. This plot is the reliability diagram, or calibration curve."
   - title: An overconfident model
-    text: "This model is too sure of itself. Emails it scores 0.9 are spam only 75 % of the time, and those it scores 0.1 are spam 25 % of the time: the curve is flatter than the diagonal. Its ranking can still be perfect — ROC AUC only looks at the order of scores, so it cannot see this."
+    text: "This model is too sure of itself. Emails it scores 0.9 are spam only 75 % of the time, and those it scores 0.1 are spam 25 % of the time: the curve is flatter than the diagonal. Its ranking can still be perfect. ROC AUC only looks at the order of scores, so it cannot see this."
   - title: "Score it: Brier and log-loss"
     text: "Two scoring rules grade probabilities directly. The Brier score is the mean squared gap between p and the 0/1 outcome: these five emails give 0.59 / 5 = 0.118. Log-loss averages −ln of the probability given to what actually happened: 0.372. Both are dominated by one confident miss, 0.7 on a good email."
   - title: "Fix it: Platt scaling or isotonic"
@@ -32,11 +32,11 @@ quiz:
   - q: "You apply Platt scaling (a > 0) to a model with ROC AUC 0.90. What happens to its AUC?"
     options: ["It stays 0.90", "It rises towards 1.0", "It falls towards 0.5", "It becomes undefined"]
     answer: 0
-    why: "σ(a·z + b) with a > 0 is strictly increasing, so the order of scores — all AUC depends on — is unchanged. Only the probability values move. (Isotonic regression can merge scores into ties and nudge AUC slightly.)"
+    why: "σ(a·z + b) with a > 0 is strictly increasing, so it keeps the order of scores, and AUC depends on nothing else. Only the probability values move. (Isotonic regression can merge scores into ties and nudge AUC slightly.)"
   - q: "Five emails, two of them spam. A lazy model predicts 0.4 for every email. What is its Brier score?"
     options: ["0.16", "0.36", "0.24", "0.40"]
     answer: 2
-    why: "Spam emails: (0.4 − 1)² = 0.36 each; good emails: (0.4 − 0)² = 0.16 each. (2 × 0.36 + 3 × 0.16) / 5 = 1.20 / 5 = 0.24 — worse than the story model's 0.118, though this lazy model is perfectly calibrated on average."
+    why: "Spam emails: (0.4 − 1)² = 0.36 each; good emails: (0.4 − 0)² = 0.16 each. (2 × 0.36 + 3 × 0.16) / 5 = 1.20 / 5 = 0.24. That is worse than the story model's 0.118, even though this lazy model is perfectly calibrated on average."
   - q: "You have only 300 held-out examples to calibrate a gradient-boosted model. Which method is the safer choice?"
     options: ["Isotonic regression", "Retrain with class weights", "No calibration is possible", "Platt scaling"]
     answer: 3
@@ -60,7 +60,7 @@ sources:
 
 A classifier usually outputs a score between 0 and 1. It is **calibrated** if that score can be read as a frequency: among all cases that get score p, a fraction p is positive. Formally, P(Y = 1 | p̂ = p) = p for every p.
 
-Calibration is a different property from **discrimination**, the ability to rank positives above negatives. ROC AUC measures discrimination and ignores calibration entirely: double every log-odds and the ranking — and the AUC — stay the same, while the probabilities become far too extreme. The opposite failure also exists: a model that predicts the base rate (say 0.4) for everyone is calibrated on average yet useless, because it is not **sharp**. Good probabilities are calibrated *and* sharp.
+Calibration is a different property from **discrimination**, the ability to rank positives above negatives. ROC AUC measures discrimination and ignores calibration entirely: double every log-odds and the ranking stays the same (so does the AUC), while the probabilities become far too extreme. The opposite failure also exists: a model that predicts the base rate (say 0.4) for everyone is calibrated on average yet useless, because it is not **sharp**. Good probabilities are calibrated *and* sharp.
 
 Calibration matters whenever the number itself is used: choosing a threshold from costs (flag if p > C_FP / (C_FP + C_FN)), computing expected revenue or risk, combining models, or showing a risk score to a doctor or customer. If you only ever rank (show the top 10 results), it matters much less.
 
@@ -86,7 +86,7 @@ draw the diagonal y = x; calibrated points sit on it
 | above at high p, below at low p (steeper) | **underconfident**: predictions huddle near the middle |
 | entirely below / above | systematically over- / under-predicts positives (often a prevalence shift) |
 
-The story's model says 0.1, 0.3, 0.5, 0.7, 0.9 where the truth is 0.25, 0.40, 0.50, 0.60, 0.75 — exactly what happens when a model's log-odds are twice as large as they should be. A one-number summary is the **expected calibration error**, ECE = Σ (n_b / N) · |observed_b − predicted_b| over bins b. With equal-sized bins here, ECE = (0.15 + 0.096 + 0 + 0.096 + 0.15) / 5 ≈ 0.098. ECE depends on the binning, so report it together with the plot.
+The story's model says 0.1, 0.3, 0.5, 0.7, 0.9 where the truth is 0.25, 0.40, 0.50, 0.60, 0.75. That is exactly what happens when a model's log-odds are twice as large as they should be. A one-number summary is the **expected calibration error**, ECE = Σ (n_b / N) · |observed_b − predicted_b| over bins b. With equal-sized bins here, ECE = (0.15 + 0.096 + 0 + 0.096 + 0.15) / 5 ≈ 0.098. ECE depends on the binning, so report it together with the plot.
 
 ## Worked example: Brier score and log-loss
 
@@ -101,7 +101,7 @@ Five emails, two of them spam:
 | 0.1 | 0 | 0.01 | −ln 0.9 = 0.105 |
 | **mean** | | **Brier = 0.118** | **log-loss = 0.372** |
 
-The confident miss (0.7 on a good email) supplies 83 % of the Brier total and 65 % of the log-loss total. A lazy model that predicts the base rate 0.4 for everyone scores Brier 0.24 and log-loss 0.673 — worse on both, even though it is calibrated on average, because it is not sharp.
+The confident miss (0.7 on a good email) supplies 83 % of the Brier total and 65 % of the log-loss total. A lazy model that predicts the base rate 0.4 for everyone scores Brier 0.24 and log-loss 0.673. It is worse on both, even though it is calibrated on average, because it is not sharp.
 
 Both are **proper scoring rules**: your expected score is best when you report your true belief, so neither can be gamed by shading probabilities. Brier is bounded (0 to 1) and gentle; log-loss is unbounded and punishes confident mistakes harshly (−ln 0.01 = 4.6). The Brier score splits into *reliability* (calibration error) − *resolution* (sharpness) + *uncertainty* (how hard the problem is), which is why a better Brier score can come from either fixing calibration or sharpening predictions.
 
@@ -163,11 +163,11 @@ for mp, fp in zip(mean_pred, frac_pos):
     print(f"predicted {mp:.2f} -> actually positive {fp:.2f}")
 ```
 
-Output: raw naive Bayes — Brier 0.165, log-loss 0.759; Platt — 0.141 and 0.447; isotonic — 0.125 and 0.396. ROC AUC stays at about 0.90 throughout: recalibration fixes the numbers, not the ranking. The raw model's top bin predicts 0.98 on average but only 79 % of those cases are positive. `CalibratedClassifierCV` fits the model and the calibrator on different folds, so the calibrator never sees predictions on the model's own training rows; `method="sigmoid"` is Platt scaling. Other useful pieces: `calibration_curve(..., strategy="quantile")` gives bins with equal counts, `CalibrationDisplay` draws the reliability diagram, and `IsotonicRegression` can be used on its own.
+Output: raw naive Bayes gets Brier 0.165 and log-loss 0.759, Platt 0.141 and 0.447, isotonic 0.125 and 0.396. ROC AUC stays at about 0.90 throughout: recalibration fixes the numbers, not the ranking. The raw model's top bin predicts 0.98 on average but only 79 % of those cases are positive. `CalibratedClassifierCV` fits the model and the calibrator on different folds, so the calibrator never sees predictions on the model's own training rows; `method="sigmoid"` is Platt scaling. Other useful pieces: `calibration_curve(..., strategy="quantile")` gives bins with equal counts, `CalibrationDisplay` draws the reliability diagram, and `IsotonicRegression` can be used on its own.
 
 ## Edge cases and pitfalls
 
-- **Never calibrate on training predictions** — they are overconfident by construction. Use a held-out split or cross-validation.
+- **Never calibrate on training predictions.** They are overconfident by construction. Use a held-out split or cross-validation.
 - **Bins with few points are noisy.** Show counts per bin; with small data use fewer bins, or quantile bins that each hold the same number of predictions.
 - **Calibration is tied to the base rate.** If spam is 10 % in validation and 2 % in production, a calibrated model becomes over-predicting. Recalibrate after prevalence shifts.
 - **Accuracy and calibration move separately**: recalibration can change which side of 0.5 a score falls on, so accuracy at threshold 0.5 can shift slightly even though ranking does not.
@@ -175,4 +175,4 @@ Output: raw naive Bayes — Brier 0.165, log-loss 0.759; Platt — 0.141 and 0.4
 
 ## In the interview
 
-Expect "your model outputs 0.9 — can we tell the customer there is a 90 % chance?" A strong answer separates ranking from calibration, draws a reliability diagram, names Brier or log-loss as the metric, proposes Platt scaling (small data) or isotonic regression (lots of data) fitted on held-out data, and notes which models are usually miscalibrated. Common follow-up: "does calibration change AUC?" — not for a strictly increasing map like Platt; isotonic can create ties.
+Expect "your model outputs 0.9; can we tell the customer there is a 90 % chance?" A strong answer separates ranking from calibration, draws a reliability diagram, names Brier or log-loss as the metric, proposes Platt scaling (small data) or isotonic regression (lots of data) fitted on held-out data, and notes which models are usually miscalibrated. Common follow-up: "does calibration change AUC?" Not for a strictly increasing map like Platt, though isotonic can create ties.

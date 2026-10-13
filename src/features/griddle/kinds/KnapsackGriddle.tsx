@@ -36,7 +36,7 @@ export default function KnapsackGriddle() {
   return (
     <Shell
       title="Pack the 0/1 knapsack, row by row"
-      hint="Toggle items and change the capacity. Each cell: skip (↑) or take (↖ back w columns, plus its value). Then walk back to see what's in the bag. Try capacity 4 or 7 — greedy by $/kg falls short."
+      hint="Toggle items and change the capacity. Each cell: skip (↑) or take (↖ back w columns, plus its value). Then walk back to see what's in the bag. Try capacity 4 or 7, where greedy by $/kg falls short."
       p={p}
     >
       <div class="dp__items" role="group" aria-label="Items">
@@ -113,8 +113,8 @@ export default function KnapsackGriddle() {
       {view.done && (
         <p class={`gd__verdict gd__verdict--${differs ? 'bad' : 'ok'}`} role="status">
           {differs
-            ? `Greedy got $${greedy.value}, DP got $${run.value} — best $/kg first isn't the best bag.`
-            : `DP got $${run.value} (${run.weight} kg). Greedy by $/kg got $${greedy.value} too — this time.`}
+            ? `Greedy got $${greedy.value}, DP got $${run.value}. Best $/kg first isn't the best bag.`
+            : `DP got $${run.value} (${run.weight} kg). Greedy by $/kg got $${greedy.value} too, this time.`}
         </p>
       )}
       <Controls

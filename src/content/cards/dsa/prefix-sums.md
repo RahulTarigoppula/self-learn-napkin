@@ -67,8 +67,8 @@ sources:
 
 A **prefix sum** array (also called a cumulative sum or running total) stores, for each position, the total of everything before it:
 
-- `P[0] = 0` — the sum of no elements.
-- `P[i + 1] = P[i] + a[i]` — each entry adds one more value.
+- `P[0] = 0`, the sum of no elements.
+- `P[i + 1] = P[i] + a[i]`, so each entry adds one more value.
 
 So `P` has **n + 1** entries and `P[i]` is the sum of the first `i` values, `a[0]` to `a[i − 1]`. Building it is one pass: O(n) time and O(n) space.
 
@@ -82,7 +82,7 @@ sum(a[l..r]) = P[r + 1] − P[l]
 
 The leading 0 is what makes this formula work for `l = 0` without an `if`. Many off-by-one bugs come from building `P` with length n instead.
 
-This turns *q* range queries from O(n·q) into O(n + q). It works for anything with an **inverse**: sums (subtract), XOR (XOR again), counts. It does **not** work directly for max or min, because you cannot "un-max" a prefix — use a sparse table or segment tree for those.
+This turns *q* range queries from O(n·q) into O(n + q). It works for anything with an **inverse**: sums (subtract), XOR (XOR again), counts. It does **not** work directly for max or min, because you cannot "un-max" a prefix. Use a sparse table or segment tree for those.
 
 ### Subarray sum equals k
 
@@ -119,7 +119,7 @@ The big prefix includes the strip above the box and the strip to its left; subtr
 
 | x | total | need = total − 5 | seen[need] | count | seen after |
 |---|---|---|---|---|---|
-| — | 0 | | | 0 | {0:1} |
+| (start) | 0 | | | 0 | {0:1} |
 | 3 | 3 | −2 | 0 | 0 | {0:1, 3:1} |
 | 1 | 4 | −1 | 0 | 0 | + {4:1} |
 | 4 | 8 | 3 | 1 | 1 | + {8:1} |
@@ -131,7 +131,7 @@ The three hits are `[1, 4]` (8 − 3), `[4, 1]` (9 − 4) and `[5]` (14 − 9).
 
 ## Implement it in Python
 
-The same idea works in any language; here it is in Python, with the 2D version.
+The 1D helpers first, then the 2D build and box query. The asserts at the bottom replay the worked example.
 
 ```python
 from collections import Counter

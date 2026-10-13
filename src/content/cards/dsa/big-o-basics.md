@@ -4,14 +4,14 @@ track: dsa
 tags: [complexity, fundamentals]
 difficulty: 1
 minutes: 4
-tldr: "Big-O names how fast work grows as n grows — constants and small terms are dropped on purpose."
+tldr: "Big-O names how fast work grows as n grows. Constants and small terms are dropped on purpose."
 analogy: "Handing one invitation to each guest is O(n); every guest shaking hands with every other guest is O(n²). Double the guest list and the first job doubles, the second roughly quadruples."
 diagram: big-o-curves
 story:
   - title: Ask how the work grows
     text: "Big-O does not measure seconds. It asks one question: if the input gets bigger, how much more work does the algorithm do? So we plot input size n across and steps of work up, and watch the shape of each curve as n heads off to the right."
   - title: O(1) and O(log n) stay flat
-    text: "O(1) is a fixed amount of work whatever n is — reading a[7], or a hash lookup on average. O(log n) grows but barely: each step halves the problem, so binary search needs about 20 probes for a million items and only 30 for a billion."
+    text: "O(1) is a fixed amount of work whatever n is: reading a[7], say, or a hash lookup on average. O(log n) grows but barely: each step halves the problem, so binary search needs about 20 probes for a million items and only 30 for a billion."
   - title: O(n) and O(n log n) climb
     text: "O(n) touches every item once, like summing an array: double n, double the work. O(n log n) is a touch steeper. It is the sorting floor: any sort that only compares items needs on the order of n log n comparisons in the worst case, and merge sort and heap sort achieve it."
   - title: O(n²) and O(2ⁿ) leave the napkin
@@ -22,7 +22,7 @@ keyIdeas:
   - "**Big-O is an upper bound on growth**, not a stopwatch: it says how work scales, not how long one run takes."
   - "**Keep the fastest-growing term, drop its constant**: 3n² + 200n + 5000 is O(n²)."
   - "**Loops in sequence add, nested loops multiply**; halving the problem each step gives a log."
-  - "**Best, average and worst case** are three different questions — say which one you mean."
+  - "**Best, average and worst case** are three different questions, so say which one you mean."
   - "**Space complexity** uses the same notation for memory: an extra array of size n is O(n) space."
 quiz:
   - q: "A function runs an outer loop over n items, and for each item an inner loop of exactly 10 iterations. What is its complexity?"
@@ -30,7 +30,7 @@ quiz:
     answer: 0
     why: "The inner loop does a fixed 10 steps no matter how big n is, so the total is 10n. Constants are dropped, leaving O(n). Nested loops only multiply into n² when both depend on n."
   - q: "Algorithm A takes 100n steps and algorithm B takes n² steps. When is A faster?"
-    options: ["Always — it is O(n)", "Only when n > 100", "Only when n < 100", "Never — 100 is a big constant"]
+    options: ["Always, because it is O(n)", "Only when n > 100", "Only when n < 100", "Never, because 100 is a big constant"]
     answer: 1
     why: "100n < n² exactly when n > 100. For small inputs the 'worse' O(n²) algorithm wins; Big-O only promises which one wins eventually."
   - q: "A loop starts with n and halves it every iteration until it reaches 1. How many iterations does it run?"
@@ -45,7 +45,7 @@ bigO:
   - { op: "O(1)",        avg: "constant",  note: "array index, hash lookup" }
   - { op: "O(log n)",    avg: "log",       note: "binary search, balanced BST" }
   - { op: "O(n)",        avg: "linear",    note: "one scan" }
-  - { op: "O(n log n)",  avg: "linearithmic", note: "merge/heap sort — the sorting floor" }
+  - { op: "O(n log n)",  avg: "linearithmic", note: "merge/heap sort (the sorting floor)" }
   - { op: "O(n²)",       avg: "quadratic", note: "nested loops over the same data" }
   - { op: "O(2ⁿ)",       avg: "exponential", note: "every subset" }
 bigOTitle: "The growth ladder"
@@ -71,7 +71,7 @@ Write the number of basic steps an algorithm takes on an input of size n as a fu
 
 Three consequences follow straight from that definition:
 
-- **Constants vanish.** 3n² ≤ 3 · n², so 3n² is O(n²) — the 3 is absorbed into c.
+- **Constants vanish.** 3n² ≤ 3 · n², so 3n² is O(n²). The 3 just gets absorbed into c.
 - **Smaller terms vanish.** For n ≥ 1, 3n² + 200n + 5000 ≤ 3n² + 200n² + 5000n² = 5203n², so it is O(n²) too.
 - **It is an upper bound.** n is technically also O(n²), because n ≤ n². In practice people quote the tightest bound they can. The formal names for the other directions are **Ω (Omega)**, a lower bound, and **Θ (Theta)**, both at once; in interviews "Big-O" is normally used to mean the tight bound.
 
@@ -110,7 +110,7 @@ For small n the "unimportant" terms dominate. That is exactly why a simple O(n²
 
 ## Implement it in Python
 
-The same counting works in any language; here are the common shapes in Python.
+The common shapes, one small function each, with the cost in the comment.
 
 ```python
 def first(items):              # O(1): one step, whatever len(items) is
@@ -158,4 +158,4 @@ The two duplicate checkers show the most common trade in interviews: spend memor
 
 ## In the interview
 
-State the time and space complexity of your solution before you are asked, and name the term that dominates: "the sort is O(n log n), the scan after it is O(n), so O(n log n) overall, with O(1) extra space." If your first idea is O(n²), say so, then ask yourself which repeated work a hash set, a sort or two pointers could remove. Expect the follow-up "can you do better?" — and know the floors: you cannot beat O(n) if you must read every input, and comparison sorting cannot beat O(n log n).
+State the time and space complexity of your solution before you are asked, and name the term that dominates: "the sort is O(n log n), the scan after it is O(n), so O(n log n) overall, with O(1) extra space." If your first idea is O(n²), say so, then ask yourself which repeated work a hash set, a sort or two pointers could remove. Expect the follow-up "can you do better?", and know the floors: you cannot beat O(n) if you must read every input, and comparison sorting cannot beat O(n log n).

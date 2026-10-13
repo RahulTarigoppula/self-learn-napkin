@@ -102,7 +102,7 @@ The level-order queue, step by step:
 
 | Pop | Visit | Push | Queue afterwards |
 |---|---|---|---|
-| — | — | 4 | [4] |
+| (start) | (none) | 4 | [4] |
 | 4 | 4 | 2, 6 | [2, 6] |
 | 2 | 2 | 1, 3 | [6, 1, 3] |
 | 6 | 6 | 5, 7 | [1, 3, 5, 7] |
@@ -112,7 +112,7 @@ The level-order queue, step by step:
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+The three recursive orders fit on one line each. The iterative in-order and the level-order versions show the stack and the queue doing the work instead.
 
 ```python
 from collections import deque

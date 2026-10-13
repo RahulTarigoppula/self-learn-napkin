@@ -98,12 +98,12 @@ export default function HomeDashboard({ cards }: { cards: Lite[]; tracks: { id: 
       </a>
 
       <a class="dash__review" href={href('review/')}>
-        <span class="dash__due mono">{due === null ? '—' : due}</span>
+        <span class="dash__due mono">{due === null ? '…' : due}</span>
         <span class="dash__due-label">
           {due === null
             ? 'cards'
             : due === 0
-              ? 'nothing due — all caught up'
+              ? 'nothing due, all caught up'
               : stats?.everReviewed
                 ? `card${due === 1 ? '' : 's'} ready to review`
                 : `new flashcard${due === 1 ? '' : 's'} to start with`}

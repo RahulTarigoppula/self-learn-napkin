@@ -9,7 +9,7 @@ analogy: "A dimmer switch instead of an on/off switch. Evidence for and against 
 diagram: logistic-regression
 story:
   - title: A linear score can be any number
-    text: "Is this email spam? A linear model scores it: z = w·x + b, a weighted sum of features such as the number of links and the share of CAPITALS, plus a bias b. Larger z means more spam-like, but z is not a probability — it can be −7 or 12."
+    text: "Is this email spam? A linear model scores it: z = w·x + b, a weighted sum of features such as the number of links and the share of CAPITALS, plus a bias b. Larger z means more spam-like, but z is not a probability. It can be −7 or 12."
   - title: The sigmoid squashes it into 0…1
     text: "Pass the score through the sigmoid, σ(z) = 1 / (1 + e^(−z)). Large positive z makes e^(−z) almost 0, so σ ≈ 1; large negative z makes e^(−z) huge, so σ ≈ 0. The output always lies strictly between 0 and 1, and we read it as P(spam | email)."
   - title: Read off probabilities
@@ -17,12 +17,12 @@ story:
   - title: Threshold at 0.5
     text: "For a yes/no answer, compare p with a threshold, usually 0.5. Because σ only ever increases and σ(0) = 0.5, the rule p ≥ 0.5 is exactly the rule z ≥ 0. Raise or lower the threshold to trade precision against recall."
   - title: "In feature space: a straight line"
-    text: "So the decision boundary is every point where w·x + b = 0 — a straight line with two features, a flat plane with more. Logistic regression is a linear classifier: classes that need a curved boundary are out of reach unless you add features such as x₁² or x₁·x₂."
+    text: "The decision boundary is therefore every point where w·x + b = 0: a straight line with two features, a flat plane with more. Logistic regression is a linear classifier: classes that need a curved boundary are out of reach unless you add features such as x₁² or x₁·x₂."
   - title: "Log-loss: punish confident mistakes"
     text: "Training picks w and b to minimise log-loss: −ln of the probability given to the true class. For a spam email, p = 0.88 costs 0.13, p = 0.27 costs 1.31, and a confident wrong p = 0.01 costs 4.61. Confident mistakes cost the most."
 keyIdeas:
   - "**Linear score, sigmoid squash:** p = σ(w·x + b), where σ(z) = 1 / (1 + e^(−z))."
-  - "The boundary w·x + b = 0 is a **line or hyperplane** — logistic regression is a linear classifier."
+  - "The boundary w·x + b = 0 is a **line or hyperplane**, which makes logistic regression a linear classifier."
   - "The score is the **log-odds**: ln(p / (1 − p)) = z, so one unit of feature j multiplies the odds by e^(wⱼ)."
   - "Trained by minimising **log-loss** (cross-entropy). It is convex, so gradient descent reaches the global minimum."
   - "The gradient is just (p − y)·x per example: error times input."
@@ -34,13 +34,13 @@ quiz:
   - q: "Which decision boundary can plain logistic regression on two raw features (x₁, x₂) draw?"
     options: ["A circle around the positive class", "A straight line", "Any smooth curve", "Two parallel lines"]
     answer: 1
-    why: "The boundary is where w₁x₁ + w₂x₂ + b = 0 — the equation of a line. A circle needs extra features such as x₁² and x₂²."
+    why: "The boundary is where w₁x₁ + w₂x₂ + b = 0, which is the equation of a line. A circle needs extra features such as x₁² and x₂²."
   - q: "The weight on 'number of links' is 0.7. What does one extra link do, other features fixed?"
     options: ["Adds 0.7 to the probability", "Multiplies the odds of spam by e^0.7 ≈ 2.0", "Adds 70 % to the probability", "Nothing unless p is already above 0.5"]
     answer: 1
     why: "The score is the log-odds, so +0.7 in z multiplies p / (1 − p) by e^0.7 ≈ 2.01. The change in probability itself depends on where you start on the S-curve."
   - q: "A spam email gets p = 0.01. What is its log-loss, and why does that matter?"
-    options: ["0.01 — tiny, so ignore it", "About 4.6 — confident mistakes dominate the loss", "0.99 — one minus p", "Infinite — the model is broken"]
+    options: ["0.01: tiny, so ignore it", "About 4.6: confident mistakes dominate the loss", "0.99: one minus p", "Infinite: the model is broken"]
     answer: 1
     why: "−ln(0.01) ≈ 4.61, versus 0.13 for a correct p = 0.88. Log-loss grows without limit as the probability of the true class goes to 0, so training works hardest to fix confident errors."
 related: [ds/linear-regression, ds/loss-functions, ds/precision-recall-roc, ds/calibration]
@@ -61,7 +61,7 @@ sources:
 
 ## Why not plain linear regression?
 
-Suppose you label spam as 1 and not-spam as 0 and fit an ordinary straight line. Its outputs run off past 1 and below 0, so they cannot be probabilities, and a few extreme emails (one with 300 links) drag the whole line around. We want something that stays linear in the features — fast, interpretable — but outputs a number between 0 and 1. Logistic regression gets there in two moves: a **linear score**, then a **squashing function**.
+Suppose you label spam as 1 and not-spam as 0 and fit an ordinary straight line. Its outputs run off past 1 and below 0, so they cannot be probabilities, and a few extreme emails (one with 300 links) drag the whole line around. We want something that stays linear in the features (fast and interpretable) but outputs a number between 0 and 1. Logistic regression gets there in two moves: a **linear score**, then a **squashing function**.
 
 ## How it works
 
@@ -87,7 +87,7 @@ Only one term is active: if y = 1 the loss is −ln p, if y = 0 it is −ln(1 �
 
 Two facts make training pleasant:
 
-- The average log-loss is **convex** in w and b — one bowl, no bad local minima.
+- The average log-loss is **convex** in w and b: one bowl, no bad local minima.
 - Its gradient is tiny to write: **∂loss/∂w = (p − y)·x** and **∂loss/∂b = p − y**. The error (p − y) times the input, the same shape as linear regression's gradient.
 
 There is no closed-form solution, so you iterate. Batch gradient descent in pseudocode:
@@ -113,7 +113,7 @@ Weights w = (0.8 per link, 3.0 per unit of CAPS share), bias b = −4.
 
 Each extra link multiplies the odds of spam by e^0.8 ≈ 2.23.
 
-Now one gradient step on email A, whose true label is spam (y = 1): the error is p − y = 0.818 − 1 = −0.182. The gradients are −0.182 × 5 = −0.91 for the links weight, −0.182 × 0.5 = −0.091 for the CAPS weight and −0.182 for b. With learning rate 0.1, each parameter moves *against* its gradient: the links weight rises to 0.891, the CAPS weight to 3.009 and b to −3.982. The model now scores A slightly higher — exactly the nudge an under-confident correct answer should get.
+Now one gradient step on email A, whose true label is spam (y = 1): the error is p − y = 0.818 − 1 = −0.182. The gradients are −0.182 × 5 = −0.91 for the links weight, −0.182 × 0.5 = −0.091 for the CAPS weight and −0.182 for b. With learning rate 0.1, each parameter moves *against* its gradient: the links weight rises to 0.891, the CAPS weight to 3.009 and b to −3.982. The model now scores A slightly higher, which is exactly the nudge an under-confident correct answer should get.
 
 ## Implement it in Python
 
@@ -166,4 +166,4 @@ Both print weights [2.0, 3.4] and bias 0.27 (log-loss 0.305, accuracy 0.872): th
 
 ## In the interview
 
-Expect "derive the logistic regression loss", "why is it a linear classifier?", or "interpret this coefficient". Strong answers write p = σ(w·x + b), show that z is the log-odds, write log-loss and its gradient (p − y)·x, and mention convexity and regularisation. Likely follow-up: *how is this related to a neural network?* — it is a single neuron with a sigmoid activation trained with cross-entropy.
+Expect "derive the logistic regression loss", "why is it a linear classifier?", or "interpret this coefficient". Strong answers write p = σ(w·x + b), show that z is the log-odds, write log-loss and its gradient (p − y)·x, and mention convexity and regularisation. Likely follow-up: *how is this related to a neural network?* It is a single neuron with a sigmoid activation, trained with cross-entropy.

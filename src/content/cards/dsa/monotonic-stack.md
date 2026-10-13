@@ -4,18 +4,18 @@ track: dsa
 tags: [stacks, arrays, amortised]
 difficulty: 2
 minutes: 5
-tldr: "Keep a stack whose values only go down (or only up). Each new value pops everything it beats — and each popped item has just found its next greater element. O(n) total."
+tldr: "Keep a stack whose values only go down (or only up). Each new value pops everything it beats, and each popped item has just found its next greater element. O(n) total."
 analogy: "People join a row one at a time from the right, each wanting to know the first taller person to arrive after them. When a tall person arrives, every shorter person still waiting gets their answer at once and stops waiting."
 diagram: monotonic-stack
 story:
   - title: The next greater element
     text: "For every value in [2, 1, 2, 4, 3], find the first bigger value to its right, or −1 if there is none. Checking to the right of each position separately is O(n²) on a descending array. Picture the values as bars: each bar wants the first taller bar to its right."
   - title: Values going down just wait
-    text: "Scan left to right, keeping a stack of values still waiting for an answer. 2 waits. 1 is not bigger than 2, so it waits on top. Values in the stack only go down from bottom to top — that is the 'monotonic' part. Real code stores indices, so it knows where to write each answer."
+    text: "Scan left to right, keeping a stack of values still waiting for an answer. 2 waits. 1 is not bigger than 2, so it waits on top. Values in the stack only go down from bottom to top. That is the 'monotonic' part. Real code stores indices, so it knows where to write each answer."
   - title: A bigger value pops the waiters it beats
     text: "The second 2 arrives. It beats the top, 1, so pop 1 and record its answer: 2. It does not beat the next waiter, because 2 is not greater than 2, so popping stops and the new 2 is pushed. Everything under the top is at least as big as the top, so the first survivor protects all of them."
   - title: One big value can pop several
-    text: "4 arrives. It beats the top 2 — pop, answer 4 — and then the bottom 2 — pop, answer 4. A single arrival can settle many waiters at once. Then 4 itself goes on the stack to wait for something bigger."
+    text: "4 arrives. It beats the top 2 (pop, answer 4) and then the bottom 2 (pop, answer 4). A single arrival can settle many waiters at once. Then 4 itself goes on the stack to wait for something bigger."
   - title: Leftovers get −1; the pass is O(n)
     text: "3 does not beat 4, so it waits. The input ends with 4 and 3 still on the stack: nothing bigger ever came, so their answers stay −1. Result: [4, 2, 4, −1, −1]. Each index is pushed once and popped at most once, so the whole scan is O(n), even though one step may pop many."
 keyIdeas:
@@ -64,14 +64,14 @@ griddle: monotonic-stack
 
 ## How it works
 
-A **monotonic stack** is an ordinary stack with one extra rule: the values in it are always sorted from bottom to top — either *decreasing* or *increasing*. Before pushing a new value `x`, you pop every item that would break that order. The pops are not wasted work: each one answers a question.
+A **monotonic stack** is an ordinary stack with one extra rule: the values in it are always sorted from bottom to top, either *decreasing* or *increasing*. Before pushing a new value `x`, you pop every item that would break that order. The pops are not wasted work: each one answers a question.
 
 Take the **next greater element** problem: for every position, find the first value to its right that is strictly bigger, or −1 if none exists.
 
 Scan the array left to right, and keep on the stack the indices that are **still waiting** for their answer. Two facts make this work:
 
 1. **The waiting values are decreasing from bottom to top.** If a smaller value were sitting *below* a bigger one, the bigger one would have answered it when it arrived. So whenever something is still waiting, everything above it is no bigger than it.
-2. **A new value x answers waiters from the top down.** If `x` beats the top, then `x` is the first bigger value to the right of the top (everything between them was smaller, otherwise the top would already be answered). Pop it and record `x`. Repeat. The first waiter `x` does *not* beat stops the loop — and since everything below it is at least as big, nothing deeper can be beaten either.
+2. **A new value x answers waiters from the top down.** If `x` beats the top, then `x` is the first bigger value to the right of the top (everything between them was smaller, otherwise the top would already be answered). Pop it and record `x`. Repeat. The first waiter `x` does *not* beat stops the loop, and since everything below it is at least as big, nothing deeper can be beaten either.
 
 After processing `x`, push its own index: it now waits for something bigger. When the input ends, whatever is still on the stack never met a bigger value, so its answer is −1.
 
@@ -85,17 +85,17 @@ The inner `while` loop can pop many items in one step, which looks like O(n²). 
 
 | i | x | Pops (and the answer recorded) | Stack after | ans |
 |---|---|---|---|---|
-| 0 | 2 | — | 2 | [−1, −1, −1, −1, −1] |
-| 1 | 1 | — (1 < 2 does not beat it) | 2 1 | unchanged |
+| 0 | 2 | none | 2 | [−1, −1, −1, −1, −1] |
+| 1 | 1 | none (1 < 2 does not beat it) | 2 1 | unchanged |
 | 2 | 2 | pop 1 → ans[1] = 2; stop at 2 (not strictly bigger) | 2 2 | [−1, 2, −1, −1, −1] |
 | 3 | 4 | pop 2 → ans[2] = 4; pop 2 → ans[0] = 4 | 4 | [4, 2, 4, −1, −1] |
-| 4 | 3 | — | 4 3 | unchanged |
+| 4 | 3 | none | 4 3 | unchanged |
 
 Indices 3 and 4 are left on the stack, so their answers stay −1. Final answer: `[4, 2, 4, -1, -1]`. Five pushes and three pops: the work is proportional to n.
 
 ## Implement it in Python
 
-The same idea works in any language; here are the three classic uses in Python (`stack[-1]` is the top).
+The three classic uses, one function each. In Python, `stack[-1]` is the top.
 
 ```python
 def next_greater(nums):
@@ -138,13 +138,13 @@ print(largest_rectangle([2, 1, 5, 6, 2, 3]))                 # 10
 
 ## Largest rectangle in a histogram
 
-Bars of width 1 have heights `[2, 1, 5, 6, 2, 3]`; find the largest rectangle that fits under them. The key observation: the best rectangle has the height of its **shortest** bar, and it stretches left and right until it hits a lower bar. So for each bar we need the first lower bar on each side — *next smaller* on the right and *previous smaller* on the left.
+Bars of width 1 have heights `[2, 1, 5, 6, 2, 3]`; find the largest rectangle that fits under them. Notice that the best rectangle has the height of its **shortest** bar, and it stretches left and right until it hits a lower bar. So for each bar we need the first lower bar on each side: *next smaller* on the right and *previous smaller* on the left.
 
 An **increasing** stack gives both at once. When bar `i` is lower than the top, the top cannot extend past `i` (its right boundary), and the item under it in the stack is the first lower bar to its left (its left boundary). Width = `i − left − 1`. In the example, the bar of height 2 at index 4 pops 6 (width 1, area 6) and then 5 (left boundary is the 1 at index 1, width 2, area **10**). Appending a sentinel 0 at the end flushes every remaining bar. One pass, O(n).
 
 ## Edge cases and pitfalls
 
-- **Strict or not?** "Next greater" means strictly greater, so pop on `<`, not `<=`. With `<=`, an equal value would wrongly answer its twin — on `[2, 1, 2, 4, 3]` index 0 would get 2 instead of 4.
+- **Strict or not?** "Next greater" means strictly greater, so pop on `<`, not `<=`. With `<=`, an equal value would wrongly answer its twin. On `[2, 1, 2, 4, 3]`, index 0 would get 2 instead of 4.
 - **Values instead of indices** works only when you never need positions; most variants do need them.
 - **Circular arrays** (the last element's "right" wraps to the start): loop i from 0 to 2n − 1, read `nums[i mod n]`, and only push during the first n steps.
 - **Which direction?** Next greater/smaller to the *right*: scan left to right and answer on pop. Previous greater/smaller to the *left*: the answer is whatever is on top right after you finish popping.

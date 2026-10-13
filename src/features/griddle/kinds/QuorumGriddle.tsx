@@ -102,9 +102,9 @@ export default function QuorumGriddle() {
         </svg>
       </div>
       <p class={`gd__verdict ${strong ? 'gd__verdict--ok' : 'gd__verdict--bad'}`} aria-live="polite">
-        R + W = {R + W} {strong ? '>' : '≤'} N = {n} —{' '}
+        R + W = {R + W} {strong ? '>' : '≤'} N = {n}, so{' '}
         {strong
-          ? `every read set overlaps every write set (here on ${both.length} replica${both.length === 1 ? '' : 's'}), so reads see v2.`
+          ? `every read set overlaps every write set (here on ${both.length} replica${both.length === 1 ? '' : 's'}) and reads see v2.`
           : 'the read can land only on stale replicas and return v1.'}
       </p>
       <div class="gd__row">
@@ -114,7 +114,7 @@ export default function QuorumGriddle() {
       </div>
       <p class="gd__hint">
         Fast writes: W = 1 (but then you need R = N). Fast reads: R = 1 (needs W = N). The popular middle
-        ground is W = R = ⌊N/2⌋ + 1 — it also survives ⌈N/2⌉ − 1 replicas being down.
+        ground is W = R = ⌊N/2⌋ + 1, which also survives ⌈N/2⌉ − 1 replicas being down.
       </p>
     </Shell>
   );

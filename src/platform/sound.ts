@@ -1,7 +1,7 @@
 import { readSettings } from '../db/settings';
 
 /** Tiny synthesised UI sounds (Web Audio, zero bytes of audio files, our own work). Off by default;
- *  never forced — if the AudioContext can't start, nothing plays. Every sound has a visible twin. */
+ *  never forced: if the AudioContext can't start, nothing plays. Every sound has a visible twin. */
 let ctx: AudioContext | null = null;
 
 function ac(): AudioContext | null {

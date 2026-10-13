@@ -5,7 +5,7 @@ tags: [dynamic-programming, strings]
 difficulty: 3
 minutes: 5
 tldr: "The fewest single-letter inserts, deletes and replacements that turn one string into another. dp[i][j] = min(diagonal + 0 or 1, up + 1, left + 1); kitten → sitting = 3."
-analogy: "Fixing a typo with the fewest keystrokes. At the end of each word you have three moves — overwrite a letter, delete one, or type a missing one — and you always pick whichever leaves the least work for the rest."
+analogy: "Fixing a typo with the fewest keystrokes. At the end of each word you have three moves (overwrite a letter, delete one, or type a missing one), and you always pick whichever leaves the least work for the rest."
 diagram: edit-distance
 story:
   - title: kitten → sitting, three kinds of edit
@@ -14,7 +14,7 @@ story:
     text: "Let dp[i][j] = the fewest edits that turn the first i letters of kitten into the first j letters of sitting. Turning the empty string into \"sit\" takes 3 inserts, and turning \"kit\" into the empty string takes 3 deletes. So row 0 reads 0, 1, 2, … 7 and column 0 reads 0, 1, … 6."
   - title: Each cell is the cheapest of three neighbours
     text: "Look at the last letters. Replace one with the other (free if they already match): diagonal + 1, or + 0. Delete kitten's last letter: the cell above + 1. Insert sitting's last letter: the cell to the left + 1. For k against s: diagonal 0 + 1 = 1 beats 1 + 1 from above or from the left."
-  - title: Fill the table — distance 3
+  - title: "Fill the table: distance 3"
     text: "Fill row by row; each cell needs only its left, upper and upper-left neighbours. The matching letters i, t, t ride the diagonal for free, so the cost stays at 1 along it. The bottom-right corner says kitten → sitting needs 3 edits. That is (m+1)(n+1) cells of O(1) work: O(mn) time."
   - title: Walk back to get the edit script
     text: "From the corner, ask which neighbour produced each value and step there. The path runs down the diagonal and ends with one step left. Diagonal steps that cost 1 are replacements (k → s, e → i), free diagonal steps keep a letter, and the step left inserts g."
@@ -22,9 +22,9 @@ story:
     text: "Each row reads only itself and the row above, so two rows are enough when you only need the number: O(mn) time, O(min(m, n)) space. Printing the edit script needs the full table, or Hirschberg's divide-and-conquer trick."
 keyIdeas:
   - "**State:** `dp[i][j]` = fewest edits turning the first i letters of a into the first j letters of b. Base cases `dp[i][0] = i` (delete all) and `dp[0][j] = j` (insert all)."
-  - "**Recurrence:** `min(dp[i−1][j−1] + (a[i−1] ≠ b[j−1]), dp[i−1][j] + 1, dp[i][j−1] + 1)` — replace/keep, delete, insert."
+  - "**Recurrence:** `min(dp[i−1][j−1] + (a[i−1] ≠ b[j−1]), dp[i−1][j] + 1, dp[i][j−1] + 1)`, meaning replace/keep, delete, insert."
   - "**O(mn) time.** Two rows give O(min(m, n)) space when you only need the distance."
-  - "**Bounds:** |m − n| ≤ distance ≤ max(m, n) — handy sanity checks and early exits."
+  - "**Bounds:** |m − n| ≤ distance ≤ max(m, n). Handy for sanity checks and early exits."
   - "**Used for** spell checking, fuzzy search, DNA alignment (with weighted costs) and record matching."
 quiz:
   - q: "What is the edit distance from \"horse\" to \"ros\"?"
@@ -79,7 +79,7 @@ The distance is symmetric (an insert one way is a delete the other way) and obey
 ## How it works
 
 1. **State.** `dp[i][j]` = the fewest edits that turn the first i characters of a into the first j characters of b.
-2. **Base cases.** `dp[i][0] = i` — turning i characters into nothing takes i deletes. `dp[0][j] = j` — building j characters from nothing takes j inserts.
+2. **Base cases.** `dp[i][0] = i`, because turning i characters into nothing takes i deletes. `dp[0][j] = j`, because building j characters from nothing takes j inserts.
 3. **Recurrence.** Think about the *last* character of each prefix. In an optimal edit sequence, one of three things happens to them:
    - **Keep or replace.** a[i−1] ends up as b[j−1]: free if they are already equal, one replacement otherwise. The rest is turning the first i − 1 characters of a into the first j − 1 of b: `dp[i−1][j−1] + (0 or 1)`.
    - **Delete** a[i−1]. Then the first i − 1 characters of a must become the first j of b: `dp[i−1][j] + 1`.
@@ -88,7 +88,7 @@ The distance is symmetric (an insert one way is a delete the other way) and obey
 4. **Order.** Every cell needs its left, upper and upper-left neighbours, so fill row by row, left to right.
 5. **Answer.** `dp[m][n]`. There are (m + 1)(n + 1) cells of O(1) work: **O(mn) time and space**.
 
-Optimal substructure holds because whatever an optimal script does with the last characters, the edits on the remaining prefixes must themselves be optimal — otherwise you could swap in a cheaper set and beat the optimum.
+Optimal substructure holds because whatever an optimal script does with the last characters, the edits on the remaining prefixes must themselves be optimal. Otherwise you could swap in a cheaper set and beat the optimum.
 
 ## Worked example
 
@@ -124,7 +124,7 @@ On the example: (6,7) came from the left → **insert g**; (6,6) n = n, keep; (5
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+The full-table version also walks back to print the edit script; the two-row version only returns the number.
 
 ```python
 def edit_distance(a, b):
@@ -170,9 +170,9 @@ print(distance_two_rows("kitten", "sitting"), distance_two_rows("horse", "ros"))
 
 ## Saving space
 
-Row i reads only row i − 1 and the cells already filled in row i, so keep two rows (`prev` and `cur`) and pass the shorter string as `b`: O(min(m, n)) space. You lose the ability to walk back. If you need both the script and low memory, **Hirschberg's algorithm** splits the problem at the middle row, finds where the optimal path crosses it with two linear-space passes, and recurses on the two halves — still O(mn) time.
+Row i reads only row i − 1 and the cells already filled in row i, so keep two rows (`prev` and `cur`) and pass the shorter string as `b`: O(min(m, n)) space. You lose the ability to walk back. If you need both the script and low memory, **Hirschberg's algorithm** splits the problem at the middle row, finds where the optimal path crosses it with two linear-space passes, and recurses on the two halves. That is still O(mn) time.
 
-If you only need to know whether the distance is **at most k**, note that every step off the main diagonal costs at least 1, so only cells with |i − j| ≤ k can lie on a path of cost ≤ k. Computing that band takes O(k · min(m, n)) time — the basis of fast fuzzy matching.
+If you only need to know whether the distance is **at most k**, note that every step off the main diagonal costs at least 1, so only cells with |i − j| ≤ k can lie on a path of cost ≤ k. Computing that band takes O(k · min(m, n)) time, and it is the basis of fast fuzzy matching.
 
 ## Where it is used
 
@@ -201,4 +201,4 @@ If you only need to know whether the distance is **at most k**, note that every 
 
 ## In the interview
 
-Usually asked as "LeetCode 72: Edit Distance" or as "one edit away" (is the distance ≤ 1? — solvable in O(n) with two pointers, no table needed). A strong answer defines the state on prefixes, names the three neighbours as replace, delete and insert, sets the base row and column, fills a small table such as horse → ros (3), and states O(mn) time with an O(min(m, n)) space follow-up. Expect "print the actual edits" (walk back), "what if replace costs 2?" (change the diagonal cost; with replace = 2 the answer becomes the LCS distance), and "how would you suggest corrections from a dictionary of a million words?" (trie plus a DP row per node, or a BK-tree, which works because the distance is a metric).
+Usually asked as "LeetCode 72: Edit Distance" or as "one edit away" (is the distance ≤ 1? You can answer that in O(n) with two pointers and no table). A strong answer defines the state on prefixes, names the three neighbours as replace, delete and insert, sets the base row and column, fills a small table such as horse → ros (3), and states O(mn) time with an O(min(m, n)) space follow-up. Expect "print the actual edits" (walk back), "what if replace costs 2?" (change the diagonal cost; with replace = 2 the answer becomes the LCS distance), and "how would you suggest corrections from a dictionary of a million words?" (trie plus a DP row per node, or a BK-tree, which works because the distance is a metric).

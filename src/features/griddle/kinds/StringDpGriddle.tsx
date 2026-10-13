@@ -137,15 +137,15 @@ export default function StringDpGriddle({ kind }: { kind: string }) {
       {view.done && lcs && (
         <p class="gd__verdict gd__verdict--ok" role="status">
           {lcs.lcs
-            ? `LCS = ${lcs.lcs} — length ${[...lcs.lcs].length} of ${Math.min(m, n)} possible`
-            : 'Nothing in common — the LCS is empty'}
+            ? `LCS = ${lcs.lcs} (length ${[...lcs.lcs].length} of ${Math.min(m, n)} possible)`
+            : 'Nothing in common, so the LCS is empty'}
         </p>
       )}
       {view.done && ed && (
         <p class="gd__verdict gd__verdict--ok" role="status">
           {ed.distance === 0
-            ? 'Already equal — 0 edits'
-            : `${a || '∅'} → ${b || '∅'}: ${ed.distance} edit${ed.distance === 1 ? '' : 's'} — ${ed.script.map(formatEdit).join(', ')}`}
+            ? 'Already equal: 0 edits'
+            : `${a || '∅'} → ${b || '∅'}: ${ed.distance} edit${ed.distance === 1 ? '' : 's'} (${ed.script.map(formatEdit).join(', ')})`}
         </p>
       )}
       <Controls

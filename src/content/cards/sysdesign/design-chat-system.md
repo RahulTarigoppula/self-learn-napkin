@@ -9,11 +9,11 @@ analogy: "A post office with a numbered pigeonhole for every conversation. Each 
 diagram: design-chat-system
 story:
   - title: Every phone keeps a WebSocket open
-    text: "Alice and Bob each keep one long-lived WebSocket connection, through the load balancer, to a gateway server. Because the connection stays open, the server can push a message the moment it arrives — no polling. One gateway holds about 100,000 connections, so 100 million people online need about 1,000 gateways."
+    text: "Alice and Bob each keep one long-lived WebSocket connection, through the load balancer, to a gateway server. Because the connection stays open, the server can push a message the moment it arrives, with no polling. One gateway holds about 100,000 connections, so 100 million people online need about 1,000 gateways."
   - title: "Send: number it, store it, ack it"
     text: "Alice types “hi”. Gateway 1 forwards it to the chat service, which gives it the next sequence number in the Alice–Bob conversation, 42, and writes it to the message store under the key (conversation, 42). Only then does it ack Alice: one tick, sent. The message can no longer be lost."
   - title: "Deliver: find Bob’s gateway"
-    text: "The chat service asks the session registry where Bob is connected — gateway 2 — and pushes the message down his socket. Bob's phone acks it, and Alice sees two ticks: delivered. When Bob opens the chat, his phone sends 'read up to 42', which becomes Alice's read receipt."
+    text: "The chat service asks the session registry where Bob is connected (gateway 2) and pushes the message down his socket. Bob's phone acks it, and Alice sees two ticks: delivered. When Bob opens the chat, his phone sends 'read up to 42', which becomes Alice's read receipt."
   - title: "Groups: one copy per member"
     text: "A message to group 7 is stored once, under the group's conversation, then delivered to each member's gateway in turn. That is fine for groups of a few hundred. Channels with millions of readers switch to pull, like a news feed."
   - title: "Offline? Send a push notification"
@@ -48,7 +48,7 @@ bigO:
   - { op: "message storage", avg: "~4 TB/day", note: "20 B × ~200 B; ~1.5 PB a year" }
   - { op: "open connections at peak", avg: "~100 M", note: "assume 1 in 5 daily users online at once" }
   - { op: "gateway servers", avg: "~1,000", note: "at ~100 k connections each" }
-  - { op: "heartbeats", avg: "~3.3 M/s", note: "100 M ÷ 30 s — absorbed by gateways" }
+  - { op: "heartbeats", avg: "~3.3 M/s", note: "100 M ÷ 30 s; absorbed by gateways" }
 bigOTitle: "Key numbers"
 related: [sysdesign/pub-sub-and-streams, sysdesign/lsm-trees, sysdesign/design-news-feed, sysdesign/design-url-shortener]
 prereqs: [sysdesign/back-of-envelope, sysdesign/api-design, sysdesign/load-balancing, sysdesign/realtime-communication, sysdesign/unique-id-generation, sysdesign/idempotency, sysdesign/sql-vs-nosql]
@@ -75,7 +75,7 @@ sources:
 - Sent, delivered and read receipts.
 - Online / last-seen presence.
 - Notifications for users who are offline.
-- Attachments (photos, voice notes) — mention, then park.
+- Attachments (photos, voice notes): mention them, then park them.
 
 **Non-functional:**
 
@@ -114,7 +114,7 @@ History and attachments use ordinary HTTP (**API Design**): `GET /conversations/
 
 ## 4. High-level design
 
-1. **Gateways.** Each phone opens one WebSocket through a layer-4 load balancer (**Load Balancing**) to a gateway. Gateways are stateful — they hold the open sockets — but contain no chat logic. On connect, the gateway writes `user → gateway` into the **session registry**, an in-memory store with expiry.
+1. **Gateways.** Each phone opens one WebSocket through a layer-4 load balancer (**Load Balancing**) to a gateway. Gateways are stateful, since they hold the open sockets, but they contain no chat logic. On connect, the gateway writes `user → gateway` into the **session registry**, an in-memory store with expiry.
 2. **Send.** The gateway forwards the frame to the **chat service**, routed by conversation id so a single owner handles each conversation at a time. The owner assigns the next sequence number, writes the message to the store, then acks the sender.
 3. **Route.** The chat service looks up each recipient in the registry and forwards the message to that gateway, which pushes it down the socket. Gateways and the chat service can talk by direct RPC, or each gateway can subscribe to a pub/sub channel for its connected users (**Pub/Sub and Streams**).
 4. **Offline.** No registry entry means offline: hand the message to the **push notifier**, which calls the phone platform's push service (APNs on iOS, FCM on Android).
@@ -147,7 +147,7 @@ Users only care about order **within a conversation**, so give each conversation
 - **Gateway failure:** 100,000 clients reconnect at once. Use exponential backoff with jitter (**Circuit Breakers and Retries**), and have clients resync from their last `seq`, so nothing is lost.
 - **Hot conversations:** one huge group's owner can saturate. Cap group size, or shard the group's delivery over several workers while keeping one sequencer.
 - **Ordering vs availability:** a single sequencer per conversation is a brief point of failure; elect a new owner (**Raft Leader Election**) and accept a short pause rather than out-of-order messages.
-- **Storage cost:** petabytes a year — move old messages to cheaper storage, or keep history only on devices, as some apps do.
+- **Storage cost:** petabytes a year. Move old messages to cheaper storage, or keep history only on devices, as some apps do.
 
 ## 9. What I'd say in the last 5 minutes
 

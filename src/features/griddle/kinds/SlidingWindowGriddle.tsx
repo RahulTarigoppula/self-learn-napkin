@@ -166,7 +166,7 @@ export default function SlidingWindowGriddle() {
       </div>
       <div class="gd__stats">
         <span>
-          window <b>{started ? `"${win}"` : '—'}</b>
+          window <b>{started ? `"${win}"` : '-'}</b>
         </span>
         <span>
           best <b>{f.best.len}</b>

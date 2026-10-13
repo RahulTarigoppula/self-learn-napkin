@@ -14,7 +14,7 @@ story:
     text: "A flash sale sends 1,000 orders per second, but C1 and C2 can process only 200 per second each. Instead of timing out, the extra 600 per second wait in the queue (m1 to m5 here). After the spike the consumers drain the backlog, and you can add consumers to drain it faster."
   - title: Consume, then ack
     text: "C1 receives m1. While C1 works on it, the queue hides m1 from other consumers but does not delete it. Only when C1 finishes and sends an ack (acknowledgement) does the queue remove m1 for good."
-  - title: Crash before ack, delivered again
+  - title: "Crash before ack: delivered again"
     text: "C1 takes m2, charges the card, then crashes before acking. After the visibility timeout, say 30 s, m2 reappears and C2 receives it. This is at-least-once delivery: nothing is lost, but m2 may run twice. So the handler must be idempotent: C2 sees order m2 was already handled and skips the second charge."
   - title: Poison message to the dead-letter queue
     text: "m3 has a malformed address and fails on every attempt. Retrying forever would waste consumers and block progress. After 3 failed attempts the queue moves m3 to a dead-letter queue, where an engineer can inspect it, fix the bug and replay it."
@@ -60,7 +60,7 @@ sources:
 
 ## Why put a queue in the middle
 
-When one service calls another directly (a **synchronous** call), the caller waits for the answer, fails if the callee is down, and passes every traffic spike straight through. A **message queue** is a durable buffer between them. The **producer** writes a **message** (a small record describing work, such as "order 123 placed") to the queue and moves on. **Consumers** read messages and do the work later — **asynchronously**.
+When one service calls another directly (a **synchronous** call), the caller waits for the answer, fails if the callee is down, and passes every traffic spike straight through. A **message queue** is a durable buffer between them. The **producer** writes a **message** (a small record describing work, such as "order 123 placed") to the queue and moves on. **Consumers** read messages and do the work later, on their own schedule (**asynchronously**).
 
 That gives three things:
 
@@ -73,7 +73,7 @@ That gives three things:
 1. **Send:** the producer appends a message; the broker stores it durably (usually replicated to disk) and confirms.
 2. **Receive:** a consumer pulls a message. The broker does not delete it; it hides it from other consumers for a **visibility timeout** (or tracks it as unacknowledged).
 3. **Ack:** after finishing the work, the consumer **acknowledges**. Only now is the message deleted.
-4. **No ack:** if the consumer crashes or the timeout passes, the message becomes visible again and is redelivered — possibly to another consumer.
+4. **No ack:** if the consumer crashes or the timeout passes, the message becomes visible again and is redelivered, maybe to a different consumer.
 5. **Dead letter:** after a configured number of failed receives (say 3–5), the broker moves the message to a **dead-letter queue (DLQ)** for inspection.
 
 ### Delivery guarantees
@@ -97,7 +97,7 @@ Flash sale: producers send 1,000 orders/s for 60 s, then 100/s. Two consumers ha
 | After, 2 consumers | 100/s | 400/s | shrinks 300/s → empty in 120 s |
 | After, autoscaled to 6 | 100/s | 1,200/s | shrinks 1,100/s → empty in ~33 s |
 
-No order was lost or rejected; customers just got their confirmation emails a little later. Then a consumer crashes after committing order 123 but before acking: the message is redelivered after 30 s, and the next handler finds 123 in its `processed` table and skips it. Had the crash come *before* the commit, the claim would roll back and the retry would charge again with the same payment idempotency key, which the payment provider recognises — the card is still charged once.
+No order was lost or rejected; customers just got their confirmation emails a little later. Then a consumer crashes after committing order 123 but before acking: the message is redelivered after 30 s, and the next handler finds 123 in its `processed` table and skips it. Had the crash come *before* the commit, the claim would roll back and the retry would charge again with the same payment idempotency key, which the payment provider recognises. The card is still charged only once.
 
 ## Implement it in Python
 

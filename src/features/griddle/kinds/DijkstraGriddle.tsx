@@ -97,7 +97,7 @@ export default function DijkstraGriddle() {
         target === source || path.length === 0
           ? `All distances from ${source} are final.`
           : `Shortest ${source}→${target} = ${fmtDist(s.dist[target] as number)} via ${path.join('→')}.`
-      }${neg ? ' The −5 edge never undercut a final node from here — try source A.' : ''}`;
+      }${neg ? ' The −5 edge never undercut a final node from here. Try source A.' : ''}`;
 
   return (
     <Shell

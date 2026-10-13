@@ -24,6 +24,8 @@ interface Data {
   retention: number | null;
   read: Map<string, number>;
   forecast: number[];
+  /** never-seen cards that will be introduced each day, at the daily new-card limit */
+  forecastNew: number[];
   last: Session | undefined;
   lastBackupAt: number | null;
 }
@@ -64,6 +66,17 @@ export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
           (c) => c.orphan === 0 && c.state !== State.New && c.due <= end && (i === 0 || c.due > start),
         ).length;
       });
+      const todayKey = dayKey(now, tz());
+      const perDay = readSettings().newPerDay;
+      let unseen = cards.filter((c) => c.orphan === 0 && c.state === State.New).length;
+      const introducedToday = cards.filter(
+        (c) => c.introducedOn === todayKey && c.state !== State.New,
+      ).length;
+      const forecastNew = Array.from({ length: 7 }, (_, i) => {
+        const n = Math.min(unseen, Math.max(0, perDay - (i === 0 ? introducedToday : 0)));
+        unseen -= n;
+        return n;
+      });
       const graded = logs.filter((l) => l.rating >= 1);
       setD({
         streak: st,
@@ -74,6 +87,7 @@ export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
         retention: graded.length ? graded.filter((l) => l.rating >= 3).length / graded.length : null,
         read,
         forecast,
+        forecastNew,
         last,
         lastBackupAt: readSettings().lastBackupAt,
       });
@@ -96,7 +110,11 @@ export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
     return x ? x.reviews + x.napkinsRead * 3 : 0;
   };
   const tier = (n: number) => (n === 0 ? 0 : n < 5 ? 1 : n < 15 ? 2 : n < 30 ? 3 : 4);
-  const maxF = Math.max(1, ...d.forecast);
+  const totals = d.forecast.map((n, i) => n + (d.forecastNew[i] ?? 0));
+  const maxF = Math.max(1, ...totals);
+  const weekCards = totals.reduce((a, b) => a + b, 0);
+  // About 8 seconds per card is a typical pace for short recall prompts.
+  const weekMinutes = Math.max(1, Math.round((weekCards * 8) / 60));
   const backupDays = d.lastBackupAt ? Math.floor((Date.now() - d.lastBackupAt) / 86_400_000) : null;
   const hovered = hover ? d.days.get(hover) : undefined;
 
@@ -119,7 +137,7 @@ export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
           <small>{d.mature} long-term</small>
         </div>
         <div class="pg__stat">
-          <b class="mono">{d.retention === null ? '—' : `${Math.round(d.retention * 100)}%`}</b>
+          <b class="mono">{d.retention === null ? 'n/a' : `${Math.round(d.retention * 100)}%`}</b>
           <span>recall, 30 days</span>
         </div>
       </div>
@@ -204,24 +222,37 @@ export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
 
         <section class="pg__card card" aria-labelledby="pg-fc">
           <h2 id="pg-fc">Coming up</h2>
-          <p class="muted pg__sub">Review cards due over the next week</p>
+          <p class="muted pg__sub">
+            {weekCards === 0
+              ? 'Nothing scheduled. Read a napkin and its flashcards will start showing up here.'
+              : `${weekCards} cards over the next 7 days, roughly ${weekMinutes} minute${weekMinutes === 1 ? '' : 's'} in total.`}
+          </p>
           <ol class="fc7">
             {d.forecast.map((n, i) => {
+              const fresh = d.forecastNew[i] ?? 0;
+              const total = n + fresh;
               const date = new Date();
               date.setDate(date.getDate() + i);
+              const day = i === 0 ? 'Today' : date.toLocaleDateString(undefined, { weekday: 'short' });
               return (
-                <li key={i}>
-                  <span class="fc7__bar">
-                    <span style={{ height: `${Math.max(4, (n / maxF) * 100)}%` }} />
+                <li
+                  key={i}
+                  class={i === 0 ? 'is-today' : undefined}
+                  aria-label={`${day}: ${n} reviews, ${fresh} new`}
+                >
+                  <span class="fc7__bar" aria-hidden="true">
+                    {fresh > 0 && <span class="fc7__new" style={{ height: `${(fresh / maxF) * 100}%` }} />}
+                    {n > 0 && <span class="fc7__due" style={{ height: `${(n / maxF) * 100}%` }} />}
                   </span>
-                  <b class="mono">{n}</b>
-                  <small>
-                    {i === 0 ? 'today' : date.toLocaleDateString(undefined, { weekday: 'short' })}
-                  </small>
+                  <b class="mono">{total}</b>
+                  <small>{day}</small>
                 </li>
               );
             })}
           </ol>
+          <p class="fc7__legend" aria-hidden="true">
+            <i class="fc7__due" /> due again <i class="fc7__new" /> new cards
+          </p>
         </section>
       </div>
 

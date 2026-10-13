@@ -12,7 +12,7 @@ story:
     text: "Six towns joined by roads with lengths (weights). We want the shortest distance from A to every town. The table holds the best distance found so far: 0 for A, ∞ (not reached yet) for everyone else. A min-heap of (distance, node) pairs starts with (0, A)."
   - title: Pop A and relax its edges
     text: "Pop the smallest entry, A at 0. Relaxing an edge u–v means: if dist[u] + weight < dist[v], lower dist[v], record u as v's parent and push v. So B becomes 0 + 4 = 4 and C becomes 0 + 1 = 1. A is now settled: its distance is final."
-  - title: Pop C (1) — a cheaper way to B
+  - title: "Pop C (1): a cheaper way to B"
     text: "The closest unsettled node is C at 1. Through C, B costs 1 + 2 = 3, beating 4, so B drops to 3 even though A had a direct road. D gets 1 + 8 = 9 and E gets 1 + 10 = 11. This is why we never finalise a node early."
   - title: Pop B (3), then D (8)
     text: "B at 3 is next: D improves from 9 to 3 + 5 = 8. Then D at 8 is the closest: E improves from 11 to 10 and F gets 8 + 6 = 14. Each pop settles one node; the old heap entries (4, B) and (9, D) are now stale and are skipped when popped."
@@ -21,7 +21,7 @@ story:
   - title: A negative edge breaks the guarantee
     text: "With weights S→X 2, S→Y 3 and Y→X −2, Dijkstra settles X at 2 because nothing seemed cheaper. Only later does S→Y→X reveal a cost of 1. Settling assumes paths never get shorter as they grow, which a negative edge violates. Use Bellman-Ford instead."
 keyIdeas:
-  - "**Greedy rule**: the unsettled node with the smallest tentative distance is final — safe only because **no weight is negative**."
+  - "**Greedy rule**: the unsettled node with the smallest tentative distance is final. That is safe only because **no weight is negative**."
   - "**Relax** edge u→v: if `dist[u] + w < dist[v]`, set `dist[v]` and `parent[v] = u`, and push v onto the heap."
   - "**Lazy deletion**: push a new entry when a distance drops and skip popped entries larger than `dist[u]`."
   - "Binary heap: **O((V + E) log V)**. Rebuild any path by following `parent` back from the target."
@@ -67,7 +67,7 @@ griddle: dijkstra
 
 ## The problem
 
-You have a graph whose edges carry **weights** — road lengths, latencies, costs — and a **source** node. You want the cheapest total weight from the source to every other node: the **single-source shortest paths**. BFS solves this only when every edge costs the same, because it counts edges. With weights, two short roads can beat one long one, so we need something smarter. **Dijkstra's algorithm** solves it whenever every weight is **≥ 0**.
+You have a graph whose edges carry **weights** (road lengths, latencies, costs) and a **source** node. You want the cheapest total weight from the source to every other node: the **single-source shortest paths**. BFS solves this only when every edge costs the same, because it counts edges. With weights, two short roads can beat one long one, so we need something smarter. **Dijkstra's algorithm** solves it whenever every weight is **≥ 0**.
 
 ## How it works
 
@@ -78,7 +78,7 @@ Keep two pieces of state:
 
 Then loop:
 
-1. **Pop** the pair with the smallest distance, `(d, u)`. If `d > dist[u]`, it is a stale leftover — skip it.
+1. **Pop** the pair with the smallest distance, `(d, u)`. If `d > dist[u]`, it is a stale leftover, so skip it.
 2. Otherwise u is **settled**: `d` is its true shortest distance.
 3. **Relax** every edge u → v with weight w: if `d + w < dist[v]`, set `dist[v] = d + w`, set `parent[v] = u`, and push `(dist[v], v)`.
 
@@ -94,7 +94,7 @@ Undirected edges: A–B 4, A–C 1, B–C 2, B–D 5, C–D 8, C–E 10, D–E 2
 
 | Pop | Relaxations | dist (A B C D E F) | Heap afterwards |
 |---|---|---|---|
-| — | start | 0 ∞ ∞ ∞ ∞ ∞ | (0,A) |
+| (none) | start | 0 ∞ ∞ ∞ ∞ ∞ | (0,A) |
 | A, 0 | B = 4, C = 1 | 0 4 1 ∞ ∞ ∞ | (1,C) (4,B) |
 | C, 1 | B 4→3, D = 9, E = 11 | 0 3 1 9 11 ∞ | (3,B) (4,B) (9,D) (11,E) |
 | B, 3 | D 9→8 | 0 3 1 8 11 ∞ | (4,B) (8,D) (9,D) (11,E) |
@@ -109,7 +109,7 @@ Parents: C ← A, B ← C, D ← B, E ← D, F ← E. Walking back from F: **A �
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+This runs on the six-town graph from the worked example and prints the same distances and route.
 
 ```python
 import heapq
@@ -160,7 +160,7 @@ Adding a constant to every weight does **not** fix this: it penalises paths with
 
 ## Edge cases and pitfalls
 
-- **Skip stale entries.** Without the `d > dist[u]` check you re-relax edges with outdated distances — still correct for non-negative weights, but slower.
+- **Skip stale entries.** Without the `d > dist[u]` check you re-relax edges with outdated distances. The answer is still correct for non-negative weights, just slower.
 - **Unreachable nodes** keep `dist = ∞`; check before printing a path.
 - **Early exit** for a single target is valid when you *pop* it, not when you first *push* it.
 - **Ties** in the heap are fine; if nodes are not comparable objects, push `(dist, counter, node)` to avoid comparing them.
@@ -169,4 +169,4 @@ Adding a constant to every weight does **not** fix this: it penalises paths with
 
 ## In the interview
 
-Typical prompts: *Network Delay Time* (max of all dist values), *Cheapest Flights* (often with a stop limit, which changes the state to (node, stops)), *Path With Minimum Effort* (the cost of a path is its largest step, not a sum — Dijkstra still works because extending a path never lowers that maximum). State the non-negative requirement, the heap, lazy deletion and O((V + E) log V), and reconstruct the path with parents. Expect the follow-up "what if weights can be negative?" — answer Bellman-Ford and explain why the greedy proof fails.
+Typical prompts: *Network Delay Time* (max of all dist values), *Cheapest Flights* (often with a stop limit, which changes the state to (node, stops)), *Path With Minimum Effort* (a path costs its largest step instead of a sum, and Dijkstra still works because extending a path never lowers that maximum). State the non-negative requirement, the heap, lazy deletion and O((V + E) log V), and reconstruct the path with parents. Expect the follow-up "what if weights can be negative?". Answer Bellman-Ford and explain why the greedy proof fails.

@@ -103,7 +103,7 @@ Start from the min-heap `[2, 4, 3, 9, 7, 8, 5]`.
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+A hand-rolled min-heap first, so the index arithmetic is visible. The `top_k` helper switches to the library `heapq`.
 
 ```python
 import heapq

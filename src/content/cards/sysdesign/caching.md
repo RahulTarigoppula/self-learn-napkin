@@ -4,14 +4,14 @@ track: sysdesign
 tags: [caching, latency, performance]
 difficulty: 2
 minutes: 4
-tldr: "Keep the hot answers close; the hard part is not storing them but knowing when they are wrong."
-analogy: "A chef keeps salt and oil on the counter instead of walking to the storeroom each time. Fast — until someone swaps the storeroom oil and the counter bottle is now the wrong one."
+tldr: "Keep the hot answers close. Storing them is easy; the hard part is knowing when they have gone wrong."
+analogy: "A chef keeps salt and oil on the counter instead of walking to the storeroom each time. It's fast, right up until someone swaps the storeroom oil and the counter bottle is now the wrong one."
 diagram: cache-aside
 story:
   - title: An app, a cache and a database
-    text: "Three actors, with time flowing down the page. The cache is an in-memory key-value store that answers in about 1 ms; an indexed database read takes about 1–10 ms, and much more when it misses RAM or the query is complex. In the cache-aside pattern only the app talks to both — the cache never talks to the database."
+    text: "Three actors, with time flowing down the page. The cache is an in-memory key-value store that answers in about 1 ms; an indexed database read takes about 1–10 ms, and much more when it misses RAM or the query is complex. In the cache-aside pattern the app talks to both, and the cache never talks to the database directly."
   - title: Ask the cache first
-    text: "A request needs user 42, so the app asks the cache for user:42. The cache has never seen it and replies miss. That cost about 1 ms and bought nothing — every miss pays the cache round trip on top of the database."
+    text: "A request needs user 42, so the app asks the cache for user:42. The cache has never seen it and replies miss. That cost about 1 ms and bought nothing. Every miss pays the cache round trip on top of the database."
   - title: Miss, so read the database
     text: "The app runs the real query, SELECT … WHERE id = 42, and gets back the row: Ada. This is the slow path that the cache exists to avoid."
   - title: Copy the answer into the cache
@@ -25,7 +25,7 @@ keyIdeas:
   - "**Hit rate** is everything: at 95 % hits the database sees 1 read in 20; at 50 % the cache barely helps."
   - "**TTL** bounds staleness; **delete on write** keeps it short. Update the database first, then delete the key."
   - "**Eviction** (usually LRU or an approximation of it) decides what to drop when memory is full."
-  - "A hot key expiring causes a **thundering herd** — fix with a single-flight lock and jittered TTLs."
+  - "A hot key expiring causes a **thundering herd**. Fix it with a single-flight lock and jittered TTLs."
 quiz:
   - q: "A cache answers in 1 ms, the database in 20 ms, and the hit rate is 90 %. What is the average read latency with cache-aside?"
     options: ["About 1 ms", "About 3 ms", "About 10.5 ms", "About 21 ms"]
@@ -36,9 +36,9 @@ quiz:
     answer: 1
     why: "If writer A sets v1 and writer B sets v2 but their cache writes land in the opposite order, the cache holds v1 forever (until the TTL). Deleting means the next reader loads whatever the database holds."
   - q: "A key read 50,000 times per second expires. What happens without protection?"
-    options: ["Nothing — the next read refills it", "Thousands of requests miss at once and all query the database", "The cache evicts other keys", "Reads return an error until the TTL resets"]
+    options: ["Nothing; the next read refills it", "Thousands of requests miss at once and all query the database", "The cache evicts other keys", "Reads return an error until the TTL resets"]
     answer: 1
-    why: "Every request that arrives before the first one refills the key also misses, so the database takes a burst of identical queries — a thundering herd. A single-flight lock lets one request refill while others wait."
+    why: "Every request that arrives before the first one refills the key also misses, so the database takes a burst of identical queries, known as a thundering herd. A single-flight lock lets one request refill while others wait."
 bigO:
   - { op: "hit",  avg: "~1 ms",   note: "in-memory, same datacentre" }
   - { op: "miss", avg: "~10 ms+", note: "hit cost plus the database read" }
@@ -72,7 +72,7 @@ Cache-aside (also called lazy loading) is the most common pattern:
 2. On a **miss**, read the database, store the result in the cache with a **TTL** (time to live, after which the cache deletes it automatically), and return it.
 3. **Write:** update the database, then **delete** the cache key. The next read reloads it.
 
-Only data that someone actually asks for gets cached, and if the cache dies, the app still works — just slower.
+Only data that someone actually asks for gets cached, and if the cache dies, the app still works. It's just slower.
 
 ### Other patterns
 
@@ -90,9 +90,9 @@ Cache 1 ms, database 20 ms, TTL 60 s, user 42 read 1,000 times a minute.
 | Step | Cache | Database | Latency |
 |---|---|---|---|
 | First read | miss | SELECT, 20 ms | 21 ms |
-| Fill | SET user:42, TTL 60 s | — | — |
+| Fill | SET user:42, TTL 60 s | not touched | part of the first read |
 | Next 999 reads in that minute | hit | untouched | 1 ms each |
-| Name change | DEL user:42 | UPDATE | — |
+| Name change | DEL user:42 | UPDATE | (a write) |
 | Next read | miss | SELECT returns new name | 21 ms |
 
 The database served 2 reads instead of 1,000. Average read latency is `hit_rate × 1 + miss_rate × 21`, so the hit rate matters far more than the cache's raw speed.
@@ -128,7 +128,7 @@ def rename_user(uid, name):
 
 ## When to use it
 
-Cache data that is **read much more often than it changes** and where a little staleness is acceptable: profiles, product pages, rendered fragments, computed feeds. Be careful with data that must be exact at every read — balances, stock counts at checkout — and read those from the source of truth.
+Cache data that is **read much more often than it changes** and where a little staleness is acceptable: profiles, product pages, rendered fragments, computed feeds. Be careful with data that must be exact at every read, such as balances or stock counts at checkout. Read those from the source of truth.
 
 ## In the interview
 

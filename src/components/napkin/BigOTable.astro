@@ -37,9 +37,9 @@ const single = !hasBest && !hasWorst;
                 {r.op}
                 {r.note && <span class="bigo__note">{r.note}</span>}
               </th>
-              {hasBest && <td class="mono">{r.best ?? '—'}</td>}
+              {hasBest && <td class="mono">{r.best ?? '-'}</td>}
               <td class="mono bigo__avg">{r.avg}</td>
-              {hasWorst && <td class="mono">{r.worst ?? '—'}</td>}
+              {hasWorst && <td class="mono">{r.worst ?? '-'}</td>}
             </tr>
           ))
         }

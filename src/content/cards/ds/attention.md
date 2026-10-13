@@ -21,7 +21,7 @@ story:
 keyIdeas:
   - "Each token makes a **query** (what it wants), a **key** (what it offers) and a **value** (what it hands over), using learned matrices W_Q, W_K and W_V."
   - "**Score** = q·k / √d, **softmax** turns scores into weights that sum to 1, **output** = weighted sum of the values."
-  - "For all tokens at once: `softmax(QKᵀ / √d) · V` — that one line is self-attention."
+  - "For all tokens at once: `softmax(QKᵀ / √d) · V`. That one line is self-attention."
   - "**Multi-head** attention runs several attentions in parallel with different matrices, so each head can track a different relation."
   - "Every token scores every other token, so cost grows with the **square of the sequence length**."
 quiz:
@@ -51,7 +51,7 @@ flashcards:
     text: "Attention weights come from a {{softmax}} over the scaled dot products, so each row of weights sums to {{1}}."
   - kind: qa
     q: "Why does a Transformer need positional encodings?"
-    a: "Attention treats its inputs as an unordered set — shuffle the tokens and each output is the same, just shuffled. Position information must be injected (position vectors added to the embeddings, or rotations of the queries and keys) for word order to matter."
+    a: "Attention treats its inputs as an unordered set: shuffle the tokens and each output is the same, just shuffled. Position information must be injected (position vectors added to the embeddings, or rotations of the queries and keys) for word order to matter."
 sources:
   - { name: "Stanford CS230 VIP cheatsheets (Amidi)", url: "https://github.com/afshinea/stanford-cs-230-deep-learning", licence: "MIT", note: "Recurrent neural networks cheatsheet: attention" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -60,7 +60,7 @@ griddle: attention
 
 ## The problem attention solves
 
-The meaning of a word depends on the other words around it. "Bank" means one thing next to "river" and another next to "loan"; "it" means whatever it refers to. A model needs a way for each word to gather information from the relevant other words — wherever they are, however far away.
+The meaning of a word depends on the other words around it. "Bank" means one thing next to "river" and another next to "loan"; "it" means whatever it refers to. A model needs a way for each word to gather information from the other words that matter to it, however far away they sit.
 
 Older recurrent networks read one word at a time and squeezed everything seen so far into one fixed-size vector, so information from far back faded. **Attention** lets every position look directly at every other position and decide, from the content itself, how much to take from each. The Transformer architecture behind modern language models is built from stacked attention layers.
 
@@ -79,7 +79,7 @@ Stack the queries into a matrix Q (one row per token), likewise K and V. Then QK
 
 > Attention(Q, K, V) = softmax(QKᵀ / √d) · V
 
-Because this is a handful of matrix multiplications, GPUs process all positions in parallel — a big reason Transformers replaced recurrent networks.
+Because this is a handful of matrix multiplications, GPUs process all positions in parallel. That is a big reason Transformers replaced recurrent networks.
 
 ### Why divide by √d?
 
@@ -101,7 +101,7 @@ Give each word a 2-number value: v(animal) = (1, 0), v(street) = (0, 1), v(it) =
 
 0.789·(1, 0) + 0.039·(0, 1) + 0.065·(0.5, 0.5) + 0.107·(0, 0.5) = (0.822, 0.125)
 
-— very close to the value of "animal". In a trained model these vectors are learned, so that queries from pronouns line up with keys of plausible referents.
+That is very close to the value of "animal". In a trained model these vectors are learned, so that queries from pronouns line up with keys of plausible referents.
 
 ## Implement it in Python
 
@@ -149,8 +149,8 @@ The first print gives weights [0.789, 0.039, 0.065, 0.107] and output [0.822, 0.
 
 - **Self-attention:** queries, keys and values all come from the same sequence. **Cross-attention:** queries from one sequence (a translation being written), keys and values from another (the source sentence).
 - **Causal (masked) attention:** in text generation each token may only attend to earlier ones; future scores are set to −∞ before the softmax.
-- **Multi-head attention:** run h attentions in parallel, each with its own smaller W_Q, W_K, W_V (for example 8 heads of size 64 instead of one of size 512), then concatenate the outputs and project them. Different heads learn different relations — one may link pronouns to nouns, another track the previous word.
-- **Positional information:** attention itself ignores order — permute the input tokens and the outputs are permuted the same way. Transformers inject position information — position vectors added to the embeddings, or position-dependent rotations of the queries and keys (RoPE) — so that order matters. See the Transformers napkin for how the full block is built around attention.
+- **Multi-head attention:** run h attentions in parallel, each with its own smaller W_Q, W_K, W_V (for example 8 heads of size 64 instead of one of size 512), then concatenate the outputs and project them. Different heads learn different relations: one may link pronouns to nouns, another track the previous word.
+- **Positional information:** attention by itself ignores order. Permute the input tokens and the outputs are permuted the same way. Transformers therefore inject position information so that order matters, either as position vectors added to the embeddings or as position-dependent rotations of the queries and keys (RoPE). See the Transformers napkin for how the full block is built around attention.
 
 ## Edge cases and pitfalls
 
@@ -161,4 +161,4 @@ The first print gives weights [0.789, 0.039, 0.065, 0.107] and output [0.822, 0.
 
 ## In the interview
 
-Expect "explain self-attention", "why the √d?", "what is multi-head attention for?" or "what is the complexity in sequence length?". A strong answer walks through query/key/value with a concrete sentence, writes softmax(QKᵀ/√d)·V, explains the scaling via variance, and mentions masking, multiple heads, positional encodings and the O(n²) cost. A likely follow-up: *how does attention differ from a fully connected layer?* — a dense layer's mixing weights are fixed after training, while attention computes new mixing weights for every input from the content itself.
+Expect "explain self-attention", "why the √d?", "what is multi-head attention for?" or "what is the complexity in sequence length?". A strong answer walks through query/key/value with a concrete sentence, writes softmax(QKᵀ/√d)·V, explains the scaling via variance, and mentions masking, multiple heads, positional encodings and the O(n²) cost. A likely follow-up: *how does attention differ from a fully connected layer?* A dense layer's mixing weights are fixed after training, while attention computes new mixing weights for every input from the content itself.

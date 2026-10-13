@@ -37,7 +37,7 @@ export default function LinearFitGriddle() {
   return (
     <Shell
       title="Fit a line by least squares"
-      hint="Drag any point (or tap empty space to add one). The line minimises the sum of squared vertical gaps — the red residuals. One outlier can swing it a lot."
+      hint="Drag any point (or tap empty space to add one). The line minimises the sum of squared vertical gaps (the red residuals). One outlier can swing it a lot."
     >
       <div class="gd__stage paper">
         <svg

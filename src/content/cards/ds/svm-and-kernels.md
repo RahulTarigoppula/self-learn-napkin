@@ -116,11 +116,11 @@ Now add a blue outlier at (2.6, 1.7). Its score is f = 0.3, on the red side. Hin
 
 ## The kernel trick
 
-Solving the SVM in its dual form reveals something useful: training and prediction touch the data **only through dot products**. A prediction is f(x) = Σ αᵢ yᵢ (xᵢ·x) + b, summed over support vectors. So if we want a linear separator in some transformed space φ(x), we only need the dot products φ(xᵢ)·φ(x), and a **kernel** k(x, z) = φ(x)·φ(z) can compute them directly.
+Solving the SVM in its dual form reveals something useful: training and prediction touch the data **only through dot products**. A prediction is f(x) = Σ αᵢ yᵢ (xᵢ·x) + b, summed over support vectors. If we want a linear separator in some transformed space φ(x), then we only need the dot products φ(xᵢ)·φ(x), and a **kernel** k(x, z) = φ(x)·φ(z) can compute them directly.
 
 **Tiny example.** One feature: red at x = −1, 0, 1, blue at x = ±2, ±3. No single threshold works. Use φ(x) = (x, x²); the kernel is k(x, z) = xz + x²z². Check one pair: k(2, 3) = 6 + 36 = 42, and φ(2)·φ(3) = (2, 4)·(3, 9) = 6 + 36 = 42. In the lifted space the SVM finds w = (0, 2/3), b = −5/3, so f(x) = (2/3)x² − 5/3. The kerbs land on x² = 1 (red at ±1) and x² = 4 (blue at ±2), the boundary on x² = 2.5. Back in 1-D, that is the two cuts |x| = √2.5 ≈ 1.58: a non-linear rule learned by a linear method.
 
-**Why it matters.** A degree-3 polynomial map of 100 features has C(103, 3) = 176,851 coordinates, yet the kernel (x·z + 1)³ costs one 100-dimensional dot product. The **RBF (Gaussian) kernel** k(x, z) = exp(−γ‖x − z‖²) corresponds to an infinite-dimensional φ, which you could never build explicitly. A valid kernel must be positive semi-definite (Mercer's condition), so that it really is a dot product in some space.
+**The payoff.** A degree-3 polynomial map of 100 features has C(103, 3) = 176,851 coordinates, yet the kernel (x·z + 1)³ costs one 100-dimensional dot product. The **RBF (Gaussian) kernel** k(x, z) = exp(−γ‖x − z‖²) corresponds to an infinite-dimensional φ, which you could never build explicitly. A valid kernel must be positive semi-definite (Mercer's condition), so that it really is a dot product in some space.
 
 ### RBF and γ
 

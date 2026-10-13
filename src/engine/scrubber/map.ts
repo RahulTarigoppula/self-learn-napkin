@@ -38,7 +38,7 @@ export function timeToStep(t: number, steps: readonly StepInfo[]): number {
   return k;
 }
 
-/** Where along the strip (0..width) a time sits — for drawing the pen tip. */
+/** Where along the strip (0..width) a time sits. Used to draw the pen tip. */
 export function timeToX(t: number, width: number, steps: readonly StepInfo[]): number {
   const n = steps.length;
   if (n === 0) return 0;

@@ -21,7 +21,7 @@ story:
   - title: "A second positive: the posterior becomes the prior"
     text: "The 9 % posterior is your new prior. In odds form each positive multiplies the odds by 0.90 / 0.09 = 10: 1:99 becomes 10:99 (9 %), and a second independent positive gives 100:99, about 50 %."
 keyIdeas:
-  - "**P(A|B) = P(B|A) · P(A) / P(B)** — posterior = likelihood × prior ÷ evidence."
+  - "**P(A|B) = P(B|A) · P(A) / P(B)**, read as posterior = likelihood × prior ÷ evidence."
   - "**P(B|A) ≠ P(A|B).** A 90 % sensitive test does not mean a positive is 90 % likely to be right."
   - "**Base-rate neglect:** when A is rare, false positives from the large not-A group swamp the true positives."
   - "Compute P(B) with the **law of total probability**: P(B) = P(B|A)P(A) + P(B|not A)P(not A)."
@@ -69,7 +69,7 @@ sources:
 
 ## The question Bayes answers
 
-You often know how likely some **evidence** is if a hypothesis is true — a test detects 90 % of sick people, a spam filter sees "free money" in 40 % of spam. What you actually want is the reverse: given that I *see* the evidence, how likely is the hypothesis? These two numbers, P(evidence | hypothesis) and P(hypothesis | evidence), are different, and confusing them is one of the most common reasoning errors in medicine, law and data science. Bayes' theorem converts one into the other.
+You often know how likely some **evidence** is if a hypothesis is true. A test detects 90 % of sick people; a spam filter sees "free money" in 40 % of spam. What you actually want is the reverse: given that I *see* the evidence, how likely is the hypothesis? These two numbers, P(evidence | hypothesis) and P(hypothesis | evidence), are different, and confusing them is one of the most common reasoning errors in medicine, law and data science. Bayes' theorem converts one into the other.
 
 ## How it works
 
@@ -85,10 +85,10 @@ Each piece has a name:
 
 | Term | Name | In the example |
 |---|---|---|
-| P(A) | **prior** — belief before the evidence | 1 % of people are sick |
-| P(B\|A) | **likelihood** — how expected the evidence is if A is true | 90 % sensitivity |
-| P(B) | **evidence** or marginal likelihood — how often B happens at all | 9.81 % of people test positive |
-| P(A\|B) | **posterior** — belief after the evidence | ≈ 9.2 % |
+| P(A) | **prior**: belief before the evidence | 1 % of people are sick |
+| P(B\|A) | **likelihood**: how expected the evidence is if A is true | 90 % sensitivity |
+| P(B) | **evidence** or marginal likelihood: how often B happens at all | 9.81 % of people test positive |
+| P(A\|B) | **posterior**: belief after the evidence | ≈ 9.2 % |
 
 P(B) is usually not given directly. You get it with the **law of total probability**, by adding up every way B can happen:
 
@@ -113,7 +113,7 @@ Evidence arrives in pieces, and Bayes chains naturally. After the first positive
 
 > posterior odds = prior odds × likelihood ratio, where likelihood ratio = P(B|A) / P(B|not A)
 
-Here the likelihood ratio of a positive is 0.90 / 0.09 = 10. Prior odds 1:99 → 10:99 (9.2 %) → 100:99 (50.3 %) → 1000:99 (91 %). Three positives are needed before you are confident. This only holds if the tests are **conditionally independent** given the disease status — repeating the same test on the same sample, which may fail the same way twice, does not count as new evidence.
+Here the likelihood ratio of a positive is 0.90 / 0.09 = 10. Prior odds 1:99 → 10:99 (9.2 %) → 100:99 (50.3 %) → 1000:99 (91 %). Three positives are needed before you are confident. This only holds if the tests are **conditionally independent** given the disease status. Repeating the same test on the same sample, which may fail the same way twice, does not count as new evidence.
 
 ## Implement it in Python
 
@@ -145,19 +145,19 @@ print(round(sick[positive].mean(), 3))             # ≈ 0.092
 
 ## Where it shows up in data science
 
-- **Classifier metrics.** Precision is P(actually positive | predicted positive) — a Bayes posterior. A model with 99 % recall and a 1 % false-positive rate can still have poor precision on a rare class (fraud, defects), for exactly the reason above.
+- **Classifier metrics.** Precision is P(actually positive | predicted positive), which is a Bayes posterior. A model with 99 % recall and a 1 % false-positive rate can still have poor precision on a rare class (fraud, defects), for exactly the reason above.
 - **Naive Bayes** classifies by computing P(class | features) ∝ P(features | class)·P(class), assuming features are independent within each class.
 - **Bayesian inference** treats a model's parameters as uncertain, puts a prior on them and updates it with data into a posterior distribution. MAP estimation (the most probable parameter under the posterior) is maximum likelihood plus a prior.
-- **A/B testing** in the Bayesian style reports "the probability that B beats A" — a posterior.
+- **A/B testing** in the Bayesian style reports "the probability that B beats A", which is also a posterior.
 
 ## Edge cases and pitfalls
 
-- **Base-rate neglect** — judging P(A|B) from P(B|A) alone. The rarer A is, the bigger the gap.
-- **Prosecutor's fallacy** — "the chance of this DNA match if innocent is 1 in a million, so he is guilty with probability 999,999 in a million." That swaps P(match | innocent) for P(innocent | match). In a city of 10 million about 10 innocent people would match too.
+- **Base-rate neglect**: judging P(A|B) from P(B|A) alone. The rarer A is, the bigger the gap.
+- **Prosecutor's fallacy.** "The chance of this DNA match if innocent is 1 in a million, so he is guilty with probability 999,999 in a million." That swaps P(match | innocent) for P(innocent | match). In a city of 10 million about 10 innocent people would match too.
 - **Shifting priors.** The same test means different things in different populations: 9 % in a screening programme with 1 % prevalence, 53 % in a clinic where 10 % of patients have the disease.
 - **Zero priors are permanent.** If P(A) = 0, no evidence can ever raise it. Keep small but non-zero priors for things you are unsure about.
 - **Dependence.** Multiplying likelihood ratios assumes the pieces of evidence are independent given A; correlated evidence counted twice makes you overconfident.
 
 ## In the interview
 
-Expect the medical-test question in some form (disease, fraud alerts, spam). A strong answer writes the formula, computes P(B) with the law of total probability, gives the number, and then explains it with natural frequencies ("out of 10,000 people…"). Mention base-rate neglect by name and how the answer changes with prevalence. A common follow-up: *"How many positive tests until you are 90 % sure?"* — use odds and the likelihood ratio: three independent positives take 1:99 to 1000:99, about 91 %.
+Expect the medical-test question in some form (disease, fraud alerts, spam). A strong answer writes the formula, computes P(B) with the law of total probability, gives the number, and then explains it with natural frequencies ("out of 10,000 people…"). Mention base-rate neglect by name and how the answer changes with prevalence. A common follow-up: *"How many positive tests until you are 90 % sure?"* Work in odds with the likelihood ratio: three independent positives take 1:99 to 1000:99, about 91 %.

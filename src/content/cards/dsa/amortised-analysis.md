@@ -67,7 +67,7 @@ sources:
 
 Some data structures are fast almost always and slow occasionally. A dynamic array appends in O(1) until it fills up, then one append takes O(n) to copy everything into a bigger block. If you only quote the worst case, n appends look like n × O(n) = O(n²). That is a correct upper bound but a terrible one, because the expensive appends are rare and get rarer as the array grows.
 
-**Amortised analysis** bounds the **total** cost of any sequence of n operations, then divides by n. If n operations always cost at most T(n) in total, each one costs T(n)/n **amortised**. It is still a worst-case guarantee: it holds for every possible sequence, not just typical ones.
+**Amortised analysis** bounds the **total** cost of any sequence of n operations, then divides by n. If n operations always cost at most T(n) in total, each one costs T(n)/n **amortised**. It is still a worst-case guarantee. It holds for every possible sequence, including the nastiest one you can construct.
 
 ## How a dynamic array grows
 
@@ -100,7 +100,7 @@ Add up the whole sequence. n appends do n writes. The copies are 1 + 2 + 4 + …
 
 > total cost < n + 2n = **3n**, and the amortised cost per append is **< 3 = O(1)**.
 
-The key fact is that each resize costs about as much as all previous resizes combined, so the last resize dominates and it is at most n.
+Each resize costs about as much as all the earlier resizes put together. The last one dominates, and it copies at most n values.
 
 ## Method 2: banker's (accounting)
 
@@ -112,7 +112,7 @@ A third method, the **potential method**, does the same with a formula: define �
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+Here is the doubling array with a counter for copies, so you can check the 48 from the table yourself.
 
 ```python
 class DynamicArray:
@@ -145,7 +145,7 @@ print(arr.size, arr.cap, arr.copies)           # 17 32 31 -> 17 + 31 = 48 units
 | **Average case** | expected cost when inputs are random | not the point here; no randomness |
 | **Amortised** | worst-case total over any sequence ÷ its length | O(1) |
 
-The difference matters. Quicksort's O(n log n) is an *average* over random orders: an unlucky input really is slower. Append's O(1) is *amortised*: no sequence of appends can ever exceed 3n units. Some structures combine both, for example a hash table with resizing is O(1) **expected amortised** per insert.
+The difference is real. Quicksort's O(n log n) is an *average* over random orders: an unlucky input really is slower. Append's O(1) is *amortised*: no sequence of appends can ever exceed 3n units. Some structures combine both, for example a hash table with resizing is O(1) **expected amortised** per insert.
 
 ## Edge cases and pitfalls
 

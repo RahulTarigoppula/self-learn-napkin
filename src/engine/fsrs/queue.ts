@@ -1,6 +1,6 @@
 import { State } from 'ts-fsrs';
 
-/** The minimum a card needs for queue building — matches the persisted ReviewCard row. */
+/** The minimum a card needs for queue building (it matches the persisted ReviewCard row). */
 export interface QueueCard {
   id: string;
   due: Date;
@@ -41,7 +41,7 @@ export function buildQueue<C extends QueueCard>(
 
 /** What the dispenser's spring plate reads. */
 export function plateLabel(queueLength: number | null, everReviewed: boolean): string {
-  if (queueLength === null) return '—';
+  if (queueLength === null) return '…';
   if (queueLength === 0) return 'Clean';
   if (!everReviewed) return 'Pull one';
   return `${queueLength} due`;

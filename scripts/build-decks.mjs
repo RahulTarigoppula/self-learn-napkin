@@ -1,5 +1,5 @@
-// npm run decks — turn every card's flashcards into public/decks/{dsa,sysdesign,ds,all}.json.
-// Deck ids are sha1(slug + '|' + RAW question) — the contract that keeps a learner's history.
+// npm run decks: turn every card's flashcards into public/decks/{dsa,sysdesign,ds,all}.json.
+// Deck ids are sha1(slug + '|' + RAW question). That is the contract that keeps a learner's history.
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';

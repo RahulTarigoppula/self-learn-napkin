@@ -94,10 +94,10 @@ Insert `car`, `cart`, `cat`, `dog` into an empty trie:
 
 | Insert | Walks existing nodes | Creates | Marks as end |
 |---|---|---|---|
-| car | — | c, a, r | r |
+| car | none | c, a, r | r |
 | cart | c, a, r | t (under r) | that t |
 | cat | c, a | t (under a) | that t |
-| dog | — | d, o, g | g |
+| dog | none | d, o, g | g |
 
 13 letters are stored in 8 nodes plus the root, because `ca` and `car` are shared. Now the queries:
 
@@ -109,7 +109,7 @@ Insert `car`, `cart`, `cat`, `dog` into an empty trie:
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+Search and startsWith share one private `_walk` helper; they only differ in whether they check the flag at the end.
 
 ```python
 class TrieNode:

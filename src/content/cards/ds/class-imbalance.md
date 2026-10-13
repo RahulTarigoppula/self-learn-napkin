@@ -5,13 +5,13 @@ tags: [classification, imbalance, evaluation, metrics]
 difficulty: 2
 minutes: 5
 tldr: "When one class is rare, accuracy rewards ignoring it. Measure the rare class (PR-AUC, recall at a precision), rebalance only the training data or the loss, and choose the threshold from costs."
-analogy: "An airport scanner that waves every bag through is right 99.99 % of the time and useless. You judge it by the dangerous bags it finds and the false alarms it raises — and you set its sensitivity by what a miss costs."
+analogy: "An airport scanner that waves every bag through is right 99.99 % of the time and useless. You judge it by the dangerous bags it finds and the false alarms it raises, then set its sensitivity by what a miss costs."
 diagram: class-imbalance
 story:
   - title: "99 to 1: accuracy lies"
     text: "A bank sees 10,000 transactions; 100 are fraud. A 'model' that always answers legit is right 9,900 times: 99 % accuracy. It also catches no fraud at all. When one class is 99 % of the data, accuracy mostly measures how common that class is."
   - title: A useful model scores lower
-    text: "A real model flags 270 transactions: 70 of the 100 frauds plus 200 false alarms. Its accuracy is (70 + 9,700) / 10,000 = 97.7 % — worse than doing nothing. Yet its recall is 0.70 and its precision 70 / 270 = 0.26. Imbalanced problems need metrics about the rare class."
+    text: "A real model flags 270 transactions: 70 of the 100 frauds plus 200 false alarms. Its accuracy is (70 + 9,700) / 10,000 = 97.7 %, which is worse than doing nothing. Yet its recall is 0.70 and its precision 70 / 270 = 0.26. Imbalanced problems need metrics about the rare class."
   - title: "Measure the rare class: the PR curve"
     text: "Plot precision against recall for every threshold. Random scores give precision 0.01, the fraud rate, so the area under this curve (PR-AUC, or average precision) has an honest floor. Targets tied to operations work well too: recall at precision ≥ 0.5, or precision at 80 % recall."
   - title: Resample the training split only
@@ -22,15 +22,15 @@ story:
     text: "The decision itself is the threshold, and 0.5 is rarely right. If a missed fraud costs £500 and a false alarm £5, flagging pays when p × 500 > (1 − p) × 5, so flag when p > 5 / 505 ≈ 0.01 (this needs calibrated p). The most reliable fix of all is more real fraud examples."
 keyIdeas:
   - "With 99 : 1 classes, **accuracy is useless**: always predicting the majority scores 99 %."
-  - "Report **PR-AUC** (average precision), recall at a fixed precision, or expected cost — metrics centred on the rare class."
-  - "**Resample only the training split** (under, over, SMOTE) — inside each cross-validation fold. Validation and test keep the true ratio."
+  - "Report **PR-AUC** (average precision), recall at a fixed precision, or expected cost. All of these are centred on the rare class."
+  - "**Resample only the training split** (under, over, SMOTE), and do it inside each cross-validation fold. Validation and test keep the true ratio."
   - "**Class weights** reweight the loss instead of the data. Both tricks mostly shift scores and distort probabilities; recalibrate if you need them."
   - "The **threshold** is the real decision knob: set it from costs or a recall target on validation data. More real minority data beats every trick."
 quiz:
   - q: "On 10,000 transactions (100 fraud), model A always says 'legit'; model B catches 70 frauds with 200 false alarms. Which statement is true?"
     options: ["A is better: 99 % vs 97.7 % accuracy", "B is better: recall 0.70 vs 0, and accuracy is the wrong yardstick", "They are equal because both make mistakes", "Neither can be judged without ROC AUC"]
     answer: 1
-    why: "A's 99 % comes entirely from the majority class; it never catches fraud. B's accuracy (9,770 / 10,000) is lower, but it finds 70 % of the fraud with precision 0.26 — whether that is good enough depends on costs, not on accuracy."
+    why: "A's 99 % comes entirely from the majority class; it never catches fraud. B's accuracy (9,770 / 10,000) is lower, but it finds 70 % of the fraud with precision 0.26. Whether that is good enough depends on costs, not on accuracy."
   - q: "You apply SMOTE to the whole dataset and then split into train and test. What goes wrong?"
     options: ["Nothing; SMOTE only adds rows", "The model can no longer use class weights", "SMOTE deletes the majority class", "Synthetic points built from test rows leak into training, and the test set no longer has the real ratio, so scores are inflated"]
     answer: 3
@@ -75,7 +75,7 @@ Using the story's model (TP 70, FN 30, FP 200, TN 9,700):
 
 | Metric | Value | Comment |
 |---|---|---|
-| Accuracy | 9,770 / 10,000 = 0.977 | lower than "always legit" (0.99) — useless here |
+| Accuracy | 9,770 / 10,000 = 0.977 | lower than "always legit" (0.99), so useless here |
 | Recall | 70 / 100 = 0.70 | share of fraud caught |
 | Precision | 70 / 270 = 0.26 | share of alerts that are real |
 | F1 | 2 · 0.26 · 0.70 / (0.26 + 0.70) = 0.38 | one number, punishes the weaker of P and R |
@@ -90,7 +90,7 @@ A probability is not a decision. With costs C_FN (a missed fraud) and C_FP (a fa
 
 p · C_FN > (1 − p) · C_FP  ⇔  p > C_FP / (C_FP + C_FN).
 
-With £500 and £5 that is 5 / 505 ≈ 0.0099. This rule assumes **calibrated** probabilities. Without reliable costs, choose the threshold on a **validation** set to meet a recall or precision target — never on the test set:
+With £500 and £5 that is 5 / 505 ≈ 0.0099. This rule assumes **calibrated** probabilities. Without reliable costs, choose the threshold on a **validation** set (never the test set) to meet a recall or precision target:
 
 ```text
 scores = model probabilities on the VALIDATION set
@@ -101,13 +101,13 @@ for t in candidate thresholds, from high to low:
 
 ## Fix 2: class weights
 
-Multiply each row's contribution to the training loss by a weight for its class. The usual "balanced" choice is w_c = n / (k · n_c) for k classes, where n_c is the number of rows in class c: 10,000 / (2 × 9,900) = 0.505 for legit rows and 10,000 / (2 × 100) = 50 for fraud rows, so each class adds up to 5,000. Relative to each other, one fraud row now counts as much as 99 legit rows — the same as having every fraud row appear 99 times, without the extra memory. Any learner that minimises a sum of per-row losses can take weights.
+Multiply each row's contribution to the training loss by a weight for its class. The usual "balanced" choice is w_c = n / (k · n_c) for k classes, where n_c is the number of rows in class c: 10,000 / (2 × 9,900) = 0.505 for legit rows and 10,000 / (2 × 100) = 50 for fraud rows, so each class adds up to 5,000. Relative to each other, one fraud row now counts as much as 99 legit rows. That is the same as having every fraud row appear 99 times, without the extra memory. Any learner that minimises a sum of per-row losses can take weights.
 
 ## Fix 3: resampling
 
 - **Random undersampling** keeps a fraction β of majority rows. Fast, and often fine when data is plentiful, but it throws information away.
 - **Random oversampling** repeats minority rows. Nothing is lost, but exact duplicates make overfitting to those few rows easy.
-- **SMOTE** (Synthetic Minority Over-sampling Technique) creates new minority points: pick a minority row xᵢ, pick one of its k = 5 nearest minority neighbours x_nn, and add x_new = xᵢ + λ · (x_nn − xᵢ) with λ drawn uniformly from [0, 1] — a point on the segment between them. It assumes the space between two fraud cases is also fraud, which fails for categorical features, for noisy minority points and in very high dimensions.
+- **SMOTE** (Synthetic Minority Over-sampling Technique) creates new minority points: pick a minority row xᵢ, pick one of its k = 5 nearest minority neighbours x_nn, and add x_new = xᵢ + λ · (x_nn − xᵢ) with λ drawn uniformly from [0, 1]. That puts the new point on the segment between them. It assumes the space between two fraud cases is also fraud, which fails for categorical features, for noisy minority points and in very high dimensions.
 
 ```text
 split data into train / validation / test       # FIRST, stratified by class
@@ -122,7 +122,7 @@ validation and test stay untouched
 
 All resampling must happen **after** the split, and inside each cross-validation fold (resample the training folds only, every time). Resample before splitting and synthetic copies of test rows leak into training.
 
-**Honest expectation:** weights and resampling rarely improve a *ranking* metric such as PR-AUC for a strong model; their main effect is to push scores up for the minority — which threshold moving does directly. They help most when a learner would otherwise ignore the minority entirely, or when undersampling makes a huge dataset tractable.
+**Honest expectation:** weights and resampling rarely improve a *ranking* metric such as PR-AUC for a strong model; their main effect is to push scores up for the minority, and threshold moving does that directly. They help most when a learner would otherwise ignore the minority entirely, or when undersampling makes a huge dataset tractable.
 
 ## Probabilities after rebalancing
 
@@ -164,7 +164,7 @@ t_best = thr[np.flatnonzero(rec[:-1] >= 0.8)[-1]]
 report("plain, tuned threshold", plain.predict_proba(X_te)[:, 1], t_best)
 ```
 
-Output: plain at 0.5 — precision 0.86, recall 0.61, PR-AUC 0.750; balanced weights at 0.5 — precision 0.11, recall 0.91, PR-AUC 0.701; plain with the threshold tuned to ≈ 0.10 — precision 0.43, recall 0.79. The weights did not rank fraud better (PR-AUC even fell slightly); they moved the operating point, which the tuned threshold does more transparently.
+Output: plain at 0.5 gets precision 0.86, recall 0.61, PR-AUC 0.750. Balanced weights at 0.5 get precision 0.11, recall 0.91, PR-AUC 0.701. Plain with the threshold tuned to ≈ 0.10 gets precision 0.43, recall 0.79. The weights did not rank fraud better (PR-AUC even fell slightly); they moved the operating point, which the tuned threshold does more transparently.
 
 Library notes: most scikit-learn classifiers accept `class_weight="balanced"` (or a dict of weights) and `fit(..., sample_weight=...)`; XGBoost and LightGBM offer `scale_pos_weight`, commonly set to negatives / positives. SMOTE and random under/over-sampling live in the `imbalanced-learn` package, whose `Pipeline` applies resampling to the training folds only during cross-validation, e.g. `Pipeline([("smote", SMOTE(k_neighbors=5)), ("clf", LogisticRegression())])`. Always pass `stratify=y` when splitting.
 
@@ -174,8 +174,8 @@ Library notes: most scikit-learn classifiers accept `class_weight="balanced"` (o
 - **Time matters** for fraud and churn: split by time, not at random, or future patterns leak backwards.
 - **Prevalence shifts** in production change precision even if the model is unchanged; monitor the positive rate.
 - **Extreme imbalance** (1 in 100,000) may be better framed as anomaly detection or as a ranking problem with human review of the top k.
-- **More and better data** — labelling more positives, active learning, better features — usually beats every resampling trick.
+- **More and better data** (labelling more positives, active learning, better features) usually beats every resampling trick.
 
 ## In the interview
 
-Expect "your fraud model is 99 % accurate — is it good?" A strong answer: compare with the majority-class baseline, switch to PR-AUC and recall / precision at an operating point, set the threshold from the costs of each error on validation data, mention class weights or resampling **on the training split only**, and note that rebalancing breaks calibration. Likely follow-up: "how would you choose the threshold?" — from C_FP / (C_FP + C_FN) with calibrated probabilities, or from a recall target on validation data.
+Expect "your fraud model is 99 % accurate; is it good?" A strong answer: compare with the majority-class baseline, switch to PR-AUC and recall / precision at an operating point, set the threshold from the costs of each error on validation data, mention class weights or resampling **on the training split only**, and note that rebalancing breaks calibration. Likely follow-up: "how would you choose the threshold?" Either from C_FP / (C_FP + C_FN) with calibrated probabilities, or from a recall target on validation data.

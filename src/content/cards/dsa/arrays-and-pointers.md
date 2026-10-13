@@ -74,7 +74,7 @@ address(a[i]) = base + i × s
 
 That is why indexing is **O(1)**: one multiply, one add, one memory read, whether the array holds ten items or ten million. It is also why most languages count from 0: the index is an *offset* from the start, and the first element is zero slots in.
 
-This is where **pointers** come in. A pointer is a variable that holds a memory address. In C an array name behaves as a pointer to `base`, and `a[i]` is literally shorthand for `*(a + i)`: "go `i` slots past the start and read". Languages such as Python, Java and JavaScript hide addresses, but the same arithmetic runs underneath. In those languages an array of *objects* is really an array of pointers (often called **references**): each fixed-size slot holds the address of an object stored elsewhere. That is how one Python list can mix numbers and strings, and why arrays of raw numbers (a C `int[]`, a Java `int[]`, a NumPy array) are more compact and faster to scan than arrays of references.
+Which brings us to **pointers**. A pointer is a variable that holds a memory address. In C an array name behaves as a pointer to `base`, and `a[i]` is literally shorthand for `*(a + i)`: "go `i` slots past the start and read". Languages such as Python, Java and JavaScript hide addresses, but the same arithmetic runs underneath. In those languages an array of *objects* is really an array of pointers (often called **references**): each fixed-size slot holds the address of an object stored elsewhere. That is how one Python list can mix numbers and strings, and why arrays of raw numbers (a C `int[]`, a Java `int[]`, a NumPy array) are more compact and faster to scan than arrays of references.
 
 ## Worked example
 
@@ -93,7 +93,7 @@ This is where **pointers** come in. A pointer is a variable that holds a memory 
 
 A **static array** (a C array, Java `int[]`) has its size fixed when it is created. A **dynamic array** (Python `list`, Java `ArrayList`, C++ `vector`) wraps one and tracks two numbers: **size** (slots in use) and **capacity** (slots allocated). Appending writes into the next spare slot, O(1). When size reaches capacity it must **resize**: allocate a bigger block, copy everything, free the old one, which is O(n).
 
-**Why growth must be geometric.** Start at capacity 1 and double. The resizes copy 1, 2, 4, … values, each at most n, a geometric series that sums to less than 2n. So n appends cost n writes plus fewer than 2n copies, under 3n in total: **O(1) amortised** per append. (*Amortised* means averaged over a whole sequence of operations, guaranteed, not just on average over random inputs.) Any constant factor above 1 works: CPython grows lists by about 1.125×, Java's `ArrayList` by 1.5×, and many C++ vectors by 2×. Smaller factors waste less memory but copy more often. Growing by a **fixed amount** instead (say +10 slots) breaks this: the copies are 10 + 20 + 30 + … ≈ n²/20, which is O(n²).
+**Why growth must be geometric.** Start at capacity 1 and double. The resizes copy 1, 2, 4, … values, each at most n, a geometric series that sums to less than 2n. So n appends cost n writes plus fewer than 2n copies, under 3n in total: **O(1) amortised** per append. (*Amortised* means averaged over a whole sequence of operations, and guaranteed for every such sequence. No random inputs are involved.) Any constant factor above 1 works: CPython grows lists by about 1.125×, Java's `ArrayList` by 1.5×, and many C++ vectors by 2×. Smaller factors waste less memory but copy more often. Growing by a **fixed amount** instead (say +10 slots) breaks this: the copies are 10 + 20 + 30 + … ≈ n²/20, which is O(n²).
 
 ## Insert and delete: the shifting cost
 
@@ -123,7 +123,7 @@ A true 2-D array (C's `int g[2][3]`, a NumPy array) is one block. An **array of 
 
 ## Implement it in Python
 
-The same idea works in any language; here is a dynamic array built on a fixed-size block, in Python.
+Here is a dynamic array built on a fixed-size block. The `copies` counter lets you check the "fewer than 2n" claim for yourself.
 
 ```python
 class DynamicArray:

@@ -1268,6 +1268,7 @@
   grid-template-columns: repeat(7, 1fr);
   gap: var(--space-2);
   align-items: end;
+  margin-top: var(--space-3);
 }
 .fc7 li {
   display: grid;
@@ -1277,21 +1278,64 @@
 }
 .fc7__bar {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
   width: 100%;
-  height: 110px;
-  border-radius: 8px;
-  background: var(--surface-2);
+  height: 120px;
+  border-radius: 10px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 23px,
+      color-mix(in srgb, var(--border) 70%, transparent) 23px 24px
+    ),
+    var(--surface-2);
   overflow: hidden;
 }
 .fc7__bar span {
   width: 100%;
+  transition: height var(--dur-slow) var(--ease-spring);
+}
+.fc7__due {
   background: var(--accent);
+}
+.fc7__new {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--hl) 0 6px,
+    color-mix(in srgb, var(--hl) 60%, var(--surface)) 6px 12px
+  );
+}
+.fc7__bar span:last-child {
   border-radius: 8px 8px 0 0;
-  transition: height var(--dur-slow) var(--ease-out);
 }
 .fc7 small {
   color: var(--ink-muted);
+}
+.fc7 li.is-today small {
+  color: var(--ink);
+  font-weight: 800;
+}
+.fc7 li.is-today .fc7__bar {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.fc7__legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+.fc7__legend i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+.fc7__legend i + i {
+  margin-left: var(--space-3);
 }
 .receipt--small {
   display: inline-block;

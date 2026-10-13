@@ -56,7 +56,7 @@ export default function BucketGriddle() {
   return (
     <Shell
       title="A live token bucket"
-      hint="Tokens drip in continuously. Each request needs one token; with the bucket empty, requests get HTTP 429. Bursts up to the capacity are fine — sustained traffic is capped at the refill rate."
+      hint="Tokens drip in continuously. Each request needs one token; with the bucket empty, requests get HTTP 429. Bursts up to the capacity are fine, but sustained traffic is capped at the refill rate."
     >
       <div class="bucket">
         <div class="gd__stage paper bucket__stage">
@@ -114,7 +114,7 @@ export default function BucketGriddle() {
             </button>
           </div>
           <ol class="bucket__log" aria-label="Recent requests, newest first">
-            {log.length === 0 && <li class="muted">No requests yet — send some.</li>}
+            {log.length === 0 && <li class="muted">No requests yet. Send some.</li>}
             {log.map((h) => (
               <li key={h.id} class={h.ok ? 'ok' : 'no'}>
                 <span class="mono">#{h.id}</span> {h.ok ? '200 OK' : '429 Too Many Requests'}

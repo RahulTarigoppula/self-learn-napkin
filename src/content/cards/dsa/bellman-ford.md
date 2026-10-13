@@ -40,7 +40,7 @@ quiz:
     answer: 1
     why: "Multiplying rates becomes adding logs. A product above 1 means a sum of logs above 0, so the sum of −log(rate) is below 0: a negative cycle."
   - q: "When should you pick Bellman-Ford over Dijkstra?"
-    options: ["Always — it is faster", "When some edge weights are negative or you must detect negative cycles", "When the graph is unweighted", "When the graph is very dense"]
+    options: ["Always, because it is faster", "When some edge weights are negative or you must detect negative cycles", "When the graph is unweighted", "When the graph is very dense"]
     answer: 1
     why: "With non-negative weights Dijkstra's O((V + E) log V) is far faster. Bellman-Ford earns its O(V · E) only when negative edges or cycle detection matter."
 bigO:
@@ -63,9 +63,9 @@ sources:
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 ---
 
-## Why another shortest-path algorithm?
+## Where Dijkstra breaks
 
-Dijkstra's algorithm finalises the closest unsettled node because extending a path can never make it cheaper. **Negative edge weights** break that: a refund, a credit, a downhill energy gain, or the log of an exchange rate can make a longer path cheaper than a shorter one. **Bellman-Ford** computes single-source shortest paths with negative weights allowed, and it also tells you when the question has no answer because of a **negative cycle** — a loop whose weights sum to less than zero, which you could traverse forever to drive the cost to −∞.
+Dijkstra's algorithm finalises the closest unsettled node because extending a path can never make it cheaper. **Negative edge weights** break that: a refund, a credit, a downhill energy gain, or the log of an exchange rate can make a longer path cheaper than a shorter one. **Bellman-Ford** computes single-source shortest paths with negative weights allowed, and it also tells you when the question has no answer because of a **negative cycle**. That is a loop whose weights sum to less than zero, so you could go round it forever and drive the cost to −∞.
 
 ## How it works
 
@@ -77,9 +77,9 @@ Keep `dist[v]` (0 for the source, ∞ elsewhere) and `parent[v]`. **Relaxing** a
 
 ### Why V − 1 passes are enough
 
-If no negative cycle is reachable, every node has a shortest path that is **simple** (no repeated node) — any cycle on it has weight ≥ 0 and could be cut out. A simple path visits at most V nodes, so it has at most **V − 1 edges**.
+If no negative cycle is reachable, every node has a shortest path that is **simple** (no repeated node), because any cycle on it has weight ≥ 0 and could be cut out. A simple path visits at most V nodes, so it has at most **V − 1 edges**.
 
-Claim: after pass i, `dist[v]` is at most the cost of the best path to v that uses at most i edges. True for i = 0 (only the source has a finite distance). If it holds after pass i, take the best path of ≤ i + 1 edges ending with edge u → v. The prefix to u uses ≤ i edges, so `dist[u]` is already at most its cost, and pass i + 1 relaxes u → v, bringing `dist[v]` down to at most the whole path's cost. So after V − 1 passes every distance is at most the true shortest distance — and it can never go below it, because every value of `dist` is the cost of some real path.
+Claim: after pass i, `dist[v]` is at most the cost of the best path to v that uses at most i edges. True for i = 0 (only the source has a finite distance). If it holds after pass i, take the best path of ≤ i + 1 edges ending with edge u → v. The prefix to u uses ≤ i edges, so `dist[u]` is already at most its cost, and pass i + 1 relaxes u → v, bringing `dist[v]` down to at most the whole path's cost. So after V − 1 passes every distance is at most the true shortest distance. It can never go below it either, because every value of `dist` is the cost of some real path.
 
 This is really **dynamic programming** over "number of edges allowed", done in place.
 
@@ -99,13 +99,13 @@ Edges in relaxation order: (1) A→C 3, (2) B→A −2, (3) S→B 4, (4) S→A 5
 | 3 | A→C: 2 + 3 = 5 | 0 | 2 | 4 | 5 |
 | check | nothing | 0 | 2 | 4 | 5 |
 
-The shortest path to C is S → B → A → C = 4 − 2 + 3 = **5**, three edges, which is why it took all three passes with this (deliberately unlucky) edge order. Had the edges been listed S→B, B→A, A→C first, one pass would have sufficed — order affects speed, never the final answer.
+The shortest path to C is S → B → A → C = 4 − 2 + 3 = **5**, three edges, which is why it took all three passes with this (deliberately unlucky) edge order. Had the edges been listed S→B, B→A, A→C first, one pass would have been enough. Edge order affects speed, never the final answer.
 
 Now add C→B with weight −6. The cycle B → A → C → B sums to −2 + 3 − 6 = **−5**. After three passes the values are still falling (A 0, B −1, C 5), and the check pass lowers C to 3, A to −3 and B to −3. A negative cycle is reported.
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+The `changed` flag lets it stop as soon as a pass does nothing, which on friendly inputs is long before V − 1.
 
 ```python
 def bellman_ford(nodes, edges, source):
@@ -139,7 +139,7 @@ In Python `float("inf") + w` stays infinite, so unreachable sources never relax 
 ## When to use it
 
 - **Negative edge weights** without negative cycles: Bellman-Ford is the standard single-source answer. (On a DAG, a topological-order DP is faster: O(V + E) even with negative weights.)
-- **Negative-cycle detection.** To find a cycle *anywhere*, not just reachable from one source, start with `dist = 0` for every node (equivalent to a virtual source with 0-weight edges to all nodes).
+- **Negative-cycle detection.** To find a cycle *anywhere*, including ones your source cannot reach, start with `dist = 0` for every node (equivalent to a virtual source with 0-weight edges to all nodes).
 - **Currency arbitrage.** Make each rate an edge with weight −log(rate). A loop whose rates multiply to more than 1 has −log weights summing below 0: a negative cycle. For USD→EUR 0.9, EUR→GBP 0.9, GBP→USD 1.3 the product is 1.053, a 5.3 % profit per lap.
 - **Distance-vector routing** (as in RIP) is a distributed Bellman-Ford: each router repeatedly relaxes using its neighbours' advertised distances.
 - **Johnson's algorithm** runs Bellman-Ford once to reweight all edges to non-negative values, then Dijkstra from every node.

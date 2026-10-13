@@ -13,7 +13,7 @@ story:
   - title: "Choose, explore, unchoose"
     text: "The walk keeps one shared list, path. Choose: append an element. Explore: recurse to the next decision. Unchoose: pop it again so path is exactly as before. Here path is [1], we take 3 to get [1, 3], record a copy at the leaf, then pop back to [1] to try skipping 3."
   - title: "4-queens: row 2 has no safe square"
-    text: "Place 4 queens on a 4×4 board so no two share a row, column or diagonal — one queen per row. Row 0 takes column 0 and row 1 takes column 2, the first safe square. Every square in row 2 is now attacked, so this branch is pruned: nothing below it is explored."
+    text: "Place 4 queens on a 4×4 board so no two share a row, column or diagonal. That means one queen per row. Row 0 takes column 0 and row 1 takes column 2, the first safe square. Every square in row 2 is now attacked, so this branch is pruned: nothing below it is explored."
   - title: "Backtrack: move the row-1 queen"
     text: "Undo row 1 and try its next safe column, 3. Row 2 then fits at column 1, but every square in row 3 is attacked. Row 2's other columns are attacked too and row 1 has no columns left, so we back up all the way to row 0."
   - title: "Row 0 → column 1: a solution"
@@ -64,9 +64,9 @@ sources:
 
 ## What backtracking is
 
-Many problems ask you to **generate** or **find** combinations: all subsets, all orderings, a valid Sudoku filling, a word in a grid, every way to split a string into palindromes. Each answer can be built by a sequence of small decisions — take this element or not, which value goes in this cell, which letter comes next. Those decisions form a **decision tree**: the root is "nothing decided", each level makes one more decision, and each leaf is a complete candidate.
+Many problems ask you to **generate** or **find** combinations: all subsets, all orderings, a valid Sudoku filling, a word in a grid, every way to split a string into palindromes. Each answer can be built by a sequence of small decisions: take this element or not, which value goes in this cell, which letter comes next. Those decisions form a **decision tree**: the root is "nothing decided", each level makes one more decision, and each leaf is a complete candidate.
 
-**Backtracking** walks that tree depth-first with a single shared, mutable partial solution. It extends the partial solution with a choice, recurses, and on the way back **undoes** the choice so the next option starts from a clean state. Its power comes from **pruning**: as soon as a partial solution breaks a rule, the whole subtree below it is skipped.
+**Backtracking** walks that tree depth-first with a single shared, mutable partial solution. It extends the partial solution with a choice, recurses, and on the way back **undoes** the choice so the next option starts from a clean state. What makes it fast is **pruning**: as soon as a partial solution breaks a rule, the whole subtree below it is skipped.
 
 ## How it works: the template
 
@@ -94,7 +94,7 @@ Three things make this correct:
 
 ## Worked example 2: 4-queens
 
-Place n queens on an n × n board so that no two attack each other. Since two queens in the same row attack, put **exactly one queen per row** and let decision r be "which column for row r". Square (r, c) is attacked if column c is used, if diagonal r − c is used, or if anti-diagonal r + c is used — three set lookups.
+Place n queens on an n × n board so that no two attack each other. Since two queens in the same row attack, put **exactly one queen per row** and let decision r be "which column for row r". Square (r, c) is attacked if column c is used, if diagonal r − c is used, or if anti-diagonal r + c is used. That is three set lookups.
 
 | Step | Action | Board (column per row) |
 |---|---|---|
@@ -110,7 +110,7 @@ Eight queen placements reach the first solution. Continuing the search finds the
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+Both examples use one shared list and undo every change on the way back up.
 
 ```python
 def subsets(nums):
@@ -155,7 +155,7 @@ Backtracking is exponential by nature, because the number of answers usually is.
 
 - **Check constraints as early as possible**: test a queen when placing it, not when the board is full.
 - **Order choices well**: in Sudoku, fill the cell with the fewest legal digits first.
-- **Bound the remaining work**: in *Combination Sum* with sorted candidates, stop the loop once a candidate exceeds the remaining target — every later one is larger.
+- **Bound the remaining work**: in *Combination Sum* with sorted candidates, stop the loop once a candidate exceeds the remaining target, because every later one is larger.
 - **Skip duplicates**: with repeated values (*Subsets II*, *Permutations II*), sort first and skip a value equal to its predecessor at the same tree level.
 - **Memoise** if the same sub-state recurs: then it is really dynamic programming.
 

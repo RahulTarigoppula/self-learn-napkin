@@ -100,7 +100,7 @@ export function kruskalFrames(g: MstGraph): MFrame[] {
     'done',
     kept === need
       ? `${kept} edges = V − 1 → spanning tree, total ${total}`
-      : `only ${kept} of ${need} edges — the graph is disconnected (a forest)`,
+      : `only ${kept} of ${need} edges, so the graph is disconnected (a forest)`,
     null,
   );
   return out;

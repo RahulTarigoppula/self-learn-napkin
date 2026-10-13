@@ -22,7 +22,7 @@ keyIdeas:
   - "Every recursion needs a **base case** that returns directly and a **recursive case** that moves strictly towards it."
   - "Each call gets its own **stack frame**; extra space is O(maximum depth), even when the code allocates nothing."
   - "Draw the **recursion tree**: time ≈ number of nodes × work per node; space ≈ height of the tree."
-  - "Repeated subtrees mean **overlapping subproblems** — memoize them and you have dynamic programming."
+  - "Repeated subtrees mean **overlapping subproblems**. Memoize them and you have dynamic programming."
   - "The stack is finite and most mainstream languages (Python, Java, C# among them) do **not guarantee tail-call optimisation**: convert deep recursions to a loop or an explicit stack."
 quiz:
   - q: "While computing fact(4) with the code on this napkin, how many frames of fact are on the call stack at the deepest point?"
@@ -36,7 +36,7 @@ quiz:
   - q: "How many calls does the naive fib(5) make (counting fib(5) itself), with fib(0) and fib(1) as base cases?"
     options: ["5", "9", "15", "32"]
     answer: 2
-    why: "calls(n) = 1 + calls(n − 1) + calls(n − 2) with calls(0) = calls(1) = 1, giving 1, 1, 3, 5, 9, 15. The count grows like the Fibonacci numbers themselves — exponentially."
+    why: "calls(n) = 1 + calls(n − 1) + calls(n − 2) with calls(0) = calls(1) = 1, giving 1, 1, 3, 5, 9, 15. The count grows like the Fibonacci numbers themselves: exponentially."
   - q: "You rewrite fact(n) as a tail-recursive function with an accumulator, in a language that does not optimise tail calls (such as Python or Java). What is its stack usage?"
     options: ["O(1): the frame is reused automatically", "Still O(n): every call still pushes a frame", "O(log n)", "It depends on the accumulator's size"]
     answer: 1
@@ -67,14 +67,14 @@ sources:
 
 **Recursion** means a function solves a problem by calling itself on a *smaller instance of the same problem*. To make that safe you need exactly two ingredients:
 
-1. **Base case** — an input small enough to answer directly, with no further call. For factorial, `fact(0)` and `fact(1)` are both 1.
-2. **Recursive case** — reduce the input (`n` becomes `n − 1`, a list loses its first element, a tree becomes its subtrees), call the function on the smaller input, then **combine** the result (`n * fact(n − 1)`).
+1. **Base case**: an input small enough to answer directly, with no further call. For factorial, `fact(0)` and `fact(1)` are both 1.
+2. **Recursive case**: reduce the input (`n` becomes `n − 1`, a list loses its first element, a tree becomes its subtrees), call the function on the smaller input, then **combine** the result (`n * fact(n − 1)`).
 
-The trick that makes recursion feel like magic is the **recursive leap of faith**: while writing `fact(n)`, assume `fact(n − 1)` already works and only ask "how do I build the answer for `n` from the answer for `n − 1`?". That is the same reasoning as a proof by induction: base case true, and "true for n − 1 implies true for n".
+The habit that makes recursion manageable is the **recursive leap of faith**: while writing `fact(n)`, assume `fact(n − 1)` already works and only ask "how do I build the answer for `n` from the answer for `n − 1`?". That is the same reasoning as a proof by induction: base case true, and "true for n − 1 implies true for n".
 
 ### What the computer actually does
 
-Every function call creates a **stack frame** (also called an activation record): a small block of memory holding the call's parameters, its local variables, and the **return address** — where to resume in the caller. Frames live on the **call stack**, a last-in-first-out structure. A call **pushes** a frame; a `return` **pops** it and hands the value to the frame underneath.
+Every function call creates a **stack frame** (also called an activation record): a small block of memory holding the call's parameters, its local variables, and the **return address** (where to resume in the caller). Frames live on the **call stack**, a last-in-first-out structure. A call **pushes** a frame; a `return` **pops** it and hands the value to the frame underneath.
 
 So `fact(4)` is not one computation but four separate, paused ones, each with its own `n`. Nothing is multiplied on the way *down*; every multiply waits until the call it depends on returns. The multiplies happen while the stack **unwinds**.
 
@@ -111,14 +111,14 @@ fib(1) fib(0)
 
 Two rules read the cost straight off the tree:
 
-- **Time** ≈ number of nodes × work per node. The naive `fib(n)` makes `2·fib(n + 1) − 1` calls: 9 for `fib(4)`, about 2.7 million for `fib(30)` — exponential, roughly 1.62ⁿ.
+- **Time** ≈ number of nodes × work per node. The naive `fib(n)` makes `2·fib(n + 1) − 1` calls: 9 for `fib(4)`, about 2.7 million for `fib(30)`. That is exponential, roughly 1.62ⁿ.
 - **Space** ≈ the tree's **height**, not its size, because only one root-to-leaf path is on the stack at a time. For `fib(n)` that is n frames.
 
 `fib(2)` appears twice above; for larger n, the same small subproblems appear thousands of times. These are **overlapping subproblems**. Store each result the first time (**memoization**) and every distinct `fib(k)` is computed once: O(n) time. That is the top-down form of dynamic programming.
 
 ## Implement it in Python
 
-The same ideas work in any language; here they are in Python, with memoization from the standard library.
+Memoization comes free from the standard library's `lru_cache`. Note how `total` passes an index instead of slicing the list.
 
 ```python
 from functools import lru_cache
@@ -152,7 +152,7 @@ assert fib(30) == 832040
 
 ## Tail calls and stack overflow
 
-A **tail call** is a call that is the very last thing a function does — nothing is left to compute after it returns:
+A **tail call** is a call that is the very last thing a function does, so nothing is left to compute after it returns:
 
 ```
 fact_tail(n, acc = 1):
@@ -160,7 +160,7 @@ fact_tail(n, acc = 1):
     return fact_tail(n − 1, acc × n)    // tail call: the multiply already happened
 ```
 
-Because the caller has nothing left to do, a compiler *could* reuse its frame instead of pushing a new one — **tail-call optimisation** (TCO), which turns the recursion into a loop with O(1) stack. Scheme guarantees it, and C and C++ compilers often do it at higher optimisation levels. **Python and Java never do**, so there `fact_tail(5000)` still uses 5,000 frames.
+Because the caller has nothing left to do, a compiler *could* reuse its frame instead of pushing a new one. That is **tail-call optimisation** (TCO), which turns the recursion into a loop with O(1) stack. Scheme guarantees it, and C and C++ compilers often do it at higher optimisation levels. **Python and Java never do**, so there `fact_tail(5000)` still uses 5,000 frames.
 
 A **stack overflow** happens when the recursion is deeper than the stack allows. The call stack is a fixed region of memory, typically a few megabytes per thread, so the limit is usually thousands to tens of thousands of frames. What you see depends on the language: Java throws `StackOverflowError`, C or C++ simply crash, and Python stops earlier, at a default limit of 1,000 frames, with `RecursionError`. Raising such a limit only moves the problem; if the real stack runs out first, the whole process crashes.
 
@@ -182,4 +182,4 @@ Anything recursive can be written iteratively, and vice versa.
 
 ## In the interview
 
-Say the base case and the recursive case out loud before writing code, then state time *and* space, with space as O(depth). Expect the follow-ups: "what is the maximum depth for this input?", "can you make it iterative?" (loop or explicit stack), and, for a branching recursion with repeated calls, "can you make it faster?" — memoize, which leads straight into dynamic programming.
+Say the base case and the recursive case out loud before writing code, then state time *and* space, with space as O(depth). Expect the follow-ups: "what is the maximum depth for this input?", "can you make it iterative?" (loop or explicit stack), and, for a branching recursion with repeated calls, "can you make it faster?" (memoize, which leads straight into dynamic programming).

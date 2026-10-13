@@ -4,16 +4,16 @@ track: ds
 tags: [statistics, experiments, hypothesis-testing, product]
 difficulty: 2
 minutes: 6
-tldr: "Randomly split users between old and new, fix the sample size up front from the baseline rate and the smallest lift that matters, then check the split, the metric and guardrails — no peeking."
+tldr: "Randomly split users between old and new, fix the sample size up front from the baseline rate and the smallest lift that matters, then check the split, the metric and guardrails. No peeking."
 analogy: "A clinical trial for a web page. Patients are assigned by coin flip so the groups differ only by the treatment, the trial size is set before it starts, and nobody gets to stop the trial the first day the numbers look good."
 diagram: ab-testing
 story:
   - title: Hypothesis and random split
     text: "Does a new checkout page sell more? Write the hypothesis first: H₀, the null hypothesis, says the conversion rate (share of users who place at least one order) is the same in both versions. Randomise per user by hashing the user id, so each person always sees one version and the groups differ only by chance and by the page."
   - title: Sample size from baseline and MDE
-    text: "Today 10 % of users convert. The smallest lift worth detecting — the minimum detectable effect (MDE) — is 1 percentage point (pp), to 11 %. With a 5 % false-positive rate (α) and an 80 % chance of catching a real 1 pp lift (power): n = (1.96 + 0.8416)² — 1.96 is the z-value for a two-sided 5 % test, 0.84 the z-value for 80 % power — × (0.09 + 0.0979) / 0.01² ≈ 14,750 users per arm."
+    text: "Today 10 % of users convert. The smallest lift worth detecting is called the minimum detectable effect (MDE); here it is 1 percentage point (pp), up to 11 %. Accept a 5 % false-positive rate (α) and aim for an 80 % chance of catching a real 1 pp lift (power). Then n = (1.96 + 0.8416)² × (0.09 + 0.0979) / 0.01² ≈ 14,750 users per arm, where 1.96 is the z-value for a two-sided 5 % test and 0.84 the one for 80 % power."
   - title: "Run time: whole weeks"
-    text: "With 3,000 eligible users a day, the 29,500 users take about 10 days. Round up to 14: whole weeks cover weekday and weekend behaviour, and the extra days let the novelty effect fade — people clicking a change only because it is new."
+    text: "With 3,000 eligible users a day, the 29,500 users take about 10 days. Round up to 14: whole weeks cover weekday and weekend behaviour, and the extra days let the novelty effect fade (people clicking a change only because it is new)."
   - title: Do not peek and stop early
     text: "Checking the p-value daily and stopping at the first 'significant' day breaks the 5 % guarantee. When there is no real effect, 14 daily looks produce a false win about 22 % of the time. Fix the sample size in advance, or use a sequential test built for repeated looks."
   - title: "Check the split first: SRM"
@@ -34,7 +34,7 @@ quiz:
   - q: "You randomise each page view rather than each user. What goes wrong?"
     options: ["Nothing; more units means more power", "One user sees both versions, so the groups are not independent and the variance is underestimated", "The test becomes one-sided", "SRM becomes impossible to check"]
     answer: 1
-    why: "The same person contributes to both arms, behaviour carries over between versions, and page views from one user are correlated — so the usual standard errors are too small and p-values too optimistic. Randomise at the level you analyse, usually the user."
+    why: "The same person contributes to both arms, behaviour carries over between versions, and page views from one user are correlated. The usual standard errors come out too small and the p-values too optimistic. Randomise at the level you analyse, usually the user."
   - q: "A 50 / 50 test shows 50,000 users in A and 48,800 in B. What should you do first?"
     options: ["Ship B if its metric is better", "Re-weight B by 50,000 / 48,800", "Investigate the assignment and logging: χ² ≈ 14.6, p ≈ 0.0001 is a sample ratio mismatch", "Nothing; a 1 % gap is normal"]
     answer: 2
@@ -60,7 +60,7 @@ sources:
 
 ## The pieces of an A/B test
 
-An **A/B test** (online controlled experiment) compares a **control** (A, the current version) with a **treatment** (B, the change) by randomly assigning units to each. Randomisation is the whole point: it balances every other cause — device, country, mood, time of day — between the groups on average, so a difference beyond chance can be attributed to the change.
+An **A/B test** (online controlled experiment) compares a **control** (A, the current version) with a **treatment** (B, the change) by randomly assigning units to each. Randomisation is the whole point: it balances every other cause (device, country, mood, time of day) between the groups on average, so a difference beyond chance can be attributed to the change.
 
 Decide these *before* launch and write them down:
 
@@ -96,7 +96,7 @@ Worked example with p₁ = 0.10, p₂ = 0.11, α = 0.05 (z = 1.960), power 0.80 
 | MDE 0.5 pp (10 % → 10.5 %) | 57,760 |
 | MDE 1 pp, power 0.9 | 19,744 |
 
-A quick mental check is n ≈ 16 · p(1 − p) / δ² = 16 × 0.09 / 0.0001 = 14,400. Notice what is expensive: small effects (n ∝ 1/δ²), and rare baselines — relative to their size, rare events need far more users.
+A quick mental check is n ≈ 16 · p(1 − p) / δ² = 16 × 0.09 / 0.0001 = 14,400. Two things get expensive. Small effects cost you because n ∝ 1/δ². Rare baselines cost you too, since rare events need far more users relative to their size.
 
 ## Run time
 
@@ -114,7 +114,7 @@ A p-value threshold of 0.05 promises a 5 % false-positive rate for **one** look 
 | 10 | 19 % |
 | 14 (daily for two weeks) | 22 % |
 
-Fixes: commit to the sample size and look once; or use a method built for repeated looks — **group sequential designs** (for example O'Brien–Fleming boundaries, which demand very small p-values at early looks) or **always-valid p-values** (mSPRT), which many experimentation platforms provide.
+You have two ways out. Commit to the sample size and look once, or use a method built for repeated looks: **group sequential designs** (for example O'Brien–Fleming boundaries, which demand very small p-values at early looks) or **always-valid p-values** (mSPRT), which many experimentation platforms provide.
 
 ## Reading the result
 

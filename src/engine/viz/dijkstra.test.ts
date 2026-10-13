@@ -34,7 +34,7 @@ describe('dijkstra frames on the napkin graph', () => {
   });
 
   it('pop A then relax B = 4 and C = 1, queue sorted', () => {
-    expect(fr[1]?.caption).toBe('pop (0, A) — the smallest, so A is final');
+    expect(fr[1]?.caption).toBe('pop (0, A): it is the smallest, so A is final');
     expect(fr[2]?.caption).toBe('A→B: 0 + 4 = 4 < ∞ → dist[B] = 4');
     expect(fr[3]?.state.pq).toEqual([
       [1, 'C'],
@@ -51,7 +51,7 @@ describe('dijkstra frames on the napkin graph', () => {
   });
 
   it('skips the stale entries (4,B) (9,D) (11,E) (14,F)', () => {
-    const stale = fr.filter((f) => f.step === 'stale').map((f) => f.caption.split(' —')[0]);
+    const stale = fr.filter((f) => f.step === 'stale').map((f) => f.caption.split(' is stale')[0]);
     expect(stale).toEqual(['pop (4, B)', 'pop (9, D)', 'pop (11, E)', 'pop (14, F)']);
   });
 
@@ -100,7 +100,7 @@ describe('negative detour', () => {
   it('Dijkstra from A is fooled: B settled at 3, but A→G→B costs 2', () => {
     const fr = dijkstraFrames(N, 'A');
     const bad = fr.find((f) => f.step === 'ignored');
-    expect(bad?.caption).toBe('G→B: 7 + (−5) = 2 < 3, but B is already final — ignored!');
+    expect(bad?.caption).toBe('G→B: 7 + (−5) = 2 < 3, but B is already final, so it is ignored!');
     expect(fr.at(-1)?.state.dist).toMatchObject({ B: 3, D: 8, E: 10, F: 13, G: 7 });
     const bf = bellmanFord(N, 'A');
     expect(bf.negativeCycle).toBe(false);

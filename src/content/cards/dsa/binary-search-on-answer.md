@@ -67,10 +67,10 @@ sources:
 Ordinary binary search looks for a value inside a sorted array. **Binary search on the answer** (also called *parametric search*) searches the **range of possible answers** instead. It applies when:
 
 1. The question asks for the **minimum** (or maximum) value x that satisfies some condition.
-2. You can write a **feasibility check** `ok(x)` — "is x good enough?" — that is much easier than finding x directly.
+2. You can write a **feasibility check** `ok(x)` ("is x good enough?") that is much easier than finding x directly.
 3. The check is **monotone**: if `ok(x)` is true then `ok(x + 1)` is true too. Laid out over all candidates, the answers look like `✗ ✗ ✗ ✓ ✓ ✓ ✓`, with exactly one switch.
 
-You are no longer searching for a value; you are searching for **the position of the switch**: the first ✓. Binary search finds it in O(log(range)) checks because every check tells you which side of the switch you are on.
+What you are really hunting for is **the position of the switch**: the first ✓. Binary search finds it in O(log(range)) checks because every check tells you which side of the switch you are on.
 
 ### Setting lo and hi
 
@@ -97,7 +97,7 @@ Three **invariants** make it correct:
 
 Each iteration keeps these true. Because the midpoint rounds down, `mid < hi`, so both branches strictly shrink the range and the loop ends with `lo == hi`, the first ✓.
 
-For the mirror problem — the **largest** x with `ok(x)` true, pattern `✓ ✓ ✓ ✗ ✗` — use `lo = mid` on success and `hi = mid − 1` on failure, and round the midpoint **up**: `mid = ceil((lo + hi) / 2)`. Otherwise, with `hi = lo + 1`, `mid` equals `lo` and the loop never ends.
+For the mirror problem (the **largest** x with `ok(x)` true, pattern `✓ ✓ ✓ ✗ ✗`), use `lo = mid` on success and `hi = mid − 1` on failure, and round the midpoint **up**: `mid = ceil((lo + hi) / 2)`. Otherwise, with `hi = lo + 1`, `mid` equals `lo` and the loop never ends.
 
 ## Worked example
 
@@ -118,7 +118,7 @@ The search, starting at `lo = 4`, `hi = 16`:
 | 4 | 10 | 7 | ✓ | hi = 7 |
 | 4 | 7 | 5 | ✗ | lo = 6 |
 | 6 | 7 | 6 | ✓ | hi = 6 |
-| 6 | 6 | — | — | **return 6** |
+| 6 | 6 | n/a | n/a | **return 6** |
 
 Four O(n) checks instead of trying all 13 capacities.
 
@@ -126,7 +126,7 @@ Four O(n) checks instead of trying all 13 capacities.
 
 ## Implement it in Python
 
-The same template works in any language; here it is in Python, with both classic problems.
+One generic `first_true` helper, then both classic problems written as one-line checks on top of it.
 
 ```python
 from collections.abc import Callable

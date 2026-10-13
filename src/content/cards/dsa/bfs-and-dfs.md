@@ -9,9 +9,9 @@ analogy: "Dropping a stone in a pond versus exploring a cave. The ripple (BFS) r
 diagram: bfs-vs-dfs
 story:
   - title: A grid is a graph
-    text: "Each open cell is a node, and you can step up, down, left or right into another open cell — those steps are the edges. Grey filled cells are walls. We want to get from S in the top-left corner to G in the bottom-right, and we will explore the same grid twice."
+    text: "Each open cell is a node, and you can step up, down, left or right into another open cell. Those steps are the edges. Grey filled cells are walls. We want to get from S in the top-left corner to G in the bottom-right, and we will explore the same grid twice."
   - title: BFS ripples outwards
-    text: "Breadth-first search keeps a queue: take a cell from the front, add its unvisited neighbours to the back. So every cell at distance 1 is reached before any cell at distance 2, and so on — the numbers are each cell's distance from S. At any moment the queue holds at most two neighbouring distances, such as 5, 6, 6."
+    text: "Breadth-first search keeps a queue: take a cell from the front, add its unvisited neighbours to the back. So every cell at distance 1 is reached before any cell at distance 2, and so on. The numbers are each cell's distance from S. At any moment the queue holds at most two neighbouring distances, such as 5, 6, 6."
   - title: DFS dives down one branch
     text: "Depth-first search uses a stack (often the call stack of a recursive function): always continue from the newest cell. Trying up, right, down, left, it first hits a dead end at the cell right of S, backs up, then follows one long route over the top of the grid until it happens to reach G."
   - title: Only BFS guarantees the shortest path
@@ -24,15 +24,15 @@ keyIdeas:
   - "**DFS suits structure questions**: connected components, cycle detection, topological order, backtracking."
 quiz:
   - q: "You need the fewest moves for a knight to reach a square on an empty chessboard. Which traversal?"
-    options: ["DFS, because it goes deep quickly", "BFS, because every move costs the same and it explores in order of distance", "Either — both always find the shortest path", "Neither — you need Dijkstra"]
+    options: ["DFS, because it goes deep quickly", "BFS, because every move costs the same and it explores in order of distance", "Either; both always find the shortest path", "Neither; you need Dijkstra"]
     answer: 1
     why: "All moves cost 1, so the graph is unweighted. BFS reaches each square first by a shortest route. Dijkstra also works but is unnecessary when every edge weighs the same."
   - q: "A BFS marks nodes visited only when they are dequeued. What goes wrong?"
-    options: ["It finds longer paths", "The same node can be enqueued many times by different neighbours, wasting time and memory", "It turns into DFS", "Nothing — that is the standard way"]
+    options: ["It finds longer paths", "The same node can be enqueued many times by different neighbours, wasting time and memory", "It turns into DFS", "Nothing, that is the standard way"]
     answer: 1
     why: "Between being enqueued and dequeued, other neighbours see the node as unvisited and enqueue it again. Marking on enqueue guarantees each node enters the queue once."
   - q: "Roads have different lengths. Does BFS (counting roads) give the shortest driving distance?"
-    options: ["Yes, always", "Only if the graph is a tree", "No — it minimises the number of edges, not their total length; use Dijkstra", "Only if you run it twice"]
+    options: ["Yes, always", "Only if the graph is a tree", "No. It minimises the number of edges, not their total length; use Dijkstra", "Only if you run it twice"]
     answer: 2
     why: "Two short roads can be shorter than one long one. BFS's guarantee is about edge count, so weighted graphs need Dijkstra's algorithm (non-negative weights)."
   - q: "During a DFS of a directed graph, which event proves the graph has a cycle?"
@@ -74,7 +74,7 @@ Both traversals answer "which vertices can I reach from S?" with the same loop:
 The only difference is **which vertex comes out next**.
 
 - **Breadth-first search (BFS)** uses a **queue** (first in, first out). Vertices come out in the order they went in, so all vertices at distance 1 from S are processed before any at distance 2, and so on. The exploration spreads like a ripple.
-- **Depth-first search (DFS)** uses a **stack** (last in, first out) — or, more commonly, recursion, where the language's call stack plays that role. The newest vertex is explored next, so the search runs down one path as far as it can, then **backtracks** to the most recent vertex with an unexplored neighbour.
+- **Depth-first search (DFS)** uses a **stack** (last in, first out). More often you write it with recursion and let the language's call stack play that role. The newest vertex is explored next, so the search runs down one path as far as it can, then **backtracks** to the most recent vertex with an unexplored neighbour.
 
 ### Why BFS gives shortest paths
 
@@ -116,7 +116,7 @@ A recursive DFS that tries up, right, down, left goes from (0,0) right into (0,1
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+Both walk the grid from the worked example, so you can check the 8 and the 12.
 
 ```python
 from collections import deque
@@ -182,4 +182,4 @@ Memory differs too: BFS holds a whole level, which can be huge on wide graphs; D
 
 ## In the interview
 
-Grid questions are graph questions — say so, then define the neighbours. Name the container out loud ("queue, so BFS, because we need the fewest steps"), mark visited on enqueue, and state O(V + E), which for an R × C grid is O(R · C). Expect follow-ups: return the path itself (store each cell's parent and walk back from G), handle weights (Dijkstra), or start from many sources at once (put them all in the queue at distance 0).
+Grid questions are graph questions. Say so, then define the neighbours. Name the container out loud ("queue, so BFS, because we need the fewest steps"), mark visited on enqueue, and state O(V + E), which for an R × C grid is O(R · C). Expect follow-ups: return the path itself (store each cell's parent and walk back from G), handle weights (Dijkstra), or start from many sources at once (put them all in the queue at distance 0).

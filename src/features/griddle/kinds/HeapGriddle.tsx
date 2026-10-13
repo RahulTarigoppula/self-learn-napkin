@@ -181,7 +181,7 @@ export default function HeapGriddle() {
           height <b>{heapHeight(n)}</b>
         </span>
         <span>
-          min <b>{n > 0 ? a[0] : '—'}</b>
+          min <b>{n > 0 ? a[0] : 'none'}</b>
         </span>
       </div>
       <p class={`gd__verdict gd__verdict--${broken === 0 ? 'ok' : 'bad'}`} role="status">

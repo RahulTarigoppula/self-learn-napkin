@@ -1,5 +1,5 @@
 export const meta = {
-  title: 'Sorting landscape: comparison vs non-comparison, the decision-tree lower bound, stability',
+  title: 'Sorting at a glance: comparison vs non-comparison, the decision-tree lower bound, stability',
   width: 520,
   height: 420,
 };

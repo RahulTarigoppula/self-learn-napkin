@@ -11,7 +11,7 @@ story:
   - title: "One-hot: every word is equally different"
     text: "A model needs numbers, not words. The simplest encoding is one-hot: a vector as long as the vocabulary, say 50,000, with a single 1 marking the word. But any two different one-hot vectors have dot product 0, so \"cat\" is exactly as far from \"dog\" as from \"car\". No similarity, and huge vectors."
   - title: "An embedding table: one dense row per word"
-    text: "Instead, keep a table with one short row of numbers per word — 2 here, typically 32 to 1,024 in practice. Encoding a word is just looking up its row (mathematically, one-hot times the table). The numbers start random and are learned during training, like any other weights."
+    text: "Instead, keep a table with one short row of numbers per word: 2 here, typically 32 to 1,024 in practice. Encoding a word is just looking up its row (mathematically, one-hot times the table). The numbers start random and are learned during training, like any other weights."
   - title: Similar words land close together
     text: "Training adjusts the rows so that words used in similar contexts get similar vectors. Plotted, cat (3, 1) and dog (3, 2) point almost the same way, while car (−1, 3) points elsewhere. Distance in this space now means something."
   - title: Cosine similarity measures the angle
@@ -71,19 +71,19 @@ Models do arithmetic on numbers, but much of the world comes as **discrete symbo
 
 **One-hot encoding** gives a symbol a vector as long as the vocabulary V, with a 1 in its own position and 0 everywhere else. It invents no false order, but:
 
-- it is huge — V = 50,000 numbers per word;
+- it is huge: V = 50,000 numbers per word;
 - every pair of distinct symbols is orthogonal (dot product 0), so the representation knows nothing about similarity, and what a model learns about "cat" does not transfer to "kitten".
 
 An **embedding** gives each symbol a short **dense** vector of d real numbers (d = 2 in the picture, typically 32–1,024 in practice). The vectors are **learned**, so that symbols that behave similarly in the training task get nearby vectors. Generalisation then comes for free: a model that learned something about "cat" automatically applies part of it to the nearby "kitten".
 
 ## How it works
 
-An **embedding table** E is a matrix of shape V × d — one row per symbol. To embed symbol i, read row i. That is mathematically the one-hot vector times E (all rows but one are multiplied by 0), but a lookup is far cheaper. The table is a layer of the network: it starts random, the gradient of the loss flows back into the rows that were used, and gradient descent moves them. Nothing else is special about it.
+An **embedding table** E is a matrix of shape V × d, with one row per symbol. To embed symbol i, read row i. That is mathematically the one-hot vector times E (all rows but one are multiplied by 0), but a lookup is far cheaper. The table is a layer of the network: it starts random, the gradient of the loss flows back into the rows that were used, and gradient descent moves them. Nothing else is special about it.
 
 What the vectors end up encoding depends on the **training task**:
 
-- **word2vec** (2013) trains on raw text. In the skip-gram version a word's vector must predict which words appear within a few positions of it; with **negative sampling** the model learns to score real (word, neighbour) pairs high and random pairs low. Words that share contexts — "cat" and "dog" both appear near "pet", "fed", "vet" — end up with similar vectors.
-- **Inside a bigger model** — a recommender, a Transformer, a classifier — the table is trained end to end for that model's objective. A Transformer's token embeddings are exactly this, before positional information and attention are added.
+- **word2vec** (2013) trains on raw text. In the skip-gram version a word's vector must predict which words appear within a few positions of it; with **negative sampling** the model learns to score real (word, neighbour) pairs high and random pairs low. Words that share contexts end up with similar vectors: "cat" and "dog" both appear near "pet", "fed" and "vet".
+- **Inside a bigger model** (a recommender, a Transformer, a classifier) the table is trained end to end for that model's objective. A Transformer's token embeddings are exactly this, before positional information and attention are added.
 - **Two-tower / contrastive** training puts queries and documents (or users and items, or images and captions) into one shared space so that matching pairs have a high dot product.
 
 ## Measuring similarity
@@ -92,7 +92,7 @@ The usual measure is **cosine similarity**:
 
 > cos(a, b) = a·b / (‖a‖ ‖b‖)
 
-the cosine of the angle between the vectors: 1 for the same direction, 0 for perpendicular, −1 for opposite. It ignores length, which often reflects frequency rather than meaning. If you normalise every vector to length 1 once, cosine becomes a plain dot product — which is what fast search libraries compute. **Euclidean distance** on unit vectors gives the same ranking, since ‖a − b‖² = 2 − 2·cos(a, b).
+the cosine of the angle between the vectors: 1 for the same direction, 0 for perpendicular, −1 for opposite. It ignores length, which often reflects frequency rather than meaning. If you normalise every vector to length 1 once, cosine becomes a plain dot product, and that is what fast search libraries compute. **Euclidean distance** on unit vectors gives the same ranking, since ‖a − b‖² = 2 − 2·cos(a, b).
 
 ## Worked example
 
@@ -145,7 +145,7 @@ Any high-cardinality ID can be embedded: products, users, songs, advertisers, po
 
 ## Nearest-neighbour search and vector databases
 
-"Find the items most similar to this one" means **k-nearest-neighbour** search. Exact search compares the query with every vector — O(N·d), which for 10 million vectors of 768 dimensions is about 7.7 billion multiply-adds per query. **Approximate nearest-neighbour (ANN)** indexes trade a little recall for orders-of-magnitude speed: **HNSW** walks a layered proximity graph, **IVF** clusters the vectors and searches only the nearest clusters, **product quantisation** compresses vectors so more fit in memory. Libraries such as FAISS and vector databases wrap these indexes with storage, filtering and updates.
+"Find the items most similar to this one" means **k-nearest-neighbour** search. Exact search compares the query with every vector. That is O(N·d), which for 10 million vectors of 768 dimensions is about 7.7 billion multiply-adds per query. **Approximate nearest-neighbour (ANN)** indexes trade a little recall for orders-of-magnitude speed: **HNSW** walks a layered proximity graph, **IVF** clusters the vectors and searches only the nearest clusters, **product quantisation** compresses vectors so more fit in memory. Libraries such as FAISS and vector databases wrap these indexes with storage, filtering and updates.
 
 ## Edge cases and pitfalls
 
@@ -157,4 +157,4 @@ Any high-cardinality ID can be embedded: products, users, songs, advertisers, po
 
 ## In the interview
 
-Expect "what is an embedding and why not one-hot?", "how is an embedding layer trained?", "cosine versus dot product versus Euclidean?", or a system-design question about similarity search. A strong answer: a learned lookup table trained by backprop for some objective; cosine compares direction; normalise to make it a dot product; serve with an ANN index such as HNSW. A common follow-up: *"how do you embed a brand-new item with no interactions?"* — compute its vector from content (text, image, category) with a model trained to map content into the same space.
+Expect "what is an embedding and why not one-hot?", "how is an embedding layer trained?", "cosine versus dot product versus Euclidean?", or a system-design question about similarity search. A strong answer: a learned lookup table trained by backprop for some objective; cosine compares direction; normalise to make it a dot product; serve with an ANN index such as HNSW. A common follow-up: *"how do you embed a brand-new item with no interactions?"* Compute its vector from content (text, image, category) with a model trained to map content into the same space.

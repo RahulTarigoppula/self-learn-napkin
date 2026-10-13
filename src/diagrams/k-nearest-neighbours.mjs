@@ -62,7 +62,7 @@ export default (d) => {
 
   d.step('k decides: 1 overfits, 13 underfits');
   d.circle(...P(...Q), 2 * S * 1.0, { pen: 'orange', dashed: true, ...neat });
-  d.text(RX, 160, 'k = 1: blue (one point,\nmaybe noise, decides)\nk = 13: blue, 7 vs 6 —\nevery Q gets the majority', {
+  d.text(RX, 160, 'k = 1: blue (one point,\nmaybe noise, decides)\nk = 13: blue, 7 vs 6\n(the majority wins)', {
     pen: 'orange',
     size: 14,
     anchor: 'start',

@@ -11,13 +11,13 @@ story:
   - title: The user-item matrix is mostly empty
     text: "Put users in rows, items in columns and ratings in the cells. Ann rated Alien 4, Up 1 and Coco 1, but never saw Heat. Real matrices are far emptier than this one: in the Netflix Prize data only about 1 % of the cells were filled. Recommending means predicting the missing cells."
   - title: "Collaborative filtering: find similar users"
-    text: "Ann's row matches Bob's on every film they both rated, so their tastes look alike — and Bob gave Heat a 4. User-based collaborative filtering predicts Ann's rating from similar users' ratings, weighted by similarity. Nothing about the films themselves is needed, only who liked what."
+    text: "Ann's row matches Bob's on every film they both rated, so their tastes look alike. And Bob gave Heat a 4. User-based collaborative filtering predicts Ann's rating from similar users' ratings, weighted by similarity. Nothing about the films themselves is needed, only who liked what."
   - title: "Matrix factorisation: a vector per user and item"
     text: "Better: give every user and every item a short vector, learned so that their dot product reproduces the known ratings. Suppose training produced these two-number vectors. Their dimensions are hidden factors that we may read afterwards as action and family taste, though nobody labelled them."
   - title: Fill the gap with a dot product
     text: "Now any empty cell is one dot product: Ann · Heat = 2.0·2.3 + 0.3·0.3 = 4.69, so Heat is a strong recommendation for Ann. The same vectors give Ann · Coco = 2.0·0.3 + 0.3·2.3 = 1.29, close to the 1 she actually gave it."
   - title: "At scale: retrieve, then rank"
-    text: "You cannot score 10 million items for every visit with a heavy model. Stage one, retrieval, uses cheap signals — a nearest-neighbour search over item vectors, popular items, co-purchases — to fetch a few hundred candidates in milliseconds. Stage two, ranking, scores just those with a richer model and shows the best ten."
+    text: "You cannot score 10 million items for every visit with a heavy model. Stage one, retrieval, uses cheap signals (a nearest-neighbour search over item vectors, popular items, co-purchases) to fetch a few hundred candidates in milliseconds. Stage two, ranking, scores just those with a richer model and shows the best ten."
   - title: "Measure: offline, then an A/B test"
     text: "Offline, hide some of each user's later interactions and check how many land in your top k: precision@10 is the share of the 10 shown items the user actually engaged with. Offline wins do not always survive contact with users, so the final judge is an A/B test on the real goal."
 keyIdeas:
@@ -59,7 +59,7 @@ flashcards:
     text: "Matrix factorisation predicts a rating as the {{dot product}} of a learned {{user vector}} and item vector."
   - kind: qa
     q: "Why is implicit feedback harder to learn from than explicit ratings?"
-    a: "A click or play shows interest, but a missing interaction is ambiguous — the user may dislike the item or never have seen it. There are no true negatives, so models sample negatives and weight observations by confidence."
+    a: "A click or play shows interest, but a missing interaction is ambiguous: the user may dislike the item or never have seen it. There are no true negatives, so models sample negatives and weight observations by confidence."
 sources:
   - { name: "Stanford CS229 VIP cheatsheets (Amidi)", url: "https://github.com/afshinea/stanford-cs-229-machine-learning", licence: "MIT", note: "Unsupervised learning and machine learning tips: similarity, evaluation metrics" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -67,7 +67,7 @@ sources:
 
 ## The problem
 
-A catalogue has far more items than anyone can browse — millions of products, videos or songs. A **recommender system** predicts which items a particular user is most likely to want and shows those. The raw material is the **user–item interaction matrix**: rows are users, columns items, cells hold a rating or an interaction. It is overwhelmingly empty (the Netflix Prize data filled about 1.2 % of its 480,189 × 17,770 cells), and the task is to predict the empty cells that matter — the ones we would put in front of the user.
+A catalogue has far more items than anyone can browse: millions of products, videos or songs. A **recommender system** predicts which items a particular user is most likely to want and shows those. The raw material is the **user–item interaction matrix**: rows are users, columns items, cells hold a rating or an interaction. It is overwhelmingly empty (the Netflix Prize data filled about 1.2 % of its 480,189 × 17,770 cells), and the task is to predict the empty cells that matter, meaning the ones we would put in front of the user.
 
 ## Collaborative filtering
 
@@ -76,7 +76,7 @@ A catalogue has far more items than anyone can browse — millions of products, 
 - **User-based CF:** find users similar to the target user and average their ratings for the item, weighted by similarity.
 - **Item-based CF:** find items similar to the ones the user liked ("people who bought this also bought…"). Item similarities change slowly and can be precomputed, which is why Amazon popularised this variant.
 
-Similarity is usually cosine or Pearson correlation over the items both users rated. **Centre the ratings first** (subtract each user's mean): raw cosine between Ann (4, 1, 1) and Cat (1, 4, 5) is 0.47 — falsely positive, because ratings are all positive numbers — while the centred version is −0.97, correctly showing opposite tastes.
+Similarity is usually cosine or Pearson correlation over the items both users rated. **Centre the ratings first** (subtract each user's mean): raw cosine between Ann (4, 1, 1) and Cat (1, 4, 5) is 0.47, which is falsely positive because ratings are all positive numbers. The centred version is −0.97, correctly showing opposite tastes.
 
 Neighbourhood CF is simple and explainable, but it struggles when users share few rated items, and comparing every pair of users is expensive.
 
@@ -90,7 +90,7 @@ where μ is the global average, bᵤ a user bias (some people rate everything hi
 
 > Σ over known (u, i) of (rᵤᵢ − r̂ᵤᵢ)² + λ(‖pᵤ‖² + ‖qᵢ‖² + bᵤ² + bᵢ²)
 
-using SGD or **alternating least squares (ALS)** — fix the item vectors and solve every user vector by least squares, then swap. The model has (users + items)·k parameters instead of one per cell, which forces it to find shared structure. Matrix factorisation was central to the leading Netflix Prize entries (2006–2009), and the user and item vectors are **embeddings**: similar items end up with similar vectors.
+using SGD or **alternating least squares (ALS)**. ALS fixes the item vectors and solves every user vector by least squares, then swaps. The model has (users + items)·k parameters instead of one per cell, which forces it to find shared structure. Matrix factorisation was central to the leading Netflix Prize entries (2006–2009), and the user and item vectors are **embeddings**: similar items end up with similar vectors.
 
 ## Worked example
 
@@ -105,8 +105,8 @@ Ratings (blank = unknown):
 
 Suppose training produced k = 2 vectors: Ann (2.0, 0.3), Bob (1.9, 0.4), Cat (0.4, 2.0), Dan (0.3, 2.1); Alien (2.2, 0.2), Heat (2.3, 0.3), Up (0.2, 2.2), Coco (0.3, 2.3). Every observed rating is reproduced within 0.5 (for example Ann · Alien = 4.46 against 4, Cat · Coco = 4.72 against 5), and the gaps fill in:
 
-- Ann · Heat = 2.0·2.3 + 0.3·0.3 = **4.69** — recommend.
-- Dan · Coco = 0.3·0.3 + 2.1·2.3 = **4.92** — recommend.
+- Ann · Heat = 2.0·2.3 + 0.3·0.3 = **4.69**: recommend.
+- Dan · Coco = 0.3·0.3 + 2.1·2.3 = **4.92**: recommend.
 
 ## Content-based and hybrid
 
@@ -120,13 +120,13 @@ Suppose training produced k = 2 vectors: Ann (2.0, 0.3), Bob (1.9, 0.4), Cat (0.
 ## Two-stage architecture
 
 1. **Retrieval (candidate generation):** from millions of items to a few hundred in a few milliseconds. Sources: approximate nearest-neighbour search over item embeddings using the user's embedding, item-to-item co-occurrence, trending items, follows. Each source is cheap and high-recall.
-2. **Ranking:** a heavier model (gradient-boosted trees or a deep network) scores each candidate with rich features — user history, item features, context such as time and device — predicting the probability of a click, watch or purchase.
+2. **Ranking:** a heavier model (gradient-boosted trees or a deep network) scores each candidate with rich features (user history, item features, context such as time and device), predicting the probability of a click, watch or purchase.
 3. **Re-ranking / business rules:** diversity, freshness, removing items already bought, fairness constraints.
 
 ## Evaluation
 
-- **Offline:** split interactions **by time** (train on the past, test on the future — random splits leak the future). Measure **precision@k** (share of the top k that are relevant), **recall@k** (share of the relevant items that reach the top k), and ranking metrics such as **NDCG**, which rewards putting hits near the top. RMSE on ratings was the Netflix Prize metric, but ranking metrics better reflect what users see.
-- **Online:** an **A/B test** on the business goal — watch time, purchases, retention. Offline metrics are biased by what the old system chose to show, so offline gains often shrink or vanish online.
+- **Offline:** split interactions **by time** (train on the past, test on the future; random splits leak the future). Measure **precision@k** (share of the top k that are relevant), **recall@k** (share of the relevant items that reach the top k), and ranking metrics such as **NDCG**, which rewards putting hits near the top. RMSE on ratings was the Netflix Prize metric, but ranking metrics better reflect what users see.
+- **Online:** an **A/B test** on the business goal: watch time, purchases, retention. Offline metrics are biased by what the old system chose to show, so offline gains often shrink or vanish online.
 
 ## Implement it in Python
 
@@ -169,7 +169,7 @@ def precision_at_k(recommended, relevant, k):
 print(precision_at_k([7, 3, 9, 1, 4, 8, 2, 6, 5, 0], {3, 4, 0, 11, 12, 13}, 10))  # 0.3
 ```
 
-The learned vectors differ from the hand-picked ones above — factorisations are not unique — but they reach the same conclusion: Ann should see Heat, Dan should see Coco.
+The learned vectors differ from the hand-picked ones above (factorisations are not unique), but they reach the same conclusion: Ann should see Heat, Dan should see Coco.
 
 ## Edge cases and pitfalls
 

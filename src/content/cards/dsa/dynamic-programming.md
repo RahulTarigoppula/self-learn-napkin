@@ -4,7 +4,7 @@ track: dsa
 tags: [dynamic-programming, recursion, memoisation]
 difficulty: 3
 minutes: 5
-tldr: "When a recursive solution keeps solving the same subproblems, solve each one once and reuse the answer — top-down with a memo, or bottom-up by filling a table."
+tldr: "When a recursive solution keeps solving the same subproblems, solve each one once and reuse the answer: top-down with a memo, or bottom-up by filling a table."
 analogy: "Working out 47 × 23 for a homework sheet that asks it six times. You do the multiplication once, write the answer in the margin, and copy it for the other five. The margin is the memo."
 diagram: dp-stairs
 story:
@@ -15,9 +15,9 @@ story:
   - title: The same subproblems, again and again
     text: "Look at the colours: w(3) is solved twice and w(2) three times. These are overlapping subproblems. At n = 40 the naive recursion makes about 205 million calls, yet there are only 40 different questions being asked."
   - title: Memoise
-    text: "Store each answer the first time you compute it, in a lookup table (a hash map or an array) keyed by n. When w(3) is needed again, it is a memo hit: return the stored 3, and its whole subtree is never called. Every distinct n is now solved once, so the work drops to O(n) — 77 calls at n = 40."
+    text: "Store each answer the first time you compute it, in a lookup table (a hash map or an array) keyed by n. When w(3) is needed again, it is a memo hit: return the stored 3, and its whole subtree is never called. Every distinct n is now solved once, so the work drops to O(n): 77 calls at n = 40."
   - title: Tabulate bottom-up
-    text: "Or skip recursion entirely: fill a table from the smallest n upwards, each cell the sum of the two before it — 1, 2, 3, 5, 8. That is O(n) time, and since each cell needs only the previous two, you can keep just two variables for O(1) space."
+    text: "Or skip recursion entirely: fill a table from the smallest n upwards, each cell the sum of the two before it: 1, 2, 3, 5, 8. That is O(n) time, and since each cell needs only the previous two, you can keep just two variables for O(1) space."
 keyIdeas:
   - "**DP fits when a problem has optimal substructure** (the answer is built from answers to smaller subproblems) **and overlapping subproblems** (the same ones recur)."
   - "**Define the state and the recurrence first**: what does `dp[i]` mean, and how does it follow from smaller states?"
@@ -69,19 +69,19 @@ sources:
 - **Optimal substructure**: the best answer for the whole problem can be assembled from the best answers to subproblems. (The number of ways to reach step n is the sum of the ways to reach steps n − 1 and n − 2.)
 - **Overlapping subproblems**: a direct recursive solution asks the same subproblem many times. (Computing ways(5) asks for ways(3) twice.)
 
-If subproblems do not overlap — merge sort's two halves never share work — ordinary divide and conquer is enough. DP is what you add when they do: **solve each distinct subproblem once and store the answer.**
+If subproblems do not overlap (merge sort's two halves never share work), ordinary divide and conquer is enough. DP is what you add when they do: **solve each distinct subproblem once and store the answer.**
 
 ## How to build a DP solution
 
 1. **Define the state.** Say precisely what one subproblem is: "`ways[i]` = number of distinct ways to reach step i". Most DP bugs are a vague state.
 2. **Write the recurrence.** Express a state in terms of smaller states by asking "what was the last decision?" The last move onto step i was +1 (from i − 1) or +2 (from i − 2), and those cases never overlap, so `ways[i] = ways[i-1] + ways[i-2]`.
 3. **Base cases.** The smallest states you can answer directly: `ways[1] = 1`, `ways[2] = 2`.
-4. **Order.** Top-down (memoisation) lets recursion find the order for you. Bottom-up (tabulation) needs an order in which every state's dependencies are already computed — here, increasing i.
+4. **Order.** Top-down (memoisation) lets recursion find the order for you. Bottom-up (tabulation) needs an order in which every state's dependencies are already computed, which here means increasing i.
 5. **Answer and cost.** Read the answer from the right state. Time = number of states × work per state; space = the table, or less if you only keep what later states need.
 
 ## Worked example 1: climbing stairs
 
-**Naive recursion** follows the recurrence blindly. Let C(n) be the number of calls it makes: C(1) = C(2) = 1 and C(n) = 1 + C(n − 1) + C(n − 2). That works out to C(n) = 2·F(n) − 1, where F is the Fibonacci sequence, so C(5) = 9 and C(40) = 204,668,309. The growth rate is φⁿ, with φ ≈ 1.618 — exponential.
+**Naive recursion** follows the recurrence blindly. Let C(n) be the number of calls it makes: C(1) = C(2) = 1 and C(n) = 1 + C(n − 1) + C(n − 2). That works out to C(n) = 2·F(n) − 1, where F is the Fibonacci sequence, so C(5) = 9 and C(40) = 204,668,309. The growth rate is φⁿ, with φ ≈ 1.618. Exponential.
 
 **Memoised**, the first call for each n computes it and every later call is a lookup. ways(n) makes one fresh call to ways(n − 1), which does all the work below it, and then ways(n − 2) is a memo hit. That is 2n − 3 calls in total: 7 for n = 5, 77 for n = 40.
 
@@ -95,7 +95,7 @@ Each cell is the sum of the two to its left. Because only the last two cells are
 
 ## Worked example 2: coin change
 
-Coins {1, 3, 4}; make 6 with as few coins as possible. A **greedy** approach — always take the biggest coin that fits — takes 4, then 1, then 1: three coins. The best is 3 + 3: two coins. Greedy fails because taking the 4 makes the rest worse.
+Coins {1, 3, 4}; make 6 with as few coins as possible. A **greedy** approach (always take the biggest coin that fits) takes 4, then 1, then 1: three coins. The best is 3 + 3: two coins. Greedy fails because taking the 4 makes the rest worse.
 
 DP state: `best[a]` = fewest coins that sum to exactly a. Last decision: which coin was added last? If it was coin c, the rest is an optimal way to make a − c. So `best[a] = 1 + min(best[a − c])` over coins c ≤ a, with `best[0] = 0`.
 
@@ -107,7 +107,7 @@ For a = 6: via coin 1, best[5] + 1 = 3; via coin 3, best[3] + 1 = 2; via coin 4,
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+Three versions of climbing stairs, so you can feel the difference, then coin change as a table.
 
 ```python
 from functools import lru_cache
@@ -166,4 +166,4 @@ Start with memoisation when the recurrence is clear but the order is not; conver
 
 ## In the interview
 
-Say the five steps out loud: state, recurrence, base cases, order, answer. Write the naive recursion first if it helps, point at the repeated subproblem, then add a memo — that progression is exactly what interviewers want to see. State complexity as states × work per state, and offer the space optimisation at the end. Classic follow-ups: climbing stairs with steps of 1, 2 or 3; coin change counting the *number* of ways instead of the minimum; longest common subsequence (a 2-D table); 0/1 knapsack.
+Say the five steps out loud: state, recurrence, base cases, order, answer. Write the naive recursion first if it helps, point at the repeated subproblem, then add a memo. Interviewers like watching that progression happen. State complexity as states × work per state, and offer the space optimisation at the end. Classic follow-ups: climbing stairs with steps of 1, 2 or 3; coin change counting the *number* of ways instead of the minimum; longest common subsequence (a 2-D table); 0/1 knapsack.

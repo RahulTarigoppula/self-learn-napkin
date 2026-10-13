@@ -9,7 +9,7 @@ analogy: "A relay team misses its target time. Rather than rerunning the race on
 diagram: backpropagation
 story:
   - title: The computation as a graph
-    text: "Take the smallest model with a loss: predict x·w + b, compare with the target y, square the error. Break it into single operations — multiply, add, subtract, square — and draw them as a graph. Every neural network, however large, is a graph like this."
+    text: "Take the smallest model with a loss: predict x·w + b, compare with the target y, square the error. Break it into single operations (multiply, add, subtract, square) and draw them as a graph. Every neural network, however large, is a graph like this."
   - title: "Forward pass: compute every value"
     text: "With x = 2, w = 3, b = 1 and y = 5, run left to right: u = 2·3 = 6, v = 6 + 1 = 7, e = 7 − 5 = 2, L = 2² = 4. Keep every intermediate value. The backward pass will need them."
   - title: "Start at the end: ∂L/∂e = 2e = 4"
@@ -34,7 +34,7 @@ quiz:
   - q: "Why is backprop much faster than estimating each gradient by nudging each weight?"
     options: ["One backward sweep reuses shared intermediate results to get every gradient at once", "It uses smaller numbers", "It skips the forward pass", "It only updates the last layer"]
     answer: 0
-    why: "Nudging needs a forward pass per weight — millions of passes. Backprop computes each node's gradient once and reuses it for everything upstream, so all gradients cost a small constant times one forward pass."
+    why: "Nudging needs a forward pass per weight, which means millions of passes. Backprop computes each node's gradient once and reuses it for everything upstream, so all gradients cost a small constant times one forward pass."
   - q: "A deep network uses sigmoid activations, whose derivative is at most 0.25. Through 10 such layers, the gradient can shrink by a factor of about…"
     options: ["2.5", "0.25", "1 / 1,000,000", "It cannot shrink"]
     answer: 2
@@ -67,7 +67,7 @@ sources:
 
 ## The problem backprop solves
 
-Training a network means gradient descent: move every weight a little in the direction that lowers the loss. For that you need the **gradient** — the partial derivative ∂L/∂w of the loss with respect to *every* weight, often millions or billions of them. The naive way, nudging one weight and re-running the network to see how the loss changes, costs one forward pass per weight. **Backpropagation** (reverse-mode automatic differentiation) gets all of them in one backward sweep.
+Training a network means gradient descent: move every weight a little in the direction that lowers the loss. For that you need the **gradient**: the partial derivative ∂L/∂w of the loss with respect to *every* weight, and there are often millions or billions of them. The naive way, nudging one weight and re-running the network to see how the loss changes, costs one forward pass per weight. **Backpropagation** (reverse-mode automatic differentiation) gets all of them in one backward sweep.
 
 ## How it works
 
@@ -95,7 +95,7 @@ L = (x·w + b − y)² with x = 2, w = 3, b = 1, y = 5.
 
 | Node | Forward value | Local derivative | Gradient ∂L/∂(node) |
 |---|---|---|---|
-| L = e² | 4 | — | 1 |
+| L = e² | 4 | n/a | 1 |
 | e = v − y | 2 | ∂L/∂e = 2e | 1 · 4 = **4** |
 | v = u + b | 7 | ∂e/∂v = 1 | 4 · 1 = **4** |
 | b | 1 | ∂v/∂b = 1 | 4 · 1 = **4** |
@@ -103,11 +103,11 @@ L = (x·w + b − y)² with x = 2, w = 3, b = 1, y = 5.
 | w | 3 | ∂u/∂w = x = 2 | 4 · 2 = **8** |
 | x | 2 | ∂u/∂x = w = 3 | 4 · 3 = **12** |
 
-Check w by hand: L(w) = (2w + 1 − 5)² = (2w − 4)², so dL/dw = 2(2w − 4)·2 = 8 at w = 3. ✓ A gradient-descent step with learning rate 0.1 gives w = 2.2, b = 0.6, and the new prediction 2·2.2 + 0.6 = 5 hits the target exactly (a coincidence of these numbers — normally the loss only decreases).
+Check w by hand: L(w) = (2w + 1 − 5)² = (2w − 4)², so dL/dw = 2(2w − 4)·2 = 8 at w = 3. ✓ A gradient-descent step with learning rate 0.1 gives w = 2.2, b = 0.6, and the new prediction 2·2.2 + 0.6 = 5 hits the target exactly (these numbers just happen to work out; normally the loss only decreases).
 
 ## Why it is efficient
 
-Notice that ∂L/∂u = 4 was computed once and then reused for both w and x. In a deep network the gradient at layer k is reused by every weight below it. Each node is visited once going forward and once going backward, so all gradients together cost a small constant multiple (typically 2–3×) of one forward pass — no matter whether there are ten weights or ten billion. That is the whole reason deep learning is computationally possible.
+Notice that ∂L/∂u = 4 was computed once and then reused for both w and x. In a deep network the gradient at layer k is reused by every weight below it. Each node is visited once going forward and once going backward, so all gradients together cost a small constant multiple (typically 2–3×) of one forward pass, and that holds whether there are ten weights or ten billion. It is the reason deep learning is computationally possible at all.
 
 The price is **memory**: the backward pass needs the cached forward values (here x, w and e), so training must store every layer's activations. Activation checkpointing trades this back: store a few layers' outputs and recompute the rest during the backward pass.
 
@@ -161,7 +161,7 @@ The gradient reaching layer 1 of a deep network is a product with one factor per
 - Factors below 1 → **vanishing gradients**. Sigmoid's slope is at most 0.25, and 0.25¹⁰ ≈ 10⁻⁶; even 0.9⁵⁰ ≈ 0.005. Early layers stop learning.
 - Factors above 1 → **exploding gradients**. 1.5⁵⁰ ≈ 6 × 10⁸; the loss jumps to NaN.
 
-Fixes: ReLU-family activations (slope exactly 1 when active), initialisation scaled to the layer width (He, Glorot), **residual connections** (y = x + f(x) gives the gradient a path with slope 1 straight through), batch or layer normalisation, and **gradient clipping** for explosions — standard in recurrent networks, which backpropagate through every time step.
+Fixes: ReLU-family activations (slope exactly 1 when active), initialisation scaled to the layer width (He, Glorot), **residual connections** (y = x + f(x) gives the gradient a path with slope 1 straight through), batch or layer normalisation, and **gradient clipping** for explosions. Clipping is standard in recurrent networks, which backpropagate through every time step.
 
 ## Autograd
 
@@ -170,10 +170,10 @@ You rarely write backward passes by hand. **Automatic differentiation** framewor
 ## Edge cases and pitfalls
 
 - **Backprop computes gradients; it does not update weights.** The optimiser (SGD, Adam) does that. Interviewers like this distinction.
-- **Non-differentiable points** (ReLU at 0) are handled with a subgradient — frameworks simply use 0 or 1.
+- **Non-differentiable points** (ReLU at 0) are handled with a subgradient; in practice frameworks just pick 0 or 1.
 - **Check custom gradients** with central differences, (f(w + ε) − f(w − ε)) / 2ε, on a small input in float64.
 - **Saturated outputs:** sigmoid + squared error gives tiny gradients when the prediction is confidently wrong; sigmoid + log-loss does not, because the gradient simplifies to (p − y).
 
 ## In the interview
 
-Typical prompts: "explain backpropagation", "derive the gradient for this small graph", "why does it scale?", "what are vanishing gradients?". Draw the graph, run the forward pass with numbers, then go backwards node by node multiplying local derivatives, and verify one gradient by hand. Mention caching, the cost (about one extra pass, not one per weight), the memory trade-off, and the vanishing-gradient fixes. A common follow-up: *"why reverse mode rather than forward mode?"* — reverse mode costs one sweep per *output*; a loss is a single number with millions of inputs, so reverse mode wins. Forward mode costs one sweep per input.
+Typical prompts: "explain backpropagation", "derive the gradient for this small graph", "why does it scale?", "what are vanishing gradients?". Draw the graph, run the forward pass with numbers, then go backwards node by node multiplying local derivatives, and verify one gradient by hand. Mention caching, the cost (about one extra pass, not one per weight), the memory trade-off, and the vanishing-gradient fixes. A common follow-up: *"why reverse mode rather than forward mode?"* Reverse mode costs one sweep per *output* and forward mode one sweep per input. A loss is a single number with millions of inputs, so reverse mode wins.

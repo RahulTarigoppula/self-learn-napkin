@@ -8,15 +8,15 @@ tldr: "Buffer writes in a sorted in-memory table, flush it to disk as an immutab
 analogy: "An office inbox: new papers go on a tray on your desk (memtable). When the tray is full you file the whole stack as one sorted folder. Every so often you merge folders and bin the out-of-date copies (compaction)."
 diagram: lsm-trees
 story:
-  - title: Write, append to the WAL and insert in the memtable
+  - title: "Write: append to the WAL, insert in the memtable"
     text: "put(dog, 7) does two cheap things. It appends the record to the write-ahead log on disk, so a crash cannot lose it, and inserts it into the memtable, a sorted structure in memory. Nothing on disk is modified in place, so no random disk writes happen."
-  - title: Flush, the memtable becomes a sorted SSTable
+  - title: "Flush: the memtable becomes a sorted SSTable"
     text: "When the memtable reaches a size limit (64 MB by default in RocksDB), it is written out in one sequential pass as an SSTable: an immutable file of key-value pairs sorted by key. A fresh memtable takes over and the old WAL segment can be deleted. Over time level L0 collects several SSTables."
-  - title: Read, newest first, bloom filters skip files
+  - title: "Read: newest first, bloom filters skip files"
     text: "get(cat) checks the memtable, then SSTables from newest to oldest, because the newest value wins. Each SSTable has a bloom filter: SST 3's says 'definitely not here', so it is skipped without a disk read. SST 2's says 'maybe', and its sorted index finds cat:5. SST 1 is never touched."
-  - title: Compaction, merge and keep the newest
+  - title: "Compaction: merge and keep the newest"
     text: "Overlapping files make reads slower and waste space: dog appears three times. Compaction merge-sorts SSTables into a new one, keeping only the newest version of each key and dropping deleted ones. Like merge sort, it reads and writes sequentially. The three dogs become dog:7."
-  - title: Levels, each about 10× bigger
+  - title: "Levels: each about 10× bigger"
     text: "Leveled compaction keeps each level about 10× the size of the one above, split into non-overlapping files, so a read needs at most one file per level. Size-tiered compaction instead merges several similar-sized files at once: fewer rewrites, but more overlap and more space."
 keyIdeas:
   - "**Write path**: WAL append + memtable insert. All disk writes are sequential: log appends, flushes and compaction."

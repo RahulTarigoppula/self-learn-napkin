@@ -9,7 +9,7 @@ analogy: "A noticeboard copies the canteen menu. When the chef changes the menu,
 diagram: cache-invalidation
 story:
   - title: A cache in front of the database
-    text: "A reader, a writer, a cache and a database, with time flowing down the page. The database holds x = v1 and the cache has no copy of x yet, perhaps it just expired. The cache is a copy, so every write raises the question of how the copy finds out."
+    text: "A reader, a writer, a cache and a database, with time flowing down the page. The database holds x = v1 and the cache has no copy of x yet (perhaps it just expired). The cache is a copy, so every write raises the question of how the copy finds out."
   - title: Update the DB, then delete the key
     text: "The writer follows the standard cache-aside rule: first UPDATE the database to v2, then DEL x from the cache. It deletes rather than writes v2 into the cache, so the next reader misses and loads the fresh row itself. Most of the time, this is all you need."
   - title: "The race: a slow reader re-fills old data"
@@ -104,10 +104,10 @@ Even "update the DB, then delete" has a gap. Key `x` is not cached; the database
 
 | Time | Reader | Writer | Cache | DB |
 |---|---|---|---|---|
-| t1 | `GET x` → miss | | — | v1 |
-| t2 | reads DB → v1 | | — | v1 |
-| t3 | (paused) | `UPDATE x = v2` | — | v2 |
-| t4 | (paused) | `DEL x` (nothing to delete) | — | v2 |
+| t1 | `GET x` → miss | | (none) | v1 |
+| t2 | reads DB → v1 | | (none) | v1 |
+| t3 | (paused) | `UPDATE x = v2` | (none) | v2 |
+| t4 | (paused) | `DEL x` (nothing to delete) | (none) | v2 |
 | t5 | `SET x = v1` | | **v1, stale** | v2 |
 
 It needs a slow reader and a write landing inside its few milliseconds, so it is rare, but at millions of requests per day rare events happen daily. Defences, from simplest to strongest:

@@ -34,7 +34,7 @@ const CURATED: LearningPath[] = [
   {
     id: 'system-design-kit',
     title: 'System design interview kit',
-    blurb: 'Estimate, scale, cache, partition, replicate — then put it together in real designs.',
+    blurb: 'Estimate, scale, cache, partition and replicate. Then put it all together in real designs.',
     icon: 'layers',
     ids: [
       'sysdesign/back-of-envelope',
@@ -54,7 +54,7 @@ const CURATED: LearningPath[] = [
   {
     id: 'ml-foundations',
     title: 'Machine learning foundations',
-    blurb: 'From framing a problem to evaluating a model honestly — the core every DS interview checks.',
+    blurb: 'From framing a problem to evaluating a model honestly: the core every DS interview checks.',
     icon: 'sparkles',
     ids: [
       'ds/ml-problem-framing',

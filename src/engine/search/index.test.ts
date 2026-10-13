@@ -34,7 +34,7 @@ const index = prepare(docs);
 
 describe('search', () => {
   it('normalises and splits queries', () => {
-    expect(normalize('  Résumé — LRU! ')).toBe('resume lru');
+    expect(normalize('  Résumé \u2014 LRU! ')).toBe('resume lru');
     expect(terms('hash  HASH ring')).toEqual(['hash', 'ring']);
   });
 

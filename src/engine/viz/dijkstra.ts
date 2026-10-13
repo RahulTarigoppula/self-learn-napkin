@@ -71,7 +71,7 @@ export interface DState {
   hist: Readonly<Record<string, readonly number[]>>;
   parent: Readonly<Record<string, string | null>>;
   settled: readonly string[];
-  /** The priority queue, ascending — stale entries included (lazy deletion). */
+  /** The priority queue, ascending, with stale entries included (lazy deletion). */
   pq: readonly (readonly [number, string])[];
   current: string | null;
   edge: readonly [string, string] | null;
@@ -123,24 +123,26 @@ export function dijkstraFrames(g: WGraph, source: string): DFrame[] {
     if (settled.includes(u)) {
       snap(
         'stale',
-        `pop (${fmtDist(d)}, ${u}) — stale, ${u} is already final at ${fmtDist(dist[u] as number)}`,
+        `pop (${fmtDist(d)}, ${u}) is stale: ${u} is already final at ${fmtDist(dist[u] as number)}`,
         u,
         null,
       );
       continue;
     }
     settled.push(u);
-    snap('pop', `pop (${fmtDist(d)}, ${u}) — the smallest, so ${u} is final`, u, null);
+    snap('pop', `pop (${fmtDist(d)}, ${u}): it is the smallest, so ${u} is final`, u, null);
     for (const { to, w } of adj.get(u) as Arc[]) {
       const nd = d + w;
       const old = dist[to] as number;
       const sum = `${fmtDist(d)} + ${w < 0 ? `(${fmtDist(w)})` : w} = ${fmtDist(nd)}`;
       if (settled.includes(to)) {
         if (nd < old)
-          snap('ignored', `${u}→${to}: ${sum} < ${fmtDist(old)}, but ${to} is already final — ignored!`, u, [
+          snap(
+            'ignored',
+            `${u}→${to}: ${sum} < ${fmtDist(old)}, but ${to} is already final, so it is ignored!`,
             u,
-            to,
-          ]);
+            [u, to],
+          );
         continue;
       }
       if (nd < old) {

@@ -5,19 +5,19 @@ tags: [dynamic-programming, strings]
 difficulty: 3
 minutes: 5
 tldr: "The longest letters-in-order (gaps allowed) shared by two strings. Fill a table: equal last letters take the diagonal + 1, otherwise the larger of up and left. O(mn)."
-analogy: "Two friends list the films they watched this year, in order. The longest common subsequence is the longest list of films both watched in the same order — gaps allowed, no reshuffling."
+analogy: "Two friends list the films they watched this year, in order. The longest common subsequence is the longest list of films both watched in the same order. Gaps are allowed; reshuffling is not."
 diagram: longest-common-subsequence
 story:
   - title: Two strings, letters matched in order
     text: "A subsequence keeps letters in their original order but may skip any of them; a substring may not skip. BCB is a subsequence of both ABCBD and BDCAB. Draw a line between each pair of matched letters: a valid match never has crossing lines. A string of length m has 2ᵐ subsequences, so trying them all is hopeless."
   - title: A table of prefixes
     text: "Let dp[i][j] = the LCS length of the first i letters of X and the first j letters of Y. Row ∅ and column ∅ stand for an empty prefix, which has nothing in common with anything, so they are all 0. The answer will sit in the bottom-right corner, dp[5][5]."
-  - title: Letters match — diagonal + 1
+  - title: "Letters match: diagonal + 1"
     text: "Compare the last letters of the two prefixes. If they are equal, pair them up: the best is the LCS of both shorter prefixes plus one, dp[i−1][j−1] + 1. For AB against BDCAB both end in B; the diagonal cell says A and BDCA share 1 letter, so this cell is 2 (AB)."
-  - title: No match — the larger of up and left
+  - title: "No match: the larger of up and left"
     text: "If the last letters differ, at least one of them is not in the LCS, so drop it: take the larger of dp[i−1][j] (cell above) and dp[i][j−1] (cell to the left). In the corner D ≠ B, up gives 3 and left gives 2, so the LCS length is 3. That is (m+1)(n+1) cells of O(1) work: O(mn)."
   - title: Walk back to read the LCS
-    text: "The table holds lengths, not letters. Start at the corner. On a match, keep the letter and step diagonally; otherwise step to the larger of up and left (up on a tie). The kept letters appear last-first — B, C, B — so reverse them to get BCB."
+    text: "The table holds lengths, not letters. Start at the corner. On a match, keep the letter and step diagonally; otherwise step to the larger of up and left (up on a tie). The kept letters appear last-first (B, C, B), so reverse them to get BCB."
 keyIdeas:
   - "**Subsequence** = order kept, gaps allowed. **Substring** = contiguous. They need different recurrences."
   - "**State:** `dp[i][j]` = LCS length of the first i letters of x and the first j letters of y; row 0 and column 0 are all 0."
@@ -32,11 +32,11 @@ quiz:
   - q: "What is the LCS length of ABCBDAB and BDCABA?"
     options: ["3", "4", "5", "6"]
     answer: 1
-    why: "Several strings of length 4 work — BCBA, BCAB and BDAB — and no string of length 5 is common to both. An LCS is often not unique."
+    why: "Several strings of length 4 work (BCBA, BCAB and BDAB), and no string of length 5 is common to both. An LCS is often not unique."
   - q: "When x[i−1] ≠ y[j−1], why is max(dp[i−1][j], dp[i][j−1]) correct?"
     options: ["Because the two letters must both be in the LCS", "Because at least one of the two last letters is unused, so the answer equals the LCS after dropping it", "Because the diagonal is always smaller", "It is a heuristic that is usually right"]
     answer: 1
-    why: "If a common subsequence used both last letters, both would be its final character and so paired together — impossible, as they differ. So one of them is unused, and dropping it loses nothing; we take the better of the two choices."
+    why: "If a common subsequence used both last letters, both would be its final character and so paired together. That is impossible, as they differ. So one of them is unused, and dropping it loses nothing; we take the better of the two choices."
   - q: "You may only delete characters. How many deletions make \"sea\" and \"eat\" equal?"
     options: ["1", "2", "3", "4"]
     answer: 1
@@ -67,7 +67,7 @@ griddle: lcs
 
 A **subsequence** of a string is what remains after deleting zero or more characters *without changing the order* of the rest. ACD is a subsequence of ABCBD. A **substring** is a contiguous block: BCB is a substring of ABCBD, ACD is not. Every substring is a subsequence, not the other way round.
 
-The **longest common subsequence (LCS)** of strings x (length m) and y (length n) is a longest string that is a subsequence of both. For ABCBD and BDCAB it is BCB, length 3. (The longest common *substring* is only 2 — AB or BD.)
+The **longest common subsequence (LCS)** of strings x (length m) and y (length n) is a longest string that is a subsequence of both. For ABCBD and BDCAB it is BCB, length 3. (The longest common *substring* is only 2: AB or BD.)
 
 Brute force would list all 2ᵐ subsequences of x and test each against y in O(n) with two pointers: O(2ᵐ · n). With m = 50 that is about 10¹⁵ subsequences. Dynamic programming gets it in m × n steps.
 
@@ -77,7 +77,7 @@ Brute force would list all 2ᵐ subsequences of x and test each against y in O(n
 2. **Base cases.** `dp[0][j] = dp[i][0] = 0`: an empty string has only the empty subsequence.
 3. **Recurrence.** Look at the last characters of the two prefixes, `a = x[i−1]` and `b = y[j−1]`.
    - **a == b:** some LCS ends by pairing these two characters. (If an LCS ended differently, you could swap its last pair for this one without making it shorter.) So `dp[i][j] = dp[i−1][j−1] + 1`.
-   - **a ≠ b:** if a common subsequence used both, each would have to supply its *last* character, so a and b would be paired together — impossible, since they differ. So at least one of a and b is unused. Dropping it changes nothing: `dp[i][j] = max(dp[i−1][j], dp[i][j−1])`.
+   - **a ≠ b:** if a common subsequence used both, each would have to supply its *last* character, so a and b would be paired together, which is impossible since they differ. So at least one of a and b is unused. Dropping it changes nothing: `dp[i][j] = max(dp[i−1][j], dp[i][j−1])`.
 4. **Order.** Each cell needs the cells above, to the left and diagonally up-left, so fill row by row, left to right.
 5. **Answer.** `dp[m][n]`.
 
@@ -112,11 +112,11 @@ Start at `(m, n)` and repeat until a row or column index reaches 0:
 
 On the example: (5,5) D ≠ B, up is larger → (4,5) B = B, keep **B** → (3,4) C ≠ A, left is larger → (3,3) C = C, keep **C** → (2,2) B ≠ D, left is larger → (2,1) B = B, keep **B** → (1,0) stop. The letters come out last-first; reversed, the LCS is **BCB**.
 
-An LCS is often **not unique**. ABCBDAB and BDCABA have three LCSs of length 4 — BCBA, BCAB and BDAB. The tie rule (prefer up or prefer left) decides which one you recover. Listing *all* of them can take exponential time, because there can be exponentially many.
+An LCS is often **not unique**. ABCBDAB and BDCABA have three LCSs of length 4: BCBA, BCAB and BDAB. The tie rule (prefer up or prefer left) decides which one you recover. Listing *all* of them can take exponential time, because there can be exponentially many.
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+The full table with the walk-back, and a two-row version for when you only need the length.
 
 ```python
 def lcs(x, y):
@@ -156,11 +156,11 @@ print(lcs("ABCBDAB", "BDCABA"), lcs_length("ABCBDAB", "BDCABA"))  # (4, 'BCBA') 
 
 ## Saving space
 
-Row i reads only row i − 1 and itself, so two rows of length min(m, n) + 1 are enough for the **length**. Recovering the actual subsequence needs the whole table — or **Hirschberg's algorithm**, a divide-and-conquer trick that finds the midpoint of the optimal path with two linear-space passes and recurses, keeping O(mn) time with O(min(m, n)) space.
+Row i reads only row i − 1 and itself, so two rows of length min(m, n) + 1 are enough for the **length**. Recovering the actual subsequence needs the whole table, or **Hirschberg's algorithm**, a divide-and-conquer trick that finds the midpoint of the optimal path with two linear-space passes and recurses, keeping O(mn) time with O(min(m, n)) space.
 
 ## Where it is used
 
-- **diff.** Comparing two versions of a file line by line, the lines in an LCS are "unchanged"; every other line in the old file is a deletion and every other line in the new file is an insertion. Unix `diff` and `git diff` are built on Myers' algorithm, which finds a shortest insert/delete script in O((m + n)·D) time, where D is the number of edits — fast when two versions are similar.
+- **diff.** Comparing two versions of a file line by line, the lines in an LCS are "unchanged"; every other line in the old file is a deletion and every other line in the new file is an insertion. Unix `diff` and `git diff` are built on Myers' algorithm, which finds a shortest insert/delete script in O((m + n)·D) time, where D is the number of edits. That is fast when two versions are similar.
 - **Bioinformatics.** Comparing DNA or protein sequences is the same alignment idea, usually with scores for matches, mismatches and gaps.
 - **Plagiarism and merge tools** use it to line up similar documents.
 

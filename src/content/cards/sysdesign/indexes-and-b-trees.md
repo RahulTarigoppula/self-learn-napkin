@@ -8,17 +8,17 @@ tldr: "An index is a sorted copy of some columns that points back to the rows. D
 analogy: "A thick book's index: to find 'quorum' you jump to Q, then the right column, then the page number. You never read the whole book, but every new edition means updating the index too."
 diagram: indexes-and-b-trees
 story:
-  - title: No index, scan every page
+  - title: "No index: scan every page"
     text: "A table's rows sit in pages on disk in no useful order. To answer WHERE id = 142 without an index, the database must read every page and check every row. With 10 million rows that is gigabytes of reading for one row: O(n)."
-  - title: A B+tree, sorted pages with many keys each
+  - title: "A B+tree: sorted pages, many keys each"
     text: "An index keeps the key column sorted in a tree of fixed-size pages (8 or 16 KB). Inner pages hold only separator keys and child pointers. Leaves, in green, hold every key with a pointer to its row, and each leaf links to its neighbour. The drawing shows 2 keys per page; real pages hold hundreds."
-  - title: Lookup, root then inner page then leaf
+  - title: "Lookup: root, inner page, leaf"
     text: "Find 142: at the root, 142 < 300, so take the first child. There, 100 ≤ 142 < 200, so take the middle child. That leaf holds 100–199 and contains 142 with a pointer to its row. Three page reads plus one for the row, and the top levels are usually already cached in memory."
-  - title: Fan-out, why 3–4 levels are enough
+  - title: "Fan-out: why 3–4 levels are enough"
     text: "Each page has around 100 or more children, its fan-out. One root points at 100 pages, those at 10,000 leaves, and 10,000 leaves × 100 keys is a million keys in three levels. A fourth level gives 100 million. Height grows as log base 100 of n, so it barely grows at all."
-  - title: Range scan, walk the linked leaves
+  - title: "Range scan: walk the linked leaves"
     text: "For id BETWEEN 150 AND 250, descend once to the leaf holding 150, then read sideways along the leaf links until a key passes 250. Because leaves are sorted and linked, ranges, ORDER BY and prefix matches are cheap. A hash index could not do this."
-  - title: Writes, pages split and every index pays
+  - title: "Writes: pages split, every index pays"
     text: "Inserting 143 into a full leaf splits it into 100–149 and 150–199, and the parent gains separator key 150. Every insert, delete or update of an indexed column must update each index on the table, so five indexes can mean several extra page writes per row."
 keyIdeas:
   - "**B+tree**: inner pages hold separator keys; leaves hold all entries and are **linked** for range scans."

@@ -346,7 +346,7 @@ pre,
   box-shadow: var(--shadow-1);
 }
 
-/* Paper: where diagrams live — a faint blueprint grid on warm paper. */
+/* Paper: where diagrams live. A faint blueprint grid on warm paper. */
 .paper {
   background-color: var(--paper);
   background-image:

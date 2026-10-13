@@ -66,7 +66,7 @@ griddle: circuit-breaker
 
 ## How one slow service takes down many
 
-The dangerous failure in a microservice system is usually not a crash but a **slowdown**. A crashed service refuses connections instantly; a slow one holds every caller's thread, connection and memory while they wait.
+The failure that really hurts a microservice system is usually a **slowdown**, not a crash. A crashed service refuses connections instantly; a slow one holds every caller's thread, connection and memory while they wait.
 
 Little's law (concurrency = arrival rate × time spent) makes it concrete. Payments receives 100 requests/s and normally calls the bank in 100 ms, so about 10 calls are in flight. When the bank slows to 30 s, payments needs 100 × 30 = **3,000** concurrent calls, but its pool has 200 threads. After 2 seconds the pool is full, and every new request to payments, even ones that never touch the bank, queues behind them. Checkout calls payments, so its threads fill up next. This is a **cascading failure**, and the tools below each cut one link of the chain.
 

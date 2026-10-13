@@ -81,16 +81,16 @@ describe('LCS table', () => {
     expect(run.trace.filter((s) => s.mark).map((s) => s.note)).toEqual(['B', 'C', 'B']);
     expect(run.trace[2]?.caption).toBe('C ≠ A → go ← (2 > 1)');
     expect(run.trace[0]?.caption).toBe('D ≠ B → go ↑ (3 ≥ 2)');
-    expect(run.trace.at(-1)?.caption).toBe('stop — LCS = BCB (length 3)');
+    expect(run.trace.at(-1)?.caption).toBe('stop: LCS = BCB (length 3)');
   });
 
   it('handles nothing in common and empty strings', () => {
     const none = lcsRun('AAA', 'BB');
     expect(none.lcs).toBe('');
-    expect(none.trace.at(-1)?.caption).toBe('stop — nothing in common');
+    expect(none.trace.at(-1)?.caption).toBe('stop: nothing in common');
     const empty = lcsRun('', 'ABC');
     expect(empty.fills).toHaveLength(0);
-    expect(empty.trace).toEqual([{ r: 0, c: 3, caption: 'stop — nothing in common', mark: false }]);
+    expect(empty.trace).toEqual([{ r: 0, c: 3, caption: 'stop: nothing in common', mark: false }]);
     expect(dpFrameCount(empty)).toBe(2);
   });
 
@@ -147,7 +147,7 @@ describe('edit distance table', () => {
     ]);
     expect(run.trace[0]?.caption).toBe('insert g, go ←');
     expect(run.trace[1]?.caption).toBe('n = n → keep, go ↖');
-    expect(run.trace.at(-1)).toMatchObject({ r: 0, c: 0, caption: 'done — 3 edits' });
+    expect(run.trace.at(-1)).toMatchObject({ r: 0, c: 0, caption: 'done: 3 edits' });
     expect(applyEdits('kitten', run.ops)).toBe('sitting');
   });
 
@@ -158,10 +158,10 @@ describe('edit distance table', () => {
     const del = editRun('ab', '');
     expect(del.script.map(formatEdit)).toEqual(['delete a', 'delete b']);
     expect(del.trace[0]?.caption).toBe('delete b, go ↑');
-    expect(editRun('a', 'ab').trace.at(-1)?.caption).toBe('done — 1 edit');
+    expect(editRun('a', 'ab').trace.at(-1)?.caption).toBe('done: 1 edit');
     const same = editRun('abc', 'abc');
     expect(same.script).toEqual([]);
-    expect(same.trace.at(-1)?.caption).toBe('done — already equal, 0 edits');
+    expect(same.trace.at(-1)?.caption).toBe('done: already equal, 0 edits');
   });
 
   it('formats and applies every op kind', () => {
@@ -229,7 +229,7 @@ describe('0/1 knapsack table', () => {
   it('empty item list and zero capacity', () => {
     const none = knapsackRun([], 5);
     expect(none.value).toBe(0);
-    expect(none.trace.at(-1)?.caption).toBe('bag is empty — nothing fits');
+    expect(none.trace.at(-1)?.caption).toBe('nothing fits, so the bag is empty');
     expect(knapsackRun(KNAPSACK_ITEMS, 0).value).toBe(0);
     expect(knapsackRun(KNAPSACK_ITEMS, -2).cols).toBe(1);
   });

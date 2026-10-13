@@ -36,7 +36,7 @@ quiz:
     answer: 1
     why: "A tree on V nodes always has exactly V − 1 edges: fewer would leave it disconnected, more would create a cycle."
   - q: "Is the path between two nodes in an MST always their shortest path in the graph?"
-    options: ["Yes, always", "No — the MST minimises total cable, not the distance between any particular pair", "Only for Prim's tree", "Only if weights are distinct"]
+    options: ["Yes, always", "No. The MST minimises total cable, not the distance between any particular pair", "Only for Prim's tree", "Only if weights are distinct"]
     answer: 1
     why: "Example: a triangle with edges 2, 2 and 3. The MST keeps the two 2s, so the endpoints of the 3-edge are 4 apart in the tree but only 3 apart in the graph."
   - q: "Which property justifies keeping the cheapest edge crossing a cut?"
@@ -71,7 +71,7 @@ You have an **undirected, connected, weighted graph**: towns and the cost of a c
 
 The cheapest such set never contains a cycle: on a cycle you could delete any edge and everything would stay connected for less (or the same, with a zero-weight edge). A connected set of edges with no cycle is a **tree**, and one that touches every node is a **spanning tree**. A tree on V nodes always has exactly **V − 1 edges**. The **minimum spanning tree (MST)** is a spanning tree with the smallest total weight.
 
-## The cut property — why greed works
+## The cut property: why greed works here
 
 A **cut** splits the nodes into two non-empty groups. An edge **crosses** the cut if its endpoints are in different groups.
 
@@ -85,7 +85,7 @@ The mirror image, the **cycle property**, says a strictly heaviest edge on any c
 
 1. Sort all edges by weight, cheapest first.
 2. Start with every node in its own piece (a **union-find** / disjoint-set structure).
-3. For each edge (u, v): if `find(u) != find(v)`, keep the edge and `union` the two pieces. Otherwise skip it — u and v are already connected.
+3. For each edge (u, v): if `find(u) != find(v)`, keep the edge and `union` the two pieces. Otherwise skip it, because u and v are already connected.
 4. Stop after V − 1 edges.
 
 Each kept edge is the lightest edge crossing the cut between u's piece and everything else (any lighter crossing edge would already have been kept), so the cut property makes every choice safe.
@@ -111,7 +111,7 @@ Edges: A–B 4, A–D 2, A–E 5, B–E 3, B–C 6, C–E 7, C–F 1, E–F 8, D
 | B–E | 3 | no | keep | {A,D} {B,E} {C,F} |
 | A–B | 4 | no | keep | {A,B,D,E} {C,F} |
 | A–E | 5 | yes | **skip** (cycle A–B–E) | unchanged |
-| B–C | 6 | no | keep — 5 edges, stop | {A,B,C,D,E,F} |
+| B–C | 6 | no | keep; 5 edges, so stop | {A,B,C,D,E,F} |
 
 Total weight **1 + 2 + 3 + 4 + 6 = 16**.
 
@@ -119,7 +119,7 @@ Total weight **1 + 2 + 3 + 4 + 6 = 16**.
 
 ## Implement it in Python
 
-The same idea works in any language; only the syntax changes. Here it is in Python.
+Kruskal with a tiny inline union-find, and Prim with a heap. Both print 16 for the graph above.
 
 ```python
 import heapq
@@ -173,7 +173,7 @@ print(prim(graph, "A"))   # 16
 
 ## Edge cases and pitfalls
 
-- **Disconnected graph**: no spanning tree exists. Kruskal then returns a **minimum spanning forest** with fewer than V − 1 edges — check the count.
+- **Disconnected graph**: no spanning tree exists. Kruskal then returns a **minimum spanning forest** with fewer than V − 1 edges, so check the count.
 - **Negative weights are fine.** Unlike shortest paths, MST algorithms only compare edge weights, so negatives cause no trouble.
 - **Ties**: with equal weights there may be several MSTs with the same total; any of them is correct.
 - **MST ≠ shortest paths.** The tree minimises the total, not the distance between any pair (see the quiz's triangle).
@@ -189,4 +189,4 @@ print(prim(graph, "A"))   # 16
 
 ## In the interview
 
-Define the MST, state V − 1 edges, then pick an algorithm: Kruskal when you are given an edge list (sort + union-find), Prim when the graph is dense or given as a matrix or as points. Justify correctness with the cut property in one sentence, give the complexities, and expect the follow-up "how would you check whether a given edge must be in every MST?" (it is, if it is the strictly lightest edge across some cut — equivalently, if removing it and rerunning the MST increases the total).
+Define the MST, state V − 1 edges, then pick an algorithm: Kruskal when you are given an edge list (sort + union-find), Prim when the graph is dense or given as a matrix or as points. Justify correctness with the cut property in one sentence, give the complexities, and expect the follow-up "how would you check whether a given edge must be in every MST?" (it is if it is the strictly lightest edge across some cut; equivalently, if removing it and rerunning the MST increases the total).

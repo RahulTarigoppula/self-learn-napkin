@@ -11,13 +11,13 @@ griddle: bloom-filter
 story:
   - title: A bit array, all zeros
     text: "A Bloom filter is an array of m bits, all starting at 0, plus k independent hash functions that each map an item to a position in the array. Here m = 16 and k = 3. It stores no items, only bits, which is why it is so small."
-  - title: Add cat, set its three bits
+  - title: "Add cat: set its three bits"
     text: "To add 'cat', hash it with all three functions: positions 1, 4 and 8. Set those bits to 1. That is the whole insert: k hash computations and k bit writes, O(k) no matter how many items are already in the set."
-  - title: Add dog, bits can be shared
+  - title: "Add dog: bits can be shared"
     text: "Adding 'dog' hashes to 8, 11 and 14. Bit 8 is already 1 from cat, so it stays 1. Items share bits, which keeps the filter compact but means you can never tell which item set a bit. That is why plain Bloom filters cannot delete."
-  - title: Query emu, a zero means definitely not
+  - title: "Query emu: a zero means definitely not"
     text: "Is 'emu' in the set? Its hashes are 1, 2 and 4. Bits 1 and 4 are set, but bit 2 is 0. Had emu been added, bit 2 would be 1, so emu is definitely not in the set. No false negatives, ever. This is the answer that saves work."
-  - title: Query fox, all ones but never added
+  - title: "Query fox: all ones, never added"
     text: "'fox' hashes to 4, 11 and 14. Bit 4 was set by cat, bits 11 and 14 by dog. The filter must say 'maybe', yet fox was never added: a false positive. The caller then checks the real data store. Errors only go one way, so the filter can save work but never gives a wrong 'no'."
   - title: How often it lies
     text: "After n inserts, a bit is still 0 with probability about e^(−kn/m), so a false positive happens with probability (1 − e^(−kn/m))^k. Here, with 2 items in 16 bits, that is about 3 %. The best k is (m/n)·ln 2; with 10 bits per item that is k = 7 and about 1 % false positives."
@@ -113,7 +113,7 @@ m = 16, k = 3 (the drawing). Add `cat` → bits 1, 4, 8. Add `dog` → bits 8, 1
 | `emu` | 1, 2, 4 | 1, **0**, 1 | definitely not | absent |
 | `fox` | 4, 11, 14 | 1, 1, 1 | maybe | **absent: false positive** |
 
-No single item set all of fox's bits: cat set bit 4, dog set 11 and 14. That is how false positives arise — the bits of *several* items happen to cover a new key.
+No single item set all of fox's bits: cat set bit 4, dog set 11 and 14. That is how false positives arise: the bits of *several* items, between them, happen to cover a new key.
 
 The formula predicts p ≈ (1 − e^(−3·2/16))³ = (1 − 0.687)³ ≈ 3 % for a random query. (Direct check: 5 of 16 bits are set, and (5/16)³ ≈ 3 %.)
 

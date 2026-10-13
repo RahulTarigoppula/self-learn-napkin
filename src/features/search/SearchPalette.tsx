@@ -166,7 +166,7 @@ export default function SearchPalette() {
             ref={input}
             class="sp__input"
             type="search"
-            placeholder="Search napkins — try “LRU” or “softmax”"
+            placeholder="Search napkins, e.g. “LRU” or “softmax”"
             value={q}
             onInput={(e) => setQ((e.target as HTMLInputElement).value)}
             aria-label="Search napkins"
@@ -179,7 +179,7 @@ export default function SearchPalette() {
           </button>
         </div>
         <div class="sp__body">
-          {error && <p class="sp__empty">The search index isn't stocked yet — connect once to load it.</p>}
+          {error && <p class="sp__empty">The search index isn't stocked yet. Connect once to load it.</p>}
           {!error && !index && <p class="sp__empty">Opening the index…</p>}
           {index && !debounced && (
             <div class="sp__hints">

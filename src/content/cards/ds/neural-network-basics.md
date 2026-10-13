@@ -11,19 +11,19 @@ story:
   - title: "One neuron: a weighted sum plus a bias"
     text: "Two inputs, x₁ = 1 and x₂ = 2, feed a neuron h₁. Each connection has a weight saying how much that input matters, and the neuron adds a bias: z₁ = 1·1 + 0.5·2 + 0 = 2. On its own, this is exactly a linear model."
   - title: An activation bends the sum
-    text: "The neuron passes z through an activation function. ReLU, the most common one, is max(0, z): negative sums become 0, positive ones pass through. h₁ = ReLU(2) = 2. The bend is what lets networks model curves and interactions, not just straight lines."
+    text: "The neuron passes z through an activation function. ReLU, the most common one, is max(0, z): negative sums become 0, positive ones pass through. h₁ = ReLU(2) = 2. The bend is what lets networks model curves and interactions as well as straight lines."
   - title: "A layer: many neurons side by side"
-    text: "A second neuron h₂ reads the same inputs with its own weights and bias: z₂ = −1·1 + 0.5·2 − 1 = −1, so ReLU gives 0 — this neuron stays silent for this input. A layer is just a group of neurons; in matrix form it is h = ReLU(W·x + b)."
+    text: "A second neuron h₂ reads the same inputs with its own weights and bias: z₂ = −1·1 + 0.5·2 − 1 = −1, so ReLU gives 0. This neuron stays silent for this input. A layer is just a group of neurons; in matrix form it is h = ReLU(W·x + b)."
   - title: "The output layer: ŷ = σ(1) = 0.73"
     text: "The output neuron combines the hidden values: 1·2 − 2·0 − 1 = 1. A sigmoid, 1 / (1 + e^(−z)), squashes it into a probability: ŷ = 0.73. That full left-to-right computation is a forward pass. This small network has 9 parameters: 6 weights and 3 biases."
   - title: "Without activations, layers collapse"
-    text: "Why bother with the bends? Without them, layer 2 of layer 1 is W₂(W₁x + b₁) + b₂ = (W₂W₁)x + (W₂b₁ + b₂) — one linear layer again. However many layers you stack, the model could only ever draw straight lines. The non-linearity is what makes depth useful."
+    text: "The bends are not decoration. Without them, layer 2 of layer 1 is W₂(W₁x + b₁) + b₂ = (W₂W₁)x + (W₂b₁ + b₂), which is one linear layer again. However many layers you stack, the model could only ever draw straight lines. The non-linearity is what makes depth useful."
 keyIdeas:
   - "**Neuron:** output = activation(w·x + b). A **layer** applies many at once: h = f(Wx + b)."
   - "**Non-linear activations are essential:** without them any stack of layers equals a single linear layer."
   - "**ReLU** max(0, z) for hidden layers; **sigmoid** for a yes/no probability; **softmax** for one-of-K classes."
   - "**Parameters** per dense layer = inputs × outputs + outputs (biases). A 784-128-10 network has 101,770."
-  - "**Universal approximation:** one wide enough hidden layer can approximate any continuous function on a bounded region — but it says nothing about how to learn it."
+  - "**Universal approximation:** one wide enough hidden layer can approximate any continuous function on a bounded region. It says nothing about how to learn it, though."
 quiz:
   - q: "A neuron has weights (2, −1), bias 1 and ReLU activation. What does it output for input (1, 4)?"
     options: ["0", "−1", "1", "3"]
@@ -94,7 +94,7 @@ Parameters: hidden layer 2×2 weights + 2 biases = 6; output 2 weights + 1 bias 
 
 ## Why the activation matters
 
-Remove the activation and compute two layers: W₂(W₁x + b₁) + b₂ = (W₂W₁)x + (W₂b₁ + b₂). That is a single linear layer with weights W₂W₁. A hundred linear layers still collapse into one. The non-linearity breaks this. Classic demonstration — **XOR** (output 1 when exactly one input is 1) cannot be separated by any straight line, but two ReLU neurons do it: h₁ = ReLU(x₁ + x₂), h₂ = ReLU(x₁ + x₂ − 1), y = h₁ − 2h₂ gives 0, 1, 1, 0 for the inputs (0,0), (0,1), (1,0), (1,1).
+Remove the activation and compute two layers: W₂(W₁x + b₁) + b₂ = (W₂W₁)x + (W₂b₁ + b₂). That is a single linear layer with weights W₂W₁. A hundred linear layers still collapse into one. The non-linearity breaks this. The classic demonstration is **XOR** (output 1 when exactly one input is 1). No straight line can separate it, but two ReLU neurons do it: h₁ = ReLU(x₁ + x₂), h₂ = ReLU(x₁ + x₂ − 1), y = h₁ − 2h₂ gives 0, 1, 1, 0 for the inputs (0,0), (0,1), (1,0), (1,1).
 
 ## Common activations
 
@@ -108,7 +108,7 @@ Remove the activation and compute two layers: W₂(W₁x + b₁) + b₂ = (W₂W
 
 Softmax example: scores (2, 1, 0) become (0.665, 0.245, 0.090). Sigmoid's gradient is at most 0.25 (at z = 0) and almost 0 for large |z|, which is why deep stacks of sigmoids train poorly (vanishing gradients) and ReLU took over for hidden layers.
 
-## How powerful is it?
+## What one hidden layer can do
 
 The **universal approximation theorem** says a network with one hidden layer, enough neurons and a non-polynomial activation (such as ReLU or sigmoid) can approximate any continuous function on a bounded input region as closely as you like. It is an existence result: it does not say how many neurons you need, or that gradient descent will find the weights. In practice deeper networks represent many functions with far fewer parameters than one very wide layer.
 
@@ -159,4 +159,4 @@ print(H @ np.array([1.0, -2.0]))                       # [0. 1. 1. 0.]
 
 ## In the interview
 
-Expect "what is a neuron?", "why do we need activation functions?", "ReLU vs sigmoid?", or "count the parameters of this network". A strong answer writes a = f(Wx + b), shows the linear-collapse argument in one line, names ReLU for hidden layers and sigmoid/softmax for outputs with the reason (gradient behaviour, probabilities), and counts parameters as inputs × outputs + biases per layer. A likely follow-up: *"why go deep instead of wide if one layer is universal?"* — depth reuses features hierarchically (edges → shapes → objects), which typically needs far fewer parameters for the same accuracy.
+Expect "what is a neuron?", "why do we need activation functions?", "ReLU vs sigmoid?", or "count the parameters of this network". A strong answer writes a = f(Wx + b), shows the linear-collapse argument in one line, names ReLU for hidden layers and sigmoid/softmax for outputs with the reason (gradient behaviour, probabilities), and counts parameters as inputs × outputs + biases per layer. A likely follow-up: *"why go deep instead of wide if one layer is universal?"* Depth reuses features hierarchically (edges → shapes → objects), which typically needs far fewer parameters for the same accuracy.

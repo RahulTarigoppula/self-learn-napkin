@@ -19,7 +19,7 @@ story:
   - title: W writes to the front
     text: "W marks the next free slot of the answer. Each kept value is copied to a[W] and W moves on: 2 goes to index 1, 3 to index 2, 5 to index 3. W ends at 4, the new length, and a[0..3] = [1, 2, 3, 5]. One pass, no second array."
 keyIdeas:
-  - "**Opposite ends** (L from the left, R from the right) need a reason to discard an end each step — usually a **sorted** array."
+  - "**Opposite ends** (L from the left, R from the right) need a reason to discard an end each step, and that reason is usually a **sorted** array."
   - "**Same direction** (read/write, or slow/fast): rd reads everything once, W marks where the next kept element goes."
   - "**Why O(n):** every step moves a pointer and no pointer ever moves back, so there are at most n moves in total."
   - "Correctness is an invariant: **the answer is never in the part you discarded**. Say it out loud in interviews."
@@ -77,8 +77,8 @@ Start `L = 0` and `R = n − 1` and move them towards each other until they meet
 **Pair with a given sum in a sorted array.** Let `s = a[L] + a[R]`.
 
 - `s == target`: done.
-- `s < target`: `a[R]` is the **largest** value still in range, so `a[L]` plus anything left is at most `s` — still too small. `a[L]` can never be part of an answer: `L += 1`.
-- `s > target`: `a[L]` is the **smallest** value in range, so `a[R]` plus anything left is at least `s` — too big. Discard it: `R -= 1`.
+- `s < target`: `a[R]` is the **largest** value still in range, so `a[L]` plus anything left is at most `s`, which is still too small. `a[L]` can never be part of an answer: `L += 1`.
+- `s > target`: `a[L]` is the **smallest** value in range, so `a[R]` plus anything left is at least `s`, which is too big. Discard it: `R -= 1`.
 
 The **invariant** is: *if a valid pair exists, it lies inside `a[L..R]`*. It is true at the start and each move preserves it, so when the loop ends without a match, no pair exists. Sortedness is what makes the two "can never" arguments true.
 
@@ -119,7 +119,7 @@ Return 4. The tail `a[4..6]` still holds old values (`[2, 3, 5]`); by convention
 
 ## Implement it in Python
 
-The same idea works in any language; here are the three walks in Python.
+Three short walks: the pair search, a palindrome check and the in-place dedupe.
 
 ```python
 def pair_with_sum(a: list[int], target: int) -> tuple[int, int] | None:

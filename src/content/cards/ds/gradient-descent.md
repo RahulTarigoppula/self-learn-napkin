@@ -16,16 +16,16 @@ story:
   - title: "Step: w ← w − η · slope"
     text: "Step against the gradient: w ← w − η · dL/dw, where η (eta) is the learning rate. With η = 0.3: 2 − 0.3 × 4 = 0.8, then 0.32, then 0.13. The steps shrink on their own because the slope flattens near the bottom."
   - title: "η too small: it crawls"
-    text: "With η = 0.02 each step only multiplies w by 0.96. It always moves the right way, but getting below 0.01 takes about 130 steps instead of 6 — painful when every step costs a pass over a large dataset."
+    text: "With η = 0.02 each step only multiplies w by 0.96. It always moves the right way, but getting below 0.01 takes about 130 steps instead of 6. That hurts when every step costs a pass over a large dataset."
   - title: "η too big: it overshoots"
-    text: "With η = 1.05 each step multiplies w by −1.1. The ball jumps over the minimum and lands higher on the far side: 2, −2.2, 2.42, −2.66. The loss grows every step — divergence. On this bowl any η above 1 diverges, and between 0.5 and 1 it zig-zags in."
+    text: "With η = 1.05 each step multiplies w by −1.1. The ball jumps over the minimum and lands higher on the far side: 2, −2.2, 2.42, −2.66. The loss grows every step. That is divergence. On this bowl any η above 1 diverges, and between 0.5 and 1 it zig-zags in."
   - title: "Mini-batches: noisy but cheap"
     text: "A real loss averages over every training example, so the exact gradient costs a full pass over the data. Stochastic gradient descent estimates it from a small random mini-batch, say 32 rows. Each step wobbles (violet), but costs a tiny fraction, so you get many more steps for the same compute."
 keyIdeas:
   - "The **gradient** points uphill; step the other way: `w ← w − η · ∇L`."
   - "The **learning rate η** is the most important knob: too small crawls, too big overshoots or diverges."
   - "Steps shrink near a minimum by themselves, because the gradient shrinks."
-  - "**Mini-batch SGD** swaps exact gradients for cheap, noisy ones — far more steps per second of compute."
+  - "**Mini-batch SGD** swaps exact gradients for cheap, noisy ones, so you get far more steps per second of compute."
   - "**Momentum** and **Adam** keep the same idea but smooth and rescale the steps."
 quiz:
   - q: "L(w) = w², you are at w = 3 and η = 0.1. Where are you after one step?"
@@ -54,7 +54,7 @@ flashcards:
     text: "If the learning rate is too {{large}}, gradient descent overshoots the minimum and can {{diverge}}."
   - kind: qa
     q: "What is the difference between batch, stochastic and mini-batch gradient descent?"
-    a: "Batch uses every example per step (exact, slow); stochastic uses one (very noisy, cheap); mini-batch uses a small random subset, typically 32–512 — the practical default."
+    a: "Batch uses every example per step (exact, slow); stochastic uses one (very noisy, cheap); mini-batch uses a small random subset, typically 32–512, and it is the practical default."
 sources:
   - { name: "Stanford CS229 VIP cheatsheets (Amidi)", url: "https://github.com/afshinea/stanford-cs-229-machine-learning", licence: "MIT", note: "Supervised learning: gradient descent" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -64,7 +64,7 @@ sources:
 
 A model's **loss** L(w) is one number that measures how wrong it is on the training data, as a function of its weights w. Training means finding weights that make L small.
 
-With one weight, the **derivative** dL/dw is the slope of the loss curve: how much L changes per unit change in w. Positive slope means L increases if w increases. With many weights, take one derivative per weight — the **partial derivative** ∂L/∂wᵢ, "how L changes if I nudge only wᵢ". Stacked into a vector, they form the **gradient** ∇L. It points in the direction in which L rises fastest, and its length says how steep that rise is.
+With one weight, the **derivative** dL/dw is the slope of the loss curve: how much L changes per unit change in w. Positive slope means L increases if w increases. With many weights, take one derivative per weight. That is the **partial derivative** ∂L/∂wᵢ: "how L changes if I nudge only wᵢ". Stacked into a vector, they form the **gradient** ∇L. It points in the direction in which L rises fastest, and its length says how steep that rise is.
 
 So the downhill direction is −∇L. That is the whole idea.
 
@@ -95,7 +95,7 @@ On a bowl L(w) = (c/2)(w − w*)², the gradient is c(w − w*), so one step mul
 | between 1 and 2 | overshoots, zig-zags inwards |
 | above 2 | each overshoot lands higher: **diverges** |
 
-Real losses curve differently in different directions. η must suit the steepest direction, which makes progress slow along the flattest ones — the reason for momentum and Adam.
+Real losses curve differently in different directions. η must suit the steepest direction, which makes progress slow along the flattest ones. Momentum and Adam exist to fix that.
 
 ## Worked example
 
@@ -117,7 +117,7 @@ The distance halves every step and the loss quarters. Here c = 5, so any η abov
 
 ## Batch, stochastic and mini-batch
 
-The loss is an average over N examples, and so is its gradient. **Batch** gradient descent computes it exactly every step — N example-gradients per step. **Stochastic** gradient descent (SGD) uses one random example per step; **mini-batch** uses a small random subset, typically 32–512. The mini-batch gradient is an **unbiased estimate** — right on average — but noisy. Because each step costs a tiny fraction of a full pass, you take thousands of steps in the time batch descent takes a handful. The noise also means that with a fixed η the weights keep jittering near the minimum, which is why learning rates are usually decayed over training.
+The loss is an average over N examples, and so is its gradient. **Batch** gradient descent computes it exactly every step, which costs N example-gradients per step. **Stochastic** gradient descent (SGD) uses one random example per step; **mini-batch** uses a small random subset, typically 32–512. The mini-batch gradient is an **unbiased estimate** (right on average) but noisy. Because each step costs a tiny fraction of a full pass, you take thousands of steps in the time batch descent takes a handful. The noise also means that with a fixed η the weights keep jittering near the minimum, which is why learning rates are usually decayed over training.
 
 ## Momentum and Adam, in one paragraph each
 
@@ -153,12 +153,12 @@ for epoch in range(5):
     print(f"epoch {epoch + 1}: loss {loss(w, X, y):.4f}  w = {w.round(3)}")
 ```
 
-After the first epoch w is already about [2.00, −0.99, 0.49] with loss ≈ 0.010 — the noise floor, since the added noise has variance 0.01. Later epochs wobble between 0.0103 and 0.0108: that is mini-batch noise with a constant η.
+After the first epoch w is already about [2.00, −0.99, 0.49] with loss ≈ 0.010. That is the noise floor, since the added noise has variance 0.01. Later epochs wobble between 0.0103 and 0.0108: that is mini-batch noise with a constant η.
 
 ## Edge cases and pitfalls
 
 - **Unscaled features** make the bowl a long thin valley (one direction very steep, another very flat). Standardise inputs so one η suits all directions.
-- **Non-convex losses** (neural networks) have many minima, saddle points and plateaus. Gradient descent finds *a* low point, not provably the lowest — in practice that is good enough.
+- **Non-convex losses** (neural networks) have many minima, saddle points and plateaus. Gradient descent finds *a* low point, not provably the lowest. In practice that is good enough.
 - **A zero gradient is not proof of a minimum**: it can be a saddle point or a plateau.
 - **Exploding gradients** (NaN loss): lower η, clip gradient norms, check for unscaled inputs.
 - **Convex problems** like linear and logistic regression have a single minimum, so gradient descent with a sensible η reaches the global optimum.

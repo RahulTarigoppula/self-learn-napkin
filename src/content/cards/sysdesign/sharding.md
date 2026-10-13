@@ -21,7 +21,7 @@ story:
 keyIdeas:
   - "The **shard key** is the decision: high cardinality, even access, and present in your main queries."
   - "**Range** sharding keeps order (cheap range scans) but invites hot spots; **hash** sharding spreads load but loses order."
-  - "**Cross-shard** joins, transactions and unique constraints are expensive — design so the common queries hit one shard."
+  - "**Cross-shard** joins, transactions and unique constraints are expensive, so design for the common queries to hit one shard."
   - "**Resharding** with `hash % N` moves most rows; plan for it with consistent hashing or many logical shards."
   - "Hashing balances **keys**, not **traffic**: one celebrity key still lands on one shard."
 quiz:
@@ -86,7 +86,7 @@ Users table, 3 M rows, 3 shards, key `user_id`.
 
 - **Range:** S1 = 1–1M, S2 = 1M+1–2M, S3 = 2M+1–3M. `GET user 1,500,000` → S2. `users 1,000–2,000` → S1 only. But user 3,000,001 signs up → S3, and so does every later user: S3 becomes the **hot shard**.
 - **Hash:** `shard = hash(user_id) % 3`. Ids 1, 2, 3 might land on S1, S2, S3; new signups spread evenly. `users 1,000–2,000` must query all three shards and merge.
-- **Resharding:** add S4 and change to `% 4`. For a hash value `h`, the row stays only if `h % 3 == h % 4`, true for `h % 12` in {0, 1, 2}: 3 values in 12. So **75 % of rows move**. With consistent hashing only about 1/4 move — just those that now belong to S4.
+- **Resharding:** add S4 and change to `% 4`. For a hash value `h`, the row stays only if `h % 3 == h % 4`, true for `h % 12` in {0, 1, 2}: 3 values in 12. So **75 % of rows move**. With consistent hashing only about 1/4 move: just the rows that now belong to S4.
 
 ## Implement it in Python
 
@@ -126,4 +126,4 @@ Shard only when you must. Indexes, caching, read replicas and a bigger machine a
 
 ## In the interview
 
-You will be asked to "scale the database". A strong answer names the **shard key** and checks it against the top queries and the write pattern, chooses **range or hash** with a reason, mentions the **hot shard** risk and **resharding** plan (consistent hashing or logical shards), and says what becomes hard (cross-shard joins and transactions). Expect the follow-up "one user is 1,000× hotter than others — now what?"
+You will be asked to "scale the database". A strong answer names the **shard key** and checks it against the top queries and the write pattern, chooses **range or hash** with a reason, mentions the **hot shard** risk and **resharding** plan (consistent hashing or logical shards), and says what becomes hard (cross-shard joins and transactions). Expect the follow-up "one user is 1,000× hotter than the others. Now what?"

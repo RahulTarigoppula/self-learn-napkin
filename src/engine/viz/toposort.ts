@@ -73,7 +73,7 @@ export function kahnFrames(g: Dag): KFrame[] {
     'start',
     queue.length > 0
       ? `in-degree 0: ${queue.join(', ')} → queue`
-      : 'no node has in-degree 0 — the queue starts empty',
+      : 'no node has in-degree 0, so the queue starts empty',
     null,
     null,
   );
@@ -94,11 +94,11 @@ export function kahnFrames(g: Dag): KFrame[] {
     }
   }
   const left = g.nodes.length - order.length;
-  if (left === 0) snap('done', `${order.length} of ${g.nodes.length} output — a valid order`, null, null);
+  if (left === 0) snap('done', `${order.length} of ${g.nodes.length} output: a valid order`, null, null);
   else
     snap(
       'stuck',
-      `queue empty with ${left} left: ${g.nodes.filter((n) => !order.includes(n)).join(', ')} — cycle!`,
+      `queue empty with ${left} left (${g.nodes.filter((n) => !order.includes(n)).join(', ')}): cycle!`,
       null,
       null,
     );

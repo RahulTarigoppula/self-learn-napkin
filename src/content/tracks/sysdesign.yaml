@@ -1,6 +1,6 @@
 name: Track 2 · how systems scale
 subtitle: System Design
-blurb: "How real systems stay fast and alive at scale — from one request's journey to replication, consensus and full designs."
+blurb: "How real systems stay fast and alive at scale, from the life of one request to replication, consensus and full designs."
 order:
   - sysdesign/back-of-envelope
   - sysdesign/client-server-basics

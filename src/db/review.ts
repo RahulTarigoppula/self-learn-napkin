@@ -123,7 +123,7 @@ export async function everReviewed(db: NapkinDB): Promise<boolean> {
   return (await db.logs.count()) > 0;
 }
 
-/** Commit a rating in one transaction. Throws if the write fails — the caller keeps the card. */
+/** Commit a rating in one transaction. Throws if the write fails, so the caller keeps the card. */
 export async function rate(
   db: NapkinDB,
   card: ReviewCard,

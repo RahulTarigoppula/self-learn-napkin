@@ -1,6 +1,7 @@
 import { prefersReducedMotion } from '../../db/settings';
 import { haptic } from '../../platform/haptics';
 import { sound } from '../../platform/sound';
+import { celebrateFrom } from '../game/celebrate';
 
 /** Progressive enhancement of <section data-story>: one scene at a time, the diagram's strokes for that
  *  scene draw themselves, earlier scenes stay (dimmed), later ones are hidden. Without JS every scene
@@ -151,8 +152,7 @@ class StoryPlayer {
     const label = this.q('[data-next-label]');
     if (label) label.textContent = 'Start over';
     this.root.dataset.finished = '';
-    sound.ding();
-    void haptic.success();
+    celebrateFrom(this.q('[data-next]'), 45);
     const slug = this.root.dataset.slug;
     if (slug) {
       void import('../../db/dexie')

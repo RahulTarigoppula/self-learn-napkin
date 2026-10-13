@@ -19,7 +19,7 @@ story:
   - title: The balancer needs a partner
     text: "Now the LB is the single point of failure. Run a standby LB 2 that watches LB 1 through a heartbeat. If LB 1 goes quiet, LB 2 takes over the floating public IP within seconds. Managed cloud load balancers do this for you."
 keyIdeas:
-  - "**Health checks are the feature** — balancing without them just spreads failure evenly."
+  - "**Health checks are the real feature.** Balancing without them just spreads failure evenly."
   - "**Least connections** suits requests of uneven cost; **round robin** is fine when requests are uniform; **hashing** on a key keeps a user or key on one server."
   - "**Layer 4** forwards TCP/UDP by IP and port; **layer 7** reads HTTP and can route `/api` and `/images` to different pools."
   - "Keep app servers **stateless** (sessions in a shared store) so any request can go to any server."
@@ -30,9 +30,9 @@ quiz:
     answer: 1
     why: "Round robin and random hand out equal counts, so a server stuck on slow requests keeps getting more. Least connections sends each new request to the server with the fewest in flight, which tracks actual busyness."
   - q: "One of three servers starts returning errors, and the LB has no health checks. Roughly what share of requests fail?"
-    options: ["None — the LB notices errors", "About one third", "About two thirds", "All of them"]
+    options: ["None; the LB notices errors", "About one third", "About two thirds", "All of them"]
     answer: 1
-    why: "The LB keeps sending that server its normal share — one request in three with round robin — so about a third fail until someone removes it."
+    why: "The LB keeps sending that server its normal share (one request in three with round robin), so about a third fail until someone removes it."
   - q: "You need to send /video/* to a separate pool of servers. What do you need?"
     options: ["A layer-4 balancer", "A layer-7 balancer", "DNS round robin", "Sticky sessions"]
     answer: 1
@@ -42,7 +42,7 @@ prereqs: [sysdesign/client-server-basics]
 flashcards:
   - kind: qa
     q: "Why does 'sticky sessions' make a load balancer harder to scale?"
-    a: "Pinning a user to one server ties state to a machine, so that machine cannot be drained or replaced without losing sessions — externalise the session store instead."
+    a: "Pinning a user to one server ties state to a machine, so that machine cannot be drained or replaced without losing sessions. Externalise the session store instead."
   - kind: cloze
     text: "A layer-4 balancer routes on {{IP and port}}; a layer-7 balancer can route on {{the URL path}}."
   - kind: qa
@@ -91,15 +91,15 @@ Three servers, round robin, health check every 5 s, unhealthy after 3 failures.
 | Time | Event | Pool | Request 1, 2, 3, 4 go to |
 |---|---|---|---|
 | t = 0 s | All healthy | A, B, C | A, B, C, A |
-| t = 1 s | B's process hangs | A, B, C | A, B ✗, C, A — every third request fails |
-| t = 15 s | B fails its third check in a row | A, C | A, C, A, C — no errors |
+| t = 1 s | B's process hangs | A, B, C | A, B ✗, C, A (every third request fails) |
+| t = 15 s | B fails its third check in a row | A, C | A, C, A, C (no errors) |
 | t = 60 s | B restarted, passes 2 checks | A, B, C | A, B, C, A |
 
 The window from 1 s to 15 s is why short check intervals matter, and why layer-7 balancers that **retry a failed request on another backend** hide even that window (safe only for idempotent requests).
 
 ## Sketch it
 
-A balancer config sketch (nginx-style). Note that open-source nginx's `max_fails` is a *passive* check — it counts failed real requests — while the active `GET /health` probes described above need a dedicated health-check feature or a cloud balancer:
+A balancer config sketch (nginx-style). Note that open-source nginx's `max_fails` is a *passive* check that counts failed real requests, while the active `GET /health` probes described above need a dedicated health-check feature or a cloud balancer:
 
 ```
 upstream app {
@@ -123,4 +123,4 @@ server {
 
 ## In the interview
 
-Usually it appears as "how would you scale this to 10× traffic?" A strong answer puts a balancer in front of **stateless** app servers, names an algorithm and why (least connections for uneven work), mentions **health checks**, and says how the balancer avoids being a single point of failure. Expect the follow-up "what about sessions?" — answer: a shared session store or signed tokens, not sticky sessions. Worth knowing: a software balancer adds well under a millisecond of latency, and a single instance can handle tens of thousands of requests per second.
+Usually it appears as "how would you scale this to 10× traffic?" A strong answer puts a balancer in front of **stateless** app servers, names an algorithm and why (least connections for uneven work), mentions **health checks**, and says how the balancer avoids being a single point of failure. Expect the follow-up "what about sessions?" The answer is a shared session store or signed tokens, not sticky sessions. Worth knowing: a software balancer adds well under a millisecond of latency, and a single instance can handle tens of thousands of requests per second.

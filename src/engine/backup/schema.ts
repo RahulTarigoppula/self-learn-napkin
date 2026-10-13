@@ -123,7 +123,7 @@ export function parseBackup(text: string): ParseResult {
     const i = r.error.issues[0];
     return {
       ok: false,
-      error: `Not a Napkin backup: ${i?.path.join('.') || 'file'} — ${i?.message ?? 'invalid'}`,
+      error: `Not a Napkin backup (${i?.path.join('.') || 'file'}: ${i?.message ?? 'invalid'})`,
     };
   }
   return { ok: true, data: r.data };

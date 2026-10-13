@@ -4,7 +4,7 @@ track: sysdesign
 tags: [networking, http, latency, fundamentals]
 difficulty: 1
 minutes: 5
-tldr: "Typing a URL triggers a DNS lookup, a TCP handshake, a TLS handshake and only then the HTTP request — each a network round trip, which is where most of the first page's latency goes."
+tldr: "Typing a URL triggers a DNS lookup, a TCP handshake, a TLS handshake and only then the HTTP request. Each one is a network round trip, and that's where most of the first page's latency goes."
 analogy: "Like phoning a shop: look up the number (DNS), wait for them to pick up and say hello (TCP), agree to talk in a private code (TLS), then finally ask your question (HTTP). Staying on the line for the next question skips the first three."
 diagram: client-server-basics
 story:
@@ -17,15 +17,15 @@ story:
   - title: "TLS: agree keys, check the certificate"
     text: "For https, client and server then run a TLS handshake. They exchange key material and the server proves it really is shop.com with a certificate signed by a trusted authority. TLS 1.3 needs one round trip; the older TLS 1.2 needed two."
   - title: "HTTP: request and response"
-    text: "Only now does the real request go out: GET /cart, with headers such as Host and the session cookie. The server does its work — maybe a cache or database lookup — and replies with a status line (200 OK), headers and the HTML body."
+    text: "Only now does the real request go out: GET /cart, with headers such as Host and the session cookie. The server does its work (maybe a cache or database lookup) and replies with a status line (200 OK), headers and the HTML body."
   - title: Where the time went
-    text: "Count the round trips: DNS, TCP, TLS, HTTP — four before the first byte of the page arrives. At about 50 ms each that is roughly 200 ms, most of it handshakes. Keep-alive reuses the open connection, so the next request costs a single round trip."
+    text: "Count the round trips: DNS, TCP, TLS, HTTP. That's four before the first byte of the page arrives. At about 50 ms each that is roughly 200 ms, most of it handshakes. Keep-alive reuses the open connection, so the next request costs a single round trip."
 keyIdeas:
   - "**A new HTTPS connection costs ~3 RTTs before the first byte** (TCP 1 + TLS 1.3 1 + HTTP 1), plus DNS if not cached."
-  - "**HTTP is stateless**: every request carries what the server needs (cookie or token), so any server can answer it — the basis of horizontal scaling."
+  - "**HTTP is stateless**: every request carries what the server needs (cookie or token), so any server can answer it. That's what makes horizontal scaling work."
   - "**Keep-alive and HTTP/2** reuse one connection for many requests, paying the handshakes once."
   - "**Status code classes:** 2xx success, 3xx redirect, 4xx the client's fault, 5xx the server's fault."
-  - "**GET, PUT, DELETE are idempotent**; POST is not — retrying it can create a duplicate."
+  - "**GET, PUT, DELETE are idempotent**; POST is not, so retrying it can create a duplicate."
 quiz:
   - q: "A user 50 ms (one RTT) away opens a fresh HTTPS connection with TLS 1.3. DNS is cached. Ignoring server time, when does the first byte of the response arrive?"
     options: ["After ~50 ms", "After ~100 ms", "After ~150 ms", "After ~250 ms"]
@@ -64,7 +64,7 @@ flashcards:
   - kind: cloze
     text: "HTTP is {{stateless}}: session state lives in a {{cookie or token}} the client sends with every request."
 sources:
-  - { name: "The System Design Primer", url: "https://github.com/donnemartin/system-design-primer", licence: "CC BY 4.0", note: "Communication: HTTP, TCP, DNS — redrawn" }
+  - { name: "The System Design Primer", url: "https://github.com/donnemartin/system-design-primer", licence: "CC BY 4.0", note: "Communication section (HTTP, TCP, DNS), redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 ---
 
@@ -73,17 +73,17 @@ sources:
 Take `https://shop.com/cart`. The browser splits the **URL** into a *scheme* (`https`, so port 443 and encryption), a *host* (`shop.com`) and a *path* (`/cart`). Then:
 
 1. **DNS resolution.** The network routes packets by IP address, so the name must become one. The browser checks its own cache, then the operating system's, then asks a **recursive resolver** (run by your ISP, company or a public service). The resolver returns an `A` record (IPv4) or `AAAA` record (IPv6) with a *TTL* that says how long it may be cached.
-2. **TCP connection.** TCP gives an ordered, reliable byte stream over an unreliable network. The **three-way handshake** — `SYN` → `SYN-ACK` → `ACK` — lets both sides choose and confirm starting sequence numbers, which later reveal missing or out-of-order packets. The client can send data right after its `ACK`, so the handshake costs **one round-trip time (RTT)**.
-3. **TLS handshake.** TLS encrypts the stream and authenticates the server. The client sends supported ciphers and a key share; the server answers with its key share and its **certificate**, a document signed by a certificate authority that the browser already trusts, proving the key belongs to `shop.com`. Both sides derive the same session key. **TLS 1.3 takes 1 RTT** (TLS 1.2 took 2), and a returning client can sometimes send data with **0-RTT resumption** — at the cost of possible replay, so only for safe requests.
+2. **TCP connection.** TCP gives an ordered, reliable byte stream over an unreliable network. The **three-way handshake** (`SYN` → `SYN-ACK` → `ACK`) lets both sides choose and confirm starting sequence numbers, which later reveal missing or out-of-order packets. The client can send data right after its `ACK`, so the handshake costs **one round-trip time (RTT)**.
+3. **TLS handshake.** TLS encrypts the stream and authenticates the server. The client sends supported ciphers and a key share; the server answers with its key share and its **certificate**, a document signed by a certificate authority that the browser already trusts, proving the key belongs to `shop.com`. Both sides derive the same session key. **TLS 1.3 takes 1 RTT** (TLS 1.2 took 2), and a returning client can sometimes send data with **0-RTT resumption**. That early data can be replayed by an attacker, so it is only used for safe requests.
 4. **HTTP request.** A request is a *method*, a *path*, *headers* and an optional *body*. `Host` says which site (one IP can serve many); `Cookie` or `Authorization` carries identity.
 5. **Server work.** Typically a load balancer forwards the request to an application server, which reads a cache or database and renders a response.
-6. **HTTP response.** A *status line* (`200 OK`), *headers* (`Content-Type`, `Cache-Control`, `Set-Cookie`) and the body. The browser parses the HTML and discovers more resources (CSS, JS, images) — each another request, ideally on the same connection.
+6. **HTTP response.** A *status line* (`200 OK`), *headers* (`Content-Type`, `Cache-Control`, `Set-Cookie`) and the body. The browser parses the HTML and discovers more resources (CSS, JS, images). Each one is another request, ideally on the same connection.
 
 ## Statelessness
 
 HTTP itself is **stateless**: the server is not required to remember anything about a client between requests. Every request must be understandable on its own. Applications add *session state* by giving the client a cookie or token and having it send that with every request; the server looks up the session in a shared store or verifies a signed token.
 
-This is a feature, not a limitation. If no app server keeps private memory of a user, **any** server can handle **any** request, so a load balancer can spread traffic freely, a crashed server loses nothing, and you scale by adding servers.
+That sounds like a limitation, but it's what lets you scale. If no app server keeps private memory of a user, **any** server can handle **any** request, so a load balancer can spread traffic freely, a crashed server loses nothing, and you scale by adding servers.
 
 ## Methods and status codes
 
@@ -95,7 +95,7 @@ This is a feature, not a limitation. If no app server keeps private memory of a 
 | `PATCH` | partially modify | no | not guaranteed |
 | `DELETE` | remove | no | yes |
 
-*Safe* means it does not change server state. *Idempotent* means doing it twice has the same effect as doing it once — so a client may retry after a timeout without fear.
+*Safe* means it does not change server state. *Idempotent* means doing it twice has the same effect as doing it once, so a client may retry after a timeout without fear.
 
 | Class | Meaning | Common codes |
 |---|---|---|
@@ -115,7 +115,7 @@ A user in London loads a page from a server in Virginia: RTT ≈ 80 ms. DNS is n
 | TLS 1.3 handshake | 80 ms | 200 ms |
 | Request → server work → first byte | 80 + 30 ms | 310 ms |
 
-So the **time to first byte (TTFB)** is ~310 ms, and only 30 ms of it is your code. The second request on the same kept-alive connection costs 80 + 30 = 110 ms. Terminating TCP and TLS closer to the user (a CDN edge 10 ms away, which keeps a warm connection to Virginia) shrinks both handshakes to 10 ms each and cuts TTFB to roughly 180 ms — far more effective than optimising the 30 ms.
+So the **time to first byte (TTFB)** is ~310 ms, and only 30 ms of it is your code. The second request on the same kept-alive connection costs 80 + 30 = 110 ms. Terminating TCP and TLS closer to the user (a CDN edge 10 ms away, which keeps a warm connection to Virginia) shrinks both handshakes to 10 ms each and cuts TTFB to roughly 180 ms. That's a far bigger win than optimising the 30 ms.
 
 ## Implement it in Python
 
@@ -156,4 +156,4 @@ for name, a, b in [("DNS", t0, t1), ("TCP", t1, t2), ("TLS", t2, t3), ("HTTP", t
 
 ## In the interview
 
-"What happens when you type a URL and press Enter?" is a classic. A strong answer walks DNS → TCP → TLS → HTTP → load balancer → app → data store → response → rendering, *counting round trips*, and then names the levers: caching DNS, connection reuse, HTTP/2 or HTTP/3, a CDN to shorten RTT, and a stateless app tier so it scales. A common follow-up: *"Why does the first request to a site feel slower than the rest?"* — cold DNS and handshakes.
+"What happens when you type a URL and press Enter?" is a classic. A strong answer walks DNS → TCP → TLS → HTTP → load balancer → app → data store → response → rendering, *counting round trips*, and then names the levers: caching DNS, connection reuse, HTTP/2 or HTTP/3, a CDN to shorten RTT, and a stateless app tier so it scales. A common follow-up: *"Why does the first request to a site feel slower than the rest?"* Because of cold DNS and the handshakes.

@@ -13,18 +13,18 @@ story:
   - title: "Bootstrap: draw 10 rows with replacement"
     text: "Each tree gets its own bootstrap sample: 10 draws with replacement from the 10 rows. Some rows appear twice, some not at all. On average a sample holds 1 − (1 − 1/n)ⁿ of the distinct rows: 65 % for n = 10, ≈ 63.2 % for large n. The rest are that tree's out-of-bag rows."
   - title: "A tree per sample, random features per split"
-    text: "Grow a deep tree on each sample. At every split the tree may only choose among a random subset of the features — √p for classification, so 3 of 9 here. One dominant feature can no longer sit at the root of every tree, so the trees make different mistakes."
+    text: "Grow a deep tree on each sample. At every split the tree may only choose among a random subset of the features: √p for classification, so 3 of 9 here. One dominant feature can no longer sit at the root of every tree, so the trees make different mistakes."
   - title: Majority vote
     text: "To predict, every tree votes and the majority wins (for regression, the predictions are averaged). Two of three trees say A, so the forest says A. Mistakes that the trees do not share cancel out in the vote."
   - title: "Out-of-bag rows: a free test set"
     text: "Row 4 never went into trees 1 and 3, so those two can judge it fairly. Predict every row using only the trees that did not see it and you get the out-of-bag (OOB) error: a validation estimate without holding out any data."
   - title: "More trees: lower variance"
-    text: "Averaging B trees, each with variance σ² and pairwise correlation ρ, gives variance ρσ² + (1 − ρ)σ²/B. Adding trees shrinks the second term, so test error falls and then flattens — more trees never overfit, they only cost time. Random features lower ρ, the floor."
+    text: "Averaging B trees, each with variance σ² and pairwise correlation ρ, gives variance ρσ² + (1 − ρ)σ²/B. Adding trees shrinks the second term, so test error falls and then flattens. More trees never overfit; they only cost time. Random features lower ρ, the floor."
 keyIdeas:
   - "**Bagging** = bootstrap aggregating: train each model on a resample drawn with replacement, then average. Each sample has ≈ **63.2 %** of the distinct rows."
   - "**Feature subsampling** at each split (typically √p of the p features for classification) **decorrelates** the trees; that is what makes a forest better than plain bagged trees."
   - "Variance of the average = **ρσ² + (1 − ρ)σ²/B**: more trees remove the second term, lower correlation lowers the first."
-  - "**OOB error** uses the ≈ 36.8 % of trees that skipped each row — near-free validation."
+  - "**OOB error** uses the ≈ 36.8 % of trees that skipped each row, which gives you near-free validation."
   - "**Impurity-based importance** is biased towards high-cardinality features and splits credit between correlated ones; prefer **permutation importance** on held-out data."
 quiz:
   - q: "You bootstrap a training set of 1,000,000 rows. About how many distinct rows does one sample contain?"
@@ -68,7 +68,7 @@ sources:
 
 ## The problem: one tree is unstable
 
-A deep decision tree has **low bias** (it can fit almost any shape) and **high variance**: train it on a slightly different sample and the first split may change, rewriting everything below it. If you could train many trees on independent datasets and average them, the noise would cancel. You only have one dataset — so you simulate many with the bootstrap.
+A deep decision tree has **low bias** (it can fit almost any shape) and **high variance**: train it on a slightly different sample and the first split may change, rewriting everything below it. If you could train many trees on independent datasets and average them, the noise would cancel. You only have one dataset, so you simulate many with the bootstrap.
 
 ## How it works
 
@@ -78,7 +78,7 @@ For each of B trees (typically 100–1,000):
 2. **Grow a tree on that sample**, usually deep and unpruned (the common default is to grow until leaves are pure).
 3. **At every split, consider only m randomly chosen features** out of the p available, and pick the best threshold among those. Common defaults: m = √p for classification, p/3 or all p for regression.
 
-To predict, run the row through all B trees and take the **majority vote** — or, better, average the trees' class probabilities (many implementations do this). For regression, average the predictions.
+To predict, run the row through all B trees and take the **majority vote**. Better still, average the trees' class probabilities, as many implementations do. For regression, average the predictions.
 
 ```text
 for b in 1 … B:
@@ -105,7 +105,7 @@ Suppose each tree's prediction has variance σ² and any two trees have correlat
 
 Bagging alone leaves ρ high: if one feature is strongly predictive, every tree splits on it first and they all look alike. Restricting each split to a random feature subset forces trees to use different features, lowering ρ. Each tree gets a bit worse (slightly higher bias), but the average gets better. This decorrelation is the difference between a random forest and plain bagged trees.
 
-Bias barely changes: the forest's bias is roughly that of one deep tree. Forests reduce **variance**, not bias — which is why their trees are grown deep.
+Bias barely changes: the forest's bias is roughly that of one deep tree. Forests reduce **variance**, not bias, and that is why their trees are grown deep.
 
 ## Worked example
 
@@ -167,12 +167,12 @@ The forest beats the single tree by 7 points, and the OOB accuracy (0.915) match
 - **Memory and latency:** 500 deep trees can be hundreds of megabytes and slow to predict; cap the depth or raise the minimum rows per leaf if needed.
 - **Imbalanced classes:** weight the classes (re-computed per bootstrap sample) or tune the threshold on the averaged probabilities.
 - **Tuning:** forests work well out of the box. The knobs that matter most are m (features per split), the minimum rows per leaf and the number of trees (more is safe, just slower).
-- **Extra-Trees** (extremely randomised trees) go further: random thresholds too, usually without bootstrapping — even lower correlation and faster training.
+- **Extra-Trees** (extremely randomised trees) go further: random thresholds too, usually without bootstrapping. That buys even lower correlation and faster training.
 
 ## When to use it
 
-A random forest is a strong, low-effort baseline for tabular data: little tuning, no feature scaling, robust to outliers in features, built-in OOB validation, and trees train in parallel. Gradient boosting usually wins on accuracy after tuning; neural networks win on images, audio and text.
+A random forest is a strong, low-effort baseline for tabular data: little tuning, no feature scaling, tolerant of outliers in features, built-in OOB validation, and trees train in parallel. Gradient boosting usually wins on accuracy after tuning; neural networks win on images, audio and text.
 
 ## In the interview
 
-Expect "how does a random forest work?", "bagging vs boosting?", "why random features?", "what is OOB error?". Give the two sources of randomness, the 63.2 % figure, and the variance formula ρσ² + (1 − ρ)σ²/B to explain *why* it works. A follow-up is often about feature importance — mention the cardinality bias and permutation importance.
+Expect "how does a random forest work?", "bagging vs boosting?", "why random features?", "what is OOB error?". Give the two sources of randomness, the 63.2 % figure, and the variance formula ρσ² + (1 − ρ)σ²/B to explain *why* it works. A follow-up is often about feature importance, so mention the cardinality bias and permutation importance.

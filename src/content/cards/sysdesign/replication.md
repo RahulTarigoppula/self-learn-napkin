@@ -73,7 +73,7 @@ sources:
 2. **Read scaling:** many replicas can serve reads in parallel.
 3. **Latency:** a replica near the user, in another region, answers faster.
 
-The hard part is not copying the data once; it is keeping copies in step while the data keeps changing.
+Copying the data once is easy. Keeping the copies in step while the data keeps changing is the hard part.
 
 ## How leader-follower replication works
 
@@ -122,7 +122,7 @@ Fixes for read-your-writes: read from the leader for data the user may have just
 When the leader dies, a follower must be promoted:
 
 1. **Detect** the failure, usually with a heartbeat timeout of 10 to 30 seconds. Too short and a brief GC pause or network blip triggers an unnecessary failover; too long and writes are down for longer.
-2. **Choose** a new leader: the follower with the most recent data, ideally a synchronous one. Robust systems use a consensus protocol (Raft, or a coordinator such as ZooKeeper or etcd) so that a majority agrees.
+2. **Choose** a new leader: the follower with the most recent data, ideally a synchronous one. So that two nodes cannot both decide they won, use a consensus protocol (Raft, or a coordinator such as ZooKeeper or etcd) so that a majority agrees.
 3. **Reconfigure**: clients and the remaining followers switch to the new leader.
 
 What goes wrong:

@@ -26,7 +26,7 @@ const MONTHS = [
 
 export const monthName = (month0: number): string => MONTHS[month0] ?? '';
 
-/** '5 reviews on 3 September' — the accessible name of a coffee ring. */
+/** The accessible name of a coffee ring, e.g. '5 reviews on 3 September'. */
 export function ringLabel(dayKey: string, reviews: number): string {
   const [, m, d] = dayKey.split('-').map(Number) as [number, number, number];
   return `${reviews} ${reviews === 1 ? 'review' : 'reviews'} on ${d} ${monthName(m - 1)}`;

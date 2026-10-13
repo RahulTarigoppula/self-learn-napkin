@@ -177,6 +177,6 @@ describe('queue golden', () => {
     const q = buildQueue([{ ...due[0], orphan: 1 } as QueueCard], NOW, 10, today);
     expect(q.isEmpty).toBe(true);
     expect(plateLabel(3, false)).toBe('Pull one');
-    expect(plateLabel(null, false)).toBe('—');
+    expect(plateLabel(null, false)).toBe('…');
   });
 });

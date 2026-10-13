@@ -122,7 +122,7 @@ Any sort can be made stable by sorting (key, original index) pairs instead of ba
 
 ## Implement it in Python
 
-The same experiments work in any language with a built-in sort; here they are in Python. Two small demos: stability makes multi-key sorting work, and Timsort's comparison count is close to the theoretical floor.
+Two small experiments with the built-in sort. The first shows stability making a two-key sort work; the second counts Timsort's comparisons and puts them next to the theoretical floor.
 
 ```python
 import math, random

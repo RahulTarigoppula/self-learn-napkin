@@ -74,7 +74,7 @@ const letters = ['A', 'B', 'C', 'D'];
             ? 'Clean sweep. You own this one.'
             : correct >= total / 2
               ? 'Solid. Re-read the scene behind the one you missed.'
-              : 'Worth another pass through the story — then try again.';
+              : 'Worth another pass through the story. Then try again.';
       if (correct === total) celebrateFrom(score.querySelector('.quiz__score-num'));
       void recordQuiz(quiz.dataset.quiz ?? '', correct, total).catch(() => undefined);
       try {

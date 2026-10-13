@@ -64,8 +64,8 @@ export async function check(dist = 'dist', b = BUDGETS) {
   const rows = [
     ['dist total', `${(total / 1048576).toFixed(2)} MB`, `${b.distMb} MB`],
     ['fonts', `${(fonts / 1024).toFixed(0)} kB`, `${b.fontsKb} kB`],
-    ['heaviest page JS (gzip)', `${worstPage.kb.toFixed(1)} kB — ${worstPage.page}`, `${b.pageJsGzKb} kB`],
-    ['heaviest HTML (gzip)', `${worstHtml.kb.toFixed(1)} kB — ${worstHtml.page}`, `${b.htmlGzKb} kB`],
+    ['heaviest page JS (gzip)', `${worstPage.kb.toFixed(1)} kB, ${worstPage.page}`, `${b.pageJsGzKb} kB`],
+    ['heaviest HTML (gzip)', `${worstHtml.kb.toFixed(1)} kB, ${worstHtml.page}`, `${b.htmlGzKb} kB`],
     ['pages', String(html.length), ''],
   ];
   return { problems, rows };

@@ -5,7 +5,7 @@ tags: [statistics, hypothesis-testing, inference, experiments]
 difficulty: 2
 minutes: 6
 tldr: "A p-value says how surprising your data would be if nothing were going on; a confidence interval gives the effect sizes the data fit. Neither is the chance your hypothesis is true."
-analogy: "A smoke alarm assumes 'no fire' and goes off when the air would be very unusual for a fire-free kitchen. A beep tells you the air is surprising, not the exact chance there is a fire — and burnt toast can set it off."
+analogy: "A smoke alarm assumes 'no fire' and goes off when the air would be very unusual for a fire-free kitchen. A beep tells you the air is surprising, not the exact chance there is a fire. Burnt toast can set it off too."
 diagram: p-values-and-confidence-intervals
 story:
   - title: "Assume the null: a fair coin"
@@ -64,9 +64,9 @@ A hypothesis test is an argument by surprise. You assume the boring explanation 
 
 1. **State the hypotheses.** The **null hypothesis** H₀ is the "nothing is going on" claim: the coin is fair, the new page converts the same. The **alternative** H₁ is what you suspect: the coin is biased (two-sided) or biased towards heads (one-sided).
 2. **Choose a significance level** α, usually 0.05, *before* collecting data. It is the false-positive rate you are willing to accept.
-3. **Compute a test statistic** that measures how far the data are from what H₀ predicts — here the number of heads, or its z-score.
+3. **Compute a test statistic** that measures how far the data are from what H₀ predicts: here the number of heads, or its z-score.
 4. **Find its distribution under H₀** (the *null distribution*) and compute the **p-value**: the probability under H₀ of a statistic at least as extreme as the one observed.
-5. **Decide.** If p < α, reject H₀ ("statistically significant"). Otherwise, fail to reject — which is not the same as accepting H₀.
+5. **Decide.** If p < α, reject H₀ ("statistically significant"). Otherwise, fail to reject. That is not the same as accepting H₀.
 
 ```text
 choose α                                     # before seeing data, e.g. 0.05
@@ -90,14 +90,14 @@ Under H₀ the number of heads X in 100 flips is Binomial(100, 0.5): mean 100 ×
 - **Exact:** P(X ≥ 62) = 0.0105, and by symmetry P(X ≤ 38) = 0.0105, so the two-sided p = **0.021**.
 - **Normal approximation:** z = (62 − 50) / 5 = 2.4, and P(|Z| ≥ 2.4) = 0.016. The approximation treats a discrete count as continuous; the **continuity correction** z = (61.5 − 50) / 5 = 2.3 gives 0.021, matching the exact answer.
 
-Since 0.021 < 0.05, reject H₀ at the 5 % level. With 60 heads instead, the exact p is 0.057 and we would not reject — a reminder that 0.05 is a convention, not a cliff between truth and falsehood.
+Since 0.021 < 0.05, reject H₀ at the 5 % level. With 60 heads instead, the exact p is 0.057 and we would not reject. It is a useful reminder that 0.05 is a convention, not a cliff between truth and falsehood.
 
 ## What a p-value is not
 
 - **Not P(H₀ is true).** p is P(data | H₀); the probability of H₀ given the data needs a prior and Bayes' theorem. If most coins you test are fair, a small p can still leave H₀ quite likely.
 - **Not the probability the result is due to chance.** That is the same mistake in different words.
 - **Not an effect size.** p mixes the size of the effect with the sample size. A tiny effect with a huge n gives a tiny p.
-- **Not evidence for H₀ when large.** p = 0.4 means the data are compatible with H₀ — and possibly with many other values too.
+- **Not evidence for H₀ when large.** p = 0.4 means the data are compatible with H₀, and possibly with many other values too.
 - Under H₀ (with a continuous test statistic) p is **uniformly distributed** between 0 and 1, so p < 0.05 happens 5 % of the time purely by chance. That is what α controls.
 
 ## Confidence intervals
@@ -118,7 +118,7 @@ For the coin, p̂ = 0.62, SE = √(p̂(1 − p̂) / n) = √(0.62 × 0.38 / 100)
 
 ## Statistical vs practical significance
 
-Flip a coin 1,000,000 times and get 50.2 % heads. SE = √(0.25 / 1,000,000) = 0.0005, z = 0.002 / 0.0005 = 4.0, p ≈ 0.00006: overwhelmingly significant. The 95 % interval [0.501, 0.503] shows the bias is real but tiny — irrelevant for most purposes. Always report the effect size and its interval, and decide with a threshold that matters to the business or the science, not only p < 0.05.
+Flip a coin 1,000,000 times and get 50.2 % heads. SE = √(0.25 / 1,000,000) = 0.0005, z = 0.002 / 0.0005 = 4.0, p ≈ 0.00006: overwhelmingly significant. The 95 % interval [0.501, 0.503] shows the bias is real but tiny, and irrelevant for most purposes. Always report the effect size and its interval, and decide with a threshold that matters to the business or the science, not only p < 0.05.
 
 ## Multiple comparisons
 
@@ -132,7 +132,7 @@ Bonferroni:  reject H_i  if  p_i < α / m
 Holm:        sort p ascending: p(1) ≤ p(2) ≤ … ≤ p(m)
              for k = 1 … m: if p(k) < α / (m − k + 1): reject H(k) else: stop
 ```
-- **Benjamini–Hochberg:** controls the **false discovery rate** — the expected share of false positives among the discoveries — instead; standard for screening many hypotheses such as genes or features.
+- **Benjamini–Hochberg:** controls the **false discovery rate** instead: the expected share of false positives among the discoveries. It is standard for screening many hypotheses such as genes or features.
 
 ## Implement it in Python
 
@@ -175,4 +175,4 @@ Output: exact p = 0.0210; z = 2.40, approx p = 0.0164; Wald CI [0.525, 0.715]; W
 
 ## In the interview
 
-Expect "explain a p-value to a product manager" and "what does a 95 % confidence interval mean?". A strong answer defines p as a conditional probability under H₀, explicitly says what it is not, interprets the interval as a statement about the method, separates statistical from practical significance, and raises multiple comparisons when many metrics or segments are involved. A frequent follow-up: "the test came back p = 0.06 — what do you tell the team?" Report the effect and its interval, note the result is inconclusive rather than negative, and discuss whether the test had enough power.
+Expect "explain a p-value to a product manager" and "what does a 95 % confidence interval mean?". A strong answer defines p as a conditional probability under H₀, explicitly says what it is not, interprets the interval as a statement about the method, separates statistical from practical significance, and raises multiple comparisons when many metrics or segments are involved. A frequent follow-up: "the test came back p = 0.06; what do you tell the team?" Report the effect and its interval, note the result is inconclusive rather than negative, and discuss whether the test had enough power.

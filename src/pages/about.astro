@@ -13,44 +13,44 @@ const flashcards = cards.reduce((n, c) => n + c.data.flashcards.length, 0);
 const story = [
   {
     title: 'It started with breaking things',
-    text: 'I began my career as a tester who could also write code. Testing teaches you one habit for life: never accept "it just works". Every bug I found started with the same question — why does this actually behave like that?',
+    text: 'I started out as a tester who could also write code. Testing left me with a habit I never lost. When someone says "it just works", I want to know why it works, and what happens when it doesn’t.',
   },
   {
     title: 'C++, where every retry is real money',
-    text: 'Then I learned C++ to work on payment gateways. In payments a timeout, a duplicate request or a rounding slip is somebody’s money, so you learn to respect the details: idempotency, retries, failure paths, the boring edge cases that decide everything.',
+    text: 'Then I learned C++ to work on payment gateways. In payments, a timeout or a duplicate request is somebody’s money. You learn to care about the boring details: retries, idempotency, and what happens when something fails halfway through.',
   },
   {
     title: 'Python, and the joy of simple',
-    text: 'Next came Python, and I genuinely enjoyed how simple it felt — the code read almost like the idea itself. That stuck with me: when an explanation is right, it should feel that simple too.',
+    text: 'Next came Python, and I loved how simple it was. The code read almost like the idea itself. That stayed with me. If an explanation is right, it should feel that simple too.',
   },
   {
     title: 'Data science and system design',
-    text: 'I went on to learn data science and high-level design. Both are full of folklore: rules repeated until they sound like laws, giant diagrams that explain nothing, interview “tricks” with no reasoning behind them. What finally made things click for me was always a small picture and a worked example.',
+    text: 'Then I learned data science and high-level design, and this is where I got frustrated. So much of it was folklore: rules repeated until they sounded like laws, huge diagrams that explained nothing, interview tricks with no reasons behind them. What finally made things click was a small drawing and one worked example. I still remember the relief.',
   },
   {
     title: 'Deep into AI',
-    text: 'Then I went deep into AI, and today I work as a Senior Software Engineer specialising in AI. The more advanced the topic, the more I noticed that the hard part is rarely the maths — it is the missing mental picture.',
+    text: 'After that I went deep into AI, and today I work as a Senior Software Engineer specialising in AI. The topics kept getting harder, but the pattern held. The maths was rarely what stopped me. The missing picture was.',
   },
   {
     title: 'So I drew Napkin',
-    text: 'Napkin is the notebook I wish I had at every step: each idea drawn one stroke at a time, explained in plain words, checked against the facts, and then practised until it sticks. I built it with the same tools it teaches — and I use it myself.',
+    text: 'Napkin is the notebook I wish I’d had at each of those stops. Every idea is drawn one stroke at a time, explained in plain words, checked against the facts, and practised until it sticks. If it saves the next person some of the confusion I went through, it has done its job.',
   },
 ];
 ---
 
-<AppShell title="Why Napkin" active="about" description="The story behind Napkin — from tester to C++ payments to Python, data science, system design and AI.">
+<AppShell title="Why Napkin" active="about" description="The story behind Napkin: from tester to C++ payments to Python, data science, system design and AI.">
   <div class="container about">
     <header class="about__hero">
       <p class="about__kicker hand">the story behind the napkin</p>
-      <h1>Every hard idea I understood, I understood the moment someone <span class="hl">drew it</span>.</h1>
+      <h1>A hard idea usually clicked for me the moment someone <span class="hl">drew it</span>.</h1>
       <p class="about__lede">
-        Engineers have always explained the important stuff on whatever paper was nearby — a whiteboard, a notebook, the
-        back of a napkin at lunch. Napkin is that habit turned into an app. Here is how it came to be.
+        Engineers explain the important stuff on whatever is nearby: a whiteboard, a notebook, the back of a napkin at
+        lunch. Napkin is that habit turned into an app. This is how it came to be.
       </p>
     </header>
 
     <div id="journey" class="about__story">
-      <Story slug="about" diagram="journey" title="the road to Napkin" tldr="From tester to C++ payments, Python, data science, system design and AI — and why that path led to Napkin." story={story} trackRead={false} after="beliefs" />
+      <Story slug="about" diagram="journey" title="the road to Napkin" tldr="Tester, then C++ for payments, then Python, data science, system design and AI. This is why that road led to Napkin." story={story} trackRead={false} after="beliefs" />
     </div>
 
     <ol class="road" aria-label="The road so far">
@@ -58,7 +58,7 @@ const story = [
         [
           ['Tester', 'never accept “it just works”'],
           ['C++ · payments', 'every edge case is money'],
-          ['Python', 'simple reads like the idea'],
+          ['Python', 'code that reads like the idea'],
           ['DS + HLD', 'pictures beat folklore'],
           ['AI · Sr. engineer', 'the hard part is the mental model'],
           ['Napkin', 'all of it, drawn simply'],
@@ -74,7 +74,7 @@ const story = [
 
     <section id="beliefs" class="beliefs" aria-labelledby="beliefs-h">
       <p class="eyebrow">What Napkin believes</p>
-      <h2 id="beliefs-h">Simple, not simplistic. Facts, not folklore.</h2>
+      <h2 id="beliefs-h">Keep it simple. Check the facts.</h2>
       <div class="beliefs__grid">
         <article class="belief card">
           <span class="belief__icon"><Icon name="pen" size={20} /></span>
@@ -84,12 +84,12 @@ const story = [
         <article class="belief card">
           <span class="belief__icon"><Icon name="check" size={20} /></span>
           <h3>No superstition</h3>
-          <p>Claims are checked, numbers are computed, every runnable Python example is executed on each build and prints the numbers in its worked example, and every napkin cites its sources.</p>
+          <p>Claims get checked and numbers get computed. Every runnable Python example runs on each build and prints the numbers used in its worked example. Every napkin cites its sources.</p>
         </article>
         <article class="belief card">
           <span class="belief__icon"><Icon name="code" size={20} /></span>
           <h3>Ideas first, any language</h3>
-          <p>The explanations are language-agnostic: plain words, diagrams and pseudocode. Python appears only in “Implement it” — because it reads like the idea.</p>
+          <p>The explanations are language-agnostic: plain words, diagrams and pseudocode. Python only shows up in “Implement it”, because it reads like the idea.</p>
         </article>
         <article class="belief card">
           <span class="belief__icon"><Icon name="layers" size={20} /></span>
@@ -104,7 +104,7 @@ const story = [
         <article class="belief card">
           <span class="belief__icon"><Icon name="sparkles" size={20} /></span>
           <h3>Built with what it teaches</h3>
-          <p>The diagrams are code, the flashcards run on FSRS — a modern, research-backed spaced-repetition algorithm — and the whole thing is open source.</p>
+          <p>The diagrams are code. The flashcards run on FSRS, a modern spaced-repetition algorithm backed by research. The whole thing is open source.</p>
         </article>
       </div>
     </section>
@@ -120,11 +120,11 @@ const story = [
     <section class="signoff card" aria-labelledby="signoff-h">
       <h2 id="signoff-h" class="hand">A note from me</h2>
       <p>
-        If you are preparing for an interview, switching fields, or just tired of explanations that make simple things sound
-        hard — I built this for you, and for the version of me who needed it at each of those stops. Start anywhere. Follow
-        the drawing. Check the numbers. Then come back tomorrow and see how much stuck.
+        Maybe you're preparing for an interview, or switching fields, or you're just tired of explanations that make simple
+        things sound hard. I built this for you, and for the version of me who needed it at each of those stops. Start
+        anywhere. Follow the drawing, check the numbers, and come back tomorrow to see how much stuck.
       </p>
-      <p class="signoff__name">— Rahul Tarigoppula<span>Senior Software Engineer, AI</span></p>
+      <p class="signoff__name">Rahul Tarigoppula<span>Senior Software Engineer, AI</span></p>
       <div class="signoff__cta">
         <a class="btn btn--primary btn--lg" href={href('library/')}><Icon name="library" /> Open the library</a>
         <a class="btn btn--lg" href="https://github.com/RahulTarigoppula/self-learn-napkin" target="_blank" rel="noopener"><Icon name="external" /> Source on GitHub</a>

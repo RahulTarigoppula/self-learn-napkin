@@ -1,4 +1,4 @@
-/* DP-table griddles (LCS, edit distance, knapsack). Tokens only — works in light and dark. */
+/* DP-table griddles (LCS, edit distance, knapsack). Tokens only, so it works in light and dark. */
 .dp__cell {
   cursor: pointer;
 }

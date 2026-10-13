@@ -17,7 +17,7 @@
     "number": "node scripts/number-card.mjs",
     "build": "node scripts/lint-licences.mjs && npm run decks && astro build && node scripts/build-sw.mjs && node scripts/check-budgets.mjs",
     "preview": "astro preview",
-    "lint": "biome ci .",
+    "lint": "biome ci . && node scripts/check-voice.mjs",
     "format": "biome check --write .",
     "typecheck": "node scripts/lint-licences.mjs && astro check",
     "test": "vitest run",

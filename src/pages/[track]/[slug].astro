@@ -50,6 +50,7 @@ const flashcardCount = d.flashcards.length;
 
 <AppShell title={d.title} description={d.tldr} active="library">
   <article class:list={['napkin', `t-${d.track}`]} data-napkin={id}>
+    <div class="readbar" aria-hidden="true"></div>
     <div class="container">
       <nav class="crumbs" aria-label="Breadcrumb">
         <a href={href('library/')}>Library</a>
@@ -185,7 +186,7 @@ const flashcardCount = d.flashcards.length;
         related.length > 0 && (
           <section class="block" aria-labelledby="rel-h">
             <h2 id="rel-h" class="block__title section-head">Goes well with</h2>
-            <div class="related">
+            <div class="related" style={`--n:${Math.max(3, related.length)}`}>
               {related.map((r, i) => (
                 <NapkinTile card={r} size="sm" index={i} />
               ))}
@@ -197,7 +198,7 @@ const flashcardCount = d.flashcards.length;
       <div class="done block" data-done-bar data-slug={id}>
         <div>
           <p class="done__title">Finished this napkin?</p>
-          <p class="muted">Mark it read to track your progress — your flashcards join the review queue either way.</p>
+          <p class="muted">Mark it read to track your progress. Your flashcards join the review queue either way.</p>
         </div>
         <button class="btn btn--primary" type="button" data-mark-read>
           <Icon name="check" size={17} /> <span>Mark as read</span>
@@ -239,7 +240,7 @@ const flashcardCount = d.flashcards.length;
               .map((s) => (
                 <span class="sources__item">
                   from <a href={s.url} rel="noopener" target="_blank">{s.name}</a>, {s.licence}
-                  {s.note && <span class="muted"> — {s.note}</span>}
+                  {s.note && <span class="muted"> ({s.note})</span>}
                 </span>
               ))
           }
@@ -250,7 +251,7 @@ const flashcardCount = d.flashcards.length;
           }
         </p>
         <details class="behind">
-          <summary><Icon name="code" size={16} /> Behind the sketch — how this diagram is drawn</summary>
+          <summary><Icon name="code" size={16} /> Behind the sketch: how this diagram is drawn</summary>
           <p class="muted">
             Every napkin drawing is plain code, rendered to hand-drawn SVG at build time with Rough.js. No diagram
             library ships to your device.
@@ -292,7 +293,7 @@ const flashcardCount = d.flashcards.length;
       toast(was ? 'Already in your read list.' : 'Marked as read · +20 XP', { icon: 'check' });
     } catch (err) {
       console.error(err);
-      toast("Couldn't save that — try again.", { danger: true });
+      toast("Couldn't save that. Try again.", { danger: true });
     }
   });
 
@@ -705,10 +706,39 @@ const flashcardCount = d.flashcards.length;
     tab-size: 4;
   }
 
+  /* Reading progress: a thin track-coloured line that fills as you scroll (scroll-driven, no JS). */
+  .readbar {
+    display: none;
+  }
+  @supports (animation-timeline: scroll()) {
+    .readbar {
+      display: block;
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 3px;
+      z-index: 60;
+      background: var(--track);
+      transform-origin: 0 50%;
+      transform: scaleX(0);
+      animation: readbar linear both;
+      animation-timeline: scroll(root block);
+      pointer-events: none;
+    }
+  }
+  @keyframes readbar {
+    to {
+      transform: scaleX(1);
+    }
+  }
   .related {
     display: grid;
     gap: var(--space-4);
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+  @container main (min-width: 760px) {
+    .related {
+      grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    }
   }
 
   .pager {

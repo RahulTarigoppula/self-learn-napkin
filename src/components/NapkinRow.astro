@@ -1,5 +1,5 @@
 ---
-import { cardHref } from '../lib/base';
+import { cardHref, withBase } from '../lib/base';
 import { type Card, numberOf, pad3 } from '../lib/content';
 import Icon from './Icon.astro';
 
@@ -22,6 +22,9 @@ const text = `${d.title} ${d.tldr} ${d.tags.join(' ')}`.toLowerCase();
 >
   <a href={cardHref(card.id)}>
     <span class="row__num mono">{step !== undefined ? String(step).padStart(2, '0') : pad3(numberOf(card.id))}</span>
+    <span class="row__thumb" aria-hidden="true">
+      <img src={withBase(`thumbs/${d.diagram}.svg`)} alt="" width="96" height="60" loading="lazy" decoding="async" />
+    </span>
     <span class="row__main">
       <span class="row__title">{d.title}{d.griddle && <span class="row__badge" title="Has an interactive playground"><Icon name="hand" size={13} /></span>}</span>
       <span class="row__tldr">{d.tldr}</span>
@@ -39,7 +42,7 @@ const text = `${d.title} ${d.tldr} ${d.tags.join(' ')}`.toLowerCase();
 <style>
   .row a {
     display: grid;
-    grid-template-columns: 40px minmax(0, 1fr) auto;
+    grid-template-columns: 34px 96px minmax(0, 1fr) auto;
     align-items: center;
     gap: var(--space-3);
     min-height: 64px;
@@ -61,6 +64,35 @@ const text = `${d.title} ${d.tldr} ${d.tags.join(' ')}`.toLowerCase();
   .row__main {
     display: grid;
     min-width: 0;
+  }
+  .row__thumb {
+    display: block;
+    width: 96px;
+    height: 60px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--thumb-paper);
+    transition: transform var(--dur-base) var(--ease-spring);
+  }
+  .row__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .row a:hover .row__thumb {
+    transform: rotate(-2deg) scale(1.06);
+  }
+  @container main (max-width: 520px) {
+    .row a {
+      grid-template-columns: 30px 64px minmax(0, 1fr) auto;
+      gap: var(--space-2);
+    }
+    .row__thumb {
+      width: 64px;
+      height: 44px;
+    }
   }
   .row__title {
     display: inline-flex;
@@ -92,7 +124,7 @@ const text = `${d.title} ${d.tldr} ${d.tags.join(' ')}`.toLowerCase();
   }
   .row__min {
     font-size: var(--text-xs);
-    color: var(--ink-faint);
+    color: var(--ink-muted);
     width: 26px;
     text-align: right;
   }
@@ -107,8 +139,8 @@ const text = `${d.title} ${d.tldr} ${d.tags.join(' ')}`.toLowerCase();
   }
   .row[data-read='true'] .row__done {
     border: 0;
-    background: var(--success);
-    color: #fff;
+    background: var(--success-ink);
+    color: var(--surface);
   }
   @media (max-width: 520px) {
     .row .difficulty {

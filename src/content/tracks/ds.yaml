@@ -1,6 +1,6 @@
 name: Track 3 · how models learn
 subtitle: Data Science & ML
-blurb: "The ideas behind models that generalise — framing problems, splitting data honestly, fitting by descent, and measuring what matters."
+blurb: "The ideas behind models that generalise: framing problems, splitting data honestly, fitting by descent, and measuring what matters."
 order:
   - ds/ml-problem-framing
   - ds/supervised-vs-unsupervised

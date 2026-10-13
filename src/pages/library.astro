@@ -20,7 +20,7 @@ const topTags = [...tagCounts.entries()]
     <header class="lib__head">
       <p class="eyebrow">The library</p>
       <h1>Every napkin, in one place.</h1>
-      <p class="muted">{cards.length} topics in three tracks. Filter by track, tag or difficulty — or just type.</p>
+      <p class="muted">{cards.length} topics in three tracks. Filter by track, tag or difficulty, or just type.</p>
     </header>
 
     <div class="lib__tools" role="search">
@@ -34,6 +34,7 @@ const topTags = [...tagCounts.entries()]
           <button type="button" class:list={['fchip', `t-${t.id}`]} data-track-filter={t.id} aria-pressed="false">{t.subtitle}</button>
         ))}
       </div>
+      <p class="lib__shown mono" aria-live="polite" data-shown></p>
       <div class="lib__chips" role="group" aria-label="More filters">
         <button type="button" class="fchip" data-unread aria-pressed="false">Unread</button>
         <button type="button" class="fchip" data-diff-filter="1" aria-pressed="false">Gentle</button>
@@ -51,6 +52,10 @@ const topTags = [...tagCounts.entries()]
             <div>
               <p class="lib__course hand">{t.name}</p>
               <h2 id={`h-${t.id}`}>{t.subtitle}</h2>
+              <p class="lib__progress mono">
+                <span class="lib__meter" aria-hidden="true"><span data-lib-bar={t.id} /></span>
+                <span><b data-lib-read={t.id}>0</b> of {t.cards.length} read</span>
+              </p>
             </div>
             <a class="btn btn--ghost" href={href(`${t.id}/`)}>
               Course view <Icon name="arrowRight" />
@@ -100,6 +105,17 @@ const topTags = [...tagCounts.entries()]
     }
     for (const s of sections) s.hidden = ![...s.querySelectorAll<HTMLElement>('li')].some((li) => !li.hidden);
     if (empty) empty.hidden = shown > 0;
+    const filtered = Boolean(text || state.track || state.tag || state.diff || state.unread);
+    const shownEl = document.querySelector<HTMLElement>('[data-shown]');
+    if (shownEl) shownEl.textContent = filtered ? `${shown} of ${rows.length} napkins` : '';
+    for (const el of document.querySelectorAll<HTMLElement>('[data-lib-read]')) {
+      const t = el.dataset.libRead ?? '';
+      const mine = rows.filter((r) => r.dataset.track === t);
+      const n = mine.filter((r) => r.dataset.read === 'true').length;
+      el.textContent = String(n);
+      const bar = document.querySelector<HTMLElement>(`[data-lib-bar="${t}"]`);
+      if (bar) bar.style.width = `${Math.round((n / Math.max(1, mine.length)) * 100)}%`;
+    }
     press('[data-track-filter]', (b) => (b.dataset.trackFilter ?? '') === state.track);
     press('[data-tag-filter]', (b) => b.dataset.tagFilter === state.tag);
     press('[data-diff-filter]', (b) => b.dataset.diffFilter === state.diff);
@@ -184,6 +200,42 @@ const topTags = [...tagCounts.entries()]
     overflow-x: auto;
     scrollbar-width: none;
     padding-bottom: 2px;
+  }
+  .lib__chips {
+    mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+    padding-right: 40px;
+  }
+  .lib__shown {
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+    min-height: 0;
+  }
+  .lib__shown:empty {
+    display: none;
+  }
+  .lib__progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: 6px;
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+  .lib__meter {
+    width: 120px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--surface-3);
+    overflow: hidden;
+  }
+  .lib__meter span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--track);
+    border-radius: inherit;
+    transition: width var(--dur-slow) var(--ease-out);
   }
   .lib__chips::-webkit-scrollbar {
     display: none;

@@ -34,7 +34,7 @@ quiz:
   - q: "A fixed-window limiter allows 100 requests per minute. What is the worst case in a 2-second span?"
     options: ["100 requests", "About 103 requests", "200 requests", "6,000 requests"]
     answer: 2
-    why: "100 requests at 0:59 fill the first window; the counter resets at 1:00, allowing 100 more. That is 200 requests in about two seconds — the boundary burst that sliding windows and token buckets avoid."
+    why: "100 requests at 0:59 fill the first window; the counter resets at 1:00, allowing 100 more. That is 200 requests in about two seconds. Sliding windows and token buckets avoid this boundary burst."
   - q: "Your API runs on 10 servers, and each keeps its own in-memory limiter set to 100 requests/min per user. What limit does a user actually get?"
     options: ["100 per minute", "Up to about 1,000 per minute", "10 per minute", "Exactly 100 per server, so 100 total"]
     answer: 1
@@ -63,14 +63,14 @@ sources:
 
 ## Why limit
 
-Without a limit, one client — a buggy retry loop, a scraper, an attacker, or simply your biggest customer — can use up all your capacity and slow everyone else down. A **rate limiter** decides, for each request, whether the client has exceeded its allowance, and rejects the excess cheaply before it reaches the expensive parts of the system. Limits are usually keyed by **API key, user id or IP address**, and often per endpoint (login attempts get a much tighter limit than reads).
+Without a limit, one client can use up all your capacity and slow everyone else down, whether it's a buggy retry loop, a scraper, an attacker or simply your biggest customer. A **rate limiter** decides, for each request, whether the client has exceeded its allowance, and rejects the excess cheaply before it reaches the expensive parts of the system. Limits are usually keyed by **API key, user id or IP address**, and often per endpoint (login attempts get a much tighter limit than reads).
 
 ## How the token bucket works
 
 Each client has a bucket with two parameters:
 
-- **Capacity b** — the most tokens the bucket can hold, which is the largest burst allowed.
-- **Refill rate r** — tokens added per second, which is the long-run allowed rate.
+- **Capacity b**: the most tokens the bucket can hold, which is the largest burst allowed.
+- **Refill rate r**: tokens added per second, which is the long-run allowed rate.
 
 A request takes one token if there is one; otherwise it is rejected. You do not need a timer to add tokens: store `tokens` and `last` (the time of the last update), and on each request compute `tokens = min(b, tokens + (now − last) × r)`. That makes each check **O(1)** time and memory per client.
 
@@ -84,9 +84,9 @@ Capacity 5, refill 1 token/s, bucket full at t = 0.
 |---|---|---|---|---|---|
 | 0 s | r1–r7 | 5 | r1–r5 | r6, r7 | 0 |
 | 1 s | 1 | 1 | 1 | 0 | 0 |
-| 3 s | 0 | 2 | — | — | 2 |
+| 3 s | 0 | 2 | 0 | 0 | 2 |
 | 4 s | 4 | 3 | 3 | 1 | 0 |
-| 20 s | 0 | 5 (capped) | — | — | 5 |
+| 20 s | 0 | 5 (capped) | 0 | 0 | 5 |
 
 Note the cap: after 16 idle seconds the bucket holds 5, not 16. That cap is what limits bursts.
 

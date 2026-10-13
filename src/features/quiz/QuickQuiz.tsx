@@ -127,7 +127,7 @@ export default function QuickQuiz() {
   if (error)
     return (
       <div class="qq qq--center">
-        <p>The question bank isn't stocked yet — connect once to load it.</p>
+        <p>The question bank isn't stocked yet. Connect once to load it.</p>
       </div>
     );
   if (!all)
@@ -196,7 +196,7 @@ export default function QuickQuiz() {
               ? 'Perfect round. Interview-ready on these.'
               : score >= round.length * 0.7
                 ? 'Strong. Patch the few gaps below.'
-                : 'Good practice — the napkins below will close the gaps.'}
+                : 'Good practice. The napkins below will close the gaps.'}
           </p>
           <div class="qq__row">
             <button type="button" class="btn btn--primary" onClick={start}>

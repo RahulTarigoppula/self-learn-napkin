@@ -102,7 +102,7 @@ As a recurrence: T(n) = 2T(n/2) + cn, T(1) = c. Unrolling gives T(n) = cnÂ·logâ‚
 
 ## Implement it in Python
 
-The same idea works in any language; here it is in Python, written for clarity rather than speed.
+This version is written to be read, not to be fast: it slices freely and returns new lists.
 
 ```python
 def merge_sort(a):

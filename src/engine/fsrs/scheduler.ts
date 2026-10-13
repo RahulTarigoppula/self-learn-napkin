@@ -61,7 +61,7 @@ export function spokenInterval(label: string): string {
   return `${n} ${n === '1' ? one : many}`;
 }
 
-/** Whole days between two instants, rounded, never negative — the receipt's value column. */
+/** Whole days between two instants, rounded and never negative. The receipt's value column uses it. */
 export const daysBetween = (from: Date, to: Date): number =>
   Math.max(0, Math.round((to.getTime() - from.getTime()) / 86_400_000));
 

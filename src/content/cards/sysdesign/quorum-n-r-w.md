@@ -36,7 +36,7 @@ quiz:
   - q: "With R + W > N, a reader gets back v7 from one replica and v6 from another. Why can it trust v7?"
     options: ["The first reply is always newest", "The overlap guarantees the latest version is among the replies, and versions tell it which reply is newest", "Majority vote: more replicas said v7", "Replicas never disagree when R + W > N"]
     answer: 1
-    why: "The overlap only promises that at least one reply holds the latest write — not that most do. The version number (or timestamp) identifies which reply that is."
+    why: "The overlap only promises that at least one reply holds the latest write. It says nothing about most of them. The version number (or timestamp) identifies which reply that is."
 bigO:
   - { op: "N=3, W=2, R=2", avg: "balanced", note: "reads and writes both survive 1 dead replica" }
   - { op: "N=3, W=3, R=1", avg: "fast reads", note: "any dead replica blocks writes" }
@@ -67,15 +67,15 @@ To survive machine failures, a data store keeps **N copies** (replicas) of every
 
 ## How it works
 
-- **N** — the replication factor: how many replicas store each key.
-- **W** — the write quorum: a write is reported successful once **W** replicas acknowledge it. It is still sent to all N; the rest catch up later.
-- **R** — the read quorum: a read asks replicas and waits for **R** replies, then returns the one with the **highest version**.
+- **N** is the replication factor: how many replicas store each key.
+- **W** is the write quorum: a write is reported successful once **W** replicas acknowledge it. It is still sent to all N; the rest catch up later.
+- **R** is the read quorum: a read asks replicas and waits for **R** replies, then returns the one with the **highest version**.
 
 Every stored value carries a **version** (a counter, a timestamp, or a version vector) so the reader can tell which of several replies is newest. A **version vector** keeps one counter per replica; if neither of two vectors is ≥ the other in every slot, the writes were concurrent and must be merged rather than one simply winning.
 
 ### Why R + W > N works
 
-The W replicas that acknowledged the latest write and the R replicas that answer a read are both subsets of the same N. If R + W > N, the two subsets together are bigger than the whole set, so they **must share at least one replica** — the pigeonhole principle. That shared replica holds the latest write, so the newest version is always among the R replies. If R + W ≤ N, the two subsets can be completely disjoint, and the reader can see only old copies without any way to know.
+The W replicas that acknowledged the latest write and the R replicas that answer a read are both subsets of the same N. If R + W > N, the two subsets together are bigger than the whole set, so they **must share at least one replica**. That's the pigeonhole principle. That shared replica holds the latest write, so the newest version is always among the R replies. If R + W ≤ N, the two subsets can be completely disjoint, and the reader can see only old copies without any way to know.
 
 ## Worked example
 
@@ -83,12 +83,12 @@ N = 3, W = 2, R = 2, key `cart:42` at version v1 everywhere.
 
 | Step | R1 | R2 | R3 | Result |
 |---|---|---|---|---|
-| Start | v1 | v1 | v1 | — |
+| Start | v1 | v1 | v1 | all in sync |
 | Write v2, W = 2 | v2 ✓ | v2 ✓ | (slow) v1 | 2 acks → success |
-| Read, R = 2, asks R2 + R3 | — | v2 | v1 | newest = **v2** |
-| Read repair | — | — | v2 | R3 fixed |
+| Read, R = 2, asks R2 + R3 | (not asked) | v2 | v1 | newest = **v2** |
+| Read repair | (no change) | (no change) | v2 | R3 fixed |
 
-Try every pair the reader could pick: {R1, R2}, {R1, R3}, {R2, R3}. Each contains R1 or R2, so each contains v2. Now set R = W = 1: the write lands only on R1, the read asks only R3, and the reader returns v1 — a **stale read** — with no error.
+Try every pair the reader could pick: {R1, R2}, {R1, R3}, {R2, R3}. Each contains R1 or R2, so each contains v2. Now set R = W = 1: the write lands only on R1, the read asks only R3, and the reader returns v1 with no error. That's a **stale read**.
 
 ## Sketch it
 
@@ -134,4 +134,4 @@ def read(key, R):
 
 ## In the interview
 
-Usually: "how do you make reads see the latest write in a leaderless store?" State **R + W > N** and explain the overlap in one sentence, then say why versions are needed to pick the newest reply, and mention read repair. Expect the follow-ups "N = 5, how many failures can you survive?" (2, with R = W = 3) and "is that linearisable?" (not strictly — sloppy quorums, failed writes and concurrent writes are the gaps).
+Usually: "how do you make reads see the latest write in a leaderless store?" State **R + W > N** and explain the overlap in one sentence, then say why versions are needed to pick the newest reply, and mention read repair. Expect the follow-ups "N = 5, how many failures can you survive?" (2, with R = W = 3) and "is that linearisable?" (not strictly: sloppy quorums, failed writes and concurrent writes are the gaps).
