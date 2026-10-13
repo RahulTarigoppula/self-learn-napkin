@@ -1,0 +1,46 @@
+{
+  "name": "p-values-and-confidence-intervals",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Assume the null: a fair coin",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Our data: 62 heads",
+      "firstElement": 3,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "p-value: as extreme or more, if H₀ is true",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Compare with α = 0.05",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "95 % confidence interval for P(heads)",
+      "firstElement": 9,
+      "lastElement": 11
+    },
+    {
+      "index": 5,
+      "caption": "Twenty tests: Bonferroni",
+      "firstElement": 12,
+      "lastElement": 15
+    }
+  ],
+  "hash": "c28647877986aa5622f8a542d977b64705745561",
+  "title": "Null distribution of coin flips, the p-value tails, alpha cut-offs, a confidence interval and Bonferroni"
+}

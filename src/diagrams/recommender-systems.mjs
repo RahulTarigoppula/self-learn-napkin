@@ -58,7 +58,7 @@ export default (d) => {
 
   d.step('Fill the gap with a dot product');
   d.highlight(14, 212, 492, 30);
-  d.text(260, 227, 'Ann · Heat = 2.0·2.3 + 0.3·0.3 = 4.69 → recommend', { pen: 'red', size: 15, bold: true });
+  d.text(260, 227, 'Ann · Heat = 2.0·2.3 + 0.3·0.3 = 4.69 → recommend', { pen: 'ink', size: 15, bold: true });
 
   d.step('At scale: retrieve, then rank');
   d.group(() => {

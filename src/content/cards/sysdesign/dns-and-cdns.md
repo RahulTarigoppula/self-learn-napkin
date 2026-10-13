@@ -15,7 +15,7 @@ story:
   - title: The authoritative answer, cached for its TTL
     text: "The authoritative server for shop.com finally answers: 203.0.113.7, valid for 300 seconds. The resolver caches it for that TTL and returns it, so the next user asking within five minutes gets an instant answer and nobody bothers the root or .com servers."
   - title: That IP is a nearby CDN edge
-    text: "For a site behind a CDN, that IP belongs to an edge server close to you rather than to the origin. You request /logo.png from 10 ms away. If the edge already has it — a cache hit — it answers immediately, and the origin never sees the request."
+    text: "For a site behind a CDN, the name is usually aliased (a CNAME) to the CDN, whose DNS hands back the IP of an edge server close to you rather than the origin. You request /logo.png from 10 ms away. If the edge already has it — a cache hit — it answers immediately, and the origin never sees the request."
   - title: A miss goes to the origin once
     text: "If the edge does not have the file — a miss — it fetches it from the origin, perhaps 150 ms away, returns it to you and keeps a copy for as long as the Cache-Control max-age allows. Every later user near that edge gets a hit."
   - title: "Changing a file: purge or rename"
@@ -25,7 +25,7 @@ keyIdeas:
   - "**TTL is a trade-off:** short TTLs make changes and failover fast but cost more lookups; long TTLs are cheap but slow to change."
   - "**A CDN cuts round-trip time and origin load**: hits are served from an edge near the user; only misses reach the origin."
   - "**Pull CDN** fetches on first miss; **push CDN** is loaded by you in advance. Pull is the common default."
-  - "**Cache key = what makes two requests 'the same'** (usually host + path + query). Too wide fragments the cache; too narrow can leak one user's page to another."
+  - "**Cache key = what makes two requests 'the same'** (usually host + path + query). Put too much in it and the cache fragments; leave out something that changes the response and users get the wrong — or another user's — page."
   - "**Best invalidation is no invalidation:** fingerprinted file names with long max-age; purge only for mistakes."
 quiz:
   - q: "A resolver with an empty cache looks up img.shop.com. Which server does it ask second?"

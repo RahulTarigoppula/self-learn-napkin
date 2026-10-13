@@ -41,6 +41,6 @@
       "lastElement": 12
     }
   ],
-  "hash": "36f0f3d0dde098811fe0be6f4e9c695e7b354cbc",
+  "hash": "4ee7f8f9046b2e82d78d285dc8302cde08bee042",
   "title": "PCA on five 2-D points: centre on the mean, find the diagonal direction of maximum variance, project onto it, the perpendicular second component with 90 % / 10 % explained variance, and the covariance eigenvectors"
 }

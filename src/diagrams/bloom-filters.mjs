@@ -1,5 +1,5 @@
 export const meta = {
-  title: 'Bloom filter: a 16-bit array, adding cat and dog with three hashes, a definite miss and a false positive',
+  title: 'Bloom filter: a 16-bit array, adding cat and dog with three hashes, a definite miss, and a false positive built from bits of both',
   width: 520,
   height: 420,
 };
@@ -50,23 +50,23 @@ export default (d) => {
 
   d.step('Query "emu": a 0 means definitely not');
   d.group(() => {
-    for (const i of [1, 4, 6]) d.arrow(120, 282, cx(i), Y + H + 26, { pen: i === 6 ? 'red' : 'muted', thick: i === 6 });
+    for (const i of [1, 2, 4]) d.arrow(100, 282, cx(i) - (i === 4 ? 5 : 0), Y + H + 26, { pen: i === 2 ? 'red' : 'muted', thick: i === 2 });
   });
   d.group(() => {
-    d.text(120, 296, 'query "emu"', { pen: 'red', size: 17, bold: true });
-    d.text(120, 316, 'h → 1, 4, 6', { pen: 'red', mono: true, size: 14 });
+    d.text(100, 296, 'query "emu"', { pen: 'red', size: 17, bold: true });
+    d.text(100, 316, 'h → 1, 2, 4', { pen: 'red', mono: true, size: 14 });
   });
-  d.text(120, 342, 'bit 6 is 0: definitely not', { pen: 'red', size: 15, bold: true });
+  d.text(118, 342, 'bit 2 is 0: definitely not', { pen: 'red', size: 15, bold: true });
 
   d.step('Query "fox": all 1s, but never added');
   d.group(() => {
-    for (const i of [8, 11, 14]) d.arrow(400, 282, cx(i), Y + H + 26, { pen: 'orange' });
+    for (const i of [4, 11, 14]) d.arrow(390, 282, cx(i) + (i === 4 ? 5 : 0), Y + H + 26, { pen: 'orange' });
   });
   d.group(() => {
-    d.text(400, 296, 'query "fox"', { pen: 'orange', size: 17, bold: true });
-    d.text(400, 316, 'h → 8, 11, 14', { pen: 'orange', mono: true, size: 14 });
+    d.text(390, 296, 'query "fox"', { pen: 'orange', size: 17, bold: true });
+    d.text(390, 316, 'h → 4, 11, 14', { pen: 'orange', mono: true, size: 14 });
   });
-  d.text(400, 342, 'all 1: "maybe" (false +)', { pen: 'orange', size: 15, bold: true });
+  d.text(390, 342, 'all 1: "maybe" (false +)', { pen: 'orange', size: 15, bold: true });
 
   d.step('How often it lies');
   d.highlight(70, 362, 380, 22);

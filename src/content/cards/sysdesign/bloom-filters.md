@@ -16,9 +16,9 @@ story:
   - title: Add dog, bits can be shared
     text: "Adding 'dog' hashes to 8, 11 and 14. Bit 8 is already 1 from cat, so it stays 1. Items share bits, which keeps the filter compact but means you can never tell which item set a bit. That is why plain Bloom filters cannot delete."
   - title: Query emu, a zero means definitely not
-    text: "Is 'emu' in the set? Its hashes are 1, 4 and 6. Bits 1 and 4 are set, but bit 6 is 0. Had emu been added, bit 6 would be 1, so emu is definitely not in the set. No false negatives, ever. This is the answer that saves work."
+    text: "Is 'emu' in the set? Its hashes are 1, 2 and 4. Bits 1 and 4 are set, but bit 2 is 0. Had emu been added, bit 2 would be 1, so emu is definitely not in the set. No false negatives, ever. This is the answer that saves work."
   - title: Query fox, all ones but never added
-    text: "'fox' hashes to 8, 11 and 14, all set by cat and dog. The filter must say 'maybe', yet fox was never added: a false positive. The caller then checks the real data store. Errors only go one way, so the filter can save work but never gives a wrong 'no'."
+    text: "'fox' hashes to 4, 11 and 14. Bit 4 was set by cat, bits 11 and 14 by dog. The filter must say 'maybe', yet fox was never added: a false positive. The caller then checks the real data store. Errors only go one way, so the filter can save work but never gives a wrong 'no'."
   - title: How often it lies
     text: "After n inserts, a bit is still 0 with probability about e^(−kn/m), so a false positive happens with probability (1 − e^(−kn/m))^k. Here, with 2 items in 16 bits, that is about 3 %. The best k is (m/n)·ln 2; with 10 bits per item that is k = 7 and about 1 % false positives."
 keyIdeas:
@@ -41,7 +41,7 @@ quiz:
     answer: 1
     why: "In the example, cat and dog both set bit 8. Removing cat by clearing bit 8 would make the filter answer 'definitely not' for dog, breaking the one guarantee it has. Counting Bloom filters keep a counter per position so deletes are safe."
   - q: "A filter has m = 16 bits and k = 3. After adding more and more items, what happens to its false-positive rate?"
-    options: ["It stays at 3 %", "It rises towards 100 % as the bits fill with 1s", "It falls, because more bits are set", "It becomes negative"]
+    options: ["It stays at 3 %", "It rises towards 100 % as the bits fill with 1s", "It falls, because more bits are set", "It depends only on k, not on how many items were added"]
     answer: 1
     why: "Each insert sets more bits. As the fraction of 1s grows, a random query is more likely to find all k of its bits set. When every bit is 1 the filter says 'maybe' to everything. Size the filter for the expected n."
 bigO:
@@ -110,10 +110,12 @@ m = 16, k = 3 (the drawing). Add `cat` → bits 1, 4, 8. Add `dog` → bits 8, 1
 | Query | Bits checked | Values | Answer | Truth |
 |---|---|---|---|---|
 | `cat` | 1, 4, 8 | 1, 1, 1 | maybe | present |
-| `emu` | 1, 4, 6 | 1, 1, **0** | definitely not | absent |
-| `fox` | 8, 11, 14 | 1, 1, 1 | maybe | **absent: false positive** |
+| `emu` | 1, 2, 4 | 1, **0**, 1 | definitely not | absent |
+| `fox` | 4, 11, 14 | 1, 1, 1 | maybe | **absent: false positive** |
 
-The formula predicts p ≈ (1 − e^(−3·2/16))³ = (1 − 0.687)³ ≈ 3 % for a random query.
+No single item set all of fox's bits: cat set bit 4, dog set 11 and 14. That is how false positives arise — the bits of *several* items happen to cover a new key.
+
+The formula predicts p ≈ (1 − e^(−3·2/16))³ = (1 − 0.687)³ ≈ 3 % for a random query. (Exact check: 5 of 16 bits are set, and (5/16)³ ≈ 3 %.)
 
 ## In code
 

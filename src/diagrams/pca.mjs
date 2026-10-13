@@ -16,7 +16,7 @@ const LABEL = {
   A: [-10, 0, 'end'],
   B: [10, 4, 'start'],
   C: [-10, 0, 'end'],
-  D: [10, 4, 'start'],
+  D: [8, 16, 'start'],
   E: [-10, -6, 'end'],
 };
 // Foot of the perpendicular from each point onto PC1 (the diagonal through the mean).
@@ -61,7 +61,7 @@ export default (d) => {
     d.line(x - 9, y - 9, x + 9, y + 9, { pen: 'orange', thick: true, rough: 0.3, single: true });
     d.line(x - 9, y + 9, x + 9, y - 9, { pen: 'orange', thick: true, rough: 0.3, single: true });
   });
-  d.text(RX, 40, 'mean = (3, 3)\nsubtract it: the cloud\nnow sits on the origin', {
+  d.text(RX, 40, 'mean = (3, 3)\nsubtract it: the mean\nbecomes the new origin', {
     pen: 'orange',
     size: 15,
     anchor: 'start',

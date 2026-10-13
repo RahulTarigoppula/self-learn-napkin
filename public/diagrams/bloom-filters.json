@@ -41,6 +41,6 @@
       "lastElement": 17
     }
   ],
-  "hash": "e265cd8d6616428fd80d7651d0d7d46268faf8dd",
-  "title": "Bloom filter: a 16-bit array, adding cat and dog with three hashes, a definite miss and a false positive"
+  "hash": "1a7015aec05ed4620f1337ab9745048ae5a161e3",
+  "title": "Bloom filter: a 16-bit array, adding cat and dog with three hashes, a definite miss, and a false positive built from bits of both"
 }

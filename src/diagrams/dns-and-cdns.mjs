@@ -10,8 +10,8 @@ const NS = [
   { y: 82, label: '.com TLD', note: 'ask ns1.shop.com' },
   { y: 140, label: 'shop.com NS', note: '' },
 ];
-const HX = 246; // hierarchy column
-const HW = 108;
+const HX = 240; // hierarchy column
+const HW = 118;
 const EDGE = { x: 168, y: 300, w: 112, h: 62 };
 const ORIGIN = { x: 386, y: 300, w: 112, h: 62 };
 

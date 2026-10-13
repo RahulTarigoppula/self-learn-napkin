@@ -46,8 +46,8 @@ bigO:
   - { op: "insert / delete", avg: "O(log n)", worst: "O(n)" }
   - { op: "balanced tree (AVL, red-black)", avg: "O(log n)", worst: "O(log n)" }
   - { op: "in-order traversal", avg: "O(n)" }
-related: [dsa/binary-search, dsa/hash-tables, dsa/bfs-and-dfs]
-prereqs: [dsa/binary-search]
+related: [dsa/balanced-trees, dsa/trees-and-traversals, dsa/hash-tables, dsa/binary-search]
+prereqs: [dsa/trees-and-traversals, dsa/binary-search]
 flashcards:
   - kind: qa
     q: "Why can a BST degrade to O(n) search, and how is that prevented?"

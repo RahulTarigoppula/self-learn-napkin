@@ -27,3 +27,7 @@ android/capacitor-cordova-android-plugins
 Thumbs.db
 public/search-index.json
 .secrets
+
+# stray scratch files
+/*.py
+/blk_*

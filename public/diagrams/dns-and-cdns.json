@@ -41,6 +41,6 @@
       "lastElement": 23
     }
   ],
-  "hash": "8310b84c4cdca3883a5b5bea3838fb6825becf38",
+  "hash": "6ced7ed9dbf2ac8ab9785c6bc096536d3198b29a",
   "title": "A DNS lookup walking root, TLD and authoritative servers, then a CDN edge serving a cached file or fetching it from the origin"
 }
