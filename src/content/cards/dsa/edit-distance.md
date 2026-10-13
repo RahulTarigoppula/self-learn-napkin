@@ -59,7 +59,7 @@ flashcards:
     q: "Why is the edit distance at least |m − n|?"
     a: "Replacements keep the length the same, so the length difference must be made up by that many inserts or deletes, each costing 1."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Dynamic programming chapter (edit distance), ideas redrawn" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Dynamic programming chapter (edit distance), ideas redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 griddle: edit-distance
 ---

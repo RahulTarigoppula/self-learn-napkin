@@ -61,7 +61,7 @@ flashcards:
     q: "LeetCode 'Course Schedule' asks whether all courses can be finished. What do you run, and what is the answer condition?"
     a: "Kahn's algorithm (or DFS with three colours) on the prerequisite graph; all courses can be finished exactly when every course is output, i.e. there is no cycle."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 6, depth-first search and topological sort, rewritten" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 6, depth-first search and topological sort, rewritten" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 griddle: topological-sort
 ---

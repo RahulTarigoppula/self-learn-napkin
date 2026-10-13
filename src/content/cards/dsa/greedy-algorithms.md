@@ -59,7 +59,7 @@ flashcards:
     q: "Give a coin system where 'largest coin first' fails."
     a: "Coins {1, 3, 4} for amount 6: greedy gives 4 + 1 + 1 (3 coins), the optimum is 3 + 3 (2 coins)."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 4, greedy algorithms, rewritten" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 4, greedy algorithms, rewritten" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 ---
 

@@ -1302,8 +1302,8 @@
 .fc7__new {
   background: repeating-linear-gradient(
     -45deg,
-    var(--hl) 0 6px,
-    color-mix(in srgb, var(--hl) 60%, var(--surface)) 6px 12px
+    color-mix(in srgb, var(--accent) 34%, var(--surface)) 0 5px,
+    color-mix(in srgb, var(--accent) 18%, var(--surface)) 5px 10px
   );
 }
 .fc7__bar span:last-child {

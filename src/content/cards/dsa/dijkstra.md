@@ -60,7 +60,7 @@ flashcards:
     q: "How do you return the actual shortest path, not just its length?"
     a: "Store parent[v] whenever you lower dist[v]; at the end walk parents from the target back to the source and reverse the list."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 8, shortest paths, rewritten" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 8, shortest paths, rewritten" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 griddle: dijkstra
 ---

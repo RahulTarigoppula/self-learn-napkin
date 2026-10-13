@@ -60,7 +60,7 @@ flashcards:
     q: "How does an MST give you k clusters?"
     a: "Run Kruskal but stop when k pieces remain (equivalently, delete the k − 1 heaviest MST edges). This is single-linkage clustering and maximises the gap between clusters."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 7, minimum spanning trees, rewritten" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 7, minimum spanning trees, rewritten" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 griddle: mst
 ---

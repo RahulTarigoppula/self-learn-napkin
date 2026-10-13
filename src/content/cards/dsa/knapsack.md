@@ -60,7 +60,7 @@ flashcards:
     q: "How do you recover which items were chosen from the 2-D table?"
     a: "Start at dp[n][W]. If dp[i][c] ≠ dp[i−1][c], item i was taken, so subtract its weight from c. Move up one row either way until row 0."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Dynamic programming chapter, ideas redrawn" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Dynamic programming chapter, ideas redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 griddle: knapsack
 ---

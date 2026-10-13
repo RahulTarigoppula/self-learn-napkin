@@ -62,7 +62,7 @@ flashcards:
     q: "What is an implicit graph? Give an example."
     a: "A graph whose edges are computed on demand rather than stored, such as a grid maze, where the neighbours of cell (r, c) are the open cells above, below, left and right of it."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Basic graph algorithms: representations" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Basic graph algorithms: representations" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 ---
 

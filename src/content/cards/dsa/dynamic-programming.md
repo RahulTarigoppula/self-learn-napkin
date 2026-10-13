@@ -58,7 +58,7 @@ flashcards:
     q: "For coin change (fewest coins to make an amount), what is the recurrence?"
     a: "best[a] = 1 + min(best[a − c]) over every coin c ≤ a, with best[0] = 0; unreachable amounts stay infinite."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Dynamic programming chapter, ideas redrawn" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Dynamic programming chapter, ideas redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 ---
 

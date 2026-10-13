@@ -288,6 +288,9 @@ export default function Settings({ credits }: { credits: { name: string; url: st
           </li>
         </ul>
         <p>
+          <a class="st__about" href={href('made/')}>
+            Every source, and how it was checked →
+          </a>{' '}
           <a class="st__about" href={href('about/')}>
             Why I built Napkin →
           </a>

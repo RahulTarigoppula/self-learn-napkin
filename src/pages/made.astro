@@ -1,0 +1,456 @@
+---
+import Icon from '../components/Icon.astro';
+import AppShell from '../layouts/AppShell.astro';
+import { cardHref, href } from '../lib/base';
+import { library, numberOf, pad3 } from '../lib/content';
+
+const { cards } = await library();
+
+// Every number on this page is counted from the content at build time, so it can never drift.
+const words = (s: string) => (s.match(/[A-Za-z0-9][\w'’-]*/g) ?? []).length;
+const totalWords = cards.reduce(
+  (n, c) =>
+    n +
+    words(
+      [
+        c.data.tldr,
+        c.data.analogy ?? '',
+        ...c.data.story.map((s) => s.text),
+        ...c.data.keyIdeas,
+        c.body ?? '',
+      ].join(' '),
+    ),
+  0,
+);
+const scenes = cards.reduce((n, c) => n + c.data.story.length, 0);
+const quizzes = cards.reduce((n, c) => n + c.data.quiz.length, 0);
+const flashcards = cards.reduce((n, c) => n + c.data.flashcards.length, 0);
+const playgrounds = new Set(cards.map((c) => c.data.griddle).filter(Boolean)).size;
+const pyBlocks = cards.reduce(
+  (n, c) => n + ((c.body ?? '').match(/^```python(?! sketch)/gm) ?? []).length,
+  0,
+);
+const pyNapkins = cards.filter((c) => /^```python(?! sketch)/m.test(c.body ?? '')).length;
+const sketches = cards.reduce((n, c) => n + ((c.body ?? '').match(/^```python sketch/gm) ?? []).length, 0);
+
+const WHAT: Record<string, string> = {
+  'The System Design Primer':
+    'Topic list and trade-offs for system design. I used it to check that every common interview topic is covered and to cross-check numbers like latencies and throughput.',
+  'Stanford CS229 VIP cheatsheets (Amidi)':
+    'Definitions and formulas for classic machine learning. Every formula in the ML track was checked against these and then derived again by hand.',
+  'Stanford CS230 VIP cheatsheets (Amidi)':
+    'Deep learning definitions: layers, backpropagation, attention. Used as a second opinion on notation.',
+  'Open Data Structures':
+    'Invariants and proofs for arrays, lists, heaps, trees and hash tables. I leaned on it for the "why it works" parts.',
+  'Algorithms by Jeff Erickson':
+    'Recursion, dynamic programming and graph algorithms explained with real care. It shaped how the DP and graph napkins build up an idea.',
+  OpenDSA:
+    'Step-by-step visual traces of sorting and searching. I redrew those traces as napkin scenes in my own style.',
+  'Tech Interview Handbook':
+    'What interviewers actually ask and the follow-ups they like. It fed the "In the interview" section of each napkin.',
+  TheAlgorithms:
+    'Reference implementations, used only to cross-check that my Python matches a known-good answer.',
+};
+
+interface Src {
+  name: string;
+  url: string;
+  licence: string;
+  napkins: { id: string; title: string; note?: string | undefined }[];
+}
+const bySource = new Map<string, Src>();
+for (const c of cards)
+  for (const s of c.data.sources) {
+    if (s.licence === 'Own work') continue;
+    const e = bySource.get(s.name) ?? { name: s.name, url: s.url, licence: s.licence, napkins: [] };
+    e.napkins.push({ id: c.id, title: c.data.title, note: s.note });
+    bySource.set(s.name, e);
+  }
+const sources = [...bySource.values()].sort((a, b) => b.napkins.length - a.napkins.length);
+const own = cards.filter((c) => c.data.sources.some((s) => s.licence === 'Own work')).length;
+
+const stats = [
+  [cards.length, 'napkins'],
+  [scenes, 'scenes drawn'],
+  [`${Math.round(totalWords / 1000)}k`, 'words written'],
+  [quizzes, 'quiz questions'],
+  [flashcards, 'flashcards'],
+  [playgrounds, 'playgrounds'],
+  [pyBlocks, 'Python examples run on every build'],
+  [sources.length, 'open sources'],
+].map(([v, l]) => ({ v: String(v), l: String(l) }));
+---
+
+<AppShell title="How Napkin is made" active="about" description="Every source Napkin learned from, how each one was used and checked, and the algorithms inside the app.">
+  <div class="container made">
+    <header class="made__hero">
+      <p class="made__kicker hand">the receipts</p>
+      <h1>How Napkin is made</h1>
+      <p class="made__lede">
+        Napkin took almost <strong>12 weeks</strong> of planning, building, gathering sources and cleaning them up.
+        Most of that time went into the parts nobody sees: checking a number twice, redrawing a diagram until it was
+        obvious, cutting a paragraph that sounded clever but taught nothing. This page lays all of it out, because an app
+        that says "no superstition" should show its own working.
+      </p>
+      <p class="made__sig hand">Rahul</p>
+    </header>
+
+    <ul class="made__stats" aria-label="Napkin in numbers">
+      {
+        stats.map((s) => (
+          <li class="card">
+            <b class="mono">{s.v}</b>
+            <span>{s.l}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <section class="made__block" aria-labelledby="src-h">
+      <p class="eyebrow">Where the knowledge comes from</p>
+      <h2 id="src-h">Sources, and what each one gave</h2>
+      <p class="muted">
+        I only learned from openly licensed material (MIT, CC BY and similar), so I could credit it properly. Nothing was
+        copied: I read, cross-checked, then wrote every explanation in my own words and drew every diagram myself.{' '}
+        {own} of the {cards.length} napkins also carry my own explanation as a source, because the framing, the examples
+        and the mistakes I point out came from my own learning.
+      </p>
+      <div class="made__sources">
+        {
+          sources.map((s) => (
+            <article class="src card">
+              <div class="src__head">
+                <a href={s.url} rel="noopener" target="_blank" class="src__name">
+                  {s.name} <Icon name="external" size={14} />
+                </a>
+                <span class="src__lic mono">{s.licence}</span>
+              </div>
+              <p class="src__what">{WHAT[s.name] ?? 'Cross-checked facts and examples.'}</p>
+              <details class="src__list">
+                <summary>
+                  Cited in <b>{s.napkins.length}</b> napkin{s.napkins.length === 1 ? '' : 's'}
+                </summary>
+                <ul>
+                  {s.napkins.map((n) => (
+                    <li>
+                      <a href={cardHref(n.id)}>
+                        <span class="mono">{pad3(numberOf(n.id))}</span> {n.title}
+                      </a>
+                      {n.note && <span class="muted"> ({n.note})</span>}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="made__block" aria-labelledby="clean-h">
+      <p class="eyebrow">Cleaning and checking</p>
+      <h2 id="clean-h">How every napkin gets checked</h2>
+      <p class="muted">
+        Each napkin is a plain text file. Before the site is built, a set of checks runs over all of them, and the build
+        stops if any check fails. These run on every single change, not once.
+      </p>
+      <ol class="steps">
+        <li>
+          <b>Shape check.</b> Every napkin must have a title, a one-line summary, a story of 2 to 8 scenes, 3 to 6 key ideas,
+          a quiz and flashcards, each within strict length limits. A summary longer than 200 characters fails.
+        </li>
+        <li>
+          <b>Licence check.</b> Every source must carry an allowed open licence and a link. Non-commercial and share-alike
+          licences, and a list of sites I chose not to use, fail the build.
+        </li>
+        <li>
+          <b>Order check.</b> Napkins are numbered in learning order, and a napkin may not list a prerequisite that comes
+          later in its track.
+        </li>
+        <li>
+          <b>Picture check.</b> Each story scene must line up with exactly one step of its drawing, so the words and the
+          picture can never drift apart.
+        </li>
+        <li>
+          <b>Code check.</b> {pyBlocks} Python examples across {pyNapkins} napkins are executed on every build. Their printed
+          numbers were compared, line by line, with the worked examples in the text. {sketches} snippets that need a live
+          database or message broker are labelled as sketches instead of pretending to run.
+        </li>
+        <li>
+          <b>Fact reviews.</b> Each track went through separate review passes that redid the arithmetic by hand: quorum
+          sets, Bloom filter rates, DP tables, p-values, softmax weights. Errors found were fixed and the review was run
+          again.
+        </li>
+        <li>
+          <b>Fair quizzes.</b> Authors tend to put the right answer in the same slot. One review found 113 of 149 answers in
+          one track sitting in position B. Options are now shuffled with a fixed seed per question, so the answer moves
+          around but stays put for you.
+        </li>
+        <li>
+          <b>Voice check.</b> Plain words only. The build fails on em-dashes and on the stock phrases that make writing
+          sound machine-made.
+        </li>
+        <li>
+          <b>Accessibility and offline checks.</b> Every napkin is scanned for accessibility problems in light and dark mode,
+          and the app is tested with the network switched off.
+        </li>
+      </ol>
+    </section>
+
+    <section class="made__block" aria-labelledby="algo-h">
+      <p class="eyebrow">Inside the app</p>
+      <h2 id="algo-h">The algorithms Napkin runs on</h2>
+      <div class="algos">
+        <article class="algo card">
+          <h3>Spaced repetition: FSRS-6</h3>
+          <p>
+            Flashcards are scheduled by FSRS-6, a modern, openly published model of human memory. It estimates how stable
+            each memory is and brings a card back just before you would forget it. It runs entirely on your device.
+          </p>
+        </article>
+        <article class="algo card">
+          <h3>Search ranking</h3>
+          <p>
+            Every word you type must match somewhere. A match in a title counts 6 times, a tag 4 times, the summary twice
+            and the body once; an exact word beats a prefix, which beats a substring. Typing a number jumps to that napkin.
+          </p>
+        </article>
+        <article class="algo card">
+          <h3>Drawings as code</h3>
+          <p>
+            Each diagram is a small program. At build time it is rendered into hand-drawn strokes with Rough.js, split into
+            scenes, and the story player draws each scene's strokes with a CSS animation. No drawing library ships to you.
+          </p>
+        </article>
+        <article class="algo card">
+          <h3>Daily challenge and shuffles</h3>
+          <p>
+            The daily question is picked by hashing the date (FNV-1a) over all {quizzes} questions, so everyone gets the
+            same one each day. Quiz options are shuffled with a seeded generator (mulberry32), never with true randomness.
+          </p>
+        </article>
+        <article class="algo card">
+          <h3>Progress that survives updates</h3>
+          <p>
+            Each flashcard's identity is a SHA-1 of its napkin and its question text, so new napkins can be added without
+            touching your history. Streaks, XP and achievements are counted from what is stored on your device.
+          </p>
+        </article>
+        <article class="algo card">
+          <h3>Offline first</h3>
+          <p>
+            After one visit every page, drawing and font is cached by a service worker (Workbox). The Android app ships the
+            same files inside the APK and makes no network calls at all.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="made__block" aria-labelledby="oss-h">
+      <p class="eyebrow">Standing on shoulders</p>
+      <h2 id="oss-h">Open-source pieces</h2>
+      <p class="muted oss">
+        Astro and Preact (the app), Rough.js (the sketchy strokes), ts-fsrs (the scheduler), Dexie (storage on your device),
+        Workbox (offline), Capacitor (the Android app), Lucide (icons), and the fonts Bricolage Grotesque, Inter,
+        JetBrains Mono and Excalifont. Full licences are listed in <a href={href('settings/')}>Settings</a>.
+      </p>
+    </section>
+
+    <aside class="made__end card">
+      <p class="hand made__end-title">Found a mistake?</p>
+      <p>
+        I would genuinely like to know. Every napkin links to its sources, and the whole project is open on GitHub. If
+        something is wrong or unclear, open an issue and I will fix it.
+      </p>
+      <div class="made__cta">
+        <a class="btn btn--primary" href="https://github.com/RahulTarigoppula/self-learn-napkin/issues" rel="noopener" target="_blank"
+          ><Icon name="external" size={16} /> Report something</a
+        >
+        <a class="btn" href={href('about/')}>Why I built Napkin</a>
+      </div>
+    </aside>
+  </div>
+</AppShell>
+
+<style>
+  .made {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-8);
+    max-width: 980px;
+  }
+  .made__kicker {
+    color: var(--accent-ink);
+    font-size: 1.3rem;
+  }
+  .made__hero h1 {
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    letter-spacing: -0.04em;
+    margin: var(--space-2) 0 var(--space-4);
+  }
+  .made__lede {
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+  .made__lede strong {
+    background: linear-gradient(transparent 58%, color-mix(in srgb, var(--hl) 70%, transparent) 58%);
+  }
+  .made__sig {
+    margin-top: var(--space-3);
+    font-size: 1.5rem;
+    color: var(--accent-ink);
+  }
+  .made__stats {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-7) 0 0;
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .made__stats li {
+    display: grid;
+    gap: 2px;
+    padding: var(--space-4);
+  }
+  .made__stats b {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+  }
+  .made__stats span {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .made__block {
+    margin-top: var(--space-8);
+  }
+  .made__block h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    margin: var(--space-1) 0 var(--space-3);
+  }
+  .made__block > .muted {
+    max-width: 70ch;
+  }
+  .made__sources {
+    margin-top: var(--space-5);
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  }
+  .src {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    padding: var(--space-4) var(--space-5);
+  }
+  .src__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .src__name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-md);
+  }
+  .src__lic {
+    flex: none;
+    font-size: var(--text-xs);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: var(--surface-2);
+    color: var(--ink-muted);
+  }
+  .src__what {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .src__list summary {
+    cursor: pointer;
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+  .src__list ul {
+    margin-top: var(--space-2);
+    padding-left: var(--space-4);
+    display: grid;
+    gap: 4px;
+    font-size: var(--text-sm);
+  }
+  .steps {
+    margin-top: var(--space-5);
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding: var(--space-4) var(--space-5) var(--space-4) 64px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    line-height: 1.6;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: var(--space-4);
+    top: var(--space-4);
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-weight: 800;
+    font-size: var(--text-sm);
+  }
+  .algos {
+    margin-top: var(--space-5);
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  }
+  .algo {
+    padding: var(--space-5);
+  }
+  .algo h3 {
+    font-size: var(--text-md);
+    margin-bottom: var(--space-2);
+  }
+  .algo p {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+  .oss a {
+    text-decoration: underline;
+  }
+  .made__end {
+    margin-top: var(--space-8);
+    padding: var(--space-6);
+    display: grid;
+    gap: var(--space-3);
+    background:
+      radial-gradient(90% 140% at 100% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%),
+      var(--surface);
+  }
+  .made__end-title {
+    font-size: 1.5rem;
+    color: var(--accent-ink);
+  }
+  .made__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

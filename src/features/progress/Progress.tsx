@@ -148,7 +148,9 @@ export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
           <p class="muted pg__hover" aria-live="polite">
             {hover
               ? `${ringLabel(hover, hovered?.reviews ?? 0)}${hovered?.napkinsRead ? `, ${hovered.napkinsRead} napkin${hovered.napkinsRead === 1 ? '' : 's'} read` : ''}`
-              : 'Hover or tap a day'}
+              : d.days.size === 0
+                ? 'Each review or napkin you read lights up a square'
+                : 'Hover or tap a day'}
           </p>
         </div>
         <div class="heat" role="group" aria-label="Daily activity calendar">

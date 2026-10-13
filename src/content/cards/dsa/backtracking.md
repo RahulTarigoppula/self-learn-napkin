@@ -58,7 +58,7 @@ flashcards:
     q: "How many solutions does 8-queens have, and roughly how much does pruning help?"
     a: "92 solutions. Backtracking with column and diagonal sets tries 2,056 placements, instead of 8⁸ ≈ 16.8 million ways to put one queen per row."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 2, backtracking and n queens, rewritten" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 2, backtracking and n queens, rewritten" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 ---
 

@@ -59,7 +59,7 @@ flashcards:
     q: "Why does an undirected graph with one negative edge always have a negative cycle?"
     a: "An undirected edge u–v of weight −w is two directed edges u→v and v→u, so going there and back costs −2w < 0."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 8, Bellman-Ford, rewritten" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 8, Bellman-Ford, rewritten" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 ---
 

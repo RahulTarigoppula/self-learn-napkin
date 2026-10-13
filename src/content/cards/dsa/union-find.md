@@ -60,7 +60,7 @@ flashcards:
     q: "How do you detect a cycle in an undirected graph with union-find?"
     a: "Process the edges one at a time: if both ends already have the same root, that edge closes a cycle; otherwise union them."
 sources:
-  - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Disjoint sets and Kruskal's algorithm" }
+  - { name: "Algorithms by Jeff Erickson", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Disjoint sets and Kruskal's algorithm" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
 griddle: union-find
 ---
