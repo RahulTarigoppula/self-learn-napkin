@@ -29,11 +29,21 @@ export function manifest(base) {
 
 export async function buildSw({ dist = 'dist', base = '/', maxMb = 25 } = {}) {
   await writeFile(`${dist}/manifest.webmanifest`, JSON.stringify(manifest(base), null, 2));
+  // Never cached: the app asks for it on every visit to see whether a newer release is live.
+  await writeFile(`${dist}/version.json`, JSON.stringify({ v: process.env.APP_VERSION ?? 'dev' }));
   const { count, size, warnings } = await generateSW({
     globDirectory: dist,
     globPatterns: ['**/*.{html,js,css,woff2,json,webmanifest,png,svg}'],
     // The standalone diagram files are only for sharing/debugging: every diagram is inlined in its page.
-    globIgnores: ['diagrams/*.svg', 'diagrams/*.json', 'sw.js', 'workbox-*.js', '**/*.map', 'videos/**'],
+    globIgnores: [
+      'diagrams/*.svg',
+      'diagrams/*.json',
+      'sw.js',
+      'workbox-*.js',
+      '**/*.map',
+      'videos/**',
+      'version.json',
+    ],
     modifyURLPrefix: { '': base },
     swDest: `${dist}/sw.js`,
     // A new deploy takes over as soon as it has downloaded; the page reloads onto it (src/features/pwa/register.ts).

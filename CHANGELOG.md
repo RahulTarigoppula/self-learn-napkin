@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.1 (2026-10-14)
+
+- **Always the latest version**: on every visit the app checks, bypassing all caches, which release is live. If the copy in your browser is older, it clears only the cached app files and reloads once. Your progress, profiles and settings stay.
+- New landing page heading in Rahul's own words, plus plainer section titles.
+- Phone fix: the home buttons no longer run off the screen.
+
 ## v1.2.0 (2026-10-14)
 
 - **Profiles without accounts**: everyone sharing a device gets their own progress, streaks and settings. Names live only in that browser.

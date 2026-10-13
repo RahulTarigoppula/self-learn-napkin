@@ -323,7 +323,7 @@ export default function Review() {
     const good = lines.filter((l) => l.rating >= 3).length;
     return (
       <div class="rv rv--center rv--done">
-        <h2>Session done! 🎉</h2>
+        <h2>Done for today 🎉</h2>
         <p class="muted">
           {lines.length} card{lines.length === 1 ? '' : 's'} ·{' '}
           {Math.round((good / Math.max(1, lines.length)) * 100)}% recalled · {streak}-day streak

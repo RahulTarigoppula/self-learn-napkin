@@ -47,12 +47,12 @@ const firstFact = facts[0];
   <div class="container home">
     <section class="hero reveal">
       <div class="hero__copy">
-        <p class="hero__kicker hand">interview prep, sketched on a napkin</p>
-        <h1 class="hero__title">Hard ideas, <span class="hero__scribble">drawn simply</span>.</h1>
+        <p class="hero__kicker hand">Rahul's interview notebook</p>
+        <h1 class="hero__title">I learn by drawing. <span class="hero__scribble">So I drew all of it.</span></h1>
         <p class="hero__sub">
-          {cards.length} hand-drawn visual stories on algorithms, system design and machine learning. Each one builds the
-          picture step by step, goes deeper when you want it to, and then quizzes you until it sticks. It's free and
-          private, and it works offline.
+          {cards.length} topics from algorithms, system design and machine learning, each one sketched step by step and
+          explained in plain words, the way I wish someone had explained them to me. Then a short quiz and a few
+          flashcards so it stays with you. Free, private, and it works offline.
         </p>
         <div class="hero__cta">
           <a class="btn btn--primary btn--lg" href={href('library/')}><Icon name="library" /> Browse the library</a>
@@ -180,7 +180,7 @@ const firstFact = facts[0];
       <div class="section-head">
         <div>
           <p class="eyebrow">Practice</p>
-          <h2>Test yourself, your way</h2>
+          <h2>Got ten minutes? Practise.</h2>
         </div>
       </div>
       <div class="practice">
@@ -222,7 +222,7 @@ const firstFact = facts[0];
       <div class="section-head">
         <div>
           <p class="eyebrow">How Napkin works</p>
-          <h2>Learn it once. Keep it for good.</h2>
+          <h2>What happens on each napkin</h2>
         </div>
       </div>
       <ol class="how__steps">
@@ -356,7 +356,7 @@ const firstFact = facts[0];
   }
   .hero__title {
     margin-top: var(--space-3);
-    font-size: clamp(2.3rem, 12.5cqi, 4.6rem);
+    font-size: clamp(2.1rem, 8.6cqi, 4rem);
     letter-spacing: -0.045em;
     line-height: 0.98;
   }
@@ -384,12 +384,19 @@ const firstFact = facts[0];
   }
   .hero__cta {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
     margin-top: var(--space-6);
   }
   .hero__cta .btn {
     justify-content: center;
+    min-width: 0;
+  }
+  @container main (max-width: 639px) {
+    .hero__cta .btn--lg {
+      padding-inline: var(--space-3);
+      font-size: var(--text-base);
+    }
   }
   .hero__cta [data-surprise] {
     grid-column: 1 / -1;

@@ -1,4 +1,4 @@
-import { BASE, PLATFORM } from '../../lib/base';
+import { APP_VERSION, BASE, PLATFORM } from '../../lib/base';
 import { toast } from '../../lib/toast';
 
 /** Register the Workbox service worker on the web (never inside the APK, which is offline by construction).
@@ -24,7 +24,11 @@ export function registerServiceWorker(): void {
         if (!e.isUpdate) document.documentElement.dataset.offlineReady = 'true';
       });
       // Look for a new deploy whenever the app comes back to the foreground, and every 30 minutes.
-      const check = () => void wb.update().catch(() => undefined);
+      const check = () => {
+        void wb.update().catch(() => undefined);
+        void ensureLatest();
+      };
+      void ensureLatest();
       document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && check());
       setInterval(check, 30 * 60 * 1000);
       return wb.register();
@@ -46,5 +50,23 @@ export async function refreshToLatest(): Promise<void> {
     }
   } finally {
     location.reload();
+  }
+}
+
+/** Belt and braces: ask the server (bypassing every cache) which release is live. If this page is older,
+ *  drop the cached app files and reload once onto the new one. Progress is untouched. */
+async function ensureLatest(): Promise<void> {
+  if (document.querySelector('[data-review-active]')) return;
+  try {
+    const r = await fetch(`${BASE}version.json`, { cache: 'no-store' });
+    if (!r.ok) return;
+    const { v } = (await r.json()) as { v?: string };
+    if (!v || v === APP_VERSION) return;
+    const key = 'napkin:reloaded-for';
+    if (sessionStorage.getItem(key) === v) return; // already tried once this tab; never loop
+    sessionStorage.setItem(key, v);
+    await refreshToLatest();
+  } catch {
+    // Offline or blocked: keep using the copy we have.
   }
 }

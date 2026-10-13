@@ -1,6 +1,6 @@
 # Napkin
 
-*Hard ideas, drawn simply.* Interview prep, sketched on the back of a napkin.
+*I learn by drawing, so I drew all of it.* 121 interview topics, each one sketched step by step and explained in plain words.
 
 **Web app:** https://rahultarigoppula.github.io/self-learn-napkin/ · **Android APK:** [latest release](https://github.com/RahulTarigoppula/self-learn-napkin/releases/latest)
 

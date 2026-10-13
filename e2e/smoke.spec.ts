@@ -1,8 +1,8 @@
 import { expect, test } from './_fixtures';
 
 const ROUTES = [
-  ['', /Hard ideas/],
-  ['library/', /Every napkin/],
+  ['', /So I drew all of it/],
+  ['library/', /napkins, in learning order/],
   ['dsa/', /Data Structures/],
   ['sysdesign/', /System Design/],
   ['ds/', /Data Science/],

@@ -1,6 +1,6 @@
 {
   "name": "napkin",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "type": "module",
   "description": "Interview prep sketched on the back of a diner napkin. Offline-first visual study cards for DSA, System Design and Data Science.",

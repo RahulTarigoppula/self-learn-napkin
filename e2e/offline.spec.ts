@@ -18,7 +18,7 @@ test('after one visit everything works offline', async ({ page, context }) => {
   await page.goto('sysdesign/consistent-hashing/');
   await expect(page.locator('h1')).toHaveText('Consistent Hashing');
   await page.goto('library/');
-  await expect(page.locator('h1')).toHaveText(/Every napkin/);
+  await expect(page.locator('h1')).toHaveText(/napkins, in learning order/);
   await page.goto('review/?topic=dsa%2Fbinary-search');
   await expect(page.getByRole('button', { name: /Show answer/ })).toBeVisible();
   await page.goto('never-cached-page/');
