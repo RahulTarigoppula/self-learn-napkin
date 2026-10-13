@@ -1,0 +1,106 @@
+/* Union-find griddle */
+.gd .uf__mono {
+  fill: var(--pen-muted);
+  font-family: var(--font-mono);
+}
+.gd .uf__cell rect {
+  fill: var(--surface);
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+}
+.gd .uf__cell text {
+  fill: var(--pen-ink);
+  font-weight: 700;
+}
+.gd .uf__cell .uf__mono {
+  fill: var(--pen-muted);
+  font-weight: 400;
+}
+.gd .uf__cell.is-new rect {
+  fill: var(--hl);
+  stroke: var(--pen-orange);
+}
+.gd .uf__cell.is-new text:first-of-type {
+  fill: var(--hl-ink);
+}
+.gd .uf__node {
+  cursor: pointer;
+  outline: none;
+}
+.gd .uf__node circle {
+  fill: var(--surface);
+  stroke: var(--pen-ink);
+  stroke-width: 2;
+}
+.gd .uf__node text {
+  fill: var(--pen-ink);
+  font-weight: 700;
+}
+.gd .uf__node.is-root circle {
+  fill: var(--wash-violet);
+  stroke: var(--pen-violet);
+  stroke-width: 3;
+}
+.gd .uf__node.is-path circle {
+  fill: var(--hl);
+  stroke: var(--pen-orange);
+  stroke-width: 3;
+}
+.gd .uf__node.is-path text {
+  fill: var(--hl-ink);
+}
+.gd .uf__node.is-sel circle {
+  stroke: var(--pen-orange);
+  stroke-width: 4;
+  stroke-dasharray: 5 3;
+}
+.gd .uf__node:focus-visible circle {
+  stroke: var(--accent);
+  stroke-width: 4;
+}
+.gd .uf__node .uf__size {
+  fill: var(--pen-violet);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.gd .uf__edge line,
+.gd .uf__edge path {
+  fill: none;
+  stroke: var(--pen-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.gd .uf__edge.is-path line,
+.gd .uf__edge.is-path path {
+  stroke: var(--pen-orange);
+  stroke-width: 3.5;
+}
+.gd .uf__edge.is-link line,
+.gd .uf__edge.is-link path {
+  stroke: var(--pen-green);
+  stroke-width: 3.5;
+}
+.gd .uf__pick,
+.gd .uf__opt {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.gd .uf__pick select {
+  height: 44px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+.gd .uf__opt input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--pen-orange);
+}

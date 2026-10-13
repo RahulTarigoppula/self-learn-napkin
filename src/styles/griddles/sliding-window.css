@@ -1,0 +1,45 @@
+/* Sliding-window griddle: animated window frame + last-seen map chips. */
+.sw__win {
+  transition:
+    transform var(--dur-slow) var(--ease-spring),
+    width var(--dur-slow) var(--ease-spring);
+}
+.sw__map {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  min-height: 34px;
+}
+.sw__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--pen-blue);
+  background: var(--wash-blue);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  transition:
+    background var(--dur-base) var(--ease-out),
+    opacity var(--dur-base) var(--ease-out);
+}
+.sw__chip.is-stale {
+  border-style: dashed;
+  border-color: var(--pen-muted);
+  background: var(--surface-2);
+  color: var(--ink-muted);
+}
+.sw__chip.is-new {
+  border-color: var(--pen-orange);
+  background: var(--hl);
+  color: var(--hl-ink);
+}
+.sw__empty {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}

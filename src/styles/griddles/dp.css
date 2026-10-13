@@ -1,0 +1,92 @@
+/* DP-table griddles (LCS, edit distance, knapsack). Tokens only — works in light and dark. */
+.dp__cell {
+  cursor: pointer;
+}
+.dp__words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.dp__words .gd__input {
+  width: 9.5em;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+.dp__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+.dp__chip {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--pen-green);
+  background: var(--wash-green);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  animation: dp-pop var(--dur-base) var(--ease-spring);
+}
+@keyframes dp-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dp__chip {
+    animation: none;
+  }
+}
+.dp__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: var(--space-2);
+}
+.dp__item {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border-strong);
+  background: var(--surface);
+  color: var(--ink-muted);
+  text-align: left;
+  font-size: var(--text-sm);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+.dp__item[aria-pressed="true"] {
+  border-style: solid;
+  border-color: var(--pen-blue);
+  background: var(--wash-blue);
+  color: var(--ink);
+}
+.dp__item.is-chosen {
+  border-color: var(--pen-green);
+  background: var(--wash-green);
+}
+.dp__item b {
+  font-size: var(--text-md);
+}
+.dp__item .mono {
+  color: var(--ink-muted);
+}
+.dp__badge {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-orange);
+}
+.dp__presets {
+  flex-wrap: wrap;
+  border-radius: var(--radius-lg);
+}
+.dp__presets button {
+  font-family: var(--font-mono);
+}

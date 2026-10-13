@@ -63,6 +63,7 @@ flashcards:
 sources:
   - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Chapter 6, depth-first search and topological sort, rewritten" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
+griddle: topological-sort
 ---
 
 ## The problem

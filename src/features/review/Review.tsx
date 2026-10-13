@@ -29,6 +29,7 @@ import { toast } from '../../lib/toast';
 import { haptic } from '../../platform/haptics';
 import { shareFile } from '../../platform/share';
 import { sound } from '../../platform/sound';
+import { celebrate } from '../game/celebrate';
 import { Icon } from '../ui/Icon';
 
 const TRACK = { dsa: 'DSA', sysdesign: 'System Design', ds: 'Data Science' } as const;
@@ -134,8 +135,7 @@ export default function Review() {
       text: formatReceipt({ lines: finalLines, order: s.receiptNo, streak: st.current, now, tz: tz() }),
     });
     setPhase('done');
-    sound.ding();
-    void haptic.success();
+    celebrate();
     document.dispatchEvent(new CustomEvent('napkin:progress'));
   }, []);
 

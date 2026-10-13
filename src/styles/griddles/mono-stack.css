@@ -1,0 +1,30 @@
+/* Monotonic-stack griddle */
+.gd .ms__mono {
+  fill: var(--pen-muted);
+  font-family: var(--font-mono);
+}
+.gd .ms__wall {
+  stroke: var(--pen-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.gd .ms__ghost rect {
+  fill: none;
+  stroke: var(--pen-green);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+.gd .ms__ghost text {
+  fill: var(--pen-green);
+  font-weight: 700;
+}
+.gd .ms__input {
+  width: 200px;
+}
+.gd .ms__input[aria-invalid="true"] {
+  border-color: var(--danger-ink);
+}
+.gd .ms__err {
+  font-size: var(--text-sm);
+  color: var(--danger-ink);
+}

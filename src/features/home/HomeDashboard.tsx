@@ -2,7 +2,9 @@ import { useEffect, useState } from 'preact/hooks';
 import { getDb } from '../../db/dexie';
 import { tz } from '../../db/review';
 import { dayKey } from '../../engine/fsrs/scheduler';
+import { type Level, levelOf, xpOf } from '../../engine/game/game';
 import { cardHref, href } from '../../lib/base';
+import { gameInput } from '../game/store';
 import { lastStats, type ShellStats } from '../shell/shell';
 import { Icon } from '../ui/Icon';
 
@@ -23,11 +25,21 @@ export default function HomeDashboard({ cards }: { cards: Lite[]; tracks: { id: 
   const [today, setToday] = useState<{ reviews: number; read: number } | null>(null);
   const [lastRead, setLastRead] = useState<string | null>(null);
   const [hello, setHello] = useState('Hello');
+  const [level, setLevel] = useState<Level | null>(null);
 
   useEffect(() => {
     setHello(greeting(new Date().getHours()));
-    const on = (e: Event) => setStats((e as CustomEvent<ShellStats>).detail);
+    const score = () =>
+      void gameInput()
+        .then((g) => setLevel(levelOf(xpOf(g))))
+        .catch(() => undefined);
+    const on = (e: Event) => {
+      setStats((e as CustomEvent<ShellStats>).detail);
+      score();
+    };
     document.addEventListener('napkin:stats', on);
+    document.addEventListener('napkin:game', score);
+    score();
     const db = getDb();
     void Promise.all([db.days.get(dayKey(new Date(), tz())), db.reads.orderBy('readAt').last()])
       .then(([d, r]) => {
@@ -35,7 +47,10 @@ export default function HomeDashboard({ cards }: { cards: Lite[]; tracks: { id: 
         setLastRead(r?.slug ?? null);
       })
       .catch((e: unknown) => console.warn('dashboard unavailable', e));
-    return () => document.removeEventListener('napkin:stats', on);
+    return () => {
+      document.removeEventListener('napkin:stats', on);
+      document.removeEventListener('napkin:game', score);
+    };
   }, []);
 
   const read = stats?.read ?? new Set<string>();
@@ -65,6 +80,22 @@ export default function HomeDashboard({ cards }: { cards: Lite[]; tracks: { id: 
           )}
         </span>
       </div>
+
+      <a
+        class="dash__level"
+        href={href('progress/#achievements')}
+        aria-label={level ? `Level ${level.level}, ${level.name}: ${level.xp} XP` : 'Your level'}
+      >
+        <span class="dash__lv mono">Lv {level?.level ?? 1}</span>
+        <span class="dash__lvname">{level?.name ?? 'Doodler'}</span>
+        <span class="dash__xpbar" aria-hidden="true">
+          <span style={{ width: `${Math.round((level?.progress ?? 0) * 100)}%` }} />
+        </span>
+        <span class="dash__xp mono">
+          {level?.xp ?? 0}
+          {level?.next ? ` / ${level.next}` : ''} XP
+        </span>
+      </a>
 
       <a class="dash__review" href={href('review/')}>
         <span class="dash__due mono">{due === null ? '—' : due}</span>

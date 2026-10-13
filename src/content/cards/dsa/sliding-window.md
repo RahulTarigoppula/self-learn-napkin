@@ -59,6 +59,7 @@ flashcards:
 sources:
   - { name: "Tech Interview Handbook", url: "https://github.com/yangshun/tech-interview-handbook", licence: "MIT", note: "Sliding window technique, redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
+griddle: sliding-window
 ---
 
 ## How it works

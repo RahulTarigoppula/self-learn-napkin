@@ -265,6 +265,7 @@ const flashcardCount = d.flashcards.length;
 <script>
   import { getDb } from '../../db/dexie';
   import { markRead } from '../../db/review';
+  import { celebrateFrom } from '../../features/game/celebrate';
   import { lastStats } from '../../features/shell/shell';
   import { toast } from '../../lib/toast';
 
@@ -274,7 +275,7 @@ const flashcardCount = d.flashcards.length;
   const setDone = (done: boolean) => {
     bar?.toggleAttribute('data-is-read', done);
     const label = btn?.querySelector('span');
-    if (label) label.textContent = done ? 'Read ✓' : 'Mark as read';
+    if (label) label.textContent = done ? 'Read' : 'Mark as read';
   };
   setDone(lastStats()?.read.has(bar?.dataset.slug ?? '') ?? false);
   document.addEventListener('napkin:stats', (e) => {
@@ -284,9 +285,11 @@ const flashcardCount = d.flashcards.length;
   btn?.addEventListener('click', async () => {
     try {
       await markRead(getDb(), bar?.dataset.slug ?? '');
+      const was = bar?.hasAttribute('data-is-read');
       setDone(true);
       document.dispatchEvent(new CustomEvent('napkin:progress'));
-      toast('Marked as read. Nice work.');
+      if (!was) celebrateFrom(btn, 50);
+      toast(was ? 'Already in your read list.' : 'Marked as read · +20 XP', { icon: 'check' });
     } catch (err) {
       console.error(err);
       toast("Couldn't save that — try again.", { danger: true });

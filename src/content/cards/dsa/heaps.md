@@ -62,6 +62,7 @@ flashcards:
 sources:
   - { name: "Open Data Structures", url: "https://opendatastructures.org/", licence: "CC BY 2.5", note: "Binary heaps (BinaryHeap), redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
+griddle: heap
 ---
 
 ## What problem it solves

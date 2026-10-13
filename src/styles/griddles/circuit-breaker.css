@@ -1,0 +1,103 @@
+/* --- circuit-breaker griddle --- */
+.cb__head {
+  fill: var(--pen-muted);
+}
+.cb__edge {
+  fill: none;
+  stroke: var(--pen-muted);
+  stroke-width: 1.8;
+}
+.cb__muted {
+  fill: var(--ink-muted);
+}
+.cb__off {
+  fill: var(--danger-ink);
+}
+.cb__node circle {
+  fill: var(--surface);
+  stroke: var(--border-strong);
+  stroke-width: 2;
+}
+.cb__node text {
+  fill: var(--ink-muted);
+}
+.cb__node.is-lit text {
+  fill: var(--pen-ink);
+}
+.cb__node.is-lit circle {
+  stroke-width: 4;
+}
+.cb__node--closed.is-lit circle {
+  fill: var(--wash-green);
+  stroke: var(--pen-green);
+}
+.cb__node--open.is-lit circle {
+  fill: var(--wash-red);
+  stroke: var(--pen-red);
+}
+.cb__node--half-open.is-lit circle {
+  fill: var(--wash-orange);
+  stroke: var(--pen-orange);
+}
+.cb__outage {
+  fill: var(--wash-red);
+}
+.cb__band--closed {
+  fill: var(--pen-green);
+}
+.cb__band--open {
+  fill: var(--pen-red);
+}
+.cb__band--half-open {
+  fill: var(--pen-orange);
+}
+.cb__dot {
+  stroke-width: 2;
+}
+.cb__dot--ok,
+.cb__retry--ok {
+  fill: var(--pen-green);
+  stroke: var(--pen-green);
+}
+.cb__dot--failed,
+.cb__retry--failed {
+  fill: var(--pen-red);
+  stroke: var(--pen-red);
+}
+.cb__dot--short {
+  fill: var(--surface);
+  stroke: var(--pen-muted);
+}
+.cb__retry--short {
+  fill: var(--pen-muted);
+}
+.cb__todo {
+  fill: var(--border-strong);
+}
+.cb__cursor {
+  fill: none;
+  stroke: var(--pen-blue);
+  stroke-width: 2;
+}
+.cb__key--ok {
+  background: var(--pen-green);
+}
+.cb__key--failed {
+  background: var(--pen-red);
+}
+.cb__key--short {
+  border: 2px solid var(--pen-muted);
+}
+.cb__key--outage {
+  background: var(--wash-red);
+}
+.cb__slider {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+.cb__slider input {
+  flex: 1;
+  min-width: 140px;
+  height: 44px;
+  accent-color: var(--pen-red);
+}

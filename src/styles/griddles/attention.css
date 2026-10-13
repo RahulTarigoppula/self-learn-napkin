@@ -1,0 +1,150 @@
+/* --- attention griddle --- */
+.att {
+  display: grid;
+  gap: var(--space-4);
+  align-items: start;
+}
+@media (min-width: 720px) {
+  .att {
+    grid-template-columns: 1fr 200px;
+  }
+}
+.att__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.att__table th,
+.att__table td {
+  padding: 6px 6px;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+.att__table thead th {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  font-weight: 700;
+}
+.att__table tbody th {
+  text-align: left;
+  font-weight: 700;
+}
+.att__table small {
+  display: block;
+  white-space: nowrap;
+  font-weight: 400;
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+.att__table td:last-child {
+  position: relative;
+  width: 38%;
+  text-align: left;
+}
+.att__w {
+  font-weight: 700;
+}
+.att__table tr.is-top th {
+  box-shadow: inset 4px 0 0 var(--pen-orange);
+}
+.att__bar {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  height: 8px;
+  max-width: calc(100% - 12px);
+  margin-top: 8px;
+  border-radius: 4px;
+  background: var(--pen-orange);
+  transition: width var(--dur-base) var(--ease-out);
+}
+.att__side {
+  display: grid;
+  gap: var(--space-2);
+}
+.att__eq {
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.att__grid {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+}
+.att__grid text {
+  font-family: var(--font-mono);
+}
+.att__muted {
+  fill: var(--ink-muted);
+}
+.att__arc {
+  fill: none;
+  stroke: var(--pen-orange);
+  stroke-linecap: round;
+}
+.gd__stage .att__num {
+  fill: var(--pen-ink);
+  font-family: var(--font-mono);
+}
+.att__row {
+  cursor: pointer;
+}
+.att__row text {
+  fill: var(--ink-muted);
+}
+.att__row rect {
+  fill: var(--pen-orange);
+  stroke-width: 1.5;
+}
+.att__tok {
+  cursor: pointer;
+  outline: none;
+}
+.att__tok rect {
+  fill: var(--surface);
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+}
+.att__tok text {
+  fill: var(--pen-ink);
+}
+.att__row.is-q text {
+  fill: var(--pen-ink);
+}
+.att__row.is-q rect {
+  stroke: var(--pen-ink);
+}
+.att__tok.is-q rect {
+  fill: var(--hl);
+  stroke: var(--pen-ink);
+  stroke-width: 2.5;
+}
+.att__tok.is-q text {
+  fill: var(--hl-ink);
+}
+.att__tok.is-masked rect {
+  stroke-dasharray: 5 4;
+}
+.att__tok.is-masked text {
+  fill: var(--ink-muted);
+}
+.att__tok:focus-visible rect {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.att__slider {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+.att__slider input {
+  flex: 1;
+  min-width: 140px;
+  height: 44px;
+  accent-color: var(--pen-orange);
+}
+.att__sentence {
+  margin: 0 0 var(--space-2);
+  text-align: center;
+  font-family: var(--font-hand);
+  color: var(--ink-muted);
+}

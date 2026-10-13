@@ -1,4 +1,5 @@
 ---
+import Achievements from '../features/game/Achievements';
 import Progress from '../features/progress/Progress';
 import AppShell from '../layouts/AppShell.astro';
 import { library } from '../lib/content';
@@ -15,6 +16,7 @@ const totals = tracks.map((t) => ({ id: t.id, name: t.subtitle, total: t.cards.l
       <p class="muted">Ten minutes a day beats a three-hour cram. Here is how your habit is shaping up.</p>
     </header>
     <Progress client:load tracks={totals} />
+    <Achievements client:idle />
   </div>
 </AppShell>
 

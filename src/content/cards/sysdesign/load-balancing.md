@@ -50,6 +50,7 @@ flashcards:
     a: "Least connections. Round robin hands out equal counts, so a server stuck on slow requests keeps getting more; least connections sends new work to whoever is least busy right now."
 sources:
   - { name: "The System Design Primer", url: "https://github.com/donnemartin/system-design-primer", licence: "CC BY 4.0", note: "Load balancer section, redrawn" }
+griddle: load-balancer
 ---
 
 ## Why you need one

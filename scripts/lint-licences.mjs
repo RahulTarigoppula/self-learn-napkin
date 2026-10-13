@@ -91,6 +91,21 @@ export const GRIDDLES = [
   'k-means',
   'bloom-filter',
   'linear-fit',
+  'quicksort',
+  'two-pointers',
+  'sliding-window',
+  'monotonic-stack',
+  'heap',
+  'union-find',
+  'lcs',
+  'edit-distance',
+  'knapsack',
+  'dijkstra',
+  'topological-sort',
+  'mst',
+  'load-balancer',
+  'circuit-breaker',
+  'attention',
 ];
 
 export async function loadCards(root = 'src/content/cards') {

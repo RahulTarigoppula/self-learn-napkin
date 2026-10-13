@@ -3,6 +3,7 @@ import { shuffleOptions } from '../../engine/quiz/shuffle';
 import { cardHref, withBase } from '../../lib/base';
 import { haptic } from '../../platform/haptics';
 import { sound } from '../../platform/sound';
+import { celebrate } from '../game/celebrate';
 import { Icon } from '../ui/Icon';
 
 interface QuizItem {
@@ -104,6 +105,14 @@ export default function QuickQuiz() {
     setPicked(null);
     setI((x) => x + 1);
   };
+
+  // A strong round ends with confetti.
+  const finished = round !== null && i >= round.length;
+  useEffect(() => {
+    if (!finished || !round) return;
+    const score = answers.filter((a) => a.ok).length;
+    if (score >= round.length * 0.8) celebrate();
+  }, [finished]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -221,6 +230,8 @@ export default function QuickQuiz() {
   }
 
   const item = round[i] as QuizItem;
+  let combo = 0;
+  for (let k = answers.length - 1; k >= 0 && answers[k]?.ok; k--) combo++;
   return (
     <div class={`qq t-${item.track}`}>
       <div class="qq__bar">
@@ -230,6 +241,11 @@ export default function QuickQuiz() {
         <span class="rv__progress" aria-hidden="true">
           <span style={{ width: `${(i / round.length) * 100}%` }} />
         </span>
+        {combo >= 3 && (
+          <span class="qq__combo mono" key={combo}>
+            <Icon name="flame" size={14} /> {combo} in a row
+          </span>
+        )}
         <span class="mono qq__tally">{answers.filter((a) => a.ok).length} ✓</span>
       </div>
       <article class="qq__card card" key={item.id}>

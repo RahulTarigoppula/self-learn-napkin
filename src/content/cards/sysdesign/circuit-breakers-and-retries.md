@@ -61,6 +61,7 @@ flashcards:
     a: "The first service sets an absolute deadline for the whole request and passes the remaining time to every downstream call, so each hop's timeout shrinks and nobody works past the point where the caller gave up."
 sources:
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
+griddle: circuit-breaker
 ---
 
 ## How one slow service takes down many

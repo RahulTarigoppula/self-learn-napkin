@@ -9,11 +9,11 @@ Napkin is a free, offline-first study app for **Data Structures & Algorithms**, 
 1. **The story** — a hand-drawn diagram that draws itself scene by scene while a short paragraph explains each step. Concrete example first, then the mechanism, then the payoff.
 2. **Key ideas** and a **complexity / key-numbers** table.
 3. **Deep dive** — the full explanation: how it works, a fully worked example, clean Python, edge cases and pitfalls, trade-offs, and what interviewers listen for.
-4. **Try it yourself** — interactive playgrounds: race BFS against DFS, drag a server around a consistent-hash ring, tune N/R/W quorums, fire requests at a token bucket, run k-means by hand, push a learning rate until gradient descent explodes, slide a decision threshold and watch precision and recall trade off…
+4. **Try it yourself** — 31 interactive playgrounds: partition with quicksort, slide a window over your own string, sift a heap, union-find with path compression, fill LCS / edit-distance / knapsack tables cell by cell, fool Dijkstra with a negative edge, catch a cycle in a topological sort, balance traffic across slow servers, trip a circuit breaker, steer attention weights with a temperature slider, race BFS against DFS, drag a server around a consistent-hash ring, push a learning rate until gradient descent explodes…
 5. **Check your understanding** — multiple-choice questions with an explanation for every answer.
 6. **Flashcards with spaced repetition** — an on-device FSRS-6 scheduler brings each card back just before you'd forget it. Every session ends with a printable "receipt" you can share.
 
-Plus: a **Quick quiz** that mixes questions from every topic, a ⌘K / Ctrl K search across everything, curated learning paths, a one-page **cheat sheet** of every complexity table, a progress page with streaks, a 18-week activity heatmap and a 7-day review forecast, light/dark themes, reduced-motion support, and JSON backup/restore. No accounts, no tracking, no network calls — your progress never leaves your device.
+Plus: a **daily challenge** question, **levels, XP and achievements** (with a little confetti when you earn them), a **Quick quiz** that mixes questions from every topic, a ⌘K / Ctrl K search across everything, curated learning paths, a one-page **cheat sheet** of every complexity table, a progress page with streaks, a 18-week activity heatmap and a 7-day review forecast, light/dark themes, reduced-motion support, and JSON backup/restore. No accounts, no tracking, no network calls — your progress never leaves your device.
 
 ## Why I built this
 

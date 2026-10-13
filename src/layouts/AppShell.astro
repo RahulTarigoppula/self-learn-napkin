@@ -35,11 +35,15 @@ const nav = [
 const tracks = (await getCollection('tracks')).sort(
   (a, b) => ['dsa', 'sysdesign', 'ds'].indexOf(a.id) - ['dsa', 'sysdesign', 'ds'].indexOf(b.id),
 );
+const cardIds = new Set((await getCollection('cards')).map((c) => c.id));
+const totals = Object.fromEntries(
+  tracks.map((t) => [t.id, t.data.order.filter((id) => cardIds.has(id)).length]),
+);
 ---
 
 <Base title={title} description={description}>
   <a class="skip-link" href="#main">Skip to content</a>
-  <div class:list={['shell', { 'shell--focus': focus }]}>
+  <div class:list={['shell', { 'shell--focus': focus }]} data-track-totals={JSON.stringify(totals)}>
     <aside class="sidebar" aria-label="Main">
       <a class="sidebar__logo" href={href('')} aria-label="Napkin home"><Logo /></a>
       <button class="search-trigger" type="button" data-open-search aria-label="Search napkins (Control K)">
@@ -122,7 +126,9 @@ const tracks = (await getCollection('tracks')).sort(
   <div class="toast-region" role="status" aria-live="polite"></div>
   <script>
     import { initShell } from '../features/shell/shell';
+    import { checkAchievements } from '../features/game/store';
     initShell();
+    document.addEventListener('napkin:stats', () => void checkAchievements());
   </script>
 </Base>
 

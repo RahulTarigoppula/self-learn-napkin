@@ -6,6 +6,7 @@ import {
   mergeLogs,
   parseBackup,
 } from '../engine/backup/schema';
+import { type GameRecord, mergeGame } from '../features/game/store';
 import type { NapkinDB, ReviewCard, ReviewLogRow } from './dexie';
 
 /** Rows in insertion (primary-key) order so identical databases export byte-identical files. */
@@ -47,6 +48,12 @@ export async function importBackup(db: NapkinDB, text: string): Promise<string |
       if (!reads.has(x.slug) || (reads.get(x.slug)?.readAt ?? 0) < x.readAt) reads.set(x.slug, x);
     await db.reads.bulkPut([...reads.values()]);
   });
+  // Game progress (quiz bests, daily challenges, playgrounds, achievements) merges rather than overwrites.
+  const theirs = b.settings.game as Partial<GameRecord> | undefined;
+  if (theirs && typeof theirs === 'object') {
+    const mine = ((await db.settings.get('game'))?.value ?? {}) as GameRecord;
+    await db.settings.put({ key: 'game', value: mergeGame(mine, theirs) });
+  }
   return null;
 }
 

@@ -62,6 +62,7 @@ flashcards:
 sources:
   - { name: "Algorithms (Jeff Erickson)", url: "https://jeffe.cs.illinois.edu/teaching/algorithms/", licence: "CC BY 4.0", note: "Disjoint sets and Kruskal's algorithm" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
+griddle: union-find
 ---
 
 ## The problem

@@ -1,6 +1,7 @@
 ---
 import Icon from '../components/Icon.astro';
 import NapkinTile from '../components/NapkinTile.astro';
+import DailyChallenge from '../features/game/DailyChallenge';
 import HomeDashboard from '../features/home/HomeDashboard';
 import AppShell from '../layouts/AppShell.astro';
 import { cardHref, href, withBase } from '../lib/base';
@@ -50,11 +51,16 @@ const firstFact = facts[0];
         <div class="hero__cta">
           <a class="btn btn--primary btn--lg" href={href('library/')}><Icon name="library" /> Browse the library</a>
           <a class="btn btn--lg" href={href('review/')}><Icon name="layers" /> Review cards</a>
+          <button class="btn btn--ghost btn--lg" type="button" data-surprise={JSON.stringify(cards.map((c) => c.id))}>
+            <Icon name="shuffle" /> Surprise me
+          </button>
         </div>
       </div>
       <HomeDashboard client:load cards={lite} tracks={tracks.map((t) => ({ id: t.id, total: t.cards.length }))} />
     </section>
 
+    <div class="today">
+    <DailyChallenge client:idle />
     {
       firstFact && (
         <section class="dyk card" aria-live="polite" data-facts={JSON.stringify(facts)}>
@@ -74,6 +80,7 @@ const firstFact = facts[0];
         </section>
       )
     }
+    </div>
 
     {
       picks.length > 0 && (
@@ -263,6 +270,15 @@ const firstFact = facts[0];
     dyk.querySelector('.dyk__next')?.addEventListener('click', show);
   }
 
+  // "Surprise me": a random napkin you have not read yet.
+  document.querySelector<HTMLButtonElement>('[data-surprise]')?.addEventListener('click', (e) => {
+    const ids = JSON.parse((e.currentTarget as HTMLElement).dataset.surprise ?? '[]') as string[];
+    const read = lastStats()?.read ?? new Set<string>();
+    const pool = ids.filter((id) => !read.has(id));
+    const pick = (pool.length ? pool : ids)[Math.floor(Math.random() * (pool.length || ids.length))];
+    if (pick) location.href = cardHref(pick);
+  });
+
   // Today's picks: a stable daily rotation of the hands-on napkins, unread ones first.
   const pickSlots = [...document.querySelectorAll<HTMLElement>('[data-picks] .pick')];
   const choosePicks = (read: Set<string>) => {
@@ -362,8 +378,18 @@ const firstFact = facts[0];
   .block {
     margin-top: var(--space-10);
   }
-  .dyk {
+  .today {
     margin-top: var(--space-8);
+    display: grid;
+    gap: var(--space-4);
+    align-items: start;
+  }
+  @container main (min-width: 880px) {
+    .today {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    }
+  }
+  .dyk {
     display: grid;
     grid-template-columns: auto 1fr auto;
     gap: var(--space-4);
@@ -388,7 +414,7 @@ const firstFact = facts[0];
     line-height: 1.2;
   }
   .dyk__fact {
-    font-size: clamp(1.02rem, 0.9rem + 0.6vw, var(--text-lg));
+    font-size: var(--text-md);
     font-weight: 500;
     margin: 4px 0 6px;
   }

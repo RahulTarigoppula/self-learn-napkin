@@ -32,7 +32,7 @@ jobs:
         env:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
           VITE_PLATFORM: web
-          APP_VERSION: ${{ format('v1.0.{0}', github.run_number) }}
+          APP_VERSION: ${{ format('v1.1.{0}', github.run_number) }}
       - name: Sanity — the files Pages must serve
         run: |
           test -f dist/index.html

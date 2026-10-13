@@ -1,0 +1,24 @@
+/* Heap griddle */
+.gd .hp__idx {
+  fill: var(--pen-muted);
+  font-family: var(--font-mono);
+}
+.gd .hp__arc path {
+  fill: none;
+  stroke: var(--pen-orange);
+  stroke-width: 2;
+}
+.gd .hp__arc text {
+  fill: var(--pen-ink);
+  font-family: var(--font-mono);
+}
+.gd .hp__input {
+  width: 96px;
+}
+.gd .hp__input[aria-invalid="true"] {
+  border-color: var(--danger-ink);
+}
+.gd .hp__note {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}

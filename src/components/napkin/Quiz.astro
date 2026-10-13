@@ -53,6 +53,8 @@ const letters = ['A', 'B', 'C', 'D'];
 <script>
   import { sound } from '../../platform/sound';
   import { haptic } from '../../platform/haptics';
+  import { celebrateFrom } from '../../features/game/celebrate';
+  import { recordQuiz } from '../../features/game/store';
 
   for (const quiz of document.querySelectorAll<HTMLElement>('[data-quiz]')) {
     const total = Number(quiz.dataset.total);
@@ -73,6 +75,8 @@ const letters = ['A', 'B', 'C', 'D'];
             : correct >= total / 2
               ? 'Solid. Re-read the scene behind the one you missed.'
               : 'Worth another pass through the story — then try again.';
+      if (correct === total) celebrateFrom(score.querySelector('.quiz__score-num'));
+      void recordQuiz(quiz.dataset.quiz ?? '', correct, total).catch(() => undefined);
       try {
         const key = `napkin:quiz:${quiz.dataset.quiz}`;
         const best = Number(localStorage.getItem(key) ?? '0');
@@ -213,8 +217,8 @@ const letters = ['A', 'B', 'C', 'D'];
     background: color-mix(in srgb, var(--success) 12%, var(--surface));
   }
   .quiz__opt[data-correct] .quiz__letter {
-    background: var(--success);
-    color: #fff;
+    background: var(--success-ink);
+    color: var(--surface);
   }
   .quiz__opt[data-correct] .quiz__mark::after {
     content: '✓';
@@ -227,8 +231,8 @@ const letters = ['A', 'B', 'C', 'D'];
     animation: shake 320ms var(--ease-out);
   }
   .quiz__opt[data-picked='wrong'] .quiz__letter {
-    background: var(--danger);
-    color: #fff;
+    background: var(--danger-ink);
+    color: var(--surface);
   }
   .quiz__opt[data-picked='wrong'] .quiz__mark::after {
     content: '✕';
