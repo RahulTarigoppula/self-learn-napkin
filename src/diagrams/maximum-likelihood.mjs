@@ -39,7 +39,7 @@ export default (d) => {
   });
   d.group(() => {
     d.dot(...pt(0.5), 10, { pen: 'ink' });
-    d.text(X0 + 14, py(L(0.5)) - 34, 'L(0.5) = 0.5¹⁰ ≈ 0.00098', { pen: 'ink', size: 15, anchor: 'start' });
+    d.text(X0 + 12, py(L(0.5)) - 44, 'L(0.5) = 0.5¹⁰ ≈ 0.00098', { pen: 'ink', size: 15, anchor: 'start' });
   });
 
   d.step('Try every p: the likelihood curve');

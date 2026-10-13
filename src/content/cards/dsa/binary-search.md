@@ -28,7 +28,7 @@ quiz:
   - q: "lo = 4, hi = 7, and a[mid] is bigger than the target. What is the next range?"
     options: ["lo = 4, hi = 5", "lo = 4, hi = 4", "lo = 6, hi = 7", "lo = 5, hi = 7"]
     answer: 1
-    why: "mid = (4 + 7) // 2 = 5. a[5] is too big, and so is everything to its right, so the target can only be left of mid: hi = mid − 1 = 4. One candidate remains, index 4."
+    why: "mid = ⌊(4 + 7) / 2⌋ = 5. a[5] is too big, and so is everything to its right, so the target can only be left of mid: hi = mid − 1 = 4. One candidate remains, index 4."
   - q: "Roughly how many probes does binary search need, at most, for 1,000,000 sorted items?"
     options: ["About 1,000", "About 500,000", "About 20", "About 6"]
     answer: 2

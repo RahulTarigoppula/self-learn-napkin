@@ -26,8 +26,8 @@ keyIdeas:
   - "Every token scores every other token, so cost grows with the **square of the sequence length**."
 quiz:
   - q: "Two keys get scores 2.0 and 0.0. What weights does softmax give them?"
-    options: ["0.88 and 0.12", "1.0 and 0.0", "0.67 and 0.33", "0.5 and 0.5"]
-    answer: 0
+    options: ["1.0 and 0.0", "0.67 and 0.33", "0.88 and 0.12", "0.5 and 0.5"]
+    answer: 2
     why: "e² = 7.39 and e⁰ = 1, total 8.39, so 7.39 / 8.39 ≈ 0.88 and 1 / 8.39 ≈ 0.12. Softmax keeps every option alive but strongly favours the higher score."
   - q: "Why are the scores divided by √d before the softmax?"
     options: ["So the weights sum to 1", "Dot products grow with the vector length d; unscaled, softmax saturates and its gradients vanish", "To save memory", "To stop tokens attending to future tokens"]
@@ -38,11 +38,11 @@ quiz:
     answer: 1
     why: "The score matrix is n × n: 4,000² / 2,000² = 4. This quadratic cost is the main obstacle to very long contexts."
   - q: "A text generator must not look at tokens it has not produced yet. How does attention enforce that?"
-    options: ["It deletes future tokens from the input", "A causal mask sets scores for later positions to −∞ before the softmax", "It uses a smaller √d", "It averages the values instead"]
-    answer: 1
+    options: ["It deletes future tokens from the input", "It uses a smaller √d", "It averages the values instead", "A causal mask sets scores for later positions to −∞ before the softmax"]
+    answer: 3
     why: "e^(−∞) = 0, so masked positions get weight exactly 0 and the rest still sum to 1. Token i then mixes only tokens 1 … i."
-related: [ds/gradient-descent, ds/logistic-regression]
-prereqs: []
+related: [ds/transformers, ds/embeddings, ds/neural-network-basics, ds/backpropagation]
+prereqs: [ds/embeddings]
 flashcards:
   - kind: qa
     q: "Write scaled dot-product attention and name each part."
@@ -51,7 +51,7 @@ flashcards:
     text: "Attention weights come from a {{softmax}} over the scaled dot products, so each row of weights sums to {{1}}."
   - kind: qa
     q: "Why does a Transformer need positional encodings?"
-    a: "Attention treats its inputs as an unordered set — shuffle the tokens and each output is the same, just shuffled. Position information must be added to the embeddings for word order to matter."
+    a: "Attention treats its inputs as an unordered set — shuffle the tokens and each output is the same, just shuffled. Position information must be injected (position vectors added to the embeddings, or rotations of the queries and keys) for word order to matter."
 sources:
   - { name: "Stanford CS230 VIP cheatsheets (Amidi)", url: "https://github.com/afshinea/stanford-cs-230-deep-learning", licence: "MIT", note: "Recurrent neural networks cheatsheet: attention" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -102,7 +102,9 @@ Give each word a 2-number value: v(animal) = (1, 0), v(street) = (0, 1), v(it) =
 
 — very close to the value of "animal". In a trained model these vectors are learned, so that queries from pronouns line up with keys of plausible referents.
 
-## In code
+## Implement it in Python
+
+Attention is three matrix multiplications and a softmax, so it carries over directly to any language or framework; here it is in Python with NumPy.
 
 ```python
 import numpy as np
@@ -147,7 +149,7 @@ The first print gives weights [0.789, 0.039, 0.065, 0.107] and output [0.822, 0.
 - **Self-attention:** queries, keys and values all come from the same sequence. **Cross-attention:** queries from one sequence (a translation being written), keys and values from another (the source sentence).
 - **Causal (masked) attention:** in text generation each token may only attend to earlier ones; future scores are set to −∞ before the softmax.
 - **Multi-head attention:** run h attentions in parallel, each with its own smaller W_Q, W_K, W_V (for example 8 heads of size 64 instead of one of size 512), then concatenate the outputs and project them. Different heads learn different relations — one may link pronouns to nouns, another track the previous word.
-- **Positional information:** attention itself ignores order — permute the input tokens and the outputs are permuted the same way. Transformers add positional encodings to the embeddings so that order matters.
+- **Positional information:** attention itself ignores order — permute the input tokens and the outputs are permuted the same way. Transformers inject position information — position vectors added to the embeddings, or position-dependent rotations of the queries and keys (RoPE) — so that order matters. See the Transformers napkin for how the full block is built around attention.
 
 ## Edge cases and pitfalls
 

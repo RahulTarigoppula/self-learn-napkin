@@ -45,10 +45,11 @@ export default (d) => {
   d.step('Recurse on each side');
   d.line(px(4), py(7), px(10), py(7), { pen: 'green', dashed: true, thick: true });
   d.group(() => {
-    d.arrow(416, 136, 404, 174, { pen: 'muted', single: true });
-    d.arrow(452, 136, 474, 174, { pen: 'muted', single: true });
-    node(d, 402, 196, 72, 'default\n0 : 6', 'red', { size: 14 }, 42);
-    node(d, 478, 196, 60, 'repaid\n2 : 0', 'green', { size: 14 }, 42);
+    // yes (income ≥ 7) on the left, as at the root
+    d.arrow(416, 136, 396, 174, { pen: 'muted', single: true });
+    d.arrow(452, 136, 470, 174, { pen: 'muted', single: true });
+    node(d, 392, 196, 62, 'repaid\n2 : 0', 'green', { size: 14 }, 42);
+    node(d, 470, 196, 72, 'default\n0 : 6', 'red', { size: 14 }, 42);
   });
   d.text(24, 354, 'right side: income ≥ 7 → two pure leaves, Gini 0', { pen: 'green', size: 15, anchor: 'start' });
 
@@ -58,5 +59,5 @@ export default (d) => {
     d.line(306, 136, 306, 160, { pen: 'red', dashed: true });
     d.text(300, 180, '+2 splits for\none noisy loan', { pen: 'red', size: 14 });
   });
-  d.text(24, 389, 'depth 3 carves a sliver around 1 point; cap max_depth\nor min_samples_leaf and keep the 5:1 leaf instead', { pen: 'red', size: 15, anchor: 'start' });
+  d.text(24, 389, 'depth 3 carves a sliver around 1 point; cap the depth\nor the rows per leaf and keep the 5:1 leaf instead', { pen: 'red', size: 15, anchor: 'start' });
 };

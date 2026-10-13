@@ -44,7 +44,7 @@ quiz:
     options: ["Mini-batches give the exact gradient", "Each step is far cheaper, so the same compute buys many more steps", "They remove the need for a learning rate", "They guarantee the global minimum"]
     answer: 1
     why: "A 32-row batch gives a noisy but unbiased estimate of the full gradient at a tiny fraction of the cost. Many cheap noisy steps beat a few exact ones, and batches fit the parallel hardware well."
-related: [ds/logistic-regression, ds/bias-variance]
+related: [ds/sgd-and-mini-batch, ds/linear-regression, ds/logistic-regression, ds/feature-scaling]
 prereqs: []
 flashcards:
   - kind: qa
@@ -74,6 +74,13 @@ So the downhill direction is −∇L. That is the whole idea.
 2. **Compute the gradient** of the loss at the current weights. In neural networks backpropagation does this efficiently.
 3. **Step** a small distance downhill: **w ← w − η · ∇L(w)**. The **learning rate** η scales the step.
 4. **Repeat** until the loss stops improving, the gradient is close to zero, or you run out of budget (often decided by early stopping on validation loss).
+
+```text
+w = initial guess
+repeat until the loss stops improving:
+    g = gradient of L at w        # one number per weight
+    w = w − η · g
+```
 
 Why the steps shrink by themselves: the step is η times the gradient, and the gradient gets smaller as the slope flattens near the bottom. You do not need to tell the algorithm it is close.
 
@@ -118,9 +125,9 @@ The loss is an average over N examples, and so is its gradient. **Batch** gradie
 
 **Adam** combines momentum with a per-weight scale: it divides each weight's step by a running estimate of that weight's typical gradient size. Weights with consistently tiny gradients get relatively larger steps. It is the default optimiser for most deep learning because it is forgiving about η (3 × 10⁻⁴ is a common start).
 
-## In code
+## Implement it in Python
 
-Mini-batch SGD for linear regression in NumPy:
+The update is one line in any language (R, Julia, C++, JavaScript…); deep-learning frameworks wrap it as an "optimiser". Here is mini-batch SGD for linear regression in plain NumPy:
 
 ```python
 import numpy as np

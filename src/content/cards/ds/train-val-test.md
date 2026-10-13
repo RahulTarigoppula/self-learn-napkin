@@ -32,7 +32,7 @@ quiz:
     answer: 1
     why: "Each validation score is noisy. Picking the maximum of 40 noisy scores favours a setting that also got lucky on those particular 150 rows. The test set played no part in the choice, so the luck does not carry over."
   - q: "Which of these is data leakage?"
-    options: ["Fitting a scaler on the training rows, then applying it to the test rows", "Filling missing values with the mean of the whole dataset before splitting", "Using a stratified split", "Fixing random_state so the split is reproducible"]
+    options: ["Fitting a scaler on the training rows, then applying it to the test rows", "Filling missing values with the mean of the whole dataset before splitting", "Using a stratified split", "Fixing the random seed so the split is reproducible"]
     answer: 1
     why: "The mean was computed with the test rows included, so test information shaped the training features. Compute the fill value from the training rows only."
   - q: "You have 1,000 consecutive days of sales. Which split is right?"
@@ -43,7 +43,7 @@ quiz:
     options: ["About 0.3 points", "About 1 point", "About 3 points", "About 15 points"]
     answer: 2
     why: "Standard error of a proportion = √(p(1 − p)/n) = √(0.85 × 0.15 / 150) ≈ 0.029, about 3 percentage points. Ten times more rows would shrink it only by √10, to about 0.9 points."
-related: [ds/cross-validation, ds/bias-variance]
+related: [ds/cross-validation, ds/bias-variance, ds/feature-scaling, ds/ml-problem-framing]
 prereqs: []
 flashcards:
   - kind: qa
@@ -91,7 +91,7 @@ A feature `income` has mean 50 (thousand) in the 700 training rows and the 150 v
 - **Leaky:** fit the scaler on all 1,000 rows. The mean it subtracts is 0.70 × 50 + 0.15 × 50 + 0.15 × 80 = 54.5 instead of 50 — the test rows have pulled it upward, and the model's inputs now carry a trace of the test distribution.
 - **Correct:** fit the scaler on the 700 training rows (mean 50), then *transform* validation and test with that same mean and spread. The test rows then look to the model exactly as unseen production data will: possibly shifted, which is what you need to find out.
 
-The same rule applies to anything with a `fit` step: imputers, encoders, vocabularies, feature selection and PCA.
+The same rule applies to every step that learns something from the data before the model does: imputers, encoders, vocabularies, feature selection and PCA.
 
 ## Implement it in Python
 

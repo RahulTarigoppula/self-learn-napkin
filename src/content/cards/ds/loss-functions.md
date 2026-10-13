@@ -131,7 +131,9 @@ It is the negative log-likelihood of a Bernoulli model, so minimising it is **ma
 - **Need probabilities to rank, threshold or price risk?** — log-loss. **Only need the boundary?** — hinge works.
 - **Imbalanced classes?** — weight the loss per class, or use focal loss, rather than letting the majority class dominate the average.
 
-## In code
+## Implement it in Python
+
+Every loss here is a one-line formula, so it ports to any language; ML libraries (R's yardstick, Julia's LossFunctions.jl, PyTorch, scikit-learn…) also ship them ready-made. This version uses NumPy and scikit-learn's metrics.
 
 ```python
 import numpy as np
@@ -159,7 +161,7 @@ print(np.maximum(0, 1 - m), hinge_loss(labels, z))  # [0, 0.6, 0, 5.6], mean 1.5
 ## Edge cases and pitfalls
 
 - **MAE's kink at zero** makes plain gradient descent jitter around the optimum; Huber or a decaying learning rate fixes it.
-- **Log-loss and p = 0 or 1:** −ln 0 is infinite. Libraries clip p to [ε, 1 − ε]; compute from logits (`BCEWithLogits`-style) to stay numerically stable.
+- **Log-loss and p = 0 or 1:** −ln 0 is infinite. Libraries clip p to [ε, 1 − ε]. Better still, compute the loss straight from the score z as ln(1 + e^(−m)) — most frameworks offer a "with logits" version — which never forms a p of exactly 0 or 1.
 - **Scale matters.** MSE is in squared target units, so it is not comparable across datasets; compare RMSE, MAE or R².
 - **Outliers vs signal:** a robust loss is right when the extremes are errors, wrong when they are exactly the cases you must predict (fraud, peak load).
 - **Squared error on probabilities** (Brier score) is a fine metric, but as a training loss for logistic models its gradients vanish on confident mistakes; cross-entropy does not.

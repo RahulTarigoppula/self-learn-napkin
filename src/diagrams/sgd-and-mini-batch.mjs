@@ -31,10 +31,19 @@ export default (d) => {
   d.text(340, 164, 'mini-batch: 100 rows\n100 steps / epoch', { pen: 'violet', size: 15, anchor: 'start', bold: true });
 
   d.step('Epochs, batches and steps');
+  // The epoch bar: 100 cells of 4.6 px, one per batch, drawn as a single square-wave path.
   d.group(() => {
     d.rect(30, 228, 460, 20, { pen: 'muted', rough: 0.5, single: true });
-    d.rect(30, 228, 23, 20, { pen: 'violet', fill: 'violet', rough: 0.5, single: true });
-    for (let i = 2; i < 20; i++) d.line(30 + 23 * i, 230, 30 + 23 * i, 246, { pen: 'muted', thin: true, single: true });
+    const comb = [];
+    for (let i = 1; i < 100; i++) {
+      const x = 30 + 4.6 * i;
+      comb.push(i % 2 ? [x, 230] : [x, 246], i % 2 ? [x, 246] : [x, 230]);
+    }
+    d.poly(comb, { pen: 'muted', thin: true, rough: 0.2, single: true });
+  });
+  d.group(() => {
+    d.rect(30, 228, 4.6, 20, { pen: 'violet', fill: 'violet', thick: true, rough: 0.2, single: true });
+    d.text(30, 216, '1 batch = 100 rows', { pen: 'violet', size: 14, anchor: 'start' });
   });
   d.text(260, 266, '10,000 rows ÷ 100 per batch = 100 steps = 1 epoch', { pen: 'violet', size: 15 });
 

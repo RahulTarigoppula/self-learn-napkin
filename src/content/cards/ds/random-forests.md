@@ -22,7 +22,7 @@ story:
     text: "Averaging B trees, each with variance σ² and pairwise correlation ρ, gives variance ρσ² + (1 − ρ)σ²/B. Adding trees shrinks the second term, so test error falls and then flattens — more trees never overfit, they only cost time. Random features lower ρ, the floor."
 keyIdeas:
   - "**Bagging** = bootstrap aggregating: train each model on a resample drawn with replacement, then average. Each sample has ≈ **63.2 %** of the distinct rows."
-  - "**Feature subsampling** at each split (`max_features`, √p for classification) **decorrelates** the trees; that is what makes a forest better than plain bagged trees."
+  - "**Feature subsampling** at each split (typically √p of the p features for classification) **decorrelates** the trees; that is what makes a forest better than plain bagged trees."
   - "Variance of the average = **ρσ² + (1 − ρ)σ²/B**: more trees remove the second term, lower correlation lowers the first."
   - "**OOB error** uses the ≈ 36.8 % of trees that skipped each row — near-free validation."
   - "**Impurity-based importance** is biased towards high-cardinality features and splits credit between correlated ones; prefer **permutation importance** on held-out data."
@@ -75,10 +75,20 @@ A deep decision tree has **low bias** (it can fit almost any shape) and **high v
 For each of B trees (typically 100–1,000):
 
 1. **Bootstrap the rows.** Draw n rows *with replacement* from the n training rows. This is the "bagging" step (**b**ootstrap **agg**regat**ing**).
-2. **Grow a tree on that sample**, usually deep and unpruned (scikit-learn default: grow until leaves are pure).
-3. **At every split, consider only `max_features` randomly chosen features**, and pick the best threshold among those. Common defaults: √p for classification, p/3 or all p for regression (scikit-learn's regressor uses all features by default).
+2. **Grow a tree on that sample**, usually deep and unpruned (the common default is to grow until leaves are pure).
+3. **At every split, consider only m randomly chosen features** out of the p available, and pick the best threshold among those. Common defaults: m = √p for classification, p/3 or all p for regression.
 
-To predict, run the row through all B trees and take the **majority vote** — or, better, average the trees' class probabilities (scikit-learn does this). For regression, average the predictions.
+To predict, run the row through all B trees and take the **majority vote** — or, better, average the trees' class probabilities (many implementations do this). For regression, average the predictions.
+
+```text
+for b in 1 … B:
+    S = n row indices drawn with replacement
+    tree_b = grow a deep tree on rows S, where each split
+             only searches m random features (m = √p for classification)
+    OOB_b = rows not in S
+predict(x) = majority vote (or mean probability) of tree_1(x) … tree_B(x)
+OOB prediction for row i = vote of only the trees whose OOB set contains i
+```
 
 ### Why the bootstrap leaves out about 36.8 %
 
@@ -109,7 +119,9 @@ Ten rows, three trees, as in the diagram:
 
 On average 6.7 distinct rows per sample, close to the expected 6.5. For a new point the trees vote A, B, A, so the forest predicts **A** (two thirds of the votes). For the **OOB prediction of row 4**, only trees 1 and 3 may vote, because tree 2 trained on row 4. Repeat for every row, compare with the true labels, and you have the OOB error. With 500 trees, each row gets an OOB vote from about 0.368 × 500 ≈ 184 trees, so the estimate is close to what cross-validation would give.
 
-## In code
+## Implement it in Python
+
+Random forests ship with every ML stack (R's randomForest and ranger, Julia's DecisionTree.jl, Spark MLlib…). In scikit-learn, m is `max_features`, out-of-bag scoring is `oob_score=True`, MDI is `feature_importances_`, and the other knobs are `min_samples_leaf`, `max_depth` and `class_weight="balanced_subsample"`.
 
 ```python
 import numpy as np
@@ -144,7 +156,7 @@ The forest beats the single tree by 7 points, and the OOB accuracy (0.915) match
 
 ## Feature importance caveats
 
-- **Mean decrease in impurity (MDI)**, `feature_importances_`, sums each feature's impurity reductions over all splits. It is computed on training data and is **biased towards continuous and high-cardinality features**, which offer more split points to win by chance; even pure noise gets credit.
+- **Mean decrease in impurity (MDI)** sums each feature's impurity reductions over all splits. It is computed on training data and is **biased towards continuous and high-cardinality features**, which offer more split points to win by chance; even pure noise gets credit.
 - **Correlated features share credit.** If two columns carry the same signal, the trees split on either, and each looks half as important as it is. Dropping one may cost nothing.
 - **Permutation importance** shuffles one column in held-out data and measures the drop in score. It is less biased, but with correlated features it also understates each one (the model falls back on the twin).
 - Importance is **association with the model's predictions**, not causation, and not the direction of an effect. For per-row explanations use SHAP values or partial-dependence plots.
@@ -152,9 +164,9 @@ The forest beats the single tree by 7 points, and the OOB accuracy (0.915) match
 ## Edge cases and pitfalls
 
 - **Extrapolation:** like single trees, forests predict a flat line outside the range of the training targets.
-- **Memory and latency:** 500 deep trees can be hundreds of megabytes and slow to predict; cap `max_depth` or `min_samples_leaf` if needed.
-- **Imbalanced classes:** use `class_weight="balanced_subsample"` or tune the threshold on the averaged probabilities.
-- **Tuning:** forests work well out of the box. The knobs that matter most are `max_features`, `min_samples_leaf` and the number of trees (more is safe, just slower).
+- **Memory and latency:** 500 deep trees can be hundreds of megabytes and slow to predict; cap the depth or raise the minimum rows per leaf if needed.
+- **Imbalanced classes:** weight the classes (re-computed per bootstrap sample) or tune the threshold on the averaged probabilities.
+- **Tuning:** forests work well out of the box. The knobs that matter most are m (features per split), the minimum rows per leaf and the number of trees (more is safe, just slower).
 - **Extra-Trees** (extremely randomised trees) go further: random thresholds too, usually without bootstrapping — even lower correlation and faster training.
 
 ## When to use it

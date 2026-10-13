@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
+import { shuffleOptions } from '../../engine/quiz/shuffle';
 import { cardHref, withBase } from '../../lib/base';
 import { haptic } from '../../platform/haptics';
 import { sound } from '../../platform/sound';
@@ -79,7 +80,7 @@ export default function QuickQuiz() {
     for (const q of shuffle(pool)) {
       if (seen.has(q.slug)) continue;
       seen.add(q.slug);
-      picks.push(q);
+      picks.push(shuffleOptions(q, Math.floor(Math.random() * 2 ** 31)));
       if (picks.length === length) break;
     }
     setRound(picks);

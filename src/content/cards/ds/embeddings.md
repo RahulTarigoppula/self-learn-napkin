@@ -11,7 +11,7 @@ story:
   - title: "One-hot: every word is equally different"
     text: "A model needs numbers, not words. The simplest encoding is one-hot: a vector as long as the vocabulary, say 50,000, with a single 1 marking the word. But any two different one-hot vectors have dot product 0, so \"cat\" is exactly as far from \"dog\" as from \"car\". No similarity, and huge vectors."
   - title: "An embedding table: one dense row per word"
-    text: "Instead, keep a table with one short row of numbers per word — 2 here, typically 50 to 1,000 in practice. Encoding a word is just looking up its row (mathematically, one-hot times the table). The numbers start random and are learned during training, like any other weights."
+    text: "Instead, keep a table with one short row of numbers per word — 2 here, typically 32 to 1,024 in practice. Encoding a word is just looking up its row (mathematically, one-hot times the table). The numbers start random and are learned during training, like any other weights."
   - title: Similar words land close together
     text: "Training adjusts the rows so that words used in similar contexts get similar vectors. Plotted, cat (3, 1) and dog (3, 2) point almost the same way, while car (−1, 3) points elsewhere. Distance in this space now means something."
   - title: Cosine similarity measures the angle
@@ -30,16 +30,16 @@ quiz:
     answer: 1
     why: "Dot product 1·1 + 0·1 = 1; lengths 1 and √2. 1 / √2 ≈ 0.71, the cosine of the 45° angle between them."
   - q: "Why are one-hot vectors a poor representation for similarity?"
-    options: ["They are too short", "Every pair of different words has dot product 0, so all words are equally dissimilar", "They contain negative numbers", "They cannot be stored"]
-    answer: 1
+    options: ["Every pair of different words has dot product 0, so all words are equally dissimilar", "They are too short", "They contain negative numbers", "They cannot be stored"]
+    answer: 0
     why: "Each one-hot vector has its single 1 in a different place, so any two are orthogonal. The encoding carries identity but no notion that cat is closer to dog than to car."
   - q: "An embedding table has a vocabulary of 50,000 words and 300 dimensions. How many learned numbers is that?"
     options: ["50,300", "300", "15,000,000", "2,500,000,000"]
     answer: 2
     why: "One row of 300 numbers per word: 50,000 × 300 = 15 million parameters, about 60 MB in 32-bit floats."
   - q: "You compute king − man + woman with real word2vec vectors and search for the nearest word. What is the honest caveat?"
-    options: ["The answer is always exactly queen", "Standard evaluations exclude the three input words; without that, the nearest word is often king itself", "It only works for 2-dimensional embeddings", "Cosine cannot be used for analogies"]
-    answer: 1
+    options: ["The answer is always exactly queen", "It only works for 2-dimensional embeddings", "Cosine cannot be used for analogies", "Standard evaluations exclude the three input words; without that, the nearest word is often king itself"]
+    answer: 3
     why: "The result vector is usually still closest to king. The famous answer appears when the input words are excluded, and analogies hold only approximately and for some relation types."
 bigO:
   - { op: "lookup", avg: "O(d)", note: "copy one row of the table" }
@@ -106,7 +106,9 @@ Toy 2-D table: cat = (3, 1), dog = (3, 2), car = (−1, 3).
 
 Analogy: with man = (−2.4, −0.6), woman = (−2.4, −2.2), king = (−1.4, −0.6), queen = (−1.5, −2.3), king − man + woman = (−1.4, −2.2), and its nearest other word is queen.
 
-## In code
+## Implement it in Python
+
+An embedding table is just a matrix and cosine similarity a few arithmetic operations, so this works in any language; here it is in Python with NumPy. (Deep-learning frameworks provide the same table as a trainable layer, for example PyTorch's `nn.Embedding`.)
 
 ```python
 import numpy as np

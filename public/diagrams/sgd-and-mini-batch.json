@@ -2,7 +2,7 @@
   "name": "sgd-and-mini-batch",
   "width": 520,
   "height": 420,
-  "elements": 16,
+  "elements": 17,
   "steps": [
     {
       "index": 0,
@@ -26,21 +26,21 @@
       "index": 3,
       "caption": "Epochs, batches and steps",
       "firstElement": 7,
-      "lastElement": 8
+      "lastElement": 9
     },
     {
       "index": 4,
       "caption": "Learning-rate schedule: warm up, then decay",
-      "firstElement": 9,
-      "lastElement": 11
+      "firstElement": 10,
+      "lastElement": 12
     },
     {
       "index": 5,
       "caption": "Momentum and Adam: smooth the zig-zag",
-      "firstElement": 12,
-      "lastElement": 15
+      "firstElement": 13,
+      "lastElement": 16
     }
   ],
-  "hash": "27bd12071775342956c4a09d8cf7b646c91dc55a",
+  "hash": "762f1d098104aad3f98e466c1fcce4793fee9ef2",
   "title": "Batch, stochastic and mini-batch gradient descent paths, epoch arithmetic, a warmup-then-decay schedule and momentum"
 }

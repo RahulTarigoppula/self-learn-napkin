@@ -41,6 +41,6 @@
       "lastElement": 19
     }
   ],
-  "hash": "8c72d0c59b483b9018a8393b96f5fcdfc6a14a68",
+  "hash": "4966b881dfec980f26b6786688287a355cb5fd9d",
   "title": "k-nearest neighbours: a new point Q, its 3 nearest neighbours voting red, k = 1 flipping to blue, Euclidean vs Manhattan distance, the curse of dimensionality and KD-tree splits"
 }

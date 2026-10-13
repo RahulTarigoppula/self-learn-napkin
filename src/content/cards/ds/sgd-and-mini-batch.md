@@ -87,6 +87,16 @@ In practice "SGD" in a deep-learning library means mini-batch SGD.
 3. For each batch: compute the loss and its gradient on just those rows, then **update** w ← w − η · g, where η is the learning rate.
 4. One pass over all batches is an **epoch**. Repeat for several epochs, watching validation loss to decide when to stop.
 
+```text
+for epoch in 1 … E:
+    shuffle the N row indices
+    for each consecutive block b of B indices:      # ceil(N / B) blocks
+        g = mean gradient of the loss over rows b
+        v = β·v + g                                 # optional momentum (β = 0 turns it off)
+        w = w − η(step) · v                         # η from the schedule
+        step = step + 1
+```
+
 ### Terms and arithmetic
 
 - **Batch size B:** rows per gradient estimate.
@@ -118,9 +128,9 @@ The price: with a constant η the weights keep jittering in a "noise ball" aroun
 
 **Adam** keeps two running averages per weight: m of the gradient (β₁ = 0.9) and v of the squared gradient (β₂ = 0.999). Because both start at 0, it divides them by (1 − βᵗ) — **bias correction** — and steps w ← w − η · m̂ / (√v̂ + ε). Dividing by √v̂ gives each weight its own step size: a weight whose gradients are consistently large and one whose gradients are consistently tiny both move by roughly η per step, while a weight whose gradients keep flipping sign (small m̂ relative to √v̂) moves less. On the very first step m̂ = g and v̂ = g², so every weight moves by about η regardless of the gradient's scale. **AdamW** applies weight decay directly to the weights instead of through the gradient, and is the default for transformers.
 
-## In code
+## Implement it in Python
 
-Mini-batch SGD with momentum and a warmup-then-cosine schedule, on a linear regression with 10,000 rows (NumPy):
+The loop is the same in any language; frameworks such as PyTorch, JAX, Flux.jl or Keras package it as an optimiser plus a learning-rate scheduler. Here it is written out in NumPy: mini-batch SGD with momentum and a warmup-then-cosine schedule, on a linear regression with 10,000 rows.
 
 ```python
 import math

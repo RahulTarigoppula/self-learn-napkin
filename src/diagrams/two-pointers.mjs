@@ -30,16 +30,11 @@ const cell = (d, i, y, h, v, o = {}) =>
     bold: true,
     ...o,
   });
-// A ruled-out cell: muted hatching behind the value, so the number stays readable.
-const gone = (d, i, y, h) =>
-  d.rect(X0 + i * CW + 3, y + 3, CW - 6, h - 6, {
-    pen: 'muted',
-    fill: 'muted',
-    fillStyle: 'hachure',
-    thin: true,
-    rough: 0.6,
-    single: true,
-    gap: 7,
+// A ruled-out cell: a muted wash over the cell, with its value re-lettered in muted ink on top.
+const gone = (d, i, y, h, v) =>
+  d.group(() => {
+    d.rect(X0 + i * CW + 3, y + 3, CW - 6, h - 6, { pen: 'muted', fill: 'muted', thin: true, rough: 0.6, single: true });
+    d.text(cx(i), y + h / 2, String(v), { pen: 'muted', size: 19, bold: true });
   });
 
 const logLine = (d, k, sum, act, pen) =>
@@ -64,15 +59,15 @@ export default (d) => {
 
   d.step('Too big: R steps left. Too small: L steps right');
   logLine(d, 0, '1 + 14 = 15', 'R ←', 'red');
-  gone(d, 6, AY, AH);
+  gone(d, 6, AY, AH, A[6]);
   logLine(d, 1, '1 + 11 = 12', 'L →', 'orange');
-  gone(d, 0, AY, AH);
+  gone(d, 0, AY, AH, A[0]);
 
   d.step('Each check rules out one value: O(n)');
   logLine(d, 2, '3 + 11 = 14', 'R ←', 'red');
-  gone(d, 5, AY, AH);
+  gone(d, 5, AY, AH, A[5]);
   logLine(d, 3, '3 + 9 = 12', 'L →', 'orange');
-  gone(d, 1, AY, AH);
+  gone(d, 1, AY, AH, A[1]);
   d.group(() => {
     for (const [i, t] of [
       [2, 'L'],
@@ -98,7 +93,7 @@ export default (d) => {
     size: 15,
     anchor: 'start',
   });
-  for (const i of [1, 3, 4]) gone(d, i, BY, BH);
+  for (const i of [1, 3, 4]) gone(d, i, BY, BH, B[i]);
 
   d.step('W writes kept values to the front');
   d.group(() => {

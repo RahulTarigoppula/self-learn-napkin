@@ -17,12 +17,12 @@ story:
   - title: Recurse on each side
     text: "Repeat inside each child. On the right, income ≥ 7 separates the 2 repaid loans from the 6 defaults — both leaves are pure. To classify a new loan, walk down: debt 6, income 8 → not under 4 → income at least 7 → repaid."
   - title: "Too deep: it memorises noise"
-    text: "Keep splitting and the tree carves a sliver, debt 1.9 to 2.4, around the one default among the low-debt loans. Training accuracy hits 100 %, but that rule is noise. Capping max_depth, min_samples_leaf or the number of leaves keeps the 5:1 leaf, which predicts repaid with p = 5/6."
+    text: "Keep splitting and the tree carves a sliver, debt 1.9 to 2.4, around the one default among the low-debt loans. Training accuracy hits 100 %, but that rule is noise. Capping the depth, the minimum rows per leaf or the number of leaves keeps the 5:1 leaf, which predicts repaid with p = 5/6."
 keyIdeas:
   - "A tree splits **greedily**: at each node it tries every feature and threshold and keeps the one with the **largest drop in impurity**."
   - "**Gini** = 1 − Σ pₖ²; **entropy** = −Σ pₖ log₂ pₖ. Both are 0 for a pure node; they almost always pick the same split."
   - "**Regression trees** split to minimise squared error, and each leaf predicts the **mean** of its rows."
-  - "Unlimited trees **overfit** (low bias, high variance). Regularise with **max_depth, min_samples_leaf, max_leaf_nodes** or cost-complexity pruning."
+  - "Unlimited trees **overfit** (low bias, high variance). Regularise with a **maximum depth, a minimum number of rows per leaf, a maximum number of leaves** or cost-complexity pruning."
   - "Pluses: readable rules, no feature scaling, mixed feature types. Minuses: **unstable**, axis-aligned staircase boundaries — fixed by forests and boosting."
 quiz:
   - q: "A node holds 8 cats and 2 dogs. What is its Gini impurity?"
@@ -92,7 +92,7 @@ For a node where class k makes up a share pₖ of the rows:
 | 2/8 vs 6/8 | 0.375 | 0.811 |
 | 100 / 0 | 0 | 0 |
 
-Gini avoids logarithms, so it is slightly faster and is the scikit-learn default; the two choose the same split in the vast majority of cases.
+Gini avoids logarithms, so it is slightly faster and is the default in many libraries; the two choose the same split in the vast majority of cases.
 
 ## Worked example
 
@@ -106,7 +106,7 @@ Fourteen loans, 7 repaid and 7 defaulted. Root Gini 0.5, root entropy 1 bit.
 
 Debt < 4 wins under both measures: Gini falls from 0.5 to 0.333 (decrease 0.167) and entropy from 1 to 0.742 (information gain 0.258 bits). Notice that "debt < 1.9" has a perfectly pure child and still loses: purity in a tiny child counts for little when the big child stays mixed.
 
-Inside the right child (2 : 6), income ≥ 7 separates the two repaid loans from the six defaults — weighted Gini 0, so it is the best split there. The left child (5 : 1) can only improve by isolating the single default; with `max_leaf_nodes=3` the tree stops and that leaf predicts **repaid with probability 5/6 ≈ 0.83**. That three-leaf tree gets 13 of 14 training loans right. Grown to purity, the tree needs depth 3 and five leaves and gets 14 of 14 — by fencing off debt 1.9–2.4, a rule no one would trust.
+Inside the right child (2 : 6), income ≥ 7 separates the two repaid loans from the six defaults — weighted Gini 0, so it is the best split there. The left child (5 : 1) can only improve by isolating the single default; with a limit of three leaves the tree stops and that leaf predicts **repaid with probability 5/6 ≈ 0.83**. That three-leaf tree gets 13 of 14 training loans right. Grown to purity, the tree needs depth 3 and five leaves and gets 14 of 14 — by fencing off debt 1.9–2.4, a rule no one would trust.
 
 ## Regression trees
 
@@ -114,17 +114,36 @@ For a numeric target the same algorithm splits to minimise the **sum of squared 
 
 ## Controlling overfitting
 
-An unconstrained tree keeps splitting until every leaf is pure — low bias, very high variance. The knobs (scikit-learn names):
+An unconstrained tree keeps splitting until every leaf is pure — low bias, very high variance. The knobs:
 
-- `max_depth` — limit the number of questions on any path.
-- `min_samples_leaf` / `min_samples_split` — every leaf must hold, or every split must start from, at least this many rows.
-- `max_leaf_nodes` — grow best-first and stop at this many leaves.
-- `min_impurity_decrease` — skip splits that barely help.
-- `ccp_alpha` — **cost-complexity pruning**: grow fully, then cut back subtrees whose impurity reduction is not worth alpha per extra leaf.
+- **Maximum depth** — limit the number of questions on any path.
+- **Minimum rows per leaf / per split** — every leaf must hold, or every split must start from, at least this many rows.
+- **Maximum number of leaves** — grow best-first and stop at this many leaves.
+- **Minimum impurity decrease** — skip splits that barely help.
+- **Cost-complexity pruning** — grow fully, then cut back subtrees whose impurity reduction is not worth a penalty α per extra leaf.
 
 Pick them by cross-validation.
 
-## In code
+## The algorithm in pseudocode
+
+```text
+grow(rows, depth):
+    if rows are pure, or depth = max depth, or too few rows:
+        return leaf(class shares of rows)
+    for each feature f:
+        sort rows by f
+        for each midpoint t between consecutive distinct values:
+            score = weighted impurity of (rows with f < t, rows with f ≥ t)
+            remember (f, t) if score is the lowest so far
+    if the best split does not lower the impurity: return leaf(class shares of rows)
+    return node(best (f, t), grow(left rows, depth + 1), grow(right rows, depth + 1))
+```
+
+Sorting once per feature lets the class counts of every threshold be updated in O(1) as rows move from the right side to the left, which is where the n log n in the cost comes from.
+
+## Implement it in Python
+
+Trees are available in every ML stack (R's rpart, Julia's DecisionTree.jl, Spark MLlib…); this version computes Gini by hand and then uses scikit-learn, whose knobs are `max_depth`, `min_samples_leaf` / `min_samples_split`, `max_leaf_nodes`, `min_impurity_decrease` and `ccp_alpha` (cost-complexity pruning).
 
 ```python
 import numpy as np
@@ -157,7 +176,7 @@ print(full.get_depth(), full.get_n_leaves(), full.score(X, y))   # 3 5 1.0
 - **Axis-aligned splits:** a diagonal boundary such as "income > debt" needs a staircase of many splits. Adding a feature like income − debt helps.
 - **No scaling needed:** splits depend only on the order of values, so standardising or log-transforming a feature does not change the tree.
 - **High-cardinality features** (IDs, zip codes) offer many thresholds and can win splits by chance; impurity-based importances are biased towards them.
-- **Class imbalance:** pure-looking leaves can just be the majority class; use `class_weight` or judge with precision/recall rather than accuracy.
+- **Class imbalance:** pure-looking leaves can just be the majority class; use class weights or judge with precision/recall rather than accuracy.
 
 ## In the interview
 

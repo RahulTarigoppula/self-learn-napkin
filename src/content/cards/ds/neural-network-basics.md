@@ -38,8 +38,8 @@ quiz:
     answer: 2
     why: "100 × 50 = 5,000 weights plus one bias per output neuron, 50: 5,050."
   - q: "Which output activation fits classifying an image as exactly one of 10 digits?"
-    options: ["ReLU", "Sigmoid on each output independently", "Softmax", "No activation"]
-    answer: 2
+    options: ["ReLU", "Sigmoid on each output independently", "No activation", "Softmax"]
+    answer: 3
     why: "Softmax turns 10 scores into 10 positive probabilities that sum to 1, one per mutually exclusive class. Independent sigmoids suit multi-label problems where several classes can be true."
 bigO:
   - { op: "parameters, dense layer n → m", avg: "n·m + m", note: "weights plus biases" }
@@ -112,7 +112,9 @@ Softmax example: scores (2, 1, 0) become (0.665, 0.245, 0.090). Sigmoid's gradie
 
 The **universal approximation theorem** says a network with one hidden layer, enough neurons and a non-polynomial activation (such as ReLU or sigmoid) can approximate any continuous function on a bounded input region as closely as you like. It is an existence result: it does not say how many neurons you need, or that gradient descent will find the weights. In practice deeper networks represent many functions with far fewer parameters than one very wide layer.
 
-## In code
+## Implement it in Python
+
+A forward pass is matrix multiplications plus element-wise activations, so it looks the same in any language or deep-learning framework; here it is in plain Python with NumPy.
 
 ```python
 import numpy as np

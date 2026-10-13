@@ -37,8 +37,8 @@ quiz:
     answer: 1
     why: "0.10·0.90 = 0.090 true positives versus 0.90·0.09 = 0.081 false positives, so 0.090 / 0.171 ≈ 53 %. The same test means more when the prior is higher."
   - q: "What is base-rate neglect?"
-    options: ["Forgetting to normalise probabilities", "Judging P(A|B) from P(B|A) while ignoring how rare A is", "Using too small a sample", "Confusing correlation with causation"]
-    answer: 1
+    options: ["Forgetting to normalise probabilities", "Using too small a sample", "Confusing correlation with causation", "Judging P(A|B) from P(B|A) while ignoring how rare A is"]
+    answer: 3
     why: "People read the test's accuracy as the answer and ignore the prior P(A). When A is rare, the prior dominates and the posterior stays low."
   - q: "A positive result has likelihood ratio 10. Prior odds are 1:99. What are the posterior odds after two independent positive results?"
     options: ["10:99", "20:99", "100:99", "1:99"]
@@ -115,7 +115,9 @@ Evidence arrives in pieces, and Bayes chains naturally. After the first positive
 
 Here the likelihood ratio of a positive is 0.90 / 0.09 = 10. Prior odds 1:99 → 10:99 (9.2 %) → 100:99 (50.3 %) → 1000:99 (91 %). Three positives are needed before you are confident. This only holds if the tests are **conditionally independent** given the disease status — repeating the same test on the same sample, which may fail the same way twice, does not count as new evidence.
 
-## In code
+## Implement it in Python
+
+Bayes' theorem is one line of arithmetic in any language; here it is in Python, with a NumPy simulation as a check.
 
 ```python
 import numpy as np

@@ -15,7 +15,7 @@ story:
   - title: "Matrix factorisation: a vector per user and item"
     text: "Better: give every user and every item a short vector, learned so that their dot product reproduces the known ratings. Suppose training produced these two-number vectors. Their dimensions are hidden factors that we may read afterwards as action and family taste, though nobody labelled them."
   - title: Fill the gap with a dot product
-    text: "Now any empty cell is one dot product: Ann · Heat = 2.0·2.3 + 0.3·0.3 = 4.69, so Heat is a strong recommendation for Ann. The same vectors give Ann · Coco = 2.0·0.3 + 0.3·2.3 = 1.29, which matches the 1 she gave it."
+    text: "Now any empty cell is one dot product: Ann · Heat = 2.0·2.3 + 0.3·0.3 = 4.69, so Heat is a strong recommendation for Ann. The same vectors give Ann · Coco = 2.0·0.3 + 0.3·2.3 = 1.29, close to the 1 she actually gave it."
   - title: "At scale: retrieve, then rank"
     text: "You cannot score 10 million items for every visit with a heavy model. Stage one, retrieval, uses cheap signals — a nearest-neighbour search over item vectors, popular items, co-purchases — to fetch a few hundred candidates in milliseconds. Stage two, ranking, scores just those with a richer model and shows the best ten."
   - title: "Measure: offline, then an A/B test"
@@ -128,7 +128,9 @@ Suppose training produced k = 2 vectors: Ann (2.0, 0.3), Bob (1.9, 0.4), Cat (0.
 - **Offline:** split interactions **by time** (train on the past, test on the future — random splits leak the future). Measure **precision@k** (share of the top k that are relevant), **recall@k** (share of the relevant items that reach the top k), and ranking metrics such as **NDCG**, which rewards putting hits near the top. RMSE on ratings was the Netflix Prize metric, but ranking metrics better reflect what users see.
 - **Online:** an **A/B test** on the business goal — watch time, purchases, retention. Offline metrics are biased by what the old system chose to show, so offline gains often shrink or vanish online.
 
-## In code
+## Implement it in Python
+
+Similarity scores, a factorisation trained by SGD and precision@k are plain array arithmetic in any language; here they are in Python with NumPy. (At scale you would use a dedicated library or framework for ALS, two-tower models and ANN retrieval.)
 
 ```python
 import numpy as np

@@ -25,23 +25,23 @@ keyIdeas:
   - "**Forward pass caches values, backward pass reuses them.** All gradients cost about 2–3 forward passes, not one pass per weight."
   - "**Local rules:** + copies the gradient, × multiplies by the other input, ReLU passes it where the input was positive, else 0."
   - "**Vanishing / exploding gradients:** many layers multiply many factors; factors below 1 shrink the signal, above 1 blow it up."
-  - "**Autograd** (PyTorch, JAX, TensorFlow) records the graph during the forward pass and runs this backward sweep for you."
+  - "**Autograd** (in frameworks such as PyTorch, JAX or TensorFlow) records the graph during the forward pass and runs this backward sweep for you."
 quiz:
   - q: "In u = x·w with x = 2, w = 3, the gradient arriving at u is 4. What is ∂L/∂w?"
     options: ["4", "8", "12", "6"]
     answer: 1
     why: "The local derivative ∂u/∂w is the other input, x = 2. Chain rule: 4 × 2 = 8."
   - q: "Why is backprop much faster than estimating each gradient by nudging each weight?"
-    options: ["It uses smaller numbers", "One backward sweep reuses shared intermediate results to get every gradient at once", "It skips the forward pass", "It only updates the last layer"]
-    answer: 1
+    options: ["One backward sweep reuses shared intermediate results to get every gradient at once", "It uses smaller numbers", "It skips the forward pass", "It only updates the last layer"]
+    answer: 0
     why: "Nudging needs a forward pass per weight — millions of passes. Backprop computes each node's gradient once and reuses it for everything upstream, so all gradients cost a small constant times one forward pass."
   - q: "A deep network uses sigmoid activations, whose derivative is at most 0.25. Through 10 such layers, the gradient can shrink by a factor of about…"
     options: ["2.5", "0.25", "1 / 1,000,000", "It cannot shrink"]
     answer: 2
     why: "0.25¹⁰ ≈ 9.5 × 10⁻⁷, about one millionth (ignoring the weights). Early layers barely learn: the vanishing gradient problem. ReLU, residual connections and normalisation help."
   - q: "A value v is used by two later nodes. During backprop, its gradient is…"
-    options: ["The larger of the two incoming gradients", "The sum of the two incoming gradients", "Their product", "Their average"]
-    answer: 1
+    options: ["The larger of the two incoming gradients", "Their product", "Their average", "The sum of the two incoming gradients"]
+    answer: 3
     why: "The multivariable chain rule adds the contributions of every path from v to the loss. This is why autograd frameworks accumulate (+=) gradients."
 bigO:
   - { op: "all gradients via backprop", avg: "≈ 2–3× forward pass", note: "independent of the number of weights" }
@@ -111,7 +111,9 @@ Notice that ∂L/∂u = 4 was computed once and then reused for both w and x. In
 
 The price is **memory**: the backward pass needs the cached forward values (here x, w and e), so training must store every layer's activations. Activation checkpointing trades this back: store a few layers' outputs and recompute the rest during the backward pass.
 
-## In code
+## Implement it in Python
+
+A backward pass is a few lines of arithmetic per node in any language; here it is by hand in Python with NumPy, first on the scalar example and then on matrices, with a numerical gradient check.
 
 ```python
 import numpy as np
@@ -150,6 +152,8 @@ W1p = W1.copy(); W1p[0, 0] += eps
 print(dW1[0, 0], (loss_and_grads(W1p, W2)[0] - loss) / eps)   # both ≈ 2.3359
 ```
 
+In PyTorch the same thing is automatic: build the loss from tensors created with `requires_grad=True`, call `loss.backward()`, and read each parameter's `.grad`. Because `.grad` accumulates, training loops call `optimizer.zero_grad()` before every step. JAX's `jax.grad` and TensorFlow's `GradientTape` do the same job.
+
 ## Vanishing and exploding gradients
 
 The gradient reaching layer 1 of a deep network is a product with one factor per layer (an activation slope times a weight matrix). Products of many numbers behave exponentially:
@@ -161,7 +165,7 @@ Fixes: ReLU-family activations (slope exactly 1 when active), initialisation sca
 
 ## Autograd
 
-You rarely write backward passes by hand. Frameworks record each operation into a graph as the forward pass runs ("define-by-run" in PyTorch), and `loss.backward()` walks it in reverse applying each op's stored derivative rule, accumulating into `.grad`. That is why you must zero gradients between steps in PyTorch — they are summed, exactly as the multi-path chain rule requires.
+You rarely write backward passes by hand. **Automatic differentiation** frameworks record each operation into a graph as the forward pass runs, and a single "backward" call walks that graph in reverse, applying each operation's stored derivative rule and adding the result into a gradient buffer for every parameter. Because the buffers *accumulate* (they are summed, exactly as the multi-path chain rule requires), a training loop must reset them to zero before each step, or gradients from the previous batch leak into the next update.
 
 ## Edge cases and pitfalls
 

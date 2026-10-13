@@ -72,7 +72,7 @@ export default (d) => {
   d.text(20, 296, 'distance from A to B', { pen: 'muted', size: 14, anchor: 'start' });
   d.group(() => {
     const A = [40, 396];
-    const B = [106, 316];
+    const B = [100, 316]; // 60 across, 80 up: a 3-4-5 triangle
     d.line(...A, ...B, { pen: 'green', thick: true, ...neat });
     d.poly([A, [B[0], A[1]], B], { pen: 'orange', thick: true, dashed: true, ...neat });
     mark(d, ...A, 'ink', 8);

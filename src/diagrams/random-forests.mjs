@@ -39,7 +39,8 @@ const tinyTree = (d, x, y, f) => {
 // Error vs number of trees (bottom-right).
 const ex = (b) => 388 + 112 * (Math.log10(b) / 2.3);
 const ey = (e) => 352 - 300 * e;
-const err = (b) => 0.08 + 0.16 / Math.sqrt(b) * 0.9 + 0.03;
+// error = floor (bias², noise and the ρσ² term) + (1 − ρ)σ²/B: falls like 1/B, then flattens
+const err = (b) => 0.11 + 0.144 / b;
 
 export default (d) => {
   d.step('One training set: ten rows');
@@ -91,5 +92,5 @@ export default (d) => {
     const b = 10 ** ((i / 15) * 2.3);
     return [ex(b), ey(err(b))];
   }), { pen: 'violet', thick: true, rough: 0.5 });
-  d.text(ex(200), ey(0.08) - 10, 'forest', { pen: 'violet', size: 14, anchor: 'end', bold: true });
+  d.text(ex(200), ey(0.11) + 16, 'forest', { pen: 'violet', size: 14, anchor: 'end', bold: true });
 };

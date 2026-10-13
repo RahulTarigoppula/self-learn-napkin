@@ -47,7 +47,7 @@ bigO:
   - { op: "train a kernel SVM", avg: "O(n²)–O(n³)", note: "depends on C and how separable the data is; libsvm caches kernel rows" }
   - { op: "kernel matrix memory", avg: "O(n²)", note: "100,000 rows → 10¹⁰ entries ≈ 80 GB in float64" }
   - { op: "predict one point", avg: "O(n_SV · d)", note: "one kernel evaluation per support vector" }
-  - { op: "train a linear SVM", avg: "O(n · d) per pass", note: "LinearSVC / SGDClassifier(loss='hinge')" }
+  - { op: "train a linear SVM", avg: "O(n · d) per pass", note: "a linear solver, or SGD on the hinge loss" }
 bigOTitle: "Key numbers"
 related: [ds/logistic-regression, ds/feature-scaling, ds/regularisation, ds/k-nearest-neighbours]
 prereqs: [ds/logistic-regression]
@@ -129,9 +129,11 @@ The RBF kernel is a similarity: 1 for identical points, falling towards 0 with d
 - **Large γ**: narrow bumps, so the boundary wraps individual points like islands. Training accuracy is high and validation accuracy drops.
 - **Small γ**: wide bumps, so the boundary is smooth and close to linear.
 
-C and γ interact, so tune them together on a log-spaced grid (for example 0.01 … 100 for both) with cross-validation. scikit-learn's default `gamma='scale'` is 1 / (n_features × variance of X).
+C and γ interact, so tune them together on a log-spaced grid (for example 0.01 … 100 for both) with cross-validation. A sensible starting γ is 1 / (number of features × variance of the scaled data).
 
-## In code
+## Implement it in Python
+
+SVM solvers exist for every language (libsvm and liblinear in C/C++ underpin R's e1071, Julia's LIBSVM.jl and scikit-learn). scikit-learn names: `SVC` (kernel SVM, one-vs-one for many classes; `probability=True` adds Platt scaling; `class_weight="balanced"`), `LinearSVC` or `SGDClassifier(loss="hinge")` for large n, `Nystroem` / `RBFSampler` for kernel approximation, and `gamma="scale"` as the default γ.
 
 ```python
 import numpy as np
@@ -171,11 +173,11 @@ print(search.best_params_, search.score(Xte, yte))            # C=1, gamma=1, �
 
 ## Edge cases and pitfalls
 
-- **Unscaled features.** The margin and the RBF distance both measure geometry, so a feature in the thousands dominates one in fractions. Always put a `StandardScaler` in front, inside a pipeline.
-- **Large n.** Kernel SVM training scales roughly between O(n²) and O(n³), and the full kernel matrix has n² entries: 100,000 rows is 10¹⁰ numbers, about 80 GB as float64. Beyond a few tens of thousands of rows, use `LinearSVC` or `SGDClassifier(loss="hinge")`, which are linear in n, or approximate the kernel with `Nystroem` / `RBFSampler` and fit a linear model on top.
-- **Probabilities.** An SVM outputs a score, not a probability. `SVC(probability=True)` fits Platt scaling with an internal 5-fold cross-validation: slower, and its probabilities can occasionally disagree with `predict`. If you need calibrated probabilities, logistic regression or a calibrated classifier is more natural.
-- **Imbalanced classes.** The minority class can end up inside a wide street. Use `class_weight="balanced"`, which scales C per class.
-- **Multi-class.** SVMs are binary. `SVC` trains one-vs-one (k(k−1)/2 models); `LinearSVC` trains one-vs-rest.
+- **Unscaled features.** The margin and the RBF distance both measure geometry, so a feature in the thousands dominates one in fractions. Always standardise first, inside a pipeline.
+- **Large n.** Kernel SVM training scales roughly between O(n²) and O(n³), and the full kernel matrix has n² entries: 100,000 rows is 10¹⁰ numbers, about 80 GB as float64. Beyond a few tens of thousands of rows, use a linear SVM or SGD on the hinge loss, which are linear in n, or approximate the kernel with random features (Nyström, random Fourier features) and fit a linear model on top.
+- **Probabilities.** An SVM outputs a score, not a probability. Probabilities can be bolted on with **Platt scaling** (a logistic fit to the scores, usually cross-validated): slower, and the probabilities can occasionally disagree with the predicted class. If you need calibrated probabilities, logistic regression or a calibrated classifier is more natural.
+- **Imbalanced classes.** The minority class can end up inside a wide street. Use class weights, which scale C per class.
+- **Multi-class.** SVMs are binary. Libraries combine them one-vs-one (k(k−1)/2 models) or one-vs-rest (k models).
 - **Noisy, overlapping classes** turn most points into support vectors, which makes prediction slow and the model no sparser than kNN.
 
 ## When to use it

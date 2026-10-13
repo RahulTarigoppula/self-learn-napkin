@@ -36,8 +36,8 @@ quiz:
     answer: 1
     why: "The log of a product is a sum of logs; derivatives of sums are simple, and a product of thousands of small probabilities underflows to 0 in floating point. The maximising θ does not change."
   - q: "Assume y = f(x) + noise, where the noise is Gaussian with constant variance. Maximum likelihood for f is equivalent to minimising…"
-    options: ["Absolute error", "Mean squared error", "Log-loss", "Hinge loss"]
-    answer: 1
+    options: ["Absolute error", "Log-loss", "Hinge loss", "Mean squared error"]
+    answer: 3
     why: "−log of a Gaussian density is (y − f(x))² / (2σ²) plus a constant, so maximising the likelihood minimises the sum of squared errors. Laplace noise would give absolute error instead."
   - q: "What is the MLE of a Gaussian's variance for the data 2, 4, 6, 8?"
     options: ["5.0", "6.67", "2.24", "20"]
@@ -129,7 +129,9 @@ MLE trusts the data completely. With 3 heads in 3 flips it says p̂ = 1 — the 
 
 With a Beta(2, 2) prior on p (roughly "pretend you saw one extra head and one extra tail"), θ̂_MAP = (h + 1)/(n + 2): 8/12 ≈ 0.667 for 7 of 10 and 4/5 = 0.8 for 3 of 3. For model weights, a Gaussian prior adds −λ‖w‖² — **L2 regularisation (ridge)** — and a Laplace prior adds −λ‖w‖₁ — **L1 (lasso)**. As data grow, the likelihood term dominates and MAP approaches MLE.
 
-## In code
+## Implement it in Python
+
+Writing a log-likelihood and maximising it (by formula or by search) works the same in any language; here it is in Python with NumPy.
 
 ```python
 import numpy as np

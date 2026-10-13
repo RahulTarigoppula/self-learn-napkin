@@ -28,16 +28,16 @@ keyIdeas:
   - "**Cost:** attention is O(n²·d) per layer in sequence length n, so long contexts are expensive."
 quiz:
   - q: "Why does a Transformer need positional encodings?"
-    options: ["To normalise the embeddings", "Self-attention is permutation-equivariant, so without them word order is invisible", "To reduce the vocabulary size", "To implement the causal mask"]
-    answer: 1
+    options: ["Self-attention is permutation-equivariant, so without them word order is invisible", "To normalise the embeddings", "To reduce the vocabulary size", "To implement the causal mask"]
+    answer: 0
     why: "Attention computes weighted sums over a set: shuffle the inputs and the outputs are shuffled the same way. \"Dog bites man\" and \"man bites dog\" would look identical without position information."
   - q: "What does the causal mask do in a decoder-only model?"
-    options: ["Removes padding tokens", "Lets token i attend only to tokens 1 … i, so it cannot see the future", "Drops random attention heads", "Masks 15 % of the input tokens"]
-    answer: 1
+    options: ["Removes padding tokens", "Drops random attention heads", "Masks 15 % of the input tokens", "Lets token i attend only to tokens 1 … i, so it cannot see the future"]
+    answer: 3
     why: "Scores for j > i are set to −∞, giving weight 0 after softmax. Training can then predict all positions in parallel without any position seeing its own answer. Masking 15 % of tokens is BERT's training task, a different thing."
   - q: "Why do Transformers train faster than RNNs on GPUs?"
-    options: ["They have fewer parameters", "An RNN must process tokens one after another; a Transformer handles all positions at once with matrix multiplications", "They do not need backpropagation", "They use smaller vocabularies"]
-    answer: 1
+    options: ["They have fewer parameters", "They do not need backpropagation", "An RNN must process tokens one after another; a Transformer handles all positions at once with matrix multiplications", "They use smaller vocabularies"]
+    answer: 2
     why: "An RNN's state at step t depends on step t − 1, forcing n sequential steps. A Transformer's layers are a few big matrix products over the whole sequence, which GPUs parallelise well."
   - q: "The context grows from 4,000 to 16,000 tokens. Roughly how does the attention score memory per layer change?"
     options: ["4× larger", "16× larger", "Unchanged", "2× larger"]
@@ -112,9 +112,9 @@ d = 768, 12 heads of 64, 12 blocks, FFN width 3,072, context 1,024, vocabulary 5
 
 At full context each attention head computes a 1,024 × 1,024 score matrix — about 1.05 million scores — and there are 12 heads in each of 12 layers: about 151 million scores per forward pass. Quadruple the context to 4,096 tokens and that becomes 16 times larger.
 
-## In code
+## Implement it in Python
 
-A minimal decoder-only Transformer in numpy (random weights, pre-norm, no biases):
+A Transformer is matrix multiplications, softmax and layer norm, so the same forward pass can be written in any language or framework. Here is a minimal decoder-only Transformer in Python with NumPy (random weights, pre-norm, no biases, no learned layer-norm scale and shift):
 
 ```python
 import numpy as np

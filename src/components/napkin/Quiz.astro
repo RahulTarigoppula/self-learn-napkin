@@ -1,4 +1,5 @@
 ---
+import { shuffleOptions } from '../../engine/quiz/shuffle';
 import { inlineMd } from '../../lib/inline-md';
 
 interface Item {
@@ -11,7 +12,8 @@ interface Props {
   items: Item[];
   slug: string;
 }
-const { items, slug } = Astro.props;
+const { items: raw, slug } = Astro.props;
+const items = raw.map((it) => shuffleOptions(it));
 const letters = ['A', 'B', 'C', 'D'];
 ---
 

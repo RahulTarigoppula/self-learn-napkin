@@ -74,6 +74,14 @@ k-nearest neighbours (kNN) is the simplest useful learning algorithm: **similar 
 3. **Select** the k points with the smallest distances: q's k nearest neighbours.
 4. **Combine their labels.** Classification: majority vote, and the vote shares double as rough probabilities (2 of 3 red → P(red) ≈ 0.67). Regression: the mean (or median) of the neighbours' target values.
 
+```text
+predict(q):
+    for each training row i:  dist[i] = distance(q, xᵢ)
+    N = indices of the k smallest dist            # a partial sort is enough
+    classification: most common label among N     (or weight each vote by 1 / dist)
+    regression:     mean target among N
+```
+
 A common refinement is **distance weighting**: each neighbour votes with weight 1/distance, so a very close neighbour counts more than one at the edge of the circle. It also breaks most ties.
 
 The decision boundary is never written down; it is implied by the data. For k = 1 it follows the edges of the **Voronoi cells** around each training point, the regions closer to that point than to any other. Larger k smooths it.
@@ -108,7 +116,7 @@ Votes by k:
 
 - **Euclidean** (L2): √Σ(aᵢ − bᵢ)². The default; the straight-line distance.
 - **Manhattan** (L1): Σ|aᵢ − bᵢ|. Walks along the axes; less dominated by one large difference.
-- **Minkowski**: (Σ|aᵢ − bᵢ|ᵖ)^(1/p). p = 1 is Manhattan, p = 2 is Euclidean; scikit-learn's default is Minkowski with p = 2.
+- **Minkowski**: (Σ|aᵢ − bᵢ|ᵖ)^(1/p). p = 1 is Manhattan, p = 2 is Euclidean.
 - **Cosine distance**: 1 − cos(angle between vectors). Ignores length, so it suits text vectors and embeddings, where direction carries the meaning.
 - **Hamming**: the number of positions that differ, for binary or categorical codes.
 
@@ -135,7 +143,9 @@ Brute force costs O(n·d) per query: a million 100-dimensional points is 10⁸ m
 - **Ball tree:** nests hyperspheres instead of boxes; copes somewhat better with moderate dimensions and non-Euclidean metrics.
 - **Approximate nearest neighbours (ANN):** HNSW graphs, inverted-file indexes with quantisation (FAISS), random-projection forests (Annoy). They return *almost* the true neighbours, with recall around 0.95–0.99 at a fraction of the cost. This is how vector databases search millions of embeddings in milliseconds.
 
-## In code
+## Implement it in Python
+
+The pseudocode above is a few lines in any language; libraries add the fast indexes (R's FNN and class, Julia's NearestNeighbors.jl, FAISS for C++ and Python). In scikit-learn the default metric is Minkowski with p = 2 (Euclidean), `weights="distance"` turns on 1/distance votes, and ties go to the class that sorts first.
 
 ```python
 import numpy as np
@@ -172,7 +182,7 @@ print(search.best_params_, search.score(Xte, yte))      # k = 3, ≈ 0.951
 
 - **Forgetting to scale.** The single most common kNN bug. In the breast-cancer data, feature standard deviations range from 0.003 to 569; scaling lifts test accuracy from 0.916 to 0.951 with the same k = 5.
 - **Imbalanced classes.** With 95 % negatives, most neighbourhoods are dominated by negatives. Use distance weighting, a smaller k, resampling, or tune the decision threshold on the vote share.
-- **Ties.** Even k with two classes can tie; scikit-learn then picks the class that comes first in its sorted label order. Use odd k or distance weights.
+- **Ties.** Even k with two classes can tie, and libraries then break the tie by an arbitrary rule such as label order. Use odd k or distance weights.
 - **Categorical features.** Euclidean distance on label-encoded categories invents an order (red = 1, green = 2, blue = 3). One-hot encode, or use a mixed metric such as Gower distance.
 - **Memory and latency.** The model *is* the training set. Large n means large memory and slow predictions, the opposite of most models.
 - **Duplicates across splits.** If near-identical rows appear in both train and test, 1-NN looks spectacular for the wrong reason.

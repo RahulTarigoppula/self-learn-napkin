@@ -36,12 +36,12 @@ quiz:
     answer: 1
     why: "The raw data keep their shape — exponential waits stay skewed however many you collect. It is the mean of n draws, viewed across many repeated samples, that becomes bell-shaped."
   - q: "You want a confidence interval half as wide. How must the sample size change?"
-    options: ["Double it", "Multiply it by 4", "Multiply it by √2", "Halve it"]
-    answer: 1
+    options: ["Multiply it by 4", "Double it", "Multiply it by √2", "Halve it"]
+    answer: 0
     why: "Width ∝ SE = σ / √n. Halving it needs √n to double, so n must grow 4-fold."
   - q: "You average 1,000 draws from a Cauchy distribution, many times over. What do the averages look like?"
-    options: ["A narrow bell around 0, SD ≈ 1 / √1000", "Exactly as spread out as single draws", "All exactly 0", "A uniform distribution"]
-    answer: 1
+    options: ["A narrow bell around 0, SD ≈ 1 / √1000", "All exactly 0", "A uniform distribution", "Exactly as spread out as single draws"]
+    answer: 3
     why: "The Cauchy distribution has no finite mean or variance, so the CLT does not apply. The mean of n Cauchy draws has the same Cauchy distribution as one draw: extreme values keep dominating the average."
 related: [ds/p-values-and-confidence-intervals, ds/ab-testing, ds/maximum-likelihood]
 prereqs: []

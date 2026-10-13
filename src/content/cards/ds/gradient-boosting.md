@@ -11,7 +11,7 @@ story:
   - title: Start with the mean
     text: "Six points: (1, 1), (2, 1), (3, 4), (4, 7), (5, 4), (6, 1). Boosting builds its model F in steps. Step 0 is the best single constant under squared error, the mean: F₀ = 3 for every x."
   - title: "Residuals: what is left to explain"
-    text: "The residuals y − F₀ are −2, −2, 1, 4, 1, −2 — what the model still gets wrong. For squared error they are exactly the negative gradient of the loss with respect to the prediction. Fitting them is a gradient-descent step, hence the name."
+    text: "The residuals y − F₀ are −2, −2, 1, 4, 1, −2 — what the model still gets wrong. For the loss ½(y − F)² they are exactly the negative gradient of the loss with respect to the prediction. Fitting them is a gradient-descent step, hence the name."
   - title: Tree 1 fits the residuals
     text: "Fit a small tree — here a one-split stump — to the residuals, not to y. The best split is x < 2.5. Its leaves predict the mean residual on each side: −2 on the left, and (1 + 4 + 1 − 2) / 4 = +1 on the right."
   - title: "Add it, shrunk by η = 0.5"
@@ -119,14 +119,13 @@ Stumps can only add one-feature step functions, so a boosted model of stumps is 
 - **η (shrinkage).** With η = 1 each tree takes the full correction and the model overfits quickly; with η = 0.05 each tree corrects 5 % of the error, so many trees share the work and their individual quirks average out. Smaller η almost always helps test error, at the cost of more trees.
 - **Number of trees M.** Unlike a random forest, boosting **can overfit** as M grows, because every tree fits the remaining training error, noise included.
 - **Early stopping.** Hold out validation data (or use cross-validation), track its loss after each tree, and stop when it has not improved for, say, 20–50 rounds. Practical recipe: fix η around 0.05–0.1, set M large, let early stopping choose.
-- **Other regularisers:** shallow trees (`max_depth` 3–8 or `max_leaf_nodes` ≈ 31), `min_samples_leaf`, **row subsampling** (each tree sees a random 50–80 % of rows: *stochastic* gradient boosting), column subsampling, and L1/L2 penalties on leaf values.
+- **Other regularisers:** shallow trees (depth 3–8 or about 31 leaves), a minimum number of rows per leaf, **row subsampling** (each tree sees a random 50–80 % of rows: *stochastic* gradient boosting), column subsampling, and L1/L2 penalties on leaf values.
 
 ## XGBoost, LightGBM, CatBoost in brief
 
 - **XGBoost** uses a **second-order** (Newton) step: with gradient sum G and Hessian sum H in a leaf, the leaf weight is −G / (H + λ), and a split's gain includes a penalty γ per extra leaf. It handles missing values by learning a default direction at each split.
 - **LightGBM** buckets each feature into **histograms** (≈ 255 bins) so split search is fast, and grows trees **leaf-wise** (best leaf first) rather than level by level; it adds gradient-based row sampling (GOSS) and bundling of sparse features.
 - **CatBoost** handles **categorical features** natively with ordered target statistics and uses ordered boosting to reduce target leakage; its symmetric trees predict very fast.
-- scikit-learn's **HistGradientBoosting** follows the LightGBM-style histogram approach.
 
 ## Bagging vs boosting
 
@@ -139,7 +138,9 @@ Stumps can only add one-feature step functions, so a boosted model of stumps is 
 | Tuning effort | low | moderate (η, trees, depth, subsampling) |
 | Noisy labels / outliers | robust | sensitive with squared error; use Huber |
 
-## In code
+## Implement it in Python
+
+The hand-written loop works in any language; for real data use a boosting library (XGBoost, LightGBM and CatBoost all have R, Julia, JVM and Python bindings). Below: the worked example by hand, then scikit-learn's `HistGradientBoostingClassifier`, which follows LightGBM's histogram approach (`max_leaf_nodes`, `max_depth` and `min_samples_leaf` are its tree-size knobs).
 
 ```python
 import numpy as np
@@ -173,7 +174,7 @@ print(clf.n_iter_, round(clf.score(X_te, y_te), 3))   # 216 trees used of 1000; 
 ## Edge cases and pitfalls
 
 - **Overfitting with many trees** — always use early stopping or cross-validated M.
-- **Tuning order:** fix η, find M by early stopping, then tune depth / leaves and `min_samples_leaf`, then subsampling; lower η at the end for a last gain.
+- **Tuning order:** fix η, find M by early stopping, then tune depth / leaves and the minimum rows per leaf, then subsampling; lower η at the end for a last gain.
 - **Outliers and label noise** pull hard under squared error because their residuals stay large tree after tree; consider Huber or absolute loss.
 - **Leakage** through target encoding or features computed with the label inflates validation scores — boosting is very good at exploiting leaks.
 - **Extrapolation:** like all tree models, predictions are flat outside the training range of the features.
