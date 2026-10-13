@@ -97,7 +97,9 @@ The fix is to let the **resource** enforce the order, because it is the only par
 
 This requires two things: the lock service must produce strictly increasing tokens even across its own failures, and the resource must be able to check them atomically, for example with a conditional `UPDATE ... WHERE token <= :t` in a database. If the resource is a third-party API that cannot check tokens, you cannot make the lock fully safe; prefer idempotency there.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation. `lock_service` stands for any lease-based lock client (ZooKeeper, etcd, …).
 
 ```python
 # Client: hold a lease, pass its token with every write.

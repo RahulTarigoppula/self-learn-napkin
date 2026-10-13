@@ -102,7 +102,9 @@ Nine nodes, height 3 — as short as nine nodes can be. **Search 6** visits 8, 3
 
 Now **delete 3**, which has two children. Its in-order successor is the smallest key in its right subtree: go right to 6, then left to 4, which has no left child. Copy 4 into 3's place and remove the old 4 (a leaf). The tree is still a valid BST.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 class Node:
@@ -149,7 +151,7 @@ print(height(chain))                        # 4: a chain, one node per level
 
 - **Validating a BST** by checking only that each left child is smaller and each right child bigger is wrong: a key deep in the left subtree can still be bigger than the root. Pass down an allowed `(low, high)` range instead, or check that the in-order traversal is strictly increasing.
 - **Duplicates** need a policy: ignore them, keep a count in the node, or consistently send equal keys to one side.
-- **Recursion depth**: on a degenerate chain, recursive code recurses n deep. Python's default limit is about 1,000 frames, so iterative search is safer.
+- **Recursion depth**: on a degenerate chain, recursive code recurses n deep and can overflow the call stack (Python's default limit is only about 1,000 frames), so iterative search is safer.
 - **Deleting with two children**: forgetting to remove the successor from its old position leaves a duplicate key.
 
 ## When to use it

@@ -110,7 +110,9 @@ The level-order queue, step by step:
 
 **In-order with an explicit stack.** Recursion keeps "where to come back to" on the call stack; you can keep it yourself. Start at 4 and go left as far as possible, pushing as you go: stack [4, 2, 1]. Pop 1 and visit it; it has no right child. Pop 2, visit it, then move to its right child 3: push 3, pop 3, visit. Pop 4, visit, move right to 6 and go left again: push 6, 5. Pop 5, pop 6, then push and pop 7. Output 1 2 3 4 5 6 7, and the stack never held more than height + 1 = 3 nodes.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 from collections import deque
@@ -168,7 +170,7 @@ The `for _ in range(len(q))` line is the standard trick for grouping BFS output 
 ## Edge cases and pitfalls
 
 - **The empty tree.** Every function should accept `None` and return an empty result.
-- **Recursion depth.** On a chain of 100,000 nodes, recursive code recurses 100,000 deep, far past Python's default limit of about 1,000 frames. Use an explicit stack for trees that may be tall.
+- **Recursion depth.** On a chain of 100,000 nodes, recursive code recurses 100,000 deep, which can overflow the call stack: Python stops at about 1,000 frames by default, and Java or C++ stacks are larger but still finite. Use an explicit stack for trees that may be tall.
 - **Iterative pre- and post-order.** For pre-order, pop a node, visit it, then push its *right* child before its left so the left is popped first. For post-order, a neat trick is to produce node, right, left with that same method and reverse the result.
 - **Space.** Depth-first needs O(h) extra space: O(log n) when balanced, O(n) for a chain. Level-order needs room for the widest level, which is about n/2 for a perfect tree.
 - **Rebuilding a tree.** Pre-order plus in-order (or post-order plus in-order) identifies a binary tree with distinct values uniquely. Pre-order plus post-order does not: a node with one child could have it on either side.

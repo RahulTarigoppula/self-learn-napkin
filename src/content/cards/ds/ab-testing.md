@@ -123,7 +123,24 @@ Fixes: commit to the sample size and look once; or use a method built for repeat
 3. **Practical significance.** The interval excludes 0, but its lower end is only 0.15 pp. Whether that justifies the change is a product decision, not a statistical one.
 4. **Guardrails.** Check that latency, refunds, error rates and so on have not moved in the wrong direction.
 
-## In code
+The whole plan and analysis in language-neutral pseudocode:
+
+```text
+BEFORE: n = (z(1 − α/2) + z(power))² × (p₁(1 − p₁) + p₂(1 − p₂)) / MDE²     # per arm
+        days = ceil_to_whole_weeks(2n / eligible users per day)
+DURING: arm(user) = hash(salt + user_id) mod 2                            # stable 50/50 split
+AFTER (once, at the planned n):
+    if chi-squared test of (n_A, n_B) vs 50/50 gives p < 0.001: stop, debug the split
+    pooled = (x_A + x_B) / (n_A + n_B)
+    z  = (rate_B − rate_A) / sqrt(pooled (1 − pooled) (1/n_A + 1/n_B))
+    p  = 2 × P(standard normal > |z|)
+    CI = (rate_B − rate_A) ± 1.96 × sqrt(rate_A(1 − rate_A)/n_A + rate_B(1 − rate_B)/n_B)
+    ship if CI is above 0, the lift is worth it, and guardrails are fine
+```
+
+## Implement it in Python
+
+The same calculations work in any language with a normal and chi-squared distribution function; here they use SciPy.
 
 ```python
 import numpy as np
@@ -154,7 +171,7 @@ diff, z, p, ci = two_proportion_test(1_475, 14_750, 1_600, 14_750)
 print(f"lift {diff:+.4f}  z {z:.2f}  p {p:.3f}  95% CI [{ci[0]:+.4f}, {ci[1]:+.4f}]")
 ```
 
-Output: 14749; SRM p = 0.000046; lift +0.0085, z 2.38, p 0.017, 95 % CI [+0.0015, +0.0154].
+Output: 14749; SRM p = 0.000046; lift +0.0085, z 2.38, p 0.017, 95 % CI [+0.0015, +0.0154]. Library notes: `stats.norm.ppf` gives z-values from probabilities and `stats.norm.sf` the upper-tail probability; `stats.chisquare` assumes equal expected counts unless you pass `f_exp`. The statsmodels package has ready-made equivalents (`NormalIndPower`, `proportions_ztest`).
 
 ## Edge cases and pitfalls
 

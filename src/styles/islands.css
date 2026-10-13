@@ -1614,3 +1614,10 @@
   color: var(--success);
   font-weight: 600;
 }
+
+.st__about {
+  font-weight: 700;
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -40,8 +40,8 @@ quiz:
     answer: 1
     why: "In production you always predict the future from the past, so the evaluation must too. Shuffling lets the model learn from days that come after the ones it is tested on."
   - q: "True accuracy is 85 %. Roughly how much does the accuracy measured on a 150-row test set wobble (one standard error)?"
-    options: ["About 0.3 points", "About 3 points", "About 15 points"]
-    answer: 1
+    options: ["About 0.3 points", "About 1 point", "About 3 points", "About 15 points"]
+    answer: 2
     why: "Standard error of a proportion = √(p(1 − p)/n) = √(0.85 × 0.15 / 150) ≈ 0.029, about 3 percentage points. Ten times more rows would shrink it only by √10, to about 0.9 points."
 related: [ds/cross-validation, ds/bias-variance]
 prereqs: []
@@ -93,7 +93,9 @@ A feature `income` has mean 50 (thousand) in the 700 training rows and the 150 v
 
 The same rule applies to anything with a `fit` step: imputers, encoders, vocabularies, feature selection and PCA.
 
-## In code
+## Implement it in Python
+
+The recipe is the same in any language or library (R, Julia, Spark…): split, fit preprocessing on train, tune on validation, score test once. This version uses scikit-learn.
 
 ```python
 from sklearn.datasets import make_classification
@@ -117,10 +119,11 @@ for C in [0.01, 0.1, 1, 10]:                     # tune the hyperparameter on va
         best_C, best_acc = C, acc
 
 final = LogisticRegression(C=best_C).fit(X_tr, y_tr)
-print("validation:", best_acc, "test (look once):", final.score(X_te, y_te))
+print("C =", best_C, "validation:", best_acc, "test (look once):", final.score(X_te, y_te))
+# C = 1 validation: 0.973... test (look once): 0.986...
 ```
 
-`stratify=y` keeps the 10 % positive rate in every slice.
+`stratify=y` keeps the 10 % positive rate in every slice. Notice the test score is *higher* than validation here: 148 versus 146 correct out of 150 — two rows, well inside the ±3-point noise of a 150-row slice. Read small differences between slices as noise, not as signal.
 
 ## Edge cases and pitfalls
 

@@ -1,40 +1,40 @@
 {
   "name": "two-pointers",
   "width": 520,
-  "height": 400,
-  "elements": 14,
+  "height": 420,
+  "elements": 26,
   "steps": [
     {
       "index": 0,
-      "caption": "One block of memory, indexed by arithmetic",
+      "caption": "Sorted array, one pointer at each end",
       "firstElement": 0,
-      "lastElement": 3
+      "lastElement": 2
     },
     {
       "index": 1,
-      "caption": "Pointers at both ends: 16 is too small",
-      "firstElement": 4,
+      "caption": "Too big: R steps left. Too small: L steps right",
+      "firstElement": 3,
       "lastElement": 6
     },
     {
       "index": 2,
-      "caption": "18 is too big: drop the 15",
+      "caption": "Each check rules out one value: O(n)",
       "firstElement": 7,
-      "lastElement": 8
+      "lastElement": 13
     },
     {
       "index": 3,
-      "caption": "16 again: move L",
-      "firstElement": 9,
-      "lastElement": 10
+      "caption": "Same direction: R reads every cell",
+      "firstElement": 14,
+      "lastElement": 21
     },
     {
       "index": 4,
-      "caption": "17: found in 4 checks",
-      "firstElement": 11,
-      "lastElement": 13
+      "caption": "W writes kept values to the front",
+      "firstElement": 22,
+      "lastElement": 25
     }
   ],
-  "hash": "3e12a00efaec2f33ee9395563e78347e5c8a9b88",
-  "title": "Array memory layout and the two-pointer pair-sum walk"
+  "hash": "4d0c5fe1b6b9e9878b559672f980dffdb1ebd306",
+  "title": "Two pointers: pair sum from both ends, and removing duplicates with read/write pointers"
 }

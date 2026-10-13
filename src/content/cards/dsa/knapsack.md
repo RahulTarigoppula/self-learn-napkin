@@ -130,7 +130,9 @@ Loop **upwards** and it breaks: processing D after row C ([0, 1, 1, 4, 5, 6]), c
 
 If every item can be used any number of times, that "bug" becomes the algorithm. With the capacity loop running **upwards**, `dp[c − w]` may already contain the current item, which is exactly what reuse means. With the same four items and capacity 6, the unbounded best is $9 (D three times), while the 0/1 best is $8 (A + B + D).
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 def knapsack(items, W):

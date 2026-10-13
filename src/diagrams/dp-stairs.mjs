@@ -42,10 +42,12 @@ export default (d) => {
   });
   d.group(() => {
     // tread 3 = (135, 140), tread 4 = (169, 110), tread 5 = (203, 80)
-    d.arrow(170, 98, 210, 70, { pen: 'blue', bend: -10, thick: true, headSize: 8 });
-    d.text(206, 48, '+1', { pen: 'blue', size: 15, bold: true });
-    d.arrow(128, 126, 194, 64, { pen: 'violet', bend: -28, thick: true, headSize: 8 });
-    d.text(118, 82, '+2', { pen: 'violet', size: 15, bold: true });
+    d.dot(135, 132, 8, { pen: 'violet' });
+    d.dot(171, 102, 8, { pen: 'blue' });
+    d.arrow(175, 97, 204, 72, { pen: 'blue', bend: -8, rough: 0.6, headSize: 8 });
+    d.text(222, 92, '+1', { pen: 'blue', size: 15, bold: true, anchor: 'start' });
+    d.arrow(131, 126, 196, 68, { pen: 'violet', bend: -30, rough: 0.6, headSize: 8 });
+    d.text(116, 84, '+2', { pen: 'violet', size: 15, bold: true });
   });
   d.text(16, 262, 'ways(n) =\nways(n−1) + ways(n−2)', { pen: 'ink', size: 15, anchor: 'start' });
 

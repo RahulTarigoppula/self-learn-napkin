@@ -102,7 +102,9 @@ Six elements, 0 to 5. The `parent` array after each step:
 
 In the union(4,1) step, attaching 0 under 4 instead would have pushed four elements one level deeper rather than two. Union by size always makes the cheaper choice.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 class DSU:

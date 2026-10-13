@@ -123,7 +123,9 @@ Result: 20 at the root, 10 (with left child 5) on its left, 30 (with children 25
 
 A **left-right** example: insert 30, 10, 20. Now 30 is +2 but 10 is −1, because the new key went to the *right* of the left child. A single right rotation at 30 would only make the tree lean the other way. First rotate 10 left (20 moves above 10), then rotate 30 right, and 20 ends up as the root with 10 and 30 below it.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 class Node:
@@ -195,4 +197,4 @@ On disk, the cost that matters is the number of **page reads**, not comparisons.
 
 ## In the interview
 
-You will rarely be asked to code a red-black tree. Expect "why can a BST be O(n), and how do you prevent it?", "what is a rotation and why does it preserve order?", "AVL or red-black?" (AVL: faster lookups; red-black: cheaper updates), and "which library structure is a balanced BST?" In Python, the standard library has no balanced BST; the third-party `sortedcontainers.SortedList` is the common substitute.
+You will rarely be asked to code a red-black tree. Expect "why can a BST be O(n), and how do you prevent it?", "what is a rotation and why does it preserve order?", "AVL or red-black?" (AVL: faster lookups; red-black: cheaper updates), and "which library structure is a balanced BST?" Most standard libraries ship one (Java's `TreeMap`, C++'s `std::map`); Python's does not, and the third-party `sortedcontainers.SortedList` is the usual substitute.

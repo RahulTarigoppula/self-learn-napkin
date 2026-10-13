@@ -108,7 +108,9 @@ The degrees sum to 10 = 2 × 5 edges. The list holds 10 entries; the matrix hold
 
 In the directed, weighted graph (S → A 4, S → B 1, B → A 2, A → T 5, B → T 8) there are three routes from S to T: S → A → T costs 9, S → B → T costs 9, and S → B → A → T costs 8. The route with the most edges is the cheapest, which is why weighted shortest paths need Dijkstra's algorithm rather than plain BFS.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 n = 5

@@ -99,7 +99,9 @@ Flash sale: producers send 1,000 orders/s for 60 s, then 100/s. Two consumers ha
 
 No order was lost or rejected; customers just got their confirmation emails a little later. Then a consumer crashes after committing order 123 but before acking: the message is redelivered after 30 s, and the next handler finds 123 in its `processed` table and skips it. Had the crash come *before* the commit, the claim would roll back and the retry would charge again with the same payment idempotency key, which the payment provider recognises — the card is still charged once.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 def handle(msg):

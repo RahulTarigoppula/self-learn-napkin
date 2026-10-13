@@ -49,10 +49,10 @@ export default (d) => {
     d.dot(x(C_BEST), y(test(C_BEST)), 12, { pen: 'green', label: 'sweet spot', size: 15, dy: -20 });
   });
 
-  d.step('The gap between them is variance');
+  d.step('The gap signals variance');
   const cg = 0.9;
   d.arrow(x(cg), y(test(cg)) + 8, x(cg), y(train(cg)) - 8, { pen: 'violet', both: true, thick: true });
-  d.text(x(cg) - 12, y(test(cg)) + 51, 'gap =\nvariance', { pen: 'violet', size: 16, anchor: 'end' });
+  d.text(x(cg) - 12, y(test(cg)) + 51, 'gap signals\nvariance', { pen: 'violet', size: 16, anchor: 'end' });
   d.group(() => {
     d.line(X0 + 4, y(NOISE), X1, y(NOISE), { pen: 'muted', dashed: true });
     d.text(X0 + 10, y(NOISE) + 13, 'noise floor', { pen: 'muted', size: 14, anchor: 'start' });

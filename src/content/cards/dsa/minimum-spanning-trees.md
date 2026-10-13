@@ -116,7 +116,9 @@ Total weight **1 + 2 + 3 + 4 + 6 = 16**.
 
 **Prim from A:** candidates A–D 2, A–B 4, A–E 5. Take D (2). Take B (4), adding candidates B–E 3 and B–C 6. Take E (3). A–E 5 is now stale (E is in the tree), so take C (6), then F via C–F (1). Same tree, same **16**. Because all weights here are distinct, the MST is unique, so both algorithms must agree.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 import heapq

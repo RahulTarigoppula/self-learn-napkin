@@ -39,8 +39,8 @@ quiz:
     options: ["P → A", "P → C", "E → L vs C: paying latency for consistency", "It is not a trade-off at all"]
     answer: 2
     why: "Else (no partition) you trade latency against consistency. Waiting for the remote replica keeps reads consistent but adds a cross-region round trip, often tens of milliseconds or more, to every write."
-related: [sysdesign/quorum-n-r-w, sysdesign/raft-leader-election, sysdesign/sharding]
-prereqs: []
+related: [sysdesign/consistency-models, sysdesign/quorum-n-r-w, sysdesign/raft-leader-election, sysdesign/geo-replication]
+prereqs: [sysdesign/replication]
 flashcards:
   - kind: qa
     q: "Why is 'pick two of C, A and P' a misleading summary of CAP?"
@@ -94,11 +94,11 @@ One application usually contains both kinds of data. The design question is not 
 
 CAP only describes behaviour during a partition, which is rare. Daniel Abadi's **PACELC** fills in the rest: if there is a **P**artition, choose **A** or **C**; **E**lse, choose **L**atency or **C**onsistency. Even on a healthy network, a strongly consistent write must wait for other replicas, possibly in another region 50–150 ms away. Systems that answer from the nearest replica are fast but may return stale data. So most systems are described as PA/EL (available and fast, e.g. default Cassandra) or PC/EC (consistent always, e.g. a synchronous leader-based store).
 
-## In code
+## Sketch it
 
-What a CP replica does on a read, as pseudo-code:
+What a CP replica does on a read, as pseudocode:
 
-```
+```text
 on read(key):
     if not in_contact_with_majority():
         return Error("unavailable: partitioned")   # CP: refuse

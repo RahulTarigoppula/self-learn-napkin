@@ -102,7 +102,9 @@ Because reading is just "remember an offset", any number of groups can read the 
 - **C1 crashes.** Records 8 and 9 arrive in P0; C1 processes both but dies before committing. The group rebalances, C2 now owns all three partitions, starts P0 at the committed offset 8 and processes 8 and 9 **again**. That is **at-least-once** delivery, and the reason billing's handler must be idempotent.
 - **Analytics ships a bug** that miscounted revenue for a day. They fix it, stop the group, reset its offsets to yesterday's timestamp and let it re-read. Nothing upstream is involved; the data was still in the log.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 from confluent_kafka import Consumer, Producer

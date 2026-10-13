@@ -35,6 +35,6 @@
       "lastElement": 9
     }
   ],
-  "hash": "afe4b873eacdf2eadf51f21bcbec5429c16ab2fd",
+  "hash": "83bf2a469a9980112806ad88af1214cb472fc882",
   "title": "Logs, metrics, a distributed trace, average vs p99 latency, and an SLO error budget"
 }

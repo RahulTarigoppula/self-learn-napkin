@@ -57,8 +57,8 @@ flashcards:
   - kind: cloze
     text: "To find the k largest of n items, keep a {{min-heap}} of size k: total time {{O(n log k)}}."
   - kind: qa
-    q: "Python's heapq is a min-heap. How do you get a max-heap?"
-    a: "Push negated values (-x) and negate again when popping, or push tuples whose first field is the negated priority."
+    q: "Your language's heap is a min-heap (as Python's heapq and Java's PriorityQueue are by default). How do you get a max-heap?"
+    a: "Give it a reversed comparison (Java: Collections.reverseOrder()), or push negated keys (−x) and negate again when popping."
 sources:
   - { name: "Open Data Structures", url: "https://opendatastructures.org/", licence: "CC BY 2.5", note: "Binary heaps (BinaryHeap), redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -100,7 +100,9 @@ Start from the min-heap `[2, 4, 3, 9, 7, 8, 5]`.
 
 **Top 3 of `[5, 1, 9, 3, 7, 6, 8]`.** Fill a min-heap with the first three: {1, 5, 9}. 3 beats the root 1, so replace: {3, 5, 9}. 7 beats 3: {5, 7, 9}. 6 beats 5: {6, 7, 9}. 8 beats 6: {7, 8, 9}. The answer is 9, 8, 7, and the root, 7, is the 3rd largest.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 import heapq
@@ -146,7 +148,7 @@ a = [9, 7, 8, 5, 2, 4, 3]; heapify(a); print(a)        # [2, 5, 3, 9, 7, 4, 8]
 print(top_k([5, 1, 9, 3, 7, 6, 8], 3))                 # [9, 8, 7]
 ```
 
-In practice use Python's **`heapq`** module, which works on a plain list: `heappush`, `heappop`, `heapify`, `heapreplace` (pop then push, in one sift), and `nsmallest` / `nlargest`. It is a min-heap only.
+In practice, use your language's library heap: Python's **`heapq`** (functions on a plain list: `heappush`, `heappop`, `heapify`, `heapreplace`, `nlargest`; min-heap only), Java's `PriorityQueue` (min-heap by default) or C++'s `std::priority_queue` (max-heap by default).
 
 ```python
 import heapq
@@ -164,9 +166,9 @@ Build a **max-heap** in place (O(n)). Swap the root, the maximum, with the last 
 
 ## Edge cases and pitfalls
 
-- **Pop or peek on an empty heap** raises `IndexError` in Python; check first.
-- **Ties in tuples**: `(priority, item)` falls back to comparing `item` when priorities tie, which crashes if items are not comparable (dicts, custom objects). Add a counter: `(priority, count, item)`.
-- **No decrease-key in `heapq`**: to change a priority (as in Dijkstra), push a new entry and skip outdated ones when they are popped. This is called *lazy deletion*.
+- **Pop or peek on an empty heap** is an error (`IndexError` in Python, an exception or `null` elsewhere); check first.
+- **Ties between equal priorities**: if entries are `(priority, item)` pairs compared field by field (as Python tuples are), a tie falls back to comparing the items, which fails when they are not comparable. Add an insertion counter, `(priority, count, item)`, or compare on priority only.
+- **No decrease-key** in most library heaps: to change a priority (as in Dijkstra), push a new entry and skip outdated ones when they are popped. This is called *lazy deletion*.
 - **A heap is not sorted.** Iterating over the list does not give sorted order, and finding an arbitrary value is O(n).
 - **Top-k direction** is the classic slip: for the k *largest*, use a *min*-heap (so the weakest of the winners is on top and easy to evict), and vice versa.
 

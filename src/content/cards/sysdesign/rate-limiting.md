@@ -100,7 +100,9 @@ Note the cap: after 16 idle seconds the bucket holds 5, not 16. That cap is what
 | Sliding window log | Store a timestamp per request; count those in the last 60 s | Exact | Memory grows with the limit |
 | Sliding window counter | Weighted mix of this and the previous window's counts | Close to exact, two counters | An approximation |
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 import time

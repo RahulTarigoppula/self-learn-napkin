@@ -6,7 +6,7 @@ difficulty: 1
 minutes: 4
 tldr: "Walk two indices through an array so that every step rules something out for good. One pass, O(n) time, O(1) extra space, instead of trying all O(n²) pairs."
 analogy: "Two people checking a word is a palindrome: one reads from the front, one from the back, and they walk towards each other comparing letters. Neither ever goes back, so the whole check is one pass."
-diagram: two-pointer-patterns
+diagram: two-pointers
 story:
   - title: One pointer at each end
     text: "Find two numbers that sum to 13 in the sorted array [1, 3, 4, 6, 9, 11, 14]. Trying every pair is 21 checks. Instead put L on the smallest value and R on the largest, and look only at a[L] + a[R]."
@@ -15,9 +15,9 @@ story:
   - title: Each check rules out a value
     text: "3 + 11 = 14, too big: R moves left. 3 + 9 = 12, too small: L moves right. 4 + 9 = 13, found. Every check eliminated one value for good, so the pointers meet after at most n − 1 moves: O(n). This only works because the array is sorted."
   - title: Same direction, read and write
-    text: "The second flavour runs both pointers left to right. Remove duplicates from the sorted [1, 1, 2, 2, 2, 3, 5] in place: R reads every cell once. A value is worth keeping only if it differs from the last value kept, so the crossed-out duplicates are skipped."
+    text: "The second flavour runs both pointers left to right. Remove duplicates from the sorted [1, 1, 2, 2, 2, 3, 5] in place: R reads every cell once. A value is worth keeping only if it differs from the last value kept, so the shaded duplicates are skipped."
   - title: W writes to the front
-    text: "W marks the next free slot of the answer. Each kept value is copied to a[W] and W moves on: 2 goes to index 1, 3 to index 2, 5 to index 3. W ends at 4, the new length, and a[:4] = [1, 2, 3, 5]. One pass, no second array."
+    text: "W marks the next free slot of the answer. Each kept value is copied to a[W] and W moves on: 2 goes to index 1, 3 to index 2, 5 to index 3. W ends at 4, the new length, and a[0..3] = [1, 2, 3, 5]. One pass, no second array."
 keyIdeas:
   - "**Opposite ends** (L from the left, R from the right) need a reason to discard an end each step — usually a **sorted** array."
   - "**Same direction** (read/write, or slow/fast): R scans everything once, W marks where the next kept element goes."
@@ -57,7 +57,7 @@ flashcards:
     text: "In the read/write pattern, the {{read}} pointer visits every element once and the {{write}} pointer marks where the next kept element goes."
   - kind: qa
     q: "How do you extend two pointers to 3Sum, and what is the complexity?"
-    a: "Sort, then for each index i run the opposite-ends pair search on a[i+1:] for target − a[i], skipping duplicate values. O(n²) time instead of O(n³)."
+    a: "Sort, then for each index i run the opposite-ends pair search on a[i+1..n−1] for target − a[i], skipping duplicate values. O(n²) time instead of O(n³)."
 sources:
   - { name: "Tech Interview Handbook", url: "https://github.com/yangshun/tech-interview-handbook", licence: "MIT", note: "Array techniques, redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -85,7 +85,7 @@ The same shape solves **reversing an array** (swap `a[L]` and `a[R]`, move both 
 
 ### 2. Same direction (read / write, slow / fast)
 
-Both pointers start at the left and only move right, at different speeds. A **read** pointer `R` visits every element exactly once; a **write** pointer `W` marks the end of the result being built *inside the same array*. Everything in `a[:W]` is finished output; `a[W:]` is scratch space.
+Both pointers start at the left and only move right, at different speeds. A **read** pointer `R` visits every element exactly once; a **write** pointer `W` marks the end of the result being built *inside the same array*. Everything in `a[0..W−1]` is finished output; `a[W..n−1]` is scratch space.
 
 This solves "remove duplicates in place", "move all zeroes to the end", "remove every occurrence of x", and partitioning. Because `W ≤ R` at all times, a write never destroys a value that has not been read yet.
 
@@ -105,7 +105,7 @@ Five checks instead of 21 pairs.
 
 **Same direction:** `[1, 1, 2, 2, 2, 3, 5]`, start `W = 1` (the first element is always kept).
 
-| R | a[R] | last kept a[W−1] | Action | W after | Array prefix a[:W] |
+| R | a[R] | last kept a[W−1] | Action | W after | Prefix a[0..W−1] |
 |---|---|---|---|---|---|
 | 1 | 1 | 1 | skip | 1 | [1] |
 | 2 | 2 | 1 | a[1] = 2 | 2 | [1, 2] |
@@ -114,9 +114,11 @@ Five checks instead of 21 pairs.
 | 5 | 3 | 2 | a[2] = 3 | 3 | [1, 2, 3] |
 | 6 | 5 | 3 | a[3] = 5 | 4 | [1, 2, 3, 5] |
 
-Return 4. The tail `a[4:]` still holds old values (`[2, 3, 5]`); by convention the caller only looks at the first W elements.
+Return 4. The tail `a[4..6]` still holds old values (`[2, 3, 5]`); by convention the caller only looks at the first W elements.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here are the three walks in Python.
 
 ```python
 def pair_with_sum(a: list[int], target: int) -> tuple[int, int] | None:
@@ -173,4 +175,4 @@ Reach for two pointers when the input is a **sorted array or string** and the qu
 
 ## In the interview
 
-Name the pattern, then state the invariant before coding: "the answer, if any, is always between L and R" or "a[:W] is the finished output". Mention O(n) time and O(1) space and why. Expect follow-ups: "what if the array is not sorted?" (hash map), "return all pairs" (on a match, move both pointers and skip duplicates), and "now do three numbers" (sort plus a two-pointer pass for each element, O(n²)).
+Name the pattern, then state the invariant before coding: "the answer, if any, is always between L and R" or "a[0..W−1] is the finished output". Mention O(n) time and O(1) space and why. Expect follow-ups: "what if the array is not sorted?" (hash map), "return all pairs" (on a match, move both pointers and skip duplicates), and "now do three numbers" (sort plus a two-pointer pass for each element, O(n²)).

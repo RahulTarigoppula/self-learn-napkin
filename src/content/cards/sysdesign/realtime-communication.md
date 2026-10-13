@@ -13,7 +13,7 @@ story:
   - title: "Long polling: the server holds the request"
     text: "The client asks, and the server does not answer until there is news (orange: request held open), or until a timeout of about 30 s. As soon as a reply arrives the client asks again. Updates arrive almost instantly, using ordinary HTTP requests."
   - title: "Server-Sent Events: one open stream"
-    text: "The client makes one HTTP request and the server never finishes the response. It writes an event into it whenever something happens. SSE is one-way, server to client, text only, and browsers reconnect automatically, resuming from the last event id."
+    text: "The client makes one HTTP request and the server never finishes the response (the green line). It writes an event into it whenever something happens. SSE is one-way, server to client, text only, and browsers reconnect automatically, resuming from the last event id."
   - title: "WebSocket: upgrade, then both ways"
     text: "A WebSocket starts as an HTTP request asking to upgrade; the server answers 101 Switching Protocols (orange). From then on the same TCP connection carries small frames in both directions at any time: full duplex. Chat, games and collaborative editors use it."
   - title: Scale out with a pub/sub backplane
@@ -150,15 +150,25 @@ That creates the routing problem in scene 5: the sender's server is usually not 
 
 For a room with 10,000 members spread over 20 servers, one publish becomes at most 20 backplane deliveries and 10,000 socket writes, spread across those servers. Redis Pub/Sub is a common backplane but is fire-and-forget; that is acceptable because the message was stored first and clients resume by sequence number. Kafka or NATS JetStream add durability. For one-to-one messages an alternative is a **presence/routing table** (user → server) so the sender's server forwards directly.
 
-### Worked flow
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation. `backplane` (Redis, NATS, …) and `db` stand in for real clients; every connection server runs this same code.
 
 ```python
+import json
+from collections import defaultdict
+
 local = defaultdict(set)                          # room -> sockets on THIS server
 
 async def on_connect(ws, room):
     local[room].add(ws)
     if len(local[room]) == 1:                     # first local member of this room
         await backplane.subscribe(f"room:{room}")
+
+async def on_disconnect(ws, room):
+    local[room].discard(ws)
+    if not local[room]:                           # last local member left
+        await backplane.unsubscribe(f"room:{room}")
 
 async def on_message(user, room, text):
     seq = await db.append(room, user, text)       # durable first: enables resume

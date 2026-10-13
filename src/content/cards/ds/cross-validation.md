@@ -40,7 +40,7 @@ quiz:
     answer: 1
     why: "The winner was selected partly for being lucky on these folds. Confirm it on an untouched test set, or use nested CV, where an outer loop scores the whole tuning procedure."
   - q: "You predict churn and each customer contributes 50 monthly rows. Which splitter fits best?"
-    options: ["Plain KFold with shuffling", "GroupKFold grouped by customer", "Leave-one-out", "StratifiedKFold on the churn label"]
+    options: ["Plain k-fold with shuffling", "Group k-fold, grouped by customer", "Leave-one-out", "Stratified k-fold on the churn label"]
     answer: 1
     why: "With plain folds the same customer appears in training and validation, so the model can recognise the customer instead of learning churn signals. Grouping keeps each customer on one side. (If time matters too, also split by date.)"
 bigO:
@@ -104,7 +104,9 @@ Mean = 4.14 / 5 = 0.828. Deviations from the mean are −0.008, +0.022, −0.028
 
 **Why stratify?** A random fold of 200 rows from this data holds on average 20 spam emails, but with a standard deviation of about 3.8, so folds with 13 or 27 spam are unremarkable. Precision and recall measured on a fold with 13 positives are very noisy. Stratified folds hold exactly 20 each.
 
-## In code
+## Implement it in Python
+
+The loop above is a few lines in any language (R's caret/tidymodels, Julia's MLJ, Spark's CrossValidator all ship it). In Python, scikit-learn's splitters do the bookkeeping.
 
 ```python
 from sklearn.datasets import make_classification
@@ -120,7 +122,8 @@ model = make_pipeline(StandardScaler(), LogisticRegression())
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)    # each fold keeps ~10 % positives
 
 scores = cross_val_score(model, X, y, cv=cv, scoring="accuracy")
-print(scores.round(3), f"mean {scores.mean():.3f} ± {scores.std():.3f}")
+print(scores.round(3), f"mean {scores.mean():.3f} ± {scores.std(ddof=1):.3f}")   # sample SD, as above
+# [0.96  0.975 0.98  0.99  0.985] mean 0.978 ± 0.012
 
 # What cross_val_score does inside: k rounds, a fresh model each time
 for k, (tr, va) in enumerate(cv.split(X, y), start=1):
@@ -133,12 +136,12 @@ for tr, va in TimeSeriesSplit(n_splits=3).split(X):
     print(f"train rows 0-{tr[-1]}, validate rows {va[0]}-{va[-1]}")
 ```
 
-The last loop prints train 0–249 / validate 250–499, then 0–499 / 500–749, then 0–749 / 750–999: the window grows and validation always lies in the future. To tune hyperparameters, `GridSearchCV(model, param_grid, cv=cv)` runs this whole loop once per setting.
+Stratification gives 20 or 21 positives per fold here because this synthetic set has 103 positives, not exactly 100. The last loop prints train 0–249 / validate 250–499, then 0–499 / 500–749, then 0–749 / 750–999: the window grows and validation always lies in the future. To tune hyperparameters, `GridSearchCV(model, param_grid, cv=cv)` runs this whole loop once per setting.
 
 ## Edge cases and pitfalls
 
 - **Leakage through preprocessing:** scaling, imputing or selecting features on the full dataset *before* CV lets every validation fold influence training. Put every fitted step in a pipeline.
-- **Groups:** if one patient or customer has many rows, use `GroupKFold` so all their rows land in the same fold.
+- **Groups:** if one patient or customer has many rows, use **group k-fold**: assign whole groups to folds so all their rows land in the same fold.
 - **Selection bias:** the best of many CV means is optimistic. Use a held-out test set or **nested CV** (an inner CV loop tunes, an outer loop scores the tuned result).
 - **Cost:** k × the training time. For deep networks that take days to train, a single validation split is often the practical choice.
 - **The spread is not a confidence interval for the final model** — folds overlap in their training data, so the k scores are not independent. Treat ± as a rough guide.

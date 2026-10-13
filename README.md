@@ -15,6 +15,14 @@ Napkin is a free, offline-first study app for **Data Structures & Algorithms**, 
 
 Plus: a ⌘K / Ctrl K search across everything, curated learning paths, a one-page **cheat sheet** of every complexity table, a progress page with streaks, a 18-week activity heatmap and a 7-day review forecast, light/dark themes, reduced-motion support, and JSON backup/restore. No accounts, no tracking, no network calls — your progress never leaves your device.
 
+## Why I built this
+
+> Every hard idea I understood, I understood the moment someone drew it.
+
+I started my career as a tester who could also write code — which taught me to always ask *why does this actually work?* Then I learned C++ to work on payment gateways, where a duplicate request or a timeout is somebody's money and the edge cases decide everything. Python came next, and I loved how simple it felt: the code read like the idea. I went on to data science and high-level design (and noticed how much of what's written about them is folklore), then deep into AI — today I'm a Senior Software Engineer specialising in AI.
+
+Napkin is the notebook I wish I'd had at each of those stops: simple pictures that draw themselves, plain-language explanations that stay **language-agnostic** (Python only shows up when you "implement it"), facts that are checked rather than repeated, and practice that makes it stick. — *Rahul Tarigoppula*
+
 ## What's inside
 
 | Track | Napkins | Highlights |

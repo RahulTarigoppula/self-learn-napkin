@@ -96,7 +96,7 @@ Three servers, round robin, health check every 5 s, unhealthy after 3 failures.
 
 The window from 1 s to 15 s is why short check intervals matter, and why layer-7 balancers that **retry a failed request on another backend** hide even that window (safe only for idempotent requests).
 
-## In code
+## Sketch it
 
 A balancer config sketch (nginx-style). Note that open-source nginx's `max_fails` is a *passive* check — it counts failed real requests — while the active `GET /health` probes described above need a dedicated health-check feature or a cloud balancer:
 

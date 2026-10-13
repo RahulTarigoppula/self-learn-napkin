@@ -68,6 +68,14 @@ A hypothesis test is an argument by surprise. You assume the boring explanation 
 4. **Find its distribution under H₀** (the *null distribution*) and compute the **p-value**: the probability under H₀ of a statistic at least as extreme as the one observed.
 5. **Decide.** If p < α, reject H₀ ("statistically significant"). Otherwise, fail to reject — which is not the same as accepting H₀.
 
+```text
+choose α                                     # before seeing data, e.g. 0.05
+T_obs = statistic(data)                      # e.g. number of heads
+p = P(|T − expected under H₀| ≥ |T_obs − expected under H₀|, assuming H₀)   # two-sided
+if p < α: reject H₀ else: fail to reject H₀
+report the estimate and its confidence interval either way
+```
+
 Two kinds of error are possible:
 
 | | H₀ actually true | H₀ actually false |
@@ -118,9 +126,17 @@ Each test at α = 0.05 has a 5 % false-positive rate when its null is true. Run 
 
 - **Bonferroni:** test each at α / m. Simple, valid under any dependence, but conservative.
 - **Holm:** sort p-values and compare the smallest with α / m, the next with α / (m − 1), and so on, stopping at the first that fails. Same guarantee, more power.
+
+```text
+Bonferroni:  reject H_i  if  p_i < α / m
+Holm:        sort p ascending: p(1) ≤ p(2) ≤ … ≤ p(m)
+             for k = 1 … m: if p(k) < α / (m − k + 1): reject H(k) else: stop
+```
 - **Benjamini–Hochberg:** controls the **false discovery rate** — the expected share of false positives among the discoveries — instead; standard for screening many hypotheses such as genes or features.
 
-## In code
+## Implement it in Python
+
+The same tests work in any language with binomial and normal distribution functions; here they use SciPy.
 
 ```python
 import numpy as np
@@ -147,7 +163,7 @@ print("raw p < 0.05:", (pvals < 0.05).sum(), "| Bonferroni p < 0.0025:", (pvals 
 print("BH-adjusted p < 0.05:", (stats.false_discovery_control(pvals) < 0.05).sum())
 ```
 
-Output: exact p = 0.0210; z = 2.40, approx p = 0.0164; Wald CI [0.525, 0.715]; Wilson CI [0.522, 0.709]; and among 20 fair coins, 2 raw "discoveries", none after Bonferroni or Benjamini–Hochberg.
+Output: exact p = 0.0210; z = 2.40, approx p = 0.0164; Wald CI [0.525, 0.715]; Wilson CI [0.522, 0.709]; and among 20 fair coins, 2 raw "discoveries", none after Bonferroni or Benjamini–Hochberg. Library notes: `binomtest` (SciPy ≥ 1.7) does the exact test and `proportion_ci` its intervals; `false_discovery_control` (SciPy ≥ 1.11) returns Benjamini–Hochberg-adjusted p-values; statsmodels' `multipletests` offers Bonferroni, Holm and more.
 
 ## Edge cases and pitfalls
 

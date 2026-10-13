@@ -43,8 +43,8 @@ bigO:
   - { op: "N=3, W=1, R=3", avg: "fast writes", note: "any dead replica blocks reads" }
   - { op: "N=3, W=1, R=1", avg: "fastest", note: "R + W ≤ N: eventual consistency only" }
 bigOTitle: "Common settings"
-related: [sysdesign/cap-theorem, sysdesign/raft-leader-election, sysdesign/sharding]
-prereqs: [sysdesign/cap-theorem]
+related: [sysdesign/read-repair, sysdesign/consistency-models, sysdesign/cap-theorem, sysdesign/consistent-hashing]
+prereqs: [sysdesign/replication]
 griddle: quorum
 flashcards:
   - kind: qa
@@ -90,7 +90,9 @@ N = 3, W = 2, R = 2, key `cart:42` at version v1 everywhere.
 
 Try every pair the reader could pick: {R1, R2}, {R1, R3}, {R2, R3}. Each contains R1 or R2, so each contains v2. Now set R = W = 1: the write lands only on R1, the read asks only R3, and the reader returns v1 — a **stale read** — with no error.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 def write(key, value, W):

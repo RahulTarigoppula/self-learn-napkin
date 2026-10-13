@@ -120,7 +120,9 @@ This is the **leftmost-prefix rule**. Put equality columns first and the range c
 - In **InnoDB**, the table *is* a B+tree on the primary key: leaves hold whole rows (a **clustered index**). Secondary index leaves hold the primary key, so a secondary lookup is two tree descents. A short, increasing primary key keeps every secondary index small and inserts appending at the right edge.
 - In **PostgreSQL**, rows live in an unordered heap and every index, including the primary key's, points at a row's physical location.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python, with each page modelled as a node holding sorted keys.
 
 ```python
 from bisect import bisect_left, bisect_right

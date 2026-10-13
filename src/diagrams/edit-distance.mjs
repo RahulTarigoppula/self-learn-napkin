@@ -93,5 +93,5 @@ export default (d) => {
 
   d.step('Only two rows are ever needed');
   d.rect(TX - 4, TY + 5 * RH - 3, 8 * CW + 8, 2 * RH + 6, { pen: 'orange', thick: true, dashed: true, ...g });
-  d.text(NX, 362, 'a row reads only the\nrow above: keep two,\nO(n) space', { pen: 'orange', size: 15, anchor: 'start' });
+  d.text(NX, 362, 'a row reads only the\nrow above: keep two,\nO(min(m, n)) space', { pen: 'orange', size: 15, anchor: 'start' });
 };

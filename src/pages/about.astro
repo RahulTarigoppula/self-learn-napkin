@@ -1,0 +1,238 @@
+---
+import Icon from '../components/Icon.astro';
+import Story from '../components/napkin/Story.astro';
+import AppShell from '../layouts/AppShell.astro';
+import { href } from '../lib/base';
+import { library } from '../lib/content';
+
+const { cards, tracks } = await library();
+const playgrounds = cards.filter((c) => c.data.griddle).length;
+const quizzes = cards.reduce((n, c) => n + c.data.quiz.length, 0);
+const flashcards = cards.reduce((n, c) => n + c.data.flashcards.length, 0);
+
+const story = [
+  {
+    title: 'It started with breaking things',
+    text: 'I began my career as a tester who could also write code. Testing teaches you one habit for life: never accept "it just works". Every bug I found started with the same question — why does this actually behave like that?',
+  },
+  {
+    title: 'C++, where every retry is real money',
+    text: 'Then I learned C++ to work on payment gateways. In payments a timeout, a duplicate request or a rounding slip is somebody’s money, so you learn to respect the details: idempotency, retries, failure paths, the boring edge cases that decide everything.',
+  },
+  {
+    title: 'Python, and the joy of simple',
+    text: 'Next came Python, and I genuinely enjoyed how simple it felt — the code read almost like the idea itself. That stuck with me: when an explanation is right, it should feel that simple too.',
+  },
+  {
+    title: 'Data science and system design',
+    text: 'I went on to learn data science and high-level design. Both are full of folklore: rules repeated until they sound like laws, giant diagrams that explain nothing, interview “tricks” with no reasoning behind them. What finally made things click for me was always a small picture and a worked example.',
+  },
+  {
+    title: 'Deep into AI',
+    text: 'Then I went deep into AI, and today I work as a Senior Software Engineer specialising in AI. The more advanced the topic, the more I noticed that the hard part is rarely the maths — it is the missing mental picture.',
+  },
+  {
+    title: 'So I drew Napkin',
+    text: 'Napkin is the notebook I wish I had at every step: each idea drawn one stroke at a time, explained in plain words, checked against the facts, and then practised until it sticks. I built it with the same tools it teaches — and I use it myself.',
+  },
+];
+---
+
+<AppShell title="Why Napkin" active="about" description="The story behind Napkin — from tester to C++ payments to Python, data science, system design and AI.">
+  <div class="container about">
+    <header class="about__hero">
+      <p class="about__kicker hand">the story behind the napkin</p>
+      <h1>Every hard idea I understood, I understood the moment someone <span class="hl">drew it</span>.</h1>
+      <p class="about__lede">
+        Engineers have always explained the important stuff on whatever paper was nearby — a whiteboard, a notebook, the
+        back of a napkin at lunch. Napkin is that habit turned into an app. Here is how it came to be.
+      </p>
+    </header>
+
+    <div id="journey" class="about__story">
+      <Story slug="about" diagram="journey" title="the road to Napkin" tldr="From tester to C++ payments, Python, data science, system design and AI — and why that path led to Napkin." story={story} trackRead={false} after="beliefs" />
+    </div>
+
+    <section id="beliefs" class="beliefs" aria-labelledby="beliefs-h">
+      <p class="eyebrow">What Napkin believes</p>
+      <h2 id="beliefs-h">Simple, not simplistic. Facts, not folklore.</h2>
+      <div class="beliefs__grid">
+        <article class="belief card">
+          <span class="belief__icon"><Icon name="pen" size={20} /></span>
+          <h3>Draw it, don’t describe it</h3>
+          <p>Every napkin starts with a picture that builds up scene by scene, so you watch the idea form instead of decoding a wall of text.</p>
+        </article>
+        <article class="belief card">
+          <span class="belief__icon"><Icon name="check" size={20} /></span>
+          <h3>No superstition</h3>
+          <p>Claims are checked, numbers are computed, every code block is run against its worked example, and every napkin cites where its facts come from.</p>
+        </article>
+        <article class="belief card">
+          <span class="belief__icon"><Icon name="code" size={20} /></span>
+          <h3>Ideas first, any language</h3>
+          <p>The explanations are language-agnostic: plain words, diagrams and pseudocode. Python appears only in “Implement it” — because it reads like the idea.</p>
+        </article>
+        <article class="belief card">
+          <span class="belief__icon"><Icon name="layers" size={20} /></span>
+          <h3>Learn it once, keep it</h3>
+          <p>A quiz checks you actually understood; spaced-repetition flashcards bring each idea back right before you would forget it.</p>
+        </article>
+        <article class="belief card">
+          <span class="belief__icon"><Icon name="wifiOff" size={20} /></span>
+          <h3>Yours, and offline</h3>
+          <p>No account, no ads, no tracking. Everything works on a plane, and your progress never leaves your device.</p>
+        </article>
+        <article class="belief card">
+          <span class="belief__icon"><Icon name="sparkles" size={20} /></span>
+          <h3>Built with what it teaches</h3>
+          <p>The diagrams are code, the flashcards run on FSRS — a modern, research-backed spaced-repetition algorithm — and the whole thing is open source.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="numbers" aria-label="Napkin in numbers">
+      <div><b class="mono">{cards.length}</b><span>napkins</span></div>
+      <div><b class="mono">{tracks.length}</b><span>tracks</span></div>
+      <div><b class="mono">{playgrounds}</b><span>playgrounds</span></div>
+      <div><b class="mono">{quizzes}</b><span>quiz questions</span></div>
+      <div><b class="mono">{flashcards}</b><span>flashcards</span></div>
+    </section>
+
+    <section class="signoff card" aria-labelledby="signoff-h">
+      <h2 id="signoff-h" class="hand">A note from me</h2>
+      <p>
+        If you are preparing for an interview, switching fields, or just tired of explanations that make simple things sound
+        hard — I built this for you, and for the version of me who needed it at each of those stops. Start anywhere. Follow
+        the drawing. Check the numbers. Then come back tomorrow and see how much stuck.
+      </p>
+      <p class="signoff__name">— Rahul Tarigoppula<span>Senior Software Engineer, AI</span></p>
+      <div class="signoff__cta">
+        <a class="btn btn--primary btn--lg" href={href('library/')}><Icon name="library" /> Open the library</a>
+        <a class="btn btn--lg" href="https://github.com/RahulTarigoppula/self-learn-napkin" target="_blank" rel="noopener"><Icon name="external" /> Source on GitHub</a>
+      </div>
+    </section>
+  </div>
+</AppShell>
+
+<style>
+  .about {
+    padding-top: var(--space-6);
+  }
+  .about__hero {
+    max-width: 860px;
+    margin-bottom: var(--space-8);
+  }
+  .about__kicker {
+    font-size: 1.3rem;
+    color: var(--accent-ink);
+    transform: rotate(-1.2deg);
+    display: inline-block;
+  }
+  .about__hero h1 {
+    margin-top: var(--space-3);
+    font-size: clamp(2rem, 5.4vw, 3.6rem);
+    letter-spacing: -0.04em;
+  }
+  .hl {
+    background: linear-gradient(transparent 58%, color-mix(in srgb, var(--hl) 80%, transparent) 58%);
+  }
+  .about__lede {
+    margin-top: var(--space-5);
+    font-size: clamp(1.05rem, 2.2vw, 1.22rem);
+    color: var(--ink-muted);
+    max-width: 62ch;
+  }
+  .beliefs {
+    margin-top: var(--space-10);
+    scroll-margin-top: calc(var(--topbar-h) + var(--safe-top) + 16px);
+  }
+  .beliefs h2 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    margin: var(--space-2) 0 var(--space-6);
+  }
+  .beliefs__grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  .belief {
+    padding: var(--space-5);
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+  .belief__icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+  .belief h3 {
+    font-size: var(--text-lg);
+    margin-top: var(--space-2);
+  }
+  .belief p {
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+  }
+  .numbers {
+    margin-top: var(--space-9);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--space-3);
+  }
+  .numbers div {
+    display: grid;
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border-strong);
+    text-align: center;
+  }
+  .numbers b {
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .numbers span {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+  .signoff {
+    margin-top: var(--space-9);
+    padding: var(--space-7) var(--space-6);
+    max-width: 820px;
+    display: grid;
+    gap: var(--space-4);
+    background:
+      radial-gradient(90% 120% at 100% 0%, var(--accent-soft), transparent 60%),
+      var(--paper);
+    transform: rotate(-0.4deg);
+  }
+  .signoff h2 {
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--accent-ink);
+  }
+  .signoff p {
+    font-size: var(--text-md);
+  }
+  .signoff__name {
+    font-family: var(--font-hand);
+    font-size: 1.4rem !important;
+    display: grid;
+  }
+  .signoff__name span {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+  .signoff__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

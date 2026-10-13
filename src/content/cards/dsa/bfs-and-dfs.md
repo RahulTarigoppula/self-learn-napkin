@@ -114,7 +114,9 @@ So the shortest path is **8 steps**, for example down the left side and along th
 
 A recursive DFS that tries up, right, down, left goes from (0,0) right into (0,1), finds a dead end, backs up, goes down to (2,0), right along row 2 to (2,3), up to (0,3), right to (0,4), then down column 4 to G. That path is **12 steps**. Change the neighbour order and DFS finds a different path; BFS's distances never change.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 from collections import deque
@@ -160,9 +162,9 @@ print(bfs(GRID, (0, 0), (4, 4)), len(dfs(GRID, (0, 0), (4, 4), set())) - 1)   # 
 ## Edge cases and pitfalls
 
 - **Mark visited on enqueue.** Marking on dequeue lets the same vertex be queued by several neighbours.
-- **Use a real queue.** `list.pop(0)` in Python is O(n); `collections.deque.popleft()` is O(1).
+- **Use a real queue.** Removing the first item of an array-backed list shifts everything (Python's `list.pop(0)`, Java's `ArrayList.remove(0)`): O(n). A deque or linked queue (`collections.deque`, Java's `ArrayDeque`, C++'s `std::queue`) does it in O(1).
 - **Weighted edges** break BFS's guarantee: it minimises the *number* of edges, not their total weight. Use Dijkstra's algorithm for non-negative weights.
-- **Deep recursion.** Recursive DFS on a long path can exceed Python's default limit of about 1,000 frames. Use an explicit stack for big inputs.
+- **Deep recursion.** Recursive DFS on a long path can overflow the call stack (Python's default limit is about 1,000 frames). Use an explicit stack for big inputs.
 - **Iterative DFS order.** Pushing all neighbours onto a stack visits them in reverse order compared with the recursive version, so traces differ. And if you mark vertices visited when they are *pushed*, you get a valid reachability search but not a true depth-first order; for anything that relies on DFS order (cycle detection, topological sort) mark a vertex when it is *popped* and skip pops of already-visited vertices.
 - **Disconnected graphs.** One traversal only reaches S's component; to cover everything, start a new traversal from every unvisited vertex (this also counts the components).
 

@@ -30,7 +30,7 @@ const ND = 26;
 export default (d) => {
   d.step('A base case and a recursive case');
   d.group(() => {
-    d.text(20, 26, 'def fact(n):', { size: 18, anchor: 'start' });
+    d.text(20, 26, 'fact(n):', { size: 18, anchor: 'start' });
     d.text(44, 50, 'if n <= 1: return 1', { size: 18, anchor: 'start', pen: 'green' });
     d.text(44, 74, 'return n * fact(n - 1)', { size: 18, anchor: 'start', pen: 'blue' });
   });
@@ -48,7 +48,7 @@ export default (d) => {
 
   d.step('The base case stops the descent');
   frame(d, 1, 'fact(1) → 1', 'green', 'green');
-  d.text(24, 150, 'no base case? frames pile up\nuntil RecursionError (~1000)', {
+  d.text(24, 150, 'no base case? frames pile up\nuntil the stack overflows', {
     pen: 'red',
     size: 16,
     anchor: 'start',

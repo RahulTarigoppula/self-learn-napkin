@@ -23,7 +23,7 @@ keyIdeas:
   - "**Virtual nodes** give each server many ring positions, which evens out load and lets a big machine take a bigger share."
   - "Lookup is a **binary search** over the sorted ring positions: O(log n) in the number of positions."
   - "Plain `hash(key) % N` re-maps almost everything when N changes — that is the whole problem this solves."
-  - "Used by **DynamoDB, Cassandra** and most memcached client libraries."
+  - "Used by **Cassandra**, Amazon's original **Dynamo** design and many memcached client libraries."
 quiz:
   - q: "A ring has servers at 40°, 160° and 280°. Which server owns a key hashed to 300°?"
     options: ["The one at 280°", "The one at 40°", "The one at 160°", "It depends on the key's size"]
@@ -96,7 +96,9 @@ Servers at A = 40°, B = 160°, C = 280° (one position each). Keys at k1 = 10°
 
 Add D at 220°: k3 (170°) and k4 (200°) now meet D before C, so **only k3 and k4 move**. Remove B instead: only k2 moves, on to C.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 import bisect, hashlib

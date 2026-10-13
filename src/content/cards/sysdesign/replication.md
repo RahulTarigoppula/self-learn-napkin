@@ -135,7 +135,7 @@ What goes wrong:
 - **Multi-leader:** each region (or each offline device) has its own leader that accepts writes locally and replicates asynchronously to the others. Writes are fast everywhere and a region can keep working when cut off, but two leaders can change the same row concurrently, so you need **conflict resolution**: last-writer-wins, merging, or CRDTs.
 - **Leaderless** (Amazon's Dynamo paper, Cassandra, Riak): the client writes to N replicas and waits for W acknowledgements; reads ask R replicas and keep the newest. No failover step is needed, but replicas diverge and are repaired by read repair and anti-entropy.
 
-## In code
+## Sketch it
 
 A PostgreSQL primary that waits for one of two named standbys (semi-synchronous), and a router that gives read-your-writes:
 
@@ -145,11 +145,11 @@ synchronous_standby_names = 'FIRST 1 (f1, f2)'   # wait for 1 standby, f1 prefer
 synchronous_commit = on                           # commit waits for that standby
 ```
 
-```python
-def route_read(user, followers, leader):
-    need = user.last_write_lsn or 0           # log position of their last write
-    for f in followers:
-        if f.replayed_lsn() >= need:          # has this follower applied it?
+```text
+route_read(user, followers, leader):
+    need = user.last_write_position or 0      # log position of their last write
+    for each follower f:
+        if f.replayed_position() >= need:     # has this follower applied it?
             return f
     return leader                             # nobody caught up: use the leader
 ```

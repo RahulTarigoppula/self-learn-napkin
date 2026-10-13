@@ -25,14 +25,14 @@ keyIdeas:
   - "A **circuit breaker** (closed → open → half-open) fails fast while a dependency is broken and probes it with a few trial calls."
   - "**Bulkheads** give each dependency its own limited pool, so one slow dependency exhausts only its own slots."
 quiz:
-  - q: "With full jitter, base 100 ms and a cap of 1 s, what is the wait before retry 5 (the attempt after four failures)?"
+  - q: "Full jitter, base 100 ms (retry n draws from a window of 100 ms × 2^(n−1)), cap 1 s. What is the wait before retry 5?"
     options: ["Exactly 1,600 ms", "Random between 0 and 1,000 ms", "Random between 0 and 1,600 ms", "Exactly 1,000 ms"]
     answer: 1
-    why: "The window would be 100 × 2⁴ = 1,600 ms, but the cap limits it to 1,000 ms, and full jitter picks a uniform random point in [0, 1,000 ms]."
-  - q: "A request passes through 3 services and each retries a failed call up to 3 times. The bottom service is down. How many calls can it receive for one user request?"
+    why: "The window would be 100 × 2⁴ = 1,600 ms, but the cap limits it to 1,000 ms, and full jitter picks a uniform random point in [0, 1,000 ms]. Never a fixed wait: that would re-synchronise clients."
+  - q: "Services A → B → C form a chain, and each retries a failed downstream call up to 3 times. The database under C is down. How many calls can it receive for one user request?"
     options: ["4", "9", "12", "64"]
     answer: 3
-    why: "Each layer makes up to 4 attempts (1 + 3 retries), and each of those attempts triggers up to 4 at the next layer: 4 × 4 × 4 = 64. Retry at one layer only, or use budgets."
+    why: "Each of the 3 layers makes up to 4 attempts (1 + 3 retries), and each of those attempts triggers up to 4 at the next layer: 4 × 4 × 4 = 64. Retry at one layer only, or use budgets."
   - q: "A breaker is open. What happens to a call made 5 s later, with a 30 s cool-down?"
     options: ["It is sent to the dependency", "It fails immediately, so the caller can use a fallback", "It waits until the breaker closes", "It is queued for 25 s"]
     answer: 1
@@ -42,14 +42,14 @@ quiz:
     answer: 1
     why: "With a separate, bounded pool for the bank, at most 40 threads can be stuck there; the other 160 keep serving everything else."
 bigO:
-  - { op: "full jitter", avg: "random(0, min(cap, base·2^n))", note: "AWS: least total contention" }
+  - { op: "full jitter", avg: "random(0, min(cap, base·2^n))", note: "AWS: least total work" }
   - { op: "retry amplification", avg: "(1 + retries)^layers", note: "4³ = 64" }
   - { op: "retry budget", avg: "≤ 10 % of requests", note: "Google SRE book" }
   - { op: "Hystrix defaults", avg: "≥ 20 calls / 10 s, 50 %", note: "then a 5 s sleep window" }
   - { op: "threads stuck", avg: "λ × wait", note: "100/s × 30 s = 3,000" }
 bigOTitle: "Key numbers"
-related: [sysdesign/idempotency, sysdesign/backpressure, sysdesign/rate-limiting, sysdesign/load-balancing]
-prereqs: []
+related: [sysdesign/backpressure, sysdesign/rate-limiting, sysdesign/load-balancing, sysdesign/observability]
+prereqs: [sysdesign/idempotency]
 flashcards:
   - kind: qa
     q: "Why add jitter to exponential backoff?"
@@ -118,10 +118,14 @@ Good **fallbacks** depend on the call: cached data, a default ("recommendations 
 
 Named after the watertight compartments in a ship's hull. Give each dependency its **own bounded pool** of threads, connections or concurrent calls: bank calls at most 40, card validation 40, the rest for everything else. A slow bank can then exhaust only its 40 slots. Bulkheads and breakers work together: the bulkhead limits the damage while the breaker is still counting failures.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 import random, time
+
+class CircuitOpen(Exception): pass
 
 class Breaker:
     def __init__(self, window=20, threshold=0.5, cooldown=30.0):

@@ -11,7 +11,7 @@ story:
   - title: One room, as many meetings as possible
     text: "Seven meeting requests, each a start and end hour, and one room. Two meetings clash if they overlap; one may start at the exact hour another ends. Which set is the largest with no clashes? Trying every subset would be 2⁷ = 128 checks, and 2ⁿ in general."
   - title: Take the meeting that ends first
-    text: "Greedy rule: sort by finish time and take the meeting that ends earliest, A at hour 4. Anything that starts before 4, such as B and C, now clashes and is crossed out. Taking A leaves the room free as early as possible."
+    text: "Greedy rule: sort by finish time and take the meeting that ends earliest, A at hour 4. Walking on in finish order, B and C start before 4, so they clash with A and are crossed out. Taking A leaves the room free as early as possible."
   - title: Next one starting at or after 4
     text: "Repeat the same rule on what is left. D starts at 5, after A ends, and finishes at 7 — the earliest finish among the compatible meetings. E and F start before 7 and are crossed out."
   - title: Then G — 3 meetings, the maximum
@@ -106,7 +106,9 @@ Pay an amount with the fewest coins. "Take the largest coin that fits" works for
 
 The fix is **dynamic programming**: `best[a] = 1 + min(best[a − c])` over all coins c ≤ a, which considers every first coin rather than one.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 def max_meetings(meetings):

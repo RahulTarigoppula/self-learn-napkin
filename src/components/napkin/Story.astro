@@ -12,8 +12,12 @@ interface Props {
   title: string;
   tldr: string;
   story: Scene[];
+  /** Count finishing the story as reading this napkin (off for non-napkin stories, e.g. About). */
+  trackRead?: boolean;
+  /** Element id to scroll to when the story is finished. */
+  after?: string;
 }
-const { slug, diagram, title, tldr, story } = Astro.props;
+const { slug, diagram, title, tldr, story, trackRead = true, after = 'key-ideas' } = Astro.props;
 const manifest = loadManifest(diagram);
 const svg = loadSvg(diagram, manifest.title ?? title, tldr);
 const scenes = story.map((s, i) => ({
@@ -23,7 +27,12 @@ const scenes = story.map((s, i) => ({
 const n = scenes.length;
 ---
 
-<section class="story" data-story data-slug={slug} data-steps={n} aria-label={`The story of ${title}, in ${n} scenes`}>
+<section
+  class="story"
+  data-story
+  data-slug={trackRead ? slug : undefined}
+  data-after={after}
+  data-steps={n} aria-label={`The story of ${title}, in ${n} scenes`}>
   <div class="story__stage paper">
     <figure class="story__figure" style={`aspect-ratio:${manifest.width}/${manifest.height}`} set:html={svg} />
     <div class="story__stage-bar">

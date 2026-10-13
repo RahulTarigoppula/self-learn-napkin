@@ -3,7 +3,7 @@ import Icon from '../components/Icon.astro';
 import NapkinTile from '../components/NapkinTile.astro';
 import HomeDashboard from '../features/home/HomeDashboard';
 import AppShell from '../layouts/AppShell.astro';
-import { href } from '../lib/base';
+import { href, withBase } from '../lib/base';
 import { library, numberOf } from '../lib/content';
 import { PATHS } from '../lib/paths';
 
@@ -144,6 +144,22 @@ const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
           <span class="practice__title">Cheat sheet</span>
           <span class="practice__text">Every key idea and complexity table on one printable page.</span>
         </a>
+      </div>
+    </section>
+
+    <section class="block why card">
+      <div class="why__art">
+        <img src={withBase('thumbs/journey.svg')} alt="" width="520" height="320" loading="lazy" decoding="async" />
+      </div>
+      <div class="why__copy">
+        <p class="eyebrow">Why Napkin exists</p>
+        <h2>From tester, to payments in C++, to Python, data science, system design and AI.</h2>
+        <p class="muted">
+          “Every hard idea I understood, I understood the moment someone drew it. Napkin is the notebook I wish I’d had at
+          each of those stops — simple pictures, checked facts, no superstition.”
+        </p>
+        <p class="why__by hand">— Rahul, Senior Software Engineer (AI)</p>
+        <a class="btn" href={href('about/')}>Read the story <Icon name="arrowRight" /></a>
       </div>
     </section>
 
@@ -431,6 +447,48 @@ const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
   .practice__text {
     color: var(--ink-muted);
     font-size: var(--text-sm);
+  }
+  .why {
+    display: grid;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    align-items: center;
+    overflow: hidden;
+  }
+  @media (min-width: 860px) {
+    .why {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      padding: var(--space-8);
+    }
+  }
+  .why__art {
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    background-color: var(--thumb-paper);
+    background-image:
+      linear-gradient(var(--thumb-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--thumb-grid) 1px, transparent 1px);
+    background-size: 18px 18px;
+    transform: rotate(-1deg);
+  }
+  .why__art img {
+    width: 100%;
+    height: auto;
+  }
+  .why__copy {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+  }
+  .why__copy h2 {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+  }
+  .why__copy .muted {
+    font-size: var(--text-md);
+  }
+  .why__by {
+    font-size: 1.2rem;
+    color: var(--accent-ink);
   }
   .how__steps {
     list-style: none;

@@ -129,7 +129,9 @@ Balance x = 100. T1 deposits 50, T2 withdraws 20. Correct final balance: 130.
 | Both read with `SELECT x … FOR UPDATE` | T2's locking read waits until T1 commits, then reads 150 | 130 |
 | PostgreSQL repeatable read or serializable | its update fails: *could not serialize access due to concurrent update*; the app retries, reads 150 | 130 |
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 # Retry loop for SERIALIZABLE / repeatable-read transactions (psycopg-style sketch)

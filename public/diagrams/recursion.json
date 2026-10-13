@@ -35,6 +35,6 @@
       "lastElement": 14
     }
   ],
-  "hash": "89bba8606f3ce0a877d1f24ece8d75a4f547083e",
+  "hash": "68f51ea0a34211a3a9bd3726e71be9f526315538",
   "title": "factorial(4) on the call stack, and the call tree of fib(4)"
 }

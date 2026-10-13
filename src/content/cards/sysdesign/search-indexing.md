@@ -118,7 +118,9 @@ Documents: **1** "Quick red fox", **2** "Lazy brown dog", **3** "Red dog, red ba
 
 Document 3 ranks first even though it is longer. For comparison IDF(fox) = ln(1 + 2.5 / 1.5) ≈ 0.98: a term found in one document is worth about twice one found in two.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 import re

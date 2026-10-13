@@ -41,6 +41,6 @@
       "lastElement": 24
     }
   ],
-  "hash": "1d2273d730f21d7e03a55bbc115c3c8e330b9e4f",
+  "hash": "f170e4a54572a11e192a3bca6f93cc741be1f648",
   "title": "ACID, a lost update on a two-transaction timeline, isolation levels and MVCC snapshots"
 }

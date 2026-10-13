@@ -110,7 +110,9 @@ The last row matters: an operation concurrent with the write may return either v
 
 Why is B's 1-then-0 forbidden under sequential and causal? Under sequential, B's two reads must keep their order, so B's first read comes after the write, and so does its second, which therefore must return 1. Under causal, reading 1 puts the write into B's causal past, and a read may not return a value that something in its causal past has overwritten.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 A brute-force checker for a single register: is there an order of the operations that explains every read?
 

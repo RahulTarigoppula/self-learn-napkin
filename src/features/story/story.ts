@@ -163,7 +163,7 @@ class StoryPlayer {
         })
         .catch((e: unknown) => console.error('could not mark read', e));
     }
-    document.getElementById('key-ideas')?.scrollIntoView({ block: 'start' });
+    document.getElementById(this.root.dataset.after ?? 'key-ideas')?.scrollIntoView({ block: 'start' });
   }
 
   private play(): void {

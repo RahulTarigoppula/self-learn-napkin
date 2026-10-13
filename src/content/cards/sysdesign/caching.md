@@ -97,7 +97,9 @@ Cache 1 ms, database 20 ms, TTL 60 s, user 42 read 1,000 times a minute.
 
 The database served 2 reads instead of 1,000. Average read latency is `hit_rate × 1 + miss_rate × 21`, so the hit rate matters far more than the cache's raw speed.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 import random   # cache and db are your Redis and database clients

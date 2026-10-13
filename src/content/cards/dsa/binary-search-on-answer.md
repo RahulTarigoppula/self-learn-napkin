@@ -13,7 +13,7 @@ story:
   - title: Checking one capacity is easy
     text: "We can't compute the answer directly, but we can test a guess. With capacity 6, load greedily: [3, 2] = 5, then [2, 4] = 6, then [1, 4] = 5. Three days, so 6 works. With capacity 5 it takes four days, so 5 fails. Each check is one O(n) pass."
   - title: Fails, then works, forever after
-    text: "The answer lies between 4 (the heaviest package, or it never fits) and 16 (the total, everything in one day). And if a capacity works, every bigger one also works. So the answers read ✗ ✗ ✓ ✓ ✓ … with a single switch. That monotone predicate is all binary search needs."
+    text: "The answer lies between 4 (the heaviest package, or it never fits) and 16 (the total, everything in one day). And if a capacity works, every bigger one also works. Checked one by one, the capacities would read ✗ ✗ ✓ ✓ ✓ … with a single switch, though we don't yet know where. That monotone check is all binary search needs."
   - title: Binary search for the first ✓
     text: "Keep lo = 4, hi = 16. Test mid = 10: works, so the answer is 10 or less, hi = 10. mid = 7 works, hi = 7. mid = 5 fails, so the answer is above 5, lo = 6. mid = 6 works, hi = 6. We never test 8, 9 or 11 to 16."
   - title: lo meets hi
@@ -22,7 +22,7 @@ keyIdeas:
   - "Look for **\"minimum x such that …\"** or **\"maximum x such that …\"** with a feasibility check that is easier than finding x directly."
   - "The check must be **monotone**: once true, it stays true as x grows (or the mirror image). Say why out loud."
   - "Set **lo and hi** so the answer is guaranteed to be in [lo, hi]: e.g. lo = max weight, hi = total weight."
-  - "**First-true template:** while lo < hi: mid = (lo + hi) // 2; ok(mid) → hi = mid, else lo = mid + 1. Return lo."
+  - "**First-true template:** while lo < hi: mid = ⌊(lo + hi) / 2⌋; if ok(mid) then hi = mid, else lo = mid + 1. Return lo."
   - "Cost: **O(log(hi − lo)) checks × cost of one check**."
 quiz:
   - q: "In the ship-capacity problem, why is lo = max(weights) rather than 1?"
@@ -34,9 +34,9 @@ quiz:
     answer: 1
     why: "mid works, so the first working value is mid or something smaller. hi = mid keeps mid as a candidate; hi = mid − 1 could throw away the answer, and returning early misses smaller working values."
   - q: "You want the LARGEST x with ok(x) True (pattern ✓ ✓ ✓ ✗ ✗) and update lo = mid on success. Which midpoint avoids an infinite loop?"
-    options: ["(lo + hi) // 2", "(lo + hi + 1) // 2", "lo + 1", "Either works"]
+    options: ["⌊(lo + hi) / 2⌋, rounding down", "⌈(lo + hi) / 2⌉, rounding up", "lo + 1", "Either works"]
     answer: 1
-    why: "With lo = 5, hi = 6, (lo + hi) // 2 = 5; if ok(5) is True, lo stays 5 forever. Rounding up gives mid = 6, so every iteration shrinks the range."
+    why: "With lo = 5, hi = 6, rounding down gives mid = 5; if ok(5) is true, lo stays 5 forever. Rounding up gives mid = 6, so every iteration shrinks the range."
   - q: "Koko eats piles [3, 6, 7, 11] at k bananas per hour, finishing at most one pile per hour. How many hours does k = 4 take?"
     options: ["6", "7", "8", "9"]
     answer: 2
@@ -83,7 +83,7 @@ Pick bounds that **guarantee** the answer is inside `[lo, hi]`:
 
 ```
 while lo < hi:
-    mid = (lo + hi) // 2
+    mid = floor((lo + hi) / 2)
     if ok(mid): hi = mid        # mid works: answer is mid or to its left
     else:       lo = mid + 1    # mid fails: answer is strictly to its right
 return lo
@@ -95,9 +95,9 @@ Three **invariants** make it correct:
 - **hi** is known to work (true at the start because we chose `hi` to be feasible).
 - So the first ✓ is always in `[lo, hi]`.
 
-Each iteration keeps these true. Because `(lo + hi) // 2` rounds down, `mid < hi`, so both branches strictly shrink the range and the loop ends with `lo == hi`, the first ✓.
+Each iteration keeps these true. Because the midpoint rounds down, `mid < hi`, so both branches strictly shrink the range and the loop ends with `lo == hi`, the first ✓.
 
-For the mirror problem — the **largest** x with `ok(x)` true, pattern `✓ ✓ ✓ ✗ ✗` — use `lo = mid` on success and `hi = mid − 1` on failure, and round the midpoint **up**: `mid = (lo + hi + 1) // 2`. Otherwise, with `hi = lo + 1`, `mid` equals `lo` and the loop never ends.
+For the mirror problem — the **largest** x with `ok(x)` true, pattern `✓ ✓ ✓ ✗ ✗` — use `lo = mid` on success and `hi = mid − 1` on failure, and round the midpoint **up**: `mid = ceil((lo + hi) / 2)`. Otherwise, with `hi = lo + 1`, `mid` equals `lo` and the loop never ends.
 
 ## Worked example
 
@@ -124,7 +124,9 @@ Four O(n) checks instead of trying all 13 capacities.
 
 **Why greedy is the right check:** for a fixed capacity, putting each package on the earliest day it fits never uses more days than any other valid loading, so "greedy needs ≤ D days" is exactly "some loading fits in D days".
 
-## In code
+## Implement it in Python
+
+The same template works in any language; here it is in Python, with both classic problems.
 
 ```python
 from collections.abc import Callable
@@ -166,7 +168,7 @@ assert min_eating_speed([3, 6, 7, 11], 8) == 4
 - **hi not feasible.** The template assumes `ok(hi)` is true. If the answer might not exist, check `ok(hi)` once before searching and handle "impossible".
 - **lo too small.** In the shipping problem, `lo = 1` with this greedy check would wrongly count a too-heavy package as fitting on a fresh day. Start at `max(weights)`.
 - **Off-by-one and infinite loops.** Pair `hi = mid` with `lo = mid + 1` and round down; pair `lo = mid` with `hi = mid − 1` and round up. Mixing them loops forever or skips the answer.
-- **Integer division.** Hours per pile is `ceil(p / k)`; `(p + k − 1) // k` avoids floating point.
+- **Integer division.** Hours per pile is ⌈p / k⌉; computing it as the integer division (p + k − 1) / k avoids floating point.
 - **Real-valued answers.** For continuous ranges, loop a fixed number of times (say 100) or until `hi − lo < ε`, and use `mid = (lo + hi) / 2`.
 
 ## Where it shows up

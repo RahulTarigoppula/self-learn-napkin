@@ -6,7 +6,7 @@ import SearchPalette from '../features/search/SearchPalette';
 import { href } from '../lib/base';
 import Base from './Base.astro';
 
-export type NavKey = 'home' | 'library' | 'review' | 'progress' | 'settings' | 'none';
+export type NavKey = 'home' | 'library' | 'review' | 'progress' | 'settings' | 'about' | 'none';
 interface Props {
   title: string;
   description?: string;
@@ -66,6 +66,10 @@ const tracks = (await getCollection('tracks')).sort(
         }
       </div>
       <div class="sidebar__foot">
+        <a class="sidenav__link sidenav__link--small" href={href('about/')} aria-current={active === 'about' ? 'page' : undefined}>
+          <Icon name="bulb" size={18} />
+          <span>Why Napkin</span>
+        </a>
         <a class="sidenav__link sidenav__link--small" href={href('settings/')} aria-current={active === 'settings' ? 'page' : undefined}>
           <Icon name="sliders" size={18} />
           <span>Settings</span>

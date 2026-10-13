@@ -21,7 +21,7 @@ story:
   - title: Only two rows are needed
     text: "Each row reads only itself and the row above, so two rows are enough when you only need the number: O(mn) time, O(min(m, n)) space. Printing the edit script needs the full table, or Hirschberg's divide-and-conquer trick."
 keyIdeas:
-  - "**State:** `dp[i][j]` = fewest edits turning `a[:i]` into `b[:j]`. Base cases `dp[i][0] = i` (delete all) and `dp[0][j] = j` (insert all)."
+  - "**State:** `dp[i][j]` = fewest edits turning the first i letters of a into the first j letters of b. Base cases `dp[i][0] = i` (delete all) and `dp[0][j] = j` (insert all)."
   - "**Recurrence:** `min(dp[i−1][j−1] + (a[i−1] ≠ b[j−1]), dp[i−1][j] + 1, dp[i][j−1] + 1)` — replace/keep, delete, insert."
   - "**O(mn) time.** Two rows give O(min(m, n)) space when you only need the distance."
   - "**Bounds:** |m − n| ≤ distance ≤ max(m, n) — handy sanity checks and early exits."
@@ -34,7 +34,7 @@ quiz:
   - q: "In the table, stepping from dp[i−1][j] down to dp[i][j] corresponds to which edit?"
     options: ["Inserting b[j−1]", "Deleting a[i−1]", "Replacing a[i−1] with b[j−1]", "Keeping a matching letter"]
     answer: 1
-    why: "dp[i−1][j] already turns a[:i−1] into b[:j]. The only extra work for a[:i] is to delete its last letter, a[i−1]."
+    why: "dp[i−1][j] already turns the first i − 1 letters of a into the first j letters of b. With one more letter of a, the only extra work is to delete it: a[i−1]."
   - q: "What is the Levenshtein distance between \"ab\" and \"ba\"?"
     options: ["0", "1", "2", "3"]
     answer: 2
@@ -77,12 +77,12 @@ The distance is symmetric (an insert one way is a delete the other way) and obey
 
 ## How it works
 
-1. **State.** `dp[i][j]` = the fewest edits that turn the prefix `a[:i]` into the prefix `b[:j]`.
+1. **State.** `dp[i][j]` = the fewest edits that turn the first i characters of a into the first j characters of b.
 2. **Base cases.** `dp[i][0] = i` — turning i characters into nothing takes i deletes. `dp[0][j] = j` — building j characters from nothing takes j inserts.
 3. **Recurrence.** Think about the *last* character of each prefix. In an optimal edit sequence, one of three things happens to them:
-   - **Keep or replace.** a[i−1] ends up as b[j−1]: free if they are already equal, one replacement otherwise. The rest is turning `a[:i−1]` into `b[:j−1]`: `dp[i−1][j−1] + (0 or 1)`.
-   - **Delete** a[i−1]. Then `a[:i−1]` must become all of `b[:j]`: `dp[i−1][j] + 1`.
-   - **Insert** b[j−1] at the end. Then all of `a[:i]` must become `b[:j−1]`: `dp[i][j−1] + 1`.
+   - **Keep or replace.** a[i−1] ends up as b[j−1]: free if they are already equal, one replacement otherwise. The rest is turning the first i − 1 characters of a into the first j − 1 of b: `dp[i−1][j−1] + (0 or 1)`.
+   - **Delete** a[i−1]. Then the first i − 1 characters of a must become the first j of b: `dp[i−1][j] + 1`.
+   - **Insert** b[j−1] at the end. Then the first i characters of a must become the first j − 1 of b: `dp[i][j−1] + 1`.
    - `dp[i][j]` is the minimum of the three.
 4. **Order.** Every cell needs its left, upper and upper-left neighbours, so fill row by row, left to right.
 5. **Answer.** `dp[m][n]`. There are (m + 1)(n + 1) cells of O(1) work: **O(mn) time and space**.
@@ -121,7 +121,9 @@ Start at (m, n) and, at each cell, find a neighbour that produced its value:
 
 On the example: (6,7) came from the left → **insert g**; (6,6) n = n, keep; (5,5) came from the diagonal at cost 1 → **replace e → i**; (4,4), (3,3), (2,2) keep t, t, i; (1,1) → **replace k → s**. Read in reverse, the script is: replace k → s, replace e → i, insert g. When several neighbours tie, any choice gives an optimal script, so the script is not always unique.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 def edit_distance(a, b):
@@ -193,7 +195,7 @@ If you only need to know whether the distance is **at most k**, note that every 
 - **Forgetting the base row and column.** Starting them at 0 instead of i and j makes every prefix of the empty string look free.
 - **Mixing up insert and delete.** "Up" deletes from the source; "left" inserts from the target. Swapping them still gives the right number (the costs are equal) but prints a wrong script.
 - **Empty strings.** The distance from "" to b is len(b); the code handles it with no special case.
-- **Unicode.** Python indexes code points, so accented letters written with combining marks count as two characters. Normalise text first if that matters.
+- **Unicode.** What counts as one "character" depends on the language: Python indexes code points, Java and JavaScript index UTF-16 units, and an accented letter written with a combining mark is two code points either way. Normalise the text (and decide what a character is) first if that matters.
 - **Huge inputs.** Two 100,000-character strings mean 10¹⁰ cells. Use the band (if a small limit is acceptable) or a specialised library.
 
 ## In the interview

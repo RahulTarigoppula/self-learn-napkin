@@ -117,7 +117,9 @@ No single item set all of fox's bits: cat set bit 4, dog set 11 and 14. That is 
 
 The formula predicts p ≈ (1 − e^(−3·2/16))³ = (1 − 0.687)³ ≈ 3 % for a random query. (Direct check: 5 of 16 bits are set, and (5/16)³ ≈ 3 %.)
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 import hashlib, math

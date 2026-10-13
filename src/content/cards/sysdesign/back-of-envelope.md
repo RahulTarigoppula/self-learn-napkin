@@ -136,7 +136,9 @@ What the numbers say:
 - **Photos (PB) and metadata (GB) are different worlds.** Photos go to object storage like S3; metadata fits a single, replicated relational database for years.
 - **16 Gbps average, ~50 Gbps peak** of image traffic is why you serve images from a CDN, and why you never send the 2 MB original to a phone: that would be 10× the bandwidth.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 DAY = 10**5                         # 86,400 s, rounded

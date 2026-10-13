@@ -110,7 +110,9 @@ Why is the credit always enough? When an array of capacity m is full, the values
 
 A third method, the **potential method**, does the same with a formula: define Φ = 2·size − capacity. A cheap append raises Φ by 2; a resize from capacity m drops Φ from m to 2. Real cost plus change in Φ is exactly 3 for every append.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 class DynamicArray:

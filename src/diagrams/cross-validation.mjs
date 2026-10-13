@@ -83,6 +83,6 @@ export default (d) => {
       }
     }
     d.text(286, 400, 'time', { pen: 'muted', size: 15, anchor: 'start' });
-    d.arrow(324, 400, 494, 400, { pen: 'muted' });
+    d.arrow(334, 400, 494, 400, { pen: 'muted' });
   });
 };

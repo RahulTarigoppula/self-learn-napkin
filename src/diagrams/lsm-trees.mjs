@@ -52,7 +52,7 @@ export default (d) => {
   d.step('Read: newest first, bloom filters skip files');
   d.text(446, 46, 'get(cat):\nnot in\nmemtable', { pen: 'red', size: 14 });
   d.text(SST_X[2] + 70, SST_Y + 48, 'bloom: no → skip', { pen: 'red', size: 14 });
-  d.text(SST_X[1] + 70, SST_Y + 48, 'bloom: maybe → cat:5', { pen: 'green', size: 14, bold: true });
+  d.text(SST_X[1] + 70, SST_Y + 48, 'bloom: maybe → cat:5', { pen: 'green', size: 14 });
   d.text(SST_X[0] + 70, SST_Y + 48, 'never read', { pen: 'muted', size: 14 });
 
   d.step('Compaction: merge, keep the newest');

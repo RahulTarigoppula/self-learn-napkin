@@ -1,0 +1,46 @@
+{
+  "name": "journey",
+  "width": 520,
+  "height": 320,
+  "elements": 17,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A tester who could code",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "C++ for payment gateways",
+      "firstElement": 2,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Python, and the joy of simple",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Data science and system design",
+      "firstElement": 8,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "Deep into AI",
+      "firstElement": 11,
+      "lastElement": 13
+    },
+    {
+      "index": 5,
+      "caption": "So I drew Napkin",
+      "firstElement": 14,
+      "lastElement": 16
+    }
+  ],
+  "hash": "2fc2e80f70391e58db8f7eb9250bceed5511dac6",
+  "title": "From tester to AI engineer: the road to Napkin"
+}

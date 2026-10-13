@@ -30,7 +30,7 @@ quiz:
     answer: 1
     why: "sum(a[2..5]) = P[6] − P[2] = 16 − 4 = 12, which matches 4 + 1 + 5 + 2."
   - q: "In the subarray-sum-equals-k algorithm, why is the hash map started with {0: 1}?"
-    options: ["To avoid a KeyError", "So that subarrays starting at index 0 are counted", "To skip the empty array", "It is only needed when k is 0"]
+    options: ["To avoid looking up a missing key", "So that subarrays starting at index 0 are counted", "To skip the empty array", "It is only needed when k is 0"]
     answer: 1
     why: "A subarray a[0..j] has sum P[j+1] − P[0], and P[0] = 0. Seeding the map with one zero prefix represents P[0], so such subarrays are found when total − k = 0."
   - q: "The array contains negative numbers. Which technique still counts subarrays with sum exactly k in O(n)?"
@@ -129,7 +129,9 @@ The big prefix includes the strip above the box and the strip to its left; subtr
 
 The three hits are `[1, 4]` (8 − 3), `[4, 1]` (9 − 4) and `[5]` (14 − 9).
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here it is in Python, with the 2D version.
 
 ```python
 from collections import Counter
@@ -184,4 +186,4 @@ assert box_sum(prefix_2d([[1, 2], [3, 4]]), 1, 1, 1, 1) == 4
 
 ## In the interview
 
-When you see "sum of a subarray" or "many range queries on a fixed array", say "prefix sums" and write `P[r+1] − P[l]` with the leading zero. For "count subarrays with sum k", explain the `P[j] − P[i] = k` rewrite, the `{0: 1}` seed and why it handles negatives. Expected follow-ups: the 2D version (inclusion–exclusion), "what if the array changes?" (Fenwick tree), and "subarray sum divisible by k" (count prefixes with the same remainder `total % k`).
+When you see "sum of a subarray" or "many range queries on a fixed array", say "prefix sums" and write `P[r+1] − P[l]` with the leading zero. For "count subarrays with sum k", explain the `P[j] − P[i] = k` rewrite, the `{0: 1}` seed and why it handles negatives. Expected follow-ups: the 2D version (inclusion–exclusion), "what if the array changes?" (Fenwick tree), and "subarray sum divisible by k" (count prefixes with the same remainder `total mod k`; in languages where `%` can return a negative number, normalise it first).

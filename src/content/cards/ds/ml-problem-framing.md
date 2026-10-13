@@ -15,7 +15,7 @@ story:
   - title: One row per customer per date
     text: "The unit of prediction is one customer on one date, so the training table has one row per (customer, date): blue feature columns and an orange label column. Labels arrive on their own 30 days later, which makes churn a supervised problem. Stack several monthly snapshots and test on a later month."
   - title: Offline metric vs business metric
-    text: "Only 3 % of customers cancel, so accuracy is useless: predicting 'nobody cancels' scores 97 %. The team can contact 5 % of customers, so measure precision in the top 5 %. The business metric is profit: a £10 offer that saves 1 in 5 churners worth £200 each only pays when precision exceeds 0.25."
+    text: "Only 3 % of customers cancel, so accuracy is useless: predicting 'nobody cancels' scores 97 %. The team can contact 5 % of customers, so measure precision in the top 5 % — the model reaches 0.30. The business metric is profit: a £10 offer that saves 1 in 5 churners worth £200 each only pays when precision exceeds 0.25."
   - title: Beat a simple baseline first
     text: "Before training anything, score a one-line rule: flag the customers whose logins dropped most. Here it reaches precision 0.18, against 0.03 for random picks. If a model cannot clearly beat the rule, ship the rule — it is cheaper, explainable and has no pipeline to maintain."
 keyIdeas:
@@ -94,7 +94,24 @@ A streaming service has 100,000 active subscribers. About 3 % cancel each month,
 
 The model's top list also catches 1,500 of the 3,000 churners — a **recall** of 0.50. Only the model clears break-even, so here ML is justified; if it had scored 0.22 the right answer would be "don't run this campaign", whatever the AUC says.
 
-## In code
+## Building the training table
+
+Every training row is a snapshot taken on a cutoff date. In pseudocode:
+
+```text
+for each cutoff date c (1 Jan, 1 Feb, 1 Mar …):
+    for each customer active on c:
+        features = counts of their events in windows that END before c
+        label    = 1 if they cancel in [c, c + 30 days), else 0
+        emit row (customer, c, features, label)
+train on the early cutoffs, test on a later one (out of time)
+```
+
+Precision in the top 5 % is: sort customers by score, take the first 5 %, and compute the share of them whose label is 1.
+
+## Implement it in Python
+
+The same pipeline works in any language or tool (SQL, R, Julia, Spark); this version uses pandas and scikit-learn and expects two tables, `subs` and `logins`.
 
 ```python
 import numpy as np

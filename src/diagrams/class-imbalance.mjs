@@ -78,7 +78,7 @@ export default (d) => {
   });
 
   d.step('Class weights: make each class count equally');
-  d.text(24, 346, 'class_weight="balanced"', { pen: 'violet', size: 14, mono: true, anchor: 'start' });
+  d.text(24, 346, 'balanced class weights', { pen: 'violet', size: 15, anchor: 'start' });
   d.group(() => {
     d.text(24, 370, '9,900 legit × 0.505 = 5,000', { pen: 'ink', size: 15, anchor: 'start' });
     d.text(24, 394, '100 fraud × 50 = 5,000', { pen: 'red', size: 15, anchor: 'start' });

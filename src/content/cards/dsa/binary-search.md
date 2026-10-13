@@ -4,7 +4,7 @@ track: dsa
 tags: [search, divide-and-conquer, arrays]
 difficulty: 2
 minutes: 4
-tldr: "Halve a sorted range each step: 20 probes are enough for a million items."
+tldr: "In a sorted array, compare with the middle element and throw away the half that cannot hold the target. Each probe halves the range, so 20 probes cover a million items."
 analogy: "Finding a word in a paper dictionary: open it in the middle, see whether your word comes before or after, and throw away the wrong half without reading a single page of it."
 diagram: binary-search
 story:
@@ -22,7 +22,7 @@ keyIdeas:
   - "**The array must be sorted** — that precondition *is* the algorithm: one comparison rules out a whole half."
   - "**Invariant:** if the target exists, it is inside [lo, hi]. Every update must keep that true."
   - "**At most ⌊log₂ n⌋ + 1 probes**: 4 for 8 items, 20 for a million, 30 for a billion."
-  - "**Prefer `lo + (hi - lo) // 2`** in languages with fixed-size integers; `lo + hi` can overflow."
+  - "**Compute mid as `lo + (hi − lo) / 2`** (integer division) in languages with fixed-size integers: `lo + hi` can overflow."
   - "**Binary search on the answer** applies the same halving to any yes/no question that flips once, not just to arrays."
 quiz:
   - q: "lo = 4, hi = 7, and a[mid] is bigger than the target. What is the next range?"
@@ -34,13 +34,13 @@ quiz:
     answer: 2
     why: "Each probe halves the range, and 2²⁰ ≈ 1,048,576, so after 20 halvings a million candidates are down to one."
   - q: "Why can't you binary search an unsorted array?"
-    options: ["mid would be out of range", "A comparison with a[mid] tells you nothing about which half holds the target", "It would be O(n²)", "Python does not allow it"]
+    options: ["mid would be out of range", "A comparison with a[mid] tells you nothing about which half holds the target", "It would be O(n²)", "Most languages forbid it"]
     answer: 1
     why: "Discarding a half is only safe because every element on that side is known to be smaller (or larger). Without order, the target could be anywhere."
 bigO:
   - { op: "search", best: "O(1)", avg: "O(log n)", worst: "O(log n)" }
   - { op: "space",  avg: "O(1)", note: "iterative; O(log n) if recursive" }
-related: [dsa/big-o-basics, dsa/hash-tables]
+related: [dsa/binary-search-on-answer, dsa/big-o-basics, dsa/hash-tables]
 prereqs: [dsa/arrays-and-pointers]
 griddle: binary-search
 flashcards:
@@ -51,7 +51,7 @@ flashcards:
     text: "Writing `mid = lo + (hi - lo) / 2` instead of `(lo + hi) / 2` avoids {{integer overflow}}."
   - kind: qa
     q: "Binary search on [1,3,5,7,9,11,13,15] for 4 — which indices are probed, and what is returned?"
-    a: "Indices 3, 1, 2, then −1: the value is not present, and lo ends at the insertion point."
+    a: "Indices 3, 1 and 2 (values 7, 3, 5). Then lo = 2 > hi = 1, so it returns −1 (not found), and lo = 2 is the insertion point."
 sources:
   - { name: "OpenDSA", url: "https://github.com/OpenDSA/OpenDSA", licence: "MIT", note: "Binary search module, redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -65,7 +65,7 @@ Keep two indices, `lo` and `hi`, for the first and last candidate positions (bot
 
 Each round:
 
-1. Pick the middle, `mid = (lo + hi) // 2` (integer division rounds down).
+1. Pick the middle, `mid = ⌊(lo + hi) / 2⌋` (integer division, rounding down).
 2. If `a[mid]` equals the target, return `mid`.
 3. If `a[mid]` is **less** than the target, then because the array is sorted every element at or left of `mid` is also too small. Set `lo = mid + 1` — the invariant still holds.
 4. If `a[mid]` is **greater**, every element at or right of `mid` is too big. Set `hi = mid − 1`.
@@ -97,7 +97,17 @@ Search for **4**, which is missing:
 
 Notice where `lo` stopped: index 2, exactly where 4 would have to be inserted to keep the array sorted. That "insertion point" is often the real answer interviewers want.
 
-## In code
+## Variant: the lower bound
+
+Often the real question is not "is x here?" but "where is the **first element ≥ x**?" That position, the **lower bound**, gives the first occurrence among duplicates, the insertion point, and the number of elements smaller than x, all at once.
+
+Use a half-open range `[lo, hi)` with `lo = 0` and `hi = n`, where `hi = n` stands for "every element is smaller". While `lo < hi`, probe `mid`. If `a[mid] < x`, the answer is to the right: `lo = mid + 1`. Otherwise `a[mid]` might itself be the answer, so keep it in range: `hi = mid`. When `lo == hi` the range has shrunk to a single position, and that is the answer. For x = 4 in the array above: `[0, 8)` probes index 4 (9 ≥ 4) → `hi = 4`; `[0, 4)` probes index 2 (5 ≥ 4) → `hi = 2`; `[0, 2)` probes index 1 (3 < 4) → `lo = 2`; now `lo == hi`, so the answer is 2.
+
+The **upper bound** (first element > x) is the same loop with `a[mid] ≤ x` as the test, and *upper − lower* counts the copies of x.
+
+## Implement it in Python
+
+The same idea works in any language; here are the exact-match search and the lower-bound variant in Python.
 
 ```python
 def binary_search(a, target):
@@ -128,7 +138,7 @@ a = [1, 3, 5, 7, 9, 11, 13, 15]
 print(binary_search(a, 11), binary_search(a, 4), lower_bound(a, 4))   # 5 -1 2
 ```
 
-Python's standard library has `bisect.bisect_left`, which is exactly `lower_bound`.
+Standard libraries ship these: C++'s `std::lower_bound` and Python's `bisect.bisect_left` are exactly `lower_bound`, and Java's `Arrays.binarySearch` returns `−(insertion point) − 1` when the value is missing.
 
 ## Edge cases and pitfalls
 

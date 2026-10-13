@@ -103,7 +103,9 @@ The shortest path to C is S → B → A → C = 4 − 2 + 3 = **5**, three edges
 
 Now add C→B with weight −6. The cycle B → A → C → B sums to −2 + 3 − 6 = **−5**. After three passes the values are still falling (A 0, B −1, C 5), and the check pass lowers C to 3, A to −3 and B to −3. A negative cycle is reported.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 def bellman_ford(nodes, edges, source):

@@ -118,19 +118,19 @@ An app server (4 vCPU) handles 400 requests/s at 70 % CPU. Peak traffic is 3,000
 
 The vertical alternative — one 64-vCPU box — might handle the load, but a single failure is a total outage, and a standby twin doubles the cost while sitting idle.
 
-## In code
+## Sketch it
 
-```python
-# A stateless handler: all user state comes from the request + a shared store.
-import redis
-r = redis.Redis(host="sessions.internal")
+A stateless request handler, in pseudocode: all user state comes from the request plus a shared store.
 
-def add_to_cart(request):
-    key = f"cart:{request.cookies['sid']}"
-    n = r.rpush(key, request.json["item_id"])   # atomic append in the shared store
-    r.expire(key, 7 * 24 * 3600)                # idle carts expire after a week
-    return {"items": n}                          # any server could have answered this
+```text
+handle add_to_cart(request):
+    key = "cart:" + request.cookie("sid")
+    n   = shared_store.append(key, request.body.item_id)   # atomic append, e.g. in Redis
+    shared_store.expire(key, 7 days)                        # idle carts expire after a week
+    return { items: n }                                     # any server could have answered this
 ```
+
+An auto-scaling rule, as a Kubernetes config:
 
 ```yaml
 # Kubernetes Horizontal Pod Autoscaler: keep average CPU near 70 %

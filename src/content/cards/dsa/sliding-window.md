@@ -21,7 +21,7 @@ story:
 keyIdeas:
   - "A window is a **contiguous** range [L, R]. Keep a running summary (sum, counts, last-seen map) and update it in O(1) as an edge moves."
   - "**Fixed size k:** add a[R], drop a[R − k]. **Variable size:** grow R; shrink L while the window is invalid (longest) or while it is still valid (shortest)."
-  - "It only works when validity is **monotone**: shrinking a valid window keeps it valid. Positive sums and \"no repeats\" are; sums with negatives are not."
+  - "It needs **monotone** validity. Longest: shrinking a valid window keeps it valid (\"no repeats\"). Shortest: growing a valid window keeps it valid (sum ≥ target, if no value is negative)."
   - "**O(n)** because L and R each move right at most n times in total, an amortised argument, not a per-step one."
 quiz:
   - q: "What is the length of the longest substring without repeating characters in \"pwwkew\"?"
@@ -31,7 +31,7 @@ quiz:
   - q: "Why does the variable sliding window fail for \"shortest subarray with sum ≥ k\" when the array has negative numbers?"
     options: ["Negative numbers overflow", "Validity is no longer monotone: dropping a negative element from the left can raise the sum", "The window must be fixed size", "Hash maps cannot store negatives"]
     answer: 1
-    why: "The shrink step assumes removing elements can only lower the sum. With negatives that is false, so an L that was discarded might have been needed. Use prefix sums with a monotonic deque instead."
+    why: "The loop stops shrinking as soon as the sum drops below the target, assuming removing more can only lower it further. With negatives, dropping one raises the sum, so a shorter valid window is missed. Use prefix sums with a monotonic deque."
   - q: "In the longest-unique-substring loop, why test last[ch] >= left before moving left?"
     options: ["To skip letters that appear only once", "An older copy left of the window is not a repeat, and left must never move backwards", "It makes the algorithm O(n log n)", "To handle uppercase letters"]
     answer: 1
@@ -55,7 +55,7 @@ flashcards:
     text: "A sliding window is O(n) because {{both edges only move right}}, so there are at most {{2n}} pointer moves in total."
   - kind: qa
     q: "What property must the window condition have for the sliding window to be correct?"
-    a: "Monotonicity: if a window is valid, every smaller window inside it is valid too (and growing can only break it). Then discarding a left element never loses an answer."
+    a: "Monotonicity. For a longest-valid question, every window inside a valid window must be valid too; for a shortest-valid question, every window containing a valid one must be valid. Then discarding a left element never loses an answer."
 sources:
   - { name: "Tech Interview Handbook", url: "https://github.com/yangshun/tech-interview-handbook", licence: "MIT", note: "Sliding window technique, redrawn" }
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
@@ -92,7 +92,10 @@ Which way step 2 goes depends on the question:
 
 ### Why discarding L is safe
 
-The method needs the condition to be **monotone**: if a window is valid, every window inside it is valid too. Then, once `[L, R]` is invalid, every `[L, R']` with R' > R is also invalid, so the left element can never be part of a later answer and may be dropped for good. "No repeated letters" is monotone. "Sum ≥ target" is monotone **only for non-negative numbers** — with negatives, removing an element can make the sum go up, and the method breaks.
+The method needs the condition to be **monotone**, in the direction that matches the question:
+
+- **Longest valid:** every window *inside* a valid window is valid. Then, once `[L, R]` is invalid, every longer `[L, R']` with R' > R is invalid too, so `a[L]` can never start a later answer and may be dropped for good. "No repeated letters", "at most k distinct" and "sum ≤ target with non-negative values" all behave this way.
+- **Shortest valid:** every window *containing* a valid window is valid. Then, once `[L, R]` is valid and recorded, any `[L, R']` with R' > R is valid but longer, so `a[L]` is no longer useful and may be dropped. "Sum ≥ target" behaves this way **only for non-negative numbers**: with negatives, removing an element can make the sum go *up*, and the method breaks.
 
 ### Why it is O(n)
 
@@ -113,7 +116,9 @@ Longest substring without repeating characters in `"abcbad"`, using `last` = the
 
 Row 4 is the trap: the map still remembers the a at index 0, but that a has already left the window. Moving L to 1 would move it *backwards* and re-admit the duplicate b.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here are the three standard windows in Python.
 
 ```python
 def max_sum_k(a: list[int], k: int) -> int:
@@ -157,7 +162,7 @@ assert shortest_with_sum([2, 3, 1, 2, 4, 3], 7) == 2
 - **Recording at the wrong moment.** For longest-valid, record *after* shrinking; for shortest-valid, record *before* each shrink step.
 - **Negative numbers.** Sum-based variable windows assume non-negative values. For arbitrary integers, use prefix sums with a hash map (exact sum k) or with a monotonic deque (shortest sum ≥ k).
 - **Window larger than the input.** `max_sum_k` with k > n has no windows at all; decide whether to raise or return a sentinel.
-- **Counts that reach zero.** When tracking "at most k distinct" with a dict of counts, delete keys whose count drops to 0, or `len(counts)` lies.
+- **Counts that reach zero.** When tracking "at most k distinct" with a hash map of counts, delete keys whose count drops to 0, or the map's size overstates the distinct count.
 
 ## When to use it
 
@@ -165,4 +170,4 @@ Signals in the question: **contiguous** subarray or substring, **longest / short
 
 ## In the interview
 
-State the window, the summary you maintain, and the shrink rule before coding: "R expands; while the window has a repeat, L moves past the previous copy; record R − L + 1". Then give the 2n-moves argument for O(n). Common follow-ups: "at most k distinct characters" (counts dict, shrink while `len(counts) > k`), "minimum window substring" (counts of needed characters plus a `missing` counter), and "what if numbers can be negative?" (prefix sums).
+State the window, the summary you maintain, and the shrink rule before coding: "R expands; while the window has a repeat, L moves past the previous copy; record R − L + 1". Then give the 2n-moves argument for O(n). Common follow-ups: "at most k distinct characters" (a hash map of counts; shrink while it has more than k keys), "minimum window substring" (counts of needed characters plus a `missing` counter), and "what if numbers can be negative?" (prefix sums).

@@ -14,8 +14,8 @@ story:
     text: "Every extra degree of freedom lets the model bend closer to the training points, so training error only goes down. A flexible enough model can drive it to zero by memorising every point — noise included. Training error alone cannot tell you when to stop."
   - title: Test error falls, then rises
     text: "On fresh data the story changes. Error falls at first as the model captures the real pattern, bottoms out at the sweet spot, then climbs as the model starts fitting noise. That minimum — not the lowest training error — is the model you want."
-  - title: The gap is variance
-    text: "The widening gap between the curves is the signature of variance: the fitted model changes a lot depending on which sample it saw. The dashed line is irreducible noise. For squared error, test error = bias² + variance + noise, and no model gets below the noise."
+  - title: The gap signals variance
+    text: "The widening gap between the curves is the signature of variance: the fitted model changes a lot depending on which sample it saw. The dashed line is irreducible noise. For squared error, expected test error = bias² + variance + noise, so no model's test error gets below the noise."
   - title: "Left: underfit, high bias"
     text: "Left of the sweet spot the model is too simple — a straight line through a curve. It makes the same mistake whatever sample it trains on: darts tightly grouped but off-centre. Symptom: training and test error both high and close together. Fix: a richer model or better features."
   - title: "Right: overfit, high variance"
@@ -43,7 +43,7 @@ quiz:
     options: ["High bias, low variance", "Low bias, high variance", "High bias, high variance", "Zero error on any data"]
     answer: 1
     why: "It reproduces every training label exactly (low bias), but each prediction depends on a single neighbour, so swapping a few training points flips answers (high variance). Raising k averages more neighbours: more bias, less variance."
-related: [ds/train-val-test, ds/cross-validation]
+related: [ds/train-val-test, ds/cross-validation, ds/regularisation]
 prereqs: []
 flashcards:
   - kind: qa
@@ -90,9 +90,22 @@ Three models predict at one point where the truth is 3.0, each trained on four d
 
 Model A is consistently wrong (darts tight, off-centre). Model B is right *on average* but any single trained copy may be far off (darts centred, scattered). Model C pays a sliver of bias for a large cut in variance and wins by a factor of four.
 
-## In code
+## Measuring it by simulation
 
-This simulation measures bias² and variance directly by training on 300 fresh samples of 20 points each.
+On synthetic data you know the true f, so you can run the thought experiment for real:
+
+```text
+repeat 300 times:
+    draw a fresh training set of 20 noisy points
+    fit the model; record its training error, its error on a big test set,
+    and its prediction p at a probe point x0
+bias²    = (mean of the 300 p values − f(x0))²
+variance = mean of (p − mean p)²  over the 300 fits
+```
+
+## Implement it in Python
+
+The simulation is plain loops and averages, so it ports to any language (R, Julia, MATLAB…). This version uses NumPy and scikit-learn's polynomial regression.
 
 ```python
 import numpy as np

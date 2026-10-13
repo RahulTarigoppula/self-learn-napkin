@@ -20,7 +20,7 @@ story:
     text: "The table holds lengths, not letters. Start at the corner. On a match, keep the letter and step diagonally; otherwise step to the larger of up and left (up on a tie). The kept letters appear last-first — B, C, B — so reverse them to get BCB."
 keyIdeas:
   - "**Subsequence** = order kept, gaps allowed. **Substring** = contiguous. They need different recurrences."
-  - "**State:** `dp[i][j]` = LCS length of `x[:i]` and `y[:j]`; row 0 and column 0 are all 0."
+  - "**State:** `dp[i][j]` = LCS length of the first i letters of x and the first j letters of y; row 0 and column 0 are all 0."
   - "**Recurrence:** if `x[i−1] == y[j−1]` then `dp[i−1][j−1] + 1`, else `max(dp[i−1][j], dp[i][j−1])`."
   - "**O(mn) time and space.** Two rows give O(min(m, n)) space when you only need the length."
   - "**Diff tools are LCS in disguise:** lines outside the LCS of two files are exactly the deletions and insertions."
@@ -72,7 +72,7 @@ Brute force would list all 2ᵐ subsequences of x and test each against y in O(n
 
 ## How it works
 
-1. **State.** `dp[i][j]` = length of an LCS of the prefixes `x[:i]` and `y[:j]` (the first i and first j characters).
+1. **State.** `dp[i][j]` = length of an LCS of the prefixes made of the first i characters of x and the first j characters of y.
 2. **Base cases.** `dp[0][j] = dp[i][0] = 0`: an empty string has only the empty subsequence.
 3. **Recurrence.** Look at the last characters of the two prefixes, `a = x[i−1]` and `b = y[j−1]`.
    - **a == b:** some LCS ends by pairing these two characters. (If an LCS ended differently, you could swap its last pair for this one without making it shorter.) So `dp[i][j] = dp[i−1][j−1] + 1`.
@@ -113,7 +113,9 @@ On the example: (5,5) D ≠ B, up is larger → (4,5) B = B, keep **B** → (3,4
 
 An LCS is often **not unique**. ABCBDAB and BDCABA have three LCSs of length 4 — BCBA, BCAB and BDAB. The tie rule (prefer up or prefer left) decides which one you recover. Listing *all* of them can take exponential time, because there can be exponentially many.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 def lcs(x, y):
@@ -177,7 +179,7 @@ Row i reads only row i − 1 and itself, so two rows of length min(m, n) + 1 are
 - **Substring vs subsequence.** Using `max(up, left)` for the substring problem is wrong: a mismatch must reset to 0, because a contiguous run is broken.
 - **Empty strings** give 0; the loops above handle them without special cases.
 - **Memory.** Two 100,000-character strings make a 10¹⁰-cell table. If you only need the length, use two rows; if you need the alignment, use Hirschberg.
-- **Recursion.** A memoised recursive version is natural but recurses m + n deep; prefer the loop for long strings in Python.
+- **Recursion.** A memoised recursive version is natural but can recurse m + n deep, which overflows the call stack for long strings in many languages (Python's default limit is about 1,000 frames); prefer the loop.
 
 ## In the interview
 

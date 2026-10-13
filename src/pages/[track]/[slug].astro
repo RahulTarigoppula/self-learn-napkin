@@ -293,6 +293,35 @@ const flashcardCount = d.flashcards.length;
     // storage unavailable (private mode): recents are simply not remembered
   }
 
+  // Code blocks: a language label and a copy button.
+  const LANG: Record<string, string> = { python: 'Python', py: 'Python', sql: 'SQL', yaml: 'YAML', json: 'JSON', bash: 'Shell', sh: 'Shell', nginx: 'nginx', text: 'Text', proto: 'Protobuf', http: 'HTTP' };
+  for (const pre of document.querySelectorAll<HTMLPreElement>('.prose pre.astro-code')) {
+    const lang = pre.dataset.language ?? 'text';
+    const bar = document.createElement('div');
+    bar.className = 'codebar';
+    const label = document.createElement('span');
+    label.className = 'codebar__lang';
+    label.textContent = LANG[lang] ?? lang;
+    const copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'codebar__copy';
+    copy.textContent = 'Copy';
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(pre.innerText);
+        copy.textContent = 'Copied ✓';
+      } catch {
+        copy.textContent = 'Select & copy';
+      }
+      setTimeout(() => {
+        copy.textContent = 'Copy';
+      }, 1800);
+    });
+    bar.append(label, copy);
+    pre.before(bar);
+    pre.classList.add('has-bar');
+  }
+
   // Scroll-spy for the deep-dive table of contents.
   const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
   if (links.length && 'IntersectionObserver' in window) {

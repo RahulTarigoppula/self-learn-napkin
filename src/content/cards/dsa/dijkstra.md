@@ -106,7 +106,9 @@ Undirected edges: A–B 4, A–C 1, B–C 2, B–D 5, C–D 8, C–E 10, D–E 2
 
 Parents: C ← A, B ← C, D ← B, E ← D, F ← E. Walking back from F: **A → C → B → D → E → F**, total 1 + 2 + 5 + 2 + 3 = **13**. Notice the direct roads A–B (4) and D–F (6) both lost to detours.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 import heapq
@@ -147,7 +149,7 @@ print(dist)                  # {'A': 0, 'B': 3, 'C': 1, 'D': 8, 'E': 10, 'F': 13
 print(path_to(parent, "F"))  # ['A', 'C', 'B', 'D', 'E', 'F']
 ```
 
-Python's `heapq` has no "decrease key" operation, so instead of updating an entry we push a new one and skip the old one when it surfaces (**lazy deletion**). The heap can hold up to E entries, and log E ≤ 2 log V, so the bound stays **O((V + E) log V)**.
+Most library heaps (Python's `heapq`, Java's `PriorityQueue`, C++'s `std::priority_queue`) have no efficient "decrease key" operation, so instead of updating an entry we push a new one and skip the old one when it surfaces (**lazy deletion**). The heap can hold up to E entries, and log E ≤ 2 log V, so the bound stays **O((V + E) log V)**.
 
 ## Why negative edges break it
 

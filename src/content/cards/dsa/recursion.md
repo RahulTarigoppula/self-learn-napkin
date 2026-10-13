@@ -13,7 +13,7 @@ story:
   - title: Every call pushes a frame
     text: "Call fact(4). It cannot finish yet: it needs fact(3), so it pauses and the computer pushes a new stack frame holding n = 3 and where to return to. fact(3) pauses for fact(2) the same way. Each frame is a separate copy of n, waiting with a half-done multiply."
   - title: The base case stops the descent
-    text: "fact(1) hits the base case and returns 1 without calling anything. That is the deepest point: four frames on the stack, so the space used is O(n). Forget the base case and frames pile up until Python raises RecursionError, by default at about 1,000 deep."
+    text: "fact(1) hits the base case and returns 1 without calling anything. That is the deepest point: four frames on the stack, so the space used is O(n). Forget the base case and frames pile up until the stack runs out: a stack overflow. Python, for example, stops at about 1,000 frames."
   - title: Unwinding
     text: "Now the stack unwinds, newest frame first. fact(2) receives 1 and returns 2 × 1 = 2; fact(3) returns 3 × 2 = 6; fact(4) returns 4 × 6 = 24. The work happens on the way back up, because each multiply had to wait for its smaller answer."
   - title: When one call makes two
@@ -23,24 +23,24 @@ keyIdeas:
   - "Each call gets its own **stack frame**; extra space is O(maximum depth), even when the code allocates nothing."
   - "Draw the **recursion tree**: time ≈ number of nodes × work per node; space ≈ height of the tree."
   - "Repeated subtrees mean **overlapping subproblems** — memoize them and you have dynamic programming."
-  - "Python has **no tail-call optimisation** and a default depth limit of 1,000: convert deep recursions to a loop or an explicit stack."
+  - "The stack is finite and most mainstream languages (Python, Java, C# among them) do **not optimise tail calls**: convert deep recursions to a loop or an explicit stack."
 quiz:
   - q: "While computing fact(4) with the code on this napkin, how many frames of fact are on the call stack at the deepest point?"
     options: ["1", "3", "4", "24"]
     answer: 2
     why: "fact(4) waits for fact(3), which waits for fact(2), which waits for fact(1). All four are alive at once when fact(1) hits the base case."
-  - q: "def f(n): return f(n - 1). What happens when you call f(5) in Python?"
-    options: ["It returns 0", "It loops forever without error", "It raises RecursionError after about 1,000 calls", "It returns None"]
+  - q: "f(n) is defined as return f(n − 1), with no base case. What happens when you call f(5)?"
+    options: ["It returns 0", "It loops forever, using no extra memory", "Frames pile up until the stack overflows and the program fails", "It returns an empty value"]
     answer: 2
-    why: "There is no base case, so every call makes another call. Each pushes a frame until the interpreter's recursion limit (1,000 by default) is hit and RecursionError is raised."
+    why: "Every call makes another call, and each one pushes a frame that never pops. The stack is finite, so the program dies with a stack overflow: Java throws StackOverflowError, Python raises RecursionError at about 1,000 frames."
   - q: "How many calls does the naive fib(5) make (counting fib(5) itself), with fib(0) and fib(1) as base cases?"
     options: ["5", "9", "15", "32"]
     answer: 2
     why: "calls(n) = 1 + calls(n − 1) + calls(n − 2) with calls(0) = calls(1) = 1, giving 1, 1, 3, 5, 9, 15. The count grows like the Fibonacci numbers themselves — exponentially."
-  - q: "You rewrite fact as a tail-recursive function with an accumulator. In CPython, what is its stack usage?"
-    options: ["O(1): Python reuses the frame", "Still O(n): CPython does not optimise tail calls", "O(log n)", "It depends on the accumulator's size"]
+  - q: "You rewrite fact(n) as a tail-recursive function with an accumulator, in a language that does not optimise tail calls (such as Python or Java). What is its stack usage?"
+    options: ["O(1): the frame is reused automatically", "Still O(n): every call still pushes a frame", "O(log n)", "It depends on the accumulator's size"]
     answer: 1
-    why: "CPython deliberately has no tail-call optimisation, so every call still pushes a frame. Languages such as Scheme guarantee it; in Python, write the loop yourself."
+    why: "Being in tail position only makes frame reuse possible; the compiler or runtime must actually do it. Scheme guarantees it, Python and Java never do, so each call still pushes a frame. There, write the loop yourself."
 bigO:
   - { op: "fact(n)", avg: "O(n)", note: "plus O(n) stack: one frame per level" }
   - { op: "naive fib(n)", avg: "O(φⁿ) ≈ O(1.62ⁿ)", note: "often quoted as the looser O(2ⁿ); stack O(n)" }
@@ -116,7 +116,9 @@ Two rules read the cost straight off the tree:
 
 `fib(2)` appears twice above; for larger n, the same small subproblems appear thousands of times. These are **overlapping subproblems**. Store each result the first time (**memoization**) and every distinct `fib(k)` is computed once: O(n) time. That is the top-down form of dynamic programming.
 
-## In code
+## Implement it in Python
+
+The same ideas work in any language; here they are in Python, with memoization from the standard library.
 
 ```python
 from functools import lru_cache
@@ -152,22 +154,21 @@ assert fib(30) == 832040
 
 A **tail call** is a call that is the very last thing a function does — nothing is left to compute after it returns:
 
-```python
-def fact_tail(n: int, acc: int = 1) -> int:
-    if n <= 1:
-        return acc
-    return fact_tail(n - 1, acc * n)   # tail call: the multiply already happened
+```
+fact_tail(n, acc = 1):
+    if n ≤ 1: return acc
+    return fact_tail(n − 1, acc × n)    // tail call: the multiply already happened
 ```
 
-Because the caller has nothing left to do, a compiler *could* reuse its frame instead of pushing a new one — **tail-call optimisation** (TCO), which turns the recursion into a loop with O(1) stack. Scheme guarantees it, and C compilers often do it at higher optimisation levels. **CPython never does**, by design, so `fact_tail(5000)` still fails.
+Because the caller has nothing left to do, a compiler *could* reuse its frame instead of pushing a new one — **tail-call optimisation** (TCO), which turns the recursion into a loop with O(1) stack. Scheme guarantees it, and C and C++ compilers often do it at higher optimisation levels. **Python and Java never do**, so there `fact_tail(5000)` still uses 5,000 frames.
 
-A **stack overflow** happens when the recursion is deeper than the stack allows. In Python you get `RecursionError: maximum recursion depth exceeded` (the default limit, from `sys.getrecursionlimit()`, is 1,000). Raising the limit with `sys.setrecursionlimit` only moves the problem and can crash the interpreter if the real C stack runs out.
+A **stack overflow** happens when the recursion is deeper than the stack allows. The call stack is a fixed region of memory, typically a few megabytes per thread, so the limit is usually thousands to tens of thousands of frames. What you see depends on the language: Java throws `StackOverflowError`, C or C++ simply crash, and Python stops earlier, at a default limit of 1,000 frames, with `RecursionError`. Raising such a limit only moves the problem; if the real stack runs out first, the whole process crashes.
 
 ## Recursion vs iteration
 
 Anything recursive can be written iteratively, and vice versa.
 
-- **Linear recursion** (one call per level, like `fact` or summing a list) becomes a plain loop with an accumulator. Prefer the loop in Python when the depth can be large.
+- **Linear recursion** (one call per level, like `fact` or summing a list) becomes a plain loop with an accumulator. Prefer the loop when the depth can be large and the language does not optimise tail calls.
 - **Branching recursion** (trees, graphs, backtracking) becomes a loop over an **explicit stack** you manage yourself: push the start, pop, process, push the children. Same order of work, but the stack lives on the heap, so depth is limited only by memory.
 - Recursion wins on **clarity** when the data is recursive: trees, nested lists, divide and conquer (merge sort, quicksort), and backtracking.
 
@@ -175,8 +176,8 @@ Anything recursive can be written iteratively, and vice versa.
 
 - **Base case that can be skipped.** `if n == 0` with an input of −1 recurses forever. Use `n <= 1` or validate the input.
 - **Not shrinking.** Every call must move strictly towards the base case, or it never ends.
-- **Hidden copying.** `xs[1:]` copies the list, turning an O(n) sum into O(n²). Pass an index instead.
-- **Mutable defaults.** `def f(x, seen=set())` shares one set across all top-level calls. Use `None` and create it inside.
+- **Hidden copying.** Recursing on "the rest of the list" by copying it (a slice such as `xs[1:]`) costs O(n) per call, turning an O(n) sum into O(n²). Pass an index instead.
+- **Shared state between calls.** A memo table or `seen` set that outlives one top-level call (a global, or a Python mutable default argument such as `seen=set()`) leaks results into the next call. Create it per top-level call and pass it down.
 - **Forgetting stack space** when stating complexity: a recursive DFS on a path-shaped graph of n nodes uses O(n) space.
 
 ## In the interview

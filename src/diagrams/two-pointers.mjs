@@ -1,107 +1,125 @@
 export const meta = {
-  title: 'Array memory layout and the two-pointer pair-sum walk',
+  title: 'Two pointers: pair sum from both ends, and removing duplicates with read/write pointers',
   width: 520,
-  height: 400,
+  height: 420,
 };
 
-const A = [1, 3, 4, 6, 8, 11, 13, 15];
 const CW = 44;
 const X0 = 20;
-const CY = 74; // top of the cells
-const CH = 44;
 const cx = (i) => X0 + i * CW + CW / 2;
-const VX = 388; // verdict column
+const LX = 346; // right-hand column
 
-const ROW0 = 198;
-const DY = 44;
+// top: opposite ends
+const A = [1, 3, 4, 6, 9, 11, 14];
+const AY = 74;
+const AH = 40;
 
-function row(d, k, l, r, pen, line1, line2) {
-  const y = ROW0 + k * DY;
-  d.group(() => {
-    d.line(cx(l), y, cx(r), y, { pen: 'muted', thin: true, single: true });
-    d.dot(cx(l), y, 12, { pen: 'violet', single: true });
-    d.dot(cx(r), y, 12, { pen: 'blue', single: true });
-    d.text(cx(l) - 12, y, 'L', { pen: 'violet', size: 16, bold: true, anchor: 'end' });
-    d.text(cx(r) + 12, y, 'R', { pen: 'blue', size: 16, bold: true, anchor: 'start' });
-    d.text(VX, y - 9, line1, { pen: 'ink', size: 16, anchor: 'start' });
-    d.text(VX, y + 10, line2, { pen, size: 15, anchor: 'start' });
+// bottom: same direction
+const B = [1, 1, 2, 2, 2, 3, 5];
+const BY = 226; // before row
+const CY = 322; // after row
+const BH = 38;
+
+const cell = (d, i, y, h, v, o = {}) =>
+  d.rect(X0 + i * CW, y, CW, h, {
+    pen: 'ink',
+    rough: 0.6,
+    single: true,
+    label: String(v),
+    size: 19,
+    bold: true,
+    ...o,
   });
-}
-
-const gone = (d, i) =>
-  d.rect(X0 + i * CW + 3, CY + 3, CW - 6, CH - 6, {
+// A ruled-out cell: muted hatching behind the value, so the number stays readable.
+const gone = (d, i, y, h) =>
+  d.rect(X0 + i * CW + 3, y + 3, CW - 6, h - 6, {
+    pen: 'muted',
     fill: 'muted',
     fillStyle: 'hachure',
-    pen: 'muted',
     thin: true,
-    rough: 0.7,
+    rough: 0.6,
     single: true,
-    gap: 9,
+    gap: 7,
+  });
+
+const logLine = (d, k, sum, act, pen) =>
+  d.group(() => {
+    d.text(LX, 44 + k * 22, sum, { pen, size: 16, anchor: 'start' });
+    d.text(505, 44 + k * 22, act, { pen, size: 16, bold: true, anchor: 'end' });
   });
 
 export default (d) => {
-  d.step('One block of memory, indexed by arithmetic');
+  d.step('Sorted array, one pointer at each end');
+  d.text(X0, 20, 'opposite ends: find a pair with sum 13', { pen: 'ink', size: 17, anchor: 'start' });
   d.group(() => {
-    A.forEach((v, i) => {
-      d.rect(X0 + i * CW, CY, CW, CH, {
-        pen: 'ink',
-        rough: 0.7,
-        single: true,
-        label: String(v),
-        size: 19,
-        bold: true,
-      });
-    });
+    A.forEach((v, i) => cell(d, i, AY, AH, v));
+    A.forEach((_, i) => d.text(cx(i), AY + AH + 12, String(i), { pen: 'muted', size: 14 }));
   });
   d.group(() => {
-    A.forEach((_, i) => d.text(cx(i), CY + CH + 14, String(i), { pen: 'muted', size: 14 }));
-    A.forEach((_, i) =>
-      d.text(cx(i), CY - 12, String(1000 + 4 * i), {
-        pen: i === 5 ? 'blue' : 'muted',
-        size: 13,
-        bold: i === 5,
-      }),
-    );
+    d.text(cx(0), 44, 'L', { pen: 'violet', size: 17, bold: true });
+    d.arrow(cx(0), 54, cx(0), AY - 4, { pen: 'violet', thick: true });
+    d.text(cx(6), 44, 'R', { pen: 'blue', size: 17, bold: true });
+    d.arrow(cx(6), 54, cx(6), AY - 4, { pen: 'blue', thick: true });
   });
-  d.text(X0, 30, 'address of a[i] = base + 4 × i', { pen: 'blue', size: 17, anchor: 'start' });
-  d.text(VX, 96, 'a[5] is at\n1000 + 4×5\n= 1020', { pen: 'blue', size: 15, anchor: 'start' });
 
-  d.step('Pointers at both ends: 16 is too small');
-  d.text(X0, 162, 'sorted · find a pair summing to 17', { pen: 'ink', size: 16, anchor: 'start' });
-  row(d, 0, 0, 7, 'orange', '1 + 15 = 16', 'too small: L →');
-  gone(d, 0);
+  d.step('Too big: R steps left. Too small: L steps right');
+  logLine(d, 0, '1 + 14 = 15', 'R ←', 'red');
+  gone(d, 6, AY, AH);
+  logLine(d, 1, '1 + 11 = 12', 'L →', 'orange');
+  gone(d, 0, AY, AH);
 
-  d.step('18 is too big: drop the 15');
-  row(d, 1, 1, 7, 'red', '3 + 15 = 18', 'too big: ← R');
-  gone(d, 7);
-
-  d.step('16 again: move L');
-  row(d, 2, 1, 6, 'orange', '3 + 13 = 16', 'too small: L →');
-  gone(d, 1);
-
-  d.step('17: found in 4 checks');
-  row(d, 3, 2, 6, 'green', '4 + 13 = 17', 'found ✓');
+  d.step('Each check rules out one value: O(n)');
+  logLine(d, 2, '3 + 11 = 14', 'R ←', 'red');
+  gone(d, 5, AY, AH);
+  logLine(d, 3, '3 + 9 = 12', 'L →', 'orange');
+  gone(d, 1, AY, AH);
   d.group(() => {
-    d.rect(X0 + 2 * CW + 3, CY + 3, CW - 6, CH - 6, {
-      pen: 'green',
-      fill: 'green',
-      thick: true,
-      rough: 0.7,
-      single: true,
-    });
-    d.rect(X0 + 6 * CW + 3, CY + 3, CW - 6, CH - 6, {
-      pen: 'green',
-      fill: 'green',
-      thick: true,
-      rough: 0.7,
-      single: true,
-    });
-    d.text(cx(2), CY + CH / 2, '4', { pen: 'green', size: 19, bold: true });
-    d.text(cx(6), CY + CH / 2, '13', { pen: 'green', size: 19, bold: true });
+    for (const [i, t] of [
+      [2, 'L'],
+      [4, 'R'],
+    ]) {
+      d.arrow(cx(i), 162, cx(i), 140, { pen: 'green', thick: true });
+      d.text(cx(i), 174, t, { pen: 'green', size: 17, bold: true });
+    }
   });
-  d.text(X0, 376, 'each check discards one value: ≤ n − 1 checks, O(n)', {
-    pen: 'green',
-    size: 16,
+  d.text(LX, 140, '4 + 9 = 13 ✓', { pen: 'green', size: 18, bold: true, anchor: 'start' });
+  d.text(LX, 166, '5 checks, not 21 pairs', { pen: 'green', size: 15, anchor: 'start' });
+
+  d.step('Same direction: R reads every cell');
+  d.line(X0, 194, 500, 194, { pen: 'muted', dashed: true, thin: true });
+  d.group(() => {
+    d.text(X0 + 4, 208, 'R reads every cell', { pen: 'blue', size: 15, anchor: 'start' });
+    d.arrow(170, 208, 320, 208, { pen: 'blue', thick: true });
+  });
+  d.group(() => B.forEach((v, i) => cell(d, i, BY, BH, v)));
+  d.text(LX, 236, 'remove duplicates', { pen: 'ink', size: 17, bold: true, anchor: 'start' });
+  d.text(LX, 276, 'keep a[R] only if it\ndiffers from the\nlast value kept', {
+    pen: 'blue',
+    size: 15,
     anchor: 'start',
   });
+  for (const i of [1, 3, 4]) gone(d, i, BY, BH);
+
+  d.step('W writes kept values to the front');
+  d.group(() => {
+    [1, 2, 3, 5, 2, 3, 5].forEach((v, i) =>
+      i < 4
+        ? cell(d, i, CY, BH, v, { pen: 'green', fill: 'green', textPen: 'green' })
+        : cell(d, i, CY, BH, v, { pen: 'muted', textPen: 'muted' }),
+    );
+    B.forEach((_, i) => d.text(cx(i), CY + BH + 12, String(i), { pen: 'muted', size: 14 }));
+  });
+  d.group(() => {
+    for (const [from, to] of [
+      [2, 1],
+      [5, 2],
+      [6, 3],
+    ])
+      d.arrow(cx(from) - 4, BY + BH + 4, cx(to) + 6, CY - 4, { pen: 'orange', bend: 6, rough: 0.6 });
+  });
+  d.group(() => {
+    d.arrow(cx(4), 404, cx(4), CY + BH + 22, { pen: 'orange', thick: true });
+    d.text(cx(4) + 14, 398, 'W = 4 = new length', { pen: 'orange', size: 16, bold: true, anchor: 'start' });
+  });
+  d.text(LX, 342, 'one pass, O(1) extra', { pen: 'green', size: 15, anchor: 'start' });
 };

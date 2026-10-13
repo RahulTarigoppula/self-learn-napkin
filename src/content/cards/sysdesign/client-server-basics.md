@@ -117,7 +117,9 @@ A user in London loads a page from a server in Virginia: RTT ≈ 80 ms. DNS is n
 
 So the **time to first byte (TTFB)** is ~310 ms, and only 30 ms of it is your code. The second request on the same kept-alive connection costs 80 + 30 = 110 ms. Terminating TCP and TLS closer to the user (a CDN edge 10 ms away, which keeps a warm connection to Virginia) shrinks both handshakes to 10 ms each and cuts TTFB to roughly 180 ms — far more effective than optimising the 30 ms.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 import socket, ssl, time

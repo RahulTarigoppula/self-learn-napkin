@@ -102,7 +102,9 @@ Judging unsupervised results is harder because there is no answer key. You use i
 
 If the business needs a prediction but you have no labels, unsupervised learning will not produce one. Usually the right move is to collect labels (from logs, from outcomes that arrive later, or from paid annotation), not to call clusters "classes".
 
-## In code
+## Implement it in Python
+
+The same four tasks exist in every ML toolkit (R, Julia, Spark MLlib…); this version uses scikit-learn's built-in iris flowers, which happen to have labels so we can show both sides.
 
 ```python
 from sklearn.datasets import load_iris
@@ -119,11 +121,11 @@ X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.3, stratify=y, rando
 
 # Supervised classification: labelled rows teach X -> species
 clf = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000)).fit(X_tr, y_tr)
-print("accuracy:", clf.score(X_te, y_te))
+print("accuracy:", clf.score(X_te, y_te))                               # about 0.98
 
 # Supervised regression: predict petal width (a number) from the other three columns
 reg = LinearRegression().fit(X_tr[:, :3], X_tr[:, 3])
-print("R^2:", reg.score(X_te[:, :3], X_te[:, 3]))
+print("R^2:", reg.score(X_te[:, :3], X_te[:, 3]))                      # about 0.93
 
 # Unsupervised clustering: y is never shown to the model
 groups = KMeans(n_clusters=3, n_init=10, random_state=0).fit_predict(StandardScaler().fit_transform(X))

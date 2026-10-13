@@ -5,7 +5,7 @@ import { tz } from '../../db/review';
 import { DEFAULTS, readSettings, type Settings as S, writeSettings } from '../../db/settings';
 import { backupFilename } from '../../engine/backup/schema';
 import { dayKey } from '../../engine/fsrs/scheduler';
-import { APP_VERSION, PLATFORM } from '../../lib/base';
+import { APP_VERSION, href, PLATFORM } from '../../lib/base';
 import { toast } from '../../lib/toast';
 import { shareFile } from '../../platform/share';
 import { sound } from '../../platform/sound';
@@ -287,6 +287,11 @@ export default function Settings({ credits }: { credits: { name: string; url: st
             <span class="muted">— ISC</span> · scheduling: ts-fsrs <span class="muted">— MIT</span>
           </li>
         </ul>
+        <p>
+          <a class="st__about" href={href('about/')}>
+            Why I built Napkin →
+          </a>
+        </p>
         <p class="st__version mono">
           Napkin {APP_VERSION} ·{' '}
           {offline === null

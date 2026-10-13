@@ -136,7 +136,9 @@ A social app with users in the US and Europe, primary in US East.
 
 Likes on a post are written in both regions at once. With a G-Counter CRDT each region counts its own increments, the counts replicate, and every region reports the sum.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 class GCounter:

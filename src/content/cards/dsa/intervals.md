@@ -115,7 +115,9 @@ Input (unsorted): `[[8,10], [1,3], [15,18], [2,6]]`. Sorted by start: `[1,3], [2
 
 **Meeting rooms** for the same four intervals. Events sorted: 1 (+1), 2 (+1), 3 (−1), 6 (−1), 8 (+1), 10 (−1), 15 (+1), 18 (−1). Running count: 1, 2, 1, 0, 1, 0, 1, 0. **Peak 2 → 2 rooms.**
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 import heapq

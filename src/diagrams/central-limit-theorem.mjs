@@ -66,7 +66,11 @@ export default (d) => {
     d.line(mx(1.216), BASE[2] + 12, mx(2.784), BASE[2] + 12, { pen: 'orange', thick: true });
     d.line(mx(1.216), BASE[2] + 6, mx(1.216), BASE[2] + 18, { pen: 'orange', thick: true });
     d.line(mx(2.784), BASE[2] + 6, mx(2.784), BASE[2] + 18, { pen: 'orange', thick: true });
-    d.text(mx(2.784) + 12, BASE[2] + 12, '1.22 to 2.78 holds 95 %\nof the sample means', { pen: 'orange', size: 15, anchor: 'start' });
+    d.text(mx(1.216), BASE[2] + 36, '1.22 to 2.78 holds 95 % of the sample means', {
+      pen: 'orange',
+      size: 15,
+      anchor: 'start',
+    });
   });
 
   d.step('When it fails');

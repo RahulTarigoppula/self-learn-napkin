@@ -70,6 +70,15 @@ Calibration matters whenever the number itself is used: choosing a threshold fro
 2. For each bin, compute the mean predicted probability (x) and the observed share of positives (y).
 3. Plot the points with the diagonal y = x as reference, ideally with a histogram of how many predictions fall in each bin.
 
+```text
+for each bin b in [0, 0.2), [0.2, 0.4), …, [0.8, 1.0]:
+    rows = held-out predictions whose p falls in b
+    x_b  = average p over rows                 # what the model claimed
+    y_b  = share of rows whose label is 1      # what actually happened
+    plot point (x_b, y_b), labelled with count(rows)
+draw the diagonal y = x; calibrated points sit on it
+```
+
 | Shape | Meaning |
 |---|---|
 | on the diagonal | calibrated |
@@ -104,6 +113,14 @@ Keep the trained model and learn a monotone function g that maps its score to a 
 - **Temperature scaling**: Platt with b = 0 and a = 1/T, applied to a neural network's logits. A single parameter, it is the standard fix for overconfident deep nets and cannot change which class is predicted.
 - **Isotonic regression**: fit the best non-decreasing step function (pool-adjacent-violators algorithm). It can fix any monotone distortion, but it needs roughly a thousand or more calibration points or it overfits, and it maps ranges of scores to the same value, creating ties.
 
+```text
+split labelled data: TRAIN (fit the model) and CALIBRATE (fit g)
+z = model scores on CALIBRATE
+Platt:     fit a, b to minimise log-loss of σ(a·z + b) against the CALIBRATE labels
+Isotonic:  fit the non-decreasing step function g(z) closest (squared error) to the labels
+at prediction time: p_calibrated = g(model score)
+```
+
 ## Which models drift, and why
 
 | Model | Typical behaviour | Why |
@@ -115,7 +132,9 @@ Keep the trained model and learn a monotone function g that maps its score to a 
 | SVMs | scores are not probabilities at all | they output a margin; Platt scaling was invented for them |
 | Any model trained with resampling or class weights | over-predicts the rare class | the training prior was changed on purpose |
 
-## In code
+## Implement it in Python
+
+The same recipe works in any language or ML library: fit the model, fit a monotone map on held-out scores, re-map. Here it uses scikit-learn.
 
 ```python
 from sklearn.datasets import make_classification
@@ -144,12 +163,12 @@ for mp, fp in zip(mean_pred, frac_pos):
     print(f"predicted {mp:.2f} -> actually positive {fp:.2f}")
 ```
 
-Output: raw naive Bayes — Brier 0.165, log-loss 0.759; Platt — 0.141 and 0.447; isotonic — 0.125 and 0.396. ROC AUC stays at about 0.90 throughout: recalibration fixes the numbers, not the ranking. The raw model's top bin predicts 0.98 on average but only 79 % of those cases are positive. `CalibratedClassifierCV` fits the model and the calibrator on different folds, so the calibrator never sees predictions on the model's own training rows.
+Output: raw naive Bayes — Brier 0.165, log-loss 0.759; Platt — 0.141 and 0.447; isotonic — 0.125 and 0.396. ROC AUC stays at about 0.90 throughout: recalibration fixes the numbers, not the ranking. The raw model's top bin predicts 0.98 on average but only 79 % of those cases are positive. `CalibratedClassifierCV` fits the model and the calibrator on different folds, so the calibrator never sees predictions on the model's own training rows; `method="sigmoid"` is Platt scaling. Other useful pieces: `calibration_curve(..., strategy="quantile")` gives bins with equal counts, `CalibrationDisplay` draws the reliability diagram, and `IsotonicRegression` can be used on its own.
 
 ## Edge cases and pitfalls
 
 - **Never calibrate on training predictions** — they are overconfident by construction. Use a held-out split or cross-validation.
-- **Bins with few points are noisy.** Show counts per bin; with small data use fewer bins or quantile bins (`strategy="quantile"`).
+- **Bins with few points are noisy.** Show counts per bin; with small data use fewer bins, or quantile bins that each hold the same number of predictions.
 - **Calibration is tied to the base rate.** If spam is 10 % in validation and 2 % in production, a calibrated model becomes over-predicting. Recalibrate after prevalence shifts.
 - **Accuracy and calibration move separately**: recalibration can change which side of 0.5 a score falls on, so accuracy at threshold 0.5 can shift slightly even though ranking does not.
 - **Multiclass**: use temperature scaling on the logits, or one-vs-rest calibration followed by renormalising so probabilities sum to 1.

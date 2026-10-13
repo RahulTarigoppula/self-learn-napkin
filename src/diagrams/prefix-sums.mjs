@@ -58,12 +58,17 @@ export default (d) => {
 
   d.step('Sum = 5? Find prefixes exactly 5 apart');
   d.group(() => {
-    for (const [i, j, bend] of [
-      [1, 3, 18],
-      [2, 4, 32],
-      [4, 5, 14],
+    // two lanes so the overlapping pairs (1→3 and 2→4) do not cross
+    for (const [i, j, lane] of [
+      [1, 3, 0],
+      [2, 4, 1],
+      [4, 5, 0],
     ])
-      d.arrow(px(i) + 2, PY + H + 26, px(j) - 2, PY + H + 26, { pen: 'orange', bend, rough: 0.6 });
+      d.arrow(px(i) + 4, PY + H + 24 + lane * 18, px(j) - 4, PY + H + 24 + lane * 18, {
+        pen: 'orange',
+        bend: 8,
+        rough: 0.5,
+      });
   });
   d.group(() => {
     d.text(24, 252, '14 − 9, 9 − 4, 8 − 3: three subarrays sum to 5', {

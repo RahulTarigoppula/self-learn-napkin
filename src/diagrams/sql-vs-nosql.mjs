@@ -55,8 +55,8 @@ export default (d) => {
     );
   });
   d.group(() => {
-    d.arrow(193, 140, 42, 114, { pen: 'red', bend: -18, thick: true });
-    d.text(118, 160, 'JOIN ON uid = id', { pen: 'red', mono: true, size: 14 });
+    d.arrow(186, 148, 44, 118, { pen: 'red', bend: -14, thick: true });
+    d.text(118, 166, 'JOIN ON uid = id', { pen: 'red', mono: true, size: 14 });
   });
 
   d.step('Document: nest what you read together');

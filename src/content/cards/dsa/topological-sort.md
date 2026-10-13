@@ -110,7 +110,9 @@ To detect cycles with DFS, colour nodes **white** (unvisited), **grey** (on the 
 
 On the example, starting from Intro, DFS finishes ML, Algo, DB, DS, Intro, then Math; reversed, that is **Math, Intro, DS, DB, Algo, ML** — different from Kahn's result, and equally valid.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 from collections import deque
@@ -163,7 +165,7 @@ print(kahn({"X": ["Y"], "Y": ["Z"], "Z": ["X"]}))   # None
 - **Arrow direction.** "Course 1 requires course 0" is the arrow **0 → 1** (prerequisite first). Reversing every arrow gives you the order backwards — a classic interview bug.
 - **Nodes with no arrows** still belong in the order. Build the in-degree map from the full node list, not just from the edge list.
 - **Two-colour DFS is wrong for directed graphs.** A plain "visited" set cannot tell a cycle from two paths that meet at a shared node (A → C and B → C). You need the grey "on the current path" state.
-- **Deep recursion.** Python's default limit is about 1,000 frames; long dependency chains need Kahn or an explicit stack.
+- **Deep recursion.** Recursive DFS on a long dependency chain can overflow the call stack (Python's default limit is about 1,000 frames); use Kahn or an explicit stack.
 - **Self-loops** (A → A) are cycles: A's in-degree never reaches 0.
 - **Undirected graphs** have no topological order; the idea only applies to directed graphs.
 

@@ -22,17 +22,17 @@ keyIdeas:
   - "**Backtracking = DFS over a decision tree**: each level is one decision, each leaf a complete candidate."
   - "**Template**: if complete, record a copy; else for each option: **choose**, **explore**, **unchoose**."
   - "**Prune** as soon as a partial solution cannot succeed; checking early cuts whole subtrees."
-  - "Record **`path[:]`**, not `path`: the list keeps changing after you record it."
+  - "At a leaf, **record a copy** of the path, not the path itself: the one shared list keeps changing after you record it."
   - "Worst cases are exponential: subsets O(n · 2ⁿ), permutations O(n · n!). Pruning shrinks the real tree."
 quiz:
   - q: "In the subsets template, what goes wrong if you forget path.pop() after exploring?"
-    options: ["Nothing; Python cleans it up", "Earlier choices leak into later branches, so subsets come out wrong", "The recursion never ends", "It only affects performance"]
+    options: ["Nothing; returning from the call undoes it automatically", "Earlier choices leak into later branches, so subsets come out wrong", "The recursion never ends", "It only affects performance"]
     answer: 1
     why: "path is shared by every branch. Without the undo, the 'skip' branch still contains the element you just took, so the results are wrong."
-  - q: "Why is `out.append(path[:])` used instead of `out.append(path)`?"
-    options: ["path[:] is faster", "append(path) stores a reference to the one list that keeps changing, so every result ends up identical (and empty at the end)", "path cannot be appended directly", "To sort the result"]
+  - q: "At a leaf, why record a copy of path rather than path itself?"
+    options: ["Copying is faster", "Recording path stores a reference to the one list that keeps changing, so every result ends up identical (and empty at the end)", "A list cannot be stored inside another list", "To keep the results sorted"]
     answer: 1
-    why: "A slice makes a snapshot copy. Without it, every recorded entry points at the same list object, which is empty once the search finishes."
+    why: "A copy is a snapshot (path[:] in Python, new ArrayList<>(path) in Java). Without it, every recorded entry points at the same list object, which is empty once the search finishes."
   - q: "How does N-Queens check whether square (r, c) is attacked in O(1)?"
     options: ["Scan the whole board", "Keep sets of used columns, used r − c diagonals and used r + c anti-diagonals", "Only check the row above", "Sort the queens"]
     answer: 1
@@ -108,7 +108,9 @@ Place n queens on an n × n board so that no two attack each other. Since two qu
 
 Eight queen placements reach the first solution. Continuing the search finds the only other one, [2, 0, 3, 1] (the mirror image), after 16 placements in total. For 8-queens the same code finds all 92 solutions with 2,056 placements, where trying every one-queen-per-row arrangement would be 8⁸ ≈ 16.8 million.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 def subsets(nums):
@@ -159,10 +161,10 @@ Backtracking is exponential by nature, because the number of answers usually is.
 
 ## Edge cases and pitfalls
 
-- **Record a copy** (`path[:]` or `list(path)`): appending `path` itself stores a reference to a list that keeps changing.
+- **Record a copy** (`path[:]` in Python, `new ArrayList<>(path)` in Java, a plain copy of the vector in C++): storing `path` itself stores a reference to a list that keeps changing.
 - **Undo exactly what you did**, in reverse order, including every set or flag you touched.
 - **Do not prune too eagerly**: a check that rejects partial states which could still be completed loses answers.
-- **Recursion depth** equals the number of decisions; for n in the thousands, Python's default limit (about 1,000) needs care, but backtracking inputs are usually small.
+- **Recursion depth** equals the number of decisions; for n in the thousands it can overflow the call stack (Python's default limit is about 1,000 frames), but backtracking inputs are usually small.
 
 ## In the interview
 

@@ -15,7 +15,7 @@ export default (d) => {
     ['Atomicity', 'all or nothing', 'blue'],
     ['Consistency', 'rules still hold', 'green'],
     ['Isolation', 'as if alone', 'red'],
-    ['Durability', 'survives crashes', 'violet'],
+    ['Durability', 'crash-safe', 'violet'],
   ];
   tiles.forEach(([name, says, pen], i) => {
     const x = 14 + i * 125;
@@ -57,7 +57,7 @@ export default (d) => {
   d.step('Isolation levels: what each one blocks');
   const C = [176, 248, 326];
   d.group(() => {
-    d.text(14, 240, 'possible?', { pen: 'muted', size: 14, anchor: 'start' });
+    d.text(14, 240, 'prevents?', { pen: 'muted', size: 14, anchor: 'start' });
     d.text(C[0], 240, 'dirty', { pen: 'ink', size: 14 });
     d.text(C[1], 240, 'non-rep.', { pen: 'ink', size: 14 });
     d.text(C[2], 240, 'phantom', { pen: 'ink', size: 14 });

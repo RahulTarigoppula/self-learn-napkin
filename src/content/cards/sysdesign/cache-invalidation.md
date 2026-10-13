@@ -129,7 +129,9 @@ When a popular key expires, every request that arrives before it is rebuilt miss
 - **Jittered TTLs:** `ttl = 3600 * random.uniform(0.9, 1.1)` so keys loaded together expire across a window instead of in one instant.
 - **Probabilistic early refresh:** each reader refreshes early with a probability that rises as expiry approaches. The XFetch rule recomputes when `now − delta · beta · ln(rand()) ≥ expiry`, where `delta` is how long a rebuild takes and `beta` is usually 1.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 import random, threading

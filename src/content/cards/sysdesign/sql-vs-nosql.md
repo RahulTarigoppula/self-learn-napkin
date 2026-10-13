@@ -47,7 +47,7 @@ bigO:
   - { op: "Cassandra partition size", avg: "keep well under ~100 MB", note: "huge partitions become hot spots" }
 bigOTitle: "Key numbers"
 related: [sysdesign/acid-and-isolation, sysdesign/indexes-and-b-trees, sysdesign/sharding, sysdesign/lsm-trees]
-prereqs: []
+prereqs: [sysdesign/acid-and-isolation]
 flashcards:
   - kind: qa
     q: "What does 'access-pattern-first' modelling mean?"
@@ -103,7 +103,9 @@ The query: "show user 42's name and 20 newest orders".
 - **Document:** one document per user with an embedded `orders` array. One read. But a user with 100,000 orders would blow past MongoDB's 16 MB document limit, so unbounded lists belong in their own collection.
 - **Wide-column:** a table `orders_by_user` partitioned by `user_id`, clustered by `created_at DESC`, with the user's name duplicated in each row. One sequential read on one replica set. "Orders over £100 across all users" needs a second table or an analytics pipeline.
 
-## In code
+## Sketch it
+
+The same data in two data models, in SQL and in Cassandra's query language (CQL):
 
 ```sql
 -- Relational: normalise, index, join at read time

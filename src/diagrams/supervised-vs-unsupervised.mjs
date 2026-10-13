@@ -30,7 +30,7 @@ const SPAM = [
   [186, 58],
   [142, 40],
   [200, 36],
-  [166, 78],
+  [176, 66],
   [118, 28],
 ];
 // Clustering: the same kind of points, no labels, three natural groups.
@@ -92,6 +92,16 @@ const CLOUD = [
   [180, 16],
 ];
 
+/** A small filled hexagon: reads as a dot but costs half the bytes of d.dot. */
+const mark = (d, x, y, pen, dia = 10) =>
+  d.poly(
+    Array.from({ length: 6 }, (_, i) => [
+      x + (dia / 2) * Math.cos((i * Math.PI) / 3),
+      y + (dia / 2) * Math.sin((i * Math.PI) / 3),
+    ]),
+    { pen, fill: pen, closed: true, rough: 0.3, single: true },
+  );
+
 export default (d) => {
   d.step('Labelled data vs unlabelled data');
   d.text(L + PW / 2, 20, 'supervised', { pen: 'blue', size: 18, bold: true });
@@ -100,18 +110,18 @@ export default (d) => {
   d.text(R + PW / 2, 40, 'rows only: no answers', { pen: 'muted', size: 15 });
   d.line(260, 14, 260, 330, { pen: 'muted', dashed: true });
   d.group(() => {
-    for (const [x, y] of NOT_SPAM) d.dot(L + x, TOP + y, 10, { pen: 'blue', single: true });
-    for (const [x, y] of SPAM) d.dot(L + x, TOP + y, 10, { pen: 'orange', single: true });
+    for (const [x, y] of NOT_SPAM) mark(d, L + x, TOP + y, 'blue');
+    for (const [x, y] of SPAM) mark(d, L + x, TOP + y, 'orange');
     d.text(L + 2, TOP + 126, 'y = ham', { pen: 'blue', size: 15, anchor: 'start' });
     d.text(L + PW, TOP + 126, 'y = spam', { pen: 'orange', size: 15, anchor: 'end' });
   });
   d.group(() => {
     for (const g of GROUPS)
-      for (const [x, y] of g.pts) d.dot(R + x, TOP + y, 10, { pen: 'muted', single: true });
+      for (const [x, y] of g.pts) mark(d, R + x, TOP + y, 'muted');
   });
 
   d.step('Classification: predict a category');
-  d.line(L + 66, TOP + 4, L + 180, TOP + 104, { pen: 'red', thick: true, dashed: true });
+  d.line(L + 78, TOP + 4, L + 188, TOP + 104, { pen: 'red', thick: true, dashed: true });
   d.text(L + 2, TOP + 18, 'learned\nboundary', { pen: 'red', size: 15, anchor: 'start' });
 
   d.step('Regression: predict a number');
@@ -120,7 +130,7 @@ export default (d) => {
     d.line(L, BOT + PH, L, BOT - 4, { pen: 'muted' });
     d.text(L + PW, BOT + PH + 16, 'size (m²)', { pen: 'muted', size: 15, anchor: 'end' });
     d.text(L + 8, BOT - 4, 'price', { pen: 'muted', size: 15, anchor: 'start' });
-    for (const [x, y] of HOUSES) d.dot(L + x, BOT + y, 10, { pen: 'blue', single: true });
+    for (const [x, y] of HOUSES) mark(d, L + x, BOT + y, 'blue');
   });
   d.line(L + 6, BOT + 96, L + PW - 4, BOT + 14, { pen: 'red', thick: true });
 
@@ -130,23 +140,23 @@ export default (d) => {
 
   d.step('Dimensionality reduction: fewer columns');
   d.group(() => {
-    for (const [x, y] of CLOUD) d.dot(R + x, BOT + y, 10, { pen: 'muted', single: true });
+    for (const [x, y] of CLOUD) mark(d, R + x, BOT + y, 'muted');
   });
   d.arrow(R + 6, BOT + 100, R + 200, BOT + 4, { pen: 'violet', thick: true });
   d.text(R + PW / 2, BOT + PH + 16, '2 columns → 1 direction', { pen: 'violet', size: 15 });
 
   d.step('In between: other ways to get a signal');
-  d.text(20, 352, 'semi-supervised: a few labels + many unlabelled rows', {
+  d.text(20, 356, 'semi-supervised: a few labels + many unlabelled rows', {
     pen: 'ink',
     size: 15,
     anchor: 'start',
   });
-  d.text(20, 376, 'self-supervised: labels made from the data itself', {
+  d.text(20, 380, 'self-supervised: labels made from the data itself', {
     pen: 'ink',
     size: 15,
     anchor: 'start',
   });
-  d.text(20, 400, 'reinforcement: actions earn rewards, no labels', {
+  d.text(20, 404, 'reinforcement: actions earn rewards, no labels', {
     pen: 'ink',
     size: 15,
     anchor: 'start',

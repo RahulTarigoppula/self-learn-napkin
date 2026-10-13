@@ -24,7 +24,7 @@
     },
     {
       "index": 3,
-      "caption": "The gap between them is variance",
+      "caption": "The gap signals variance",
       "firstElement": 6,
       "lastElement": 8
     },
@@ -41,6 +41,6 @@
       "lastElement": 14
     }
   ],
-  "hash": "7762592ca33bcdec00ae863fb00bf7c89498eae1",
+  "hash": "7f2d710a33b1d38c448acc64958ec0af1fb11d71",
   "title": "Training and test error against model complexity, with dartboards"
 }

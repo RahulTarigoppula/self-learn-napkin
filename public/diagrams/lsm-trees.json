@@ -35,6 +35,6 @@
       "lastElement": 19
     }
   ],
-  "hash": "5680e89b93e07dc22ff4e5de6d4f8690fad02d65",
+  "hash": "094f503aef30b266b7e05b0901f5102f824ccf9e",
   "title": "LSM-tree: writes to WAL and memtable, flush to SSTables, reads with bloom filters, compaction into levels"
 }

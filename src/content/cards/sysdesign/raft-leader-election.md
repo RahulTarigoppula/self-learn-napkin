@@ -47,11 +47,11 @@ quiz:
 bigO:
   - { op: "votes to win, N servers", avg: "⌊N/2⌋ + 1" }
   - { op: "failures tolerated", avg: "⌊(N − 1)/2⌋", note: "1 of 3, 2 of 5" }
-  - { op: "election timeout", avg: "150–300 ms", note: "random per server, per election" }
-  - { op: "heartbeat interval", avg: "≈ 50 ms", note: "well below the shortest timeout" }
+  - { op: "election timeout", avg: "150–300 ms", note: "paper example; random per server, per election" }
+  - { op: "heartbeat interval", avg: "≈ 50 ms", note: "well below the shortest timeout (etcd: 100 ms vs 1 s)" }
 bigOTitle: "Key numbers"
-related: [sysdesign/quorum-n-r-w, sysdesign/cap-theorem, sysdesign/sharding]
-prereqs: [sysdesign/quorum-n-r-w]
+related: [sysdesign/distributed-locks, sysdesign/cap-theorem, sysdesign/consistency-models, sysdesign/two-phase-commit-vs-sagas]
+prereqs: [sysdesign/replication, sysdesign/quorum-n-r-w]
 special: true
 flashcards:
   - kind: qa
@@ -89,7 +89,7 @@ The election, step by step:
 5. If instead it hears a heartbeat from a leader with a term at least as high, it steps down.
 6. If its timer expires again with no winner (a **split vote**), it starts a new election with term + 1.
 
-Timeouts are **re-randomised** for every election, typically in a range like 150–300 ms, so one server usually times out well before the others.
+Timeouts are **re-randomised** for every election, in a range like the paper's example of 150–300 ms, so one server usually times out well before the others. Production systems often use longer values to ride out network hiccups; etcd, for instance, defaults to a 100 ms heartbeat and a 1 s election timeout.
 
 ## Worked example
 
@@ -106,7 +106,9 @@ Five servers, heartbeat every 50 ms.
 
 **Split vote:** S2 and S4 time out within a millisecond of each other in term 5. S2 gets votes from S3 and itself; S4 from S5 and itself; S1 is down. Nobody has 3. Both wait for a fresh random timeout; S4 fires first in term 6 and wins before S2 wakes up.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation for one server's election logic.
 
 ```python
 import random
@@ -114,15 +116,15 @@ import random
 def on_election_timeout(self):
     self.term += 1
     self.role, self.voted_for, votes = "candidate", self.id, 1
+    self.reset_timer(random.uniform(0.150, 0.300))  # no winner by then: try again, term + 1
     for peer in self.peers:
         reply = peer.request_vote(self.term, self.id, self.last_log_index(), self.last_log_term())
         if reply.term > self.term:                 # someone is ahead: step down
             self.term, self.role, self.voted_for = reply.term, "follower", None
             return
         votes += reply.granted
-    if votes > (len(self.peers) + 1) // 2:
+    if votes > (len(self.peers) + 1) // 2:         # majority of the whole cluster
         self.role = "leader"                       # start heartbeats now
-    self.reset_timer(random.uniform(0.150, 0.300))
 
 def on_request_vote(self, term, cand, last_idx, last_term):
     if term > self.term:

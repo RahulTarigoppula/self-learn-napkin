@@ -100,7 +100,7 @@ Without cleanup, files pile up: reads get slower (more files to check) and space
 | Write amplification | lower (each byte rewritten about once per tier) | higher (often 10–30×: each level rewrite touches ~10× its size) |
 | Read amplification | higher: a key may be in one file per tier | lower: at most one file per level (plus L0) |
 | Space amplification | high: overlapping copies; a big merge needs as much free space as its inputs | low: ~90 % of data sits in the last level, so about 1.1× |
-| Default in | Cassandra (historically), ScyllaDB | RocksDB, LevelDB |
+| Typical default | Cassandra and ScyllaDB (long-standing defaults) | RocksDB, LevelDB |
 
 ## Worked example
 
@@ -114,7 +114,9 @@ Start empty, memtable limit 2 keys.
 6. `get(fox)`: all three filters probably say "no" → zero disk reads.
 7. Compact SST 1–3 → `ant:1 bee:3 cat:5 dog:7`. Two stale dogs gone; the next `get` checks one file.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python, as a toy in-memory model of the moving parts.
 
 ```python
 import bisect

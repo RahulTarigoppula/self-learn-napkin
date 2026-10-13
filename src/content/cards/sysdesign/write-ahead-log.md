@@ -105,9 +105,9 @@ Log after a busy moment (the drawing): `…`, checkpoint, `101 T7 A 100→50`, `
 | Undo losers | T10: C back to 5, log a compensation record, then an abort record |
 | Result | A = 50, B = 50, C = 5: exactly the committed state |
 
-## In code
+## Implement it in Python
 
-A toy key-value store with a redo-only WAL: writes are made durable in the log before they are applied, and recovery replays committed transactions.
+The idea is language-independent; here it is in Python. A toy key-value store with a redo-only WAL: writes are made durable in the log before they are applied, and recovery replays committed transactions.
 
 ```python
 import json, os

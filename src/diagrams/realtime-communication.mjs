@@ -54,6 +54,7 @@ export default (d) => {
     const [yc, ys] = lanes(2, 'SSE');
     d.group(() => {
       down(134, yc, ys);
+      d.line(146, ys, X1, ys, { pen: 'green', thick: true, single: true });
       for (const x of [190, 250, 310, 370]) up(x, yc, ys);
     });
     note(2, 'server → client\nonly', 'green');

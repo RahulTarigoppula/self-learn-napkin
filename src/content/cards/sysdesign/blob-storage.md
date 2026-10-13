@@ -113,15 +113,15 @@ Disks fail all the time at scale, so every object is stored redundantly across d
 | Reading normally | read one copy | read the 6 data chunks and join them |
 | After a failure | read another copy | read any 6 chunks and decode, costing CPU and network |
 
-For 1 PB of user data that is 3 PB of disk against 1.5 PB: half the hardware with *better* fault tolerance. The cost is rebuild work, and higher latency for small objects, since each read touches 6 machines. So systems often replicate small or freshly written data and erasure-code large, colder data. Chunks are placed across failure domains (different racks or availability zones) so that one rack fire cannot remove more than m of them. This is how S3 can be *designed* for 99.999999999 % (eleven nines) annual durability.
+For 1 PB of user data that is 3 PB of disk against 1.5 PB: half the hardware with *better* fault tolerance. The cost is rebuild work, and higher latency for small objects, since each read touches 6 machines. So systems often replicate small or freshly written data and erasure-code large, colder data. Chunks are placed across failure domains (different racks or availability zones) so that one rack fire cannot remove more than m of them. Redundancy like this, spread across zones and repaired quickly after each failure, is how object stores reach *designed* durabilities such as S3's 99.999999999 % (eleven nines) per year.
 
 ## Storage classes and lifecycle
 
 Most objects are hot for days and cold forever after. Providers sell **storage classes** that trade storage price for access price and speed: standard (instant, about $23 per TB-month on S3), infrequent access (cheaper to store, a fee per GB read, a 30-day minimum), and archive tiers (around $1 per TB-month for S3 Glacier Deep Archive, but retrieval takes hours). **Lifecycle rules** move or delete objects automatically by age or prefix.
 
-## In code
+## Implement it in Python
 
-The app hands out a pre-signed PUT, and a lifecycle rule tidies up:
+The idea is language-independent; Python (with the AWS SDK, as one example of an S3-style API) is used here only as compact, readable notation. The app hands out a pre-signed PUT, and a lifecycle rule, written as JSON, tidies up:
 
 ```python
 import boto3, uuid

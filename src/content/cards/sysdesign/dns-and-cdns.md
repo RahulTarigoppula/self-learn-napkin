@@ -132,7 +132,7 @@ A shop in Virginia serves shoppers in Sydney (RTT ≈ 200 ms) through a CDN edge
 
 Going from 95 % to 99 % looks small but cuts origin traffic **five-fold**, because the origin only sees misses. That is why teams obsess over cache keys and TTLs.
 
-## In code
+## Sketch it
 
 ```text
 # 1) DNS: follow the referrals yourself

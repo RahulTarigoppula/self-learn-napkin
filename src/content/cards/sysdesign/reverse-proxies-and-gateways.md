@@ -119,7 +119,7 @@ A phone calls `GET /v2/home` with `Authorization: Bearer <JWT>`; mobile RTT is 8
 
 The phone pays one 80 ms round trip plus ~55 ms of server work, about 135 ms. Three sequential calls from the phone would cost 3 × 80 ms of round trips alone, plus each service's time.
 
-## In code
+## Sketch it
 
 ```nginx
 upstream orders { server 10.0.1.11:8080; server 10.0.1.12:8080; }   # load-balanced pool

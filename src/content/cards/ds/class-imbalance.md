@@ -17,7 +17,7 @@ story:
   - title: Resample the training split only
     text: "To give the model more fraud to learn from, rebalance the training rows: drop legit rows (undersampling), repeat fraud rows (oversampling), or synthesise fraud with SMOTE, which adds a point on the line between two nearby fraud cases. Split first: validation and test data must keep the real 99 : 1 ratio, or every metric is fiction."
   - title: "Class weights: make each class count equally"
-    text: "Or leave the data alone and reweight the loss. class_weight='balanced' gives each row n / (2 × class count): 0.505 per legit row and 50 per fraud row, so each class contributes 5,000 to the loss. Missing one fraud now costs the model 99 times as much as one false alarm."
+    text: "Or leave the data alone and reweight the loss. 'Balanced' class weights give each row n / (2 × class count): 0.505 per legit row and 50 per fraud row, so each class contributes 5,000 to the loss. Missing one fraud now costs the model 99 times as much as one false alarm."
   - title: Move the threshold to match the costs
     text: "The decision itself is the threshold, and 0.5 is rarely right. If a missed fraud costs £500 and a false alarm £5, flagging pays when p × 500 > (1 − p) × 5, so flag when p > 5 / 505 ≈ 0.01 (this needs calibrated p). The most reliable fix of all is more real fraud examples."
 keyIdeas:
@@ -35,7 +35,7 @@ quiz:
     options: ["Nothing; SMOTE only adds rows", "Synthetic points built from test rows leak into training, and the test set no longer has the real ratio, so scores are inflated", "The model can no longer use class weights", "SMOTE deletes the majority class"]
     answer: 1
     why: "A synthetic fraud point lies between two real ones, so a test fraud row's near-copy ends up in training. The test set is also artificially balanced, so its precision means nothing for production."
-  - q: "9,900 legit rows and 100 fraud rows with class_weight='balanced'. What weights does scikit-learn use?"
+  - q: "9,900 legit rows and 100 fraud rows with balanced class weights, n / (2 × class count). What weight does each class get?"
     options: ["1 and 99", "0.505 and 50", "0.01 and 0.99", "0.5 and 0.5"]
     answer: 1
     why: "Weight = n / (n_classes × class count): 10,000 / (2 × 9,900) = 0.505 and 10,000 / (2 × 100) = 50. Each class then contributes 5,000 to the loss."
@@ -90,11 +90,18 @@ A probability is not a decision. With costs C_FN (a missed fraud) and C_FP (a fa
 
 p · C_FN > (1 − p) · C_FP  ⇔  p > C_FP / (C_FP + C_FN).
 
-With £500 and £5 that is 5 / 505 ≈ 0.0099. This rule assumes **calibrated** probabilities. Without reliable costs, choose the threshold on a **validation** set to meet a recall or precision target — never on the test set.
+With £500 and £5 that is 5 / 505 ≈ 0.0099. This rule assumes **calibrated** probabilities. Without reliable costs, choose the threshold on a **validation** set to meet a recall or precision target — never on the test set:
+
+```text
+scores = model probabilities on the VALIDATION set
+for t in candidate thresholds, from high to low:
+    recall(t) = caught positives / all positives        when flagging score ≥ t
+    if recall(t) ≥ target: return t                     # highest t that meets the target
+```
 
 ## Fix 2: class weights
 
-Most scikit-learn classifiers accept `class_weight`. Each row's loss is multiplied by its class weight; `"balanced"` uses n / (k · n_c) for k classes, giving 0.505 to legit rows and 50 to fraud rows. In expectation this is the same as duplicating each fraud row ~99 times, without the extra memory. Gradient-boosting libraries have equivalents such as `scale_pos_weight` in XGBoost (commonly set to negatives / positives).
+Multiply each row's contribution to the training loss by a weight for its class. The usual "balanced" choice is w_c = n / (k · n_c) for k classes, where n_c is the number of rows in class c: 10,000 / (2 × 9,900) = 0.505 for legit rows and 10,000 / (2 × 100) = 50 for fraud rows, so each class adds up to 5,000. Relative to each other, that is the same as copying every fraud row 99 times, without the extra memory. Any learner that minimises a sum of per-row losses can take weights.
 
 ## Fix 3: resampling
 
@@ -102,7 +109,18 @@ Most scikit-learn classifiers accept `class_weight`. Each row's loss is multipli
 - **Random oversampling** repeats minority rows. Nothing is lost, but exact duplicates make overfitting to those few rows easy.
 - **SMOTE** (Synthetic Minority Over-sampling Technique) creates new minority points: pick a minority row xᵢ, pick one of its k = 5 nearest minority neighbours x_nn, and add x_new = xᵢ + λ · (x_nn − xᵢ) with λ drawn uniformly from [0, 1] — a point on the segment between them. It assumes the space between two fraud cases is also fraud, which fails for categorical features, for noisy minority points and in very high dimensions.
 
-All resampling must happen **after** the split, and inside each cross-validation fold (the `imbalanced-learn` library's `Pipeline` does this). Resample before splitting and synthetic copies of test rows leak into training.
+```text
+split data into train / validation / test       # FIRST, stratified by class
+minority = fraud rows of TRAIN only
+repeat until enough synthetic rows:
+    x  = random row from minority
+    nn = random choice among the 5 nearest minority rows to x
+    λ  = uniform random number in [0, 1]
+    add x + λ · (nn − x) to TRAIN with label "fraud"
+validation and test stay untouched
+```
+
+All resampling must happen **after** the split, and inside each cross-validation fold (resample the training folds only, every time). Resample before splitting and synthetic copies of test rows leak into training.
 
 **Honest expectation:** weights and resampling rarely improve a *ranking* metric such as PR-AUC for a strong model; their main effect is to push scores up for the minority — which threshold moving does directly. They help most when a learner would otherwise ignore the minority entirely, or when undersampling makes a huge dataset tractable.
 
@@ -114,7 +132,9 @@ p = β · p_s / (β · p_s − p_s + 1).
 
 Keep 1 in 10 legit rows (β = 0.1) and a training-world score p_s = 0.5 becomes 0.05 / 0.55 ≈ 0.091 on real traffic. For weights or SMOTE there is no exact formula; recalibrate on untouched validation data instead.
 
-## In code
+## Implement it in Python
+
+The same comparison works in any language or ML library that supports per-class weights and probability outputs; here it uses scikit-learn.
 
 ```python
 import numpy as np
@@ -146,9 +166,11 @@ report("plain, tuned threshold", plain.predict_proba(X_te)[:, 1], t_best)
 
 Output: plain at 0.5 — precision 0.86, recall 0.61, PR-AUC 0.750; balanced weights at 0.5 — precision 0.11, recall 0.91, PR-AUC 0.701; plain with the threshold tuned to ≈ 0.10 — precision 0.43, recall 0.79. The weights did not rank fraud better (PR-AUC even fell slightly); they moved the operating point, which the tuned threshold does more transparently.
 
+Library notes: most scikit-learn classifiers accept `class_weight="balanced"` (or a dict of weights) and `fit(..., sample_weight=...)`; XGBoost and LightGBM offer `scale_pos_weight`, commonly set to negatives / positives. SMOTE and random under/over-sampling live in the `imbalanced-learn` package, whose `Pipeline` applies resampling to the training folds only during cross-validation, e.g. `Pipeline([("smote", SMOTE(k_neighbors=5)), ("clf", LogisticRegression())])`. Always pass `stratify=y` when splitting.
+
 ## Edge cases and pitfalls
 
-- **Stratify** every split (`stratify=y`) so 100 positives are not split 90 / 10 by chance; with very few positives, prefer repeated stratified cross-validation and report the spread.
+- **Stratify** every split (keep the class ratio the same in each part) so 100 positives are not split 90 / 10 by chance; with very few positives, prefer repeated stratified cross-validation and report the spread.
 - **Time matters** for fraud and churn: split by time, not at random, or future patterns leak backwards.
 - **Prevalence shifts** in production change precision even if the model is unchanged; monitor the positive rate.
 - **Extreme imbalance** (1 in 100,000) may be better framed as anomaly detection or as a ranking problem with human review of the top k.

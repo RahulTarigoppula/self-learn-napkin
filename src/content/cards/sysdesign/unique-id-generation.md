@@ -19,7 +19,7 @@ story:
   - title: "UUIDv7 / ULID: time first, so IDs sort"
     text: "Putting the timestamp in the high bits makes IDs sort by creation time. UUIDv7 and ULID do it in 128 bits: a 48-bit millisecond timestamp followed by random bits. New rows land at the end of a B-tree index instead of on random pages."
   - title: "Clock goes backwards: wait, do not reuse"
-    text: "Time-based IDs trust the clock. If NTP steps it back from 105 ms to 100 ms, the generator could reuse timestamps it has already used and mint duplicates. A safe generator remembers the last timestamp and refuses to issue IDs until the clock has passed it again."
+    text: "Time-based IDs trust the clock. If NTP steps it back from 105 ms to 100 ms, the generator could reuse timestamps it has already used and mint duplicates. A safe generator remembers the last timestamp and refuses to issue IDs until the clock catches up again."
 keyIdeas:
   - "**Auto-increment** needs one counter: a bottleneck and single point of failure, and per-shard counters collide unless given offsets."
   - "**UUIDv4**: 122 random bits, no coordination, ~2.7 × 10^18 IDs for a 50 % chance of a collision. Downsides: 16 bytes and random order, which hurts B-tree inserts."
@@ -110,7 +110,9 @@ Machine 7 issues its fourth ID (sequence 3) at exactly 1,000,000,000 ms (about 1
 
 ID = **4,194,304,000,028,675**. Decoding reverses it: `id >> 22` = 1,000,000,000 ms, `(id >> 12) & 1023` = 7, `id & 4095` = 3. You can read a Snowflake ID's creation time without any lookup.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 import threading, time

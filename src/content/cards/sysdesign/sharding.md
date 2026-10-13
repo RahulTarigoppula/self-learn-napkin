@@ -88,7 +88,9 @@ Users table, 3 M rows, 3 shards, key `user_id`.
 - **Hash:** `shard = hash(user_id) % 3`. Ids 1, 2, 3 might land on S1, S2, S3; new signups spread evenly. `users 1,000–2,000` must query all three shards and merge.
 - **Resharding:** add S4 and change to `% 4`. For a hash value `h`, the row stays only if `h % 3 == h % 4`, true for `h % 12` in {0, 1, 2}: 3 values in 12. So **75 % of rows move**. With consistent hashing only about 1/4 move — just those that now belong to S4.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 import hashlib

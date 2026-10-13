@@ -107,7 +107,9 @@ Insert `car`, `cart`, `cat`, `dog` into an empty trie:
 - `search("cap")`: c → a, then a has no child `p`: **False** after two steps.
 - `complete("ca")`: walk to a, then depth-first: r is marked (`car`), its child t is marked (`cart`), then a's other child t is marked (`cat`). Output: **car, cart, cat**.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 class TrieNode:

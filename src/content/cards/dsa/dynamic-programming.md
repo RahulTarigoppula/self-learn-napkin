@@ -46,8 +46,8 @@ bigO:
   - { op: "memoised", avg: "O(n)", note: "O(n) memo + O(n) call stack" }
   - { op: "tabulated", avg: "O(n)", note: "O(1) space keeping two variables" }
   - { op: "coin change (min coins)", avg: "O(amount · coins)" }
-related: [dsa/big-o-basics, dsa/hash-tables, dsa/bfs-and-dfs]
-prereqs: [dsa/big-o-basics]
+related: [dsa/recursion, dsa/knapsack, dsa/longest-common-subsequence, dsa/greedy-algorithms]
+prereqs: [dsa/recursion, dsa/big-o-basics]
 flashcards:
   - kind: qa
     q: "What is the difference between memoisation and tabulation?"
@@ -105,7 +105,9 @@ DP state: `best[a]` = fewest coins that sum to exactly a. Last decision: which c
 
 For a = 6: via coin 1, best[5] + 1 = 3; via coin 3, best[3] + 1 = 2; via coin 4, best[2] + 1 = 3. Minimum: 2.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; only the syntax changes. Here it is in Python.
 
 ```python
 from functools import lru_cache
@@ -148,7 +150,7 @@ print(min_coins([1, 3, 4], 6), min_coins([5], 3))     # 2 -1
 - **Missing information in the state.** If the next decision depends on something the state does not record (for example, "was the previous step a 2?"), add it as another dimension: `dp[i][last]`.
 - **Base cases.** ways(0) is 1 if "standing still" counts as a way, which some versions of the problem expect; the code above only defines n ≥ 1. Decide and say so.
 - **Unreachable states** in min/max problems must start at infinity (or −1 handled carefully), not 0, or impossible amounts look free.
-- **Recursion depth.** Memoised recursion on n = 100,000 overflows Python's default stack; switch to tabulation.
+- **Recursion depth.** Memoised recursion on n = 100,000 recurses 100,000 deep and overflows the call stack in most languages (Python's default limit is about 1,000 frames); switch to tabulation.
 - **Greedy is not DP.** Greedy happens to work for some coin systems (like 1, 5, 10, 25) but not in general. Prove it or use DP.
 
 ## Memoisation vs tabulation

@@ -108,7 +108,9 @@ Now the claim that constants stop mattering, for f(n) = 3n² + 200n + 5000:
 
 For small n the "unimportant" terms dominate. That is exactly why a simple O(n²) insertion sort beats merge sort on tiny arrays, and why real sort routines switch to insertion sort for short runs.
 
-## In code
+## Implement it in Python
+
+The same counting works in any language; here are the common shapes in Python.
 
 ```python
 def first(items):              # O(1): one step, whatever len(items) is
@@ -148,7 +150,7 @@ The two duplicate checkers show the most common trade in interviews: spend memor
 
 ## Edge cases and pitfalls
 
-- **Hidden loops.** `x in some_list` is O(n), `list.insert(0, x)` is O(n), and building a string with `+=` in a loop can be O(n²) in many languages. One innocent line inside a loop can change the whole answer.
+- **Hidden loops.** Library calls hide work: checking whether a value is in an unsorted list is O(n), inserting at the front of an array is O(n), and building a string by repeated concatenation in a loop can be O(n²) in many languages. One innocent line inside a loop can change the whole answer.
 - **Two inputs, two letters.** Comparing every item of a list of size n with every item of a list of size m is O(n · m), not O(n²). Do not merge different sizes into one n.
 - **Average is not worst.** A hash lookup is O(1) on average but O(n) in the worst case; quicksort is O(n log n) on average but O(n²) in the worst case.
 - **Amortised cost** is an average over a sequence of operations: appending to a dynamic array is occasionally O(n) (when it grows) but O(1) amortised.

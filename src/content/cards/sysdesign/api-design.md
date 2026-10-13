@@ -131,7 +131,9 @@ Other costs: HTTP caching is harder because every query is a `POST` to one URL (
 
 Internally, the orders service calls payments over gRPC (`Charge`), and the mobile app's home screen may use a GraphQL gateway that pulls orders, user and recommendations in one query.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 import base64, json

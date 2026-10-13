@@ -114,7 +114,9 @@ It needs no assumptions about distributions, which makes it the most useful form
 
 The second row is how cascading failures start: latency rises downstream, concurrency rises upstream, and pools, sockets and memory run out. The third row is the design rule: **choose the buffer size from the latency you can tolerate**. If items may wait at most 125 ms and you drain 800/s, the buffer holds at most 100.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 import asyncio

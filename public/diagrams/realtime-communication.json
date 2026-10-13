@@ -35,6 +35,6 @@
       "lastElement": 14
     }
   ],
-  "hash": "e0d889bf4f2f89847cb038f618740c5d89e93447",
+  "hash": "6a52951406c7c034586771e5529c31801413738d",
   "title": "Polling, long polling, Server-Sent Events and WebSockets on a timeline, and WebSocket servers joined by a pub/sub backplane"
 }

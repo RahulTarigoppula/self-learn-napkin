@@ -112,7 +112,9 @@ Edge cases the server must decide:
 
 If the retry in step 4 had arrived while step 2 was still running, it would get 409 and try again a moment later. If the user had tapped Pay for a *second* order, the app would create a new key, `k2`.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python is used here only as compact, readable notation.
 
 ```python
 import hashlib, json

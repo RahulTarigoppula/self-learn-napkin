@@ -118,7 +118,9 @@ Redis is configured with `maxmemory` and a `maxmemory-policy`: `noeviction` (the
 
 It does **not** keep a linked list. Each object carries a 24-bit clock of its last access. When memory is over the limit, Redis samples `maxmemory-samples` keys (default 5), adds them to a small pool of good candidates, and evicts the one idle the longest. With 5 samples it behaves close to true LRU on real workloads; at 10 it is nearly indistinguishable, at a little more CPU. Its LFU mode uses an 8-bit logarithmic counter per key that decays over time (`lfu-decay-time`).
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 from collections import OrderedDict

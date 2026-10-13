@@ -118,9 +118,9 @@ A saga is atomic only eventually and offers **no isolation**: other requests see
 
 Each saga step must both update its database **and** tell the next step (send a message). Doing these as two separate writes risks committing the booking and crashing before publishing, so the saga stalls. The **transactional outbox** fixes this: insert the outgoing message into an `outbox` table **in the same local transaction** as the state change. A relay process (polling the table, or change-data-capture from the database log) publishes outbox rows to the message broker and marks them sent. Delivery is at least once, so consumers dedupe with an idempotency key.
 
-## In code
+## Implement it in Python
 
-An orchestrator sketch, with each step's change and its event written by one local transaction:
+The idea is language-independent; Python is used here only as compact, readable notation. First the orchestrator, then (in SQL) one step's change and its event written by one local transaction:
 
 ```python
 STEPS = [("book_flight", "cancel_flight"),

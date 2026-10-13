@@ -114,7 +114,9 @@ Meanwhile R3 also missed a write to key 60, which no one reads. Nightly repair b
 
 Scale it up: 1,000,000 keys in 1,024 leaves (~1,000 keys each). One stale key costs about 2 × log₂ 1024 = 20 hash comparisons plus one ~1,000-key range, instead of comparing a million keys.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; here it is in Python.
 
 ```python
 import hashlib

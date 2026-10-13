@@ -22,7 +22,7 @@ keyIdeas:
   - "t-SNE and UMAP preserve **neighbourhoods, not distances**: points close in the plot were probably close in the data; the reverse readings (far apart = very different, big blob = spread out) are unreliable."
   - "**Perplexity** (t-SNE, typically 5–50) and **n_neighbors** (UMAP, default 15) set how local the view is. Try several values and seeds before trusting a shape."
   - "A blob in a t-SNE plot is **not evidence of a cluster**. Cluster in the original (or PCA) space and validate there."
-  - "**UMAP** is faster, scales to millions of points and has `transform()` for new data; scikit-learn's t-SNE has no transform."
+  - "**UMAP** is faster, scales to millions of points and can place new points on an existing map; standard t-SNE cannot."
   - "Start with **PCA**: linear, deterministic and distance-faithful; reduce to ~50 dimensions with it before running t-SNE."
 quiz:
   - q: "In a t-SNE plot, cluster X covers three times the area of cluster Y. What can you conclude?"
@@ -34,9 +34,9 @@ quiz:
     answer: 1
     why: "Perplexity = 2^H of a point's neighbour distribution, where H is its entropy in bits. Each point's Gaussian width σ is tuned by binary search until it hits the target, so perplexity 30 means about 30 effective neighbours."
   - q: "Every night you must place thousands of new points onto an existing 2-D map without moving the old ones. Which tool fits?"
-    options: ["scikit-learn TSNE, calling transform() on the new points", "Re-run t-SNE on the new points alone", "UMAP's transform(), or PCA", "Any of them; all embeddings are deterministic"]
+    options: ["Standard t-SNE, adding the new points to the old map", "Re-run t-SNE on the new points alone", "A fitted UMAP or PCA model, which can map new points", "Any of them; all embeddings are deterministic"]
     answer: 2
-    why: "Fitted UMAP and PCA models can map unseen points into the existing layout. scikit-learn's TSNE only offers fit_transform, and a separate run on new points would produce an unrelated coordinate system."
+    why: "Fitted UMAP and PCA models are functions that can map unseen points into the existing layout. Standard t-SNE only optimises positions for the points it was given, and a separate run on new points would produce an unrelated coordinate system."
   - q: "A colleague runs k-means on 2-D t-SNE coordinates and reports 8 customer segments. What is the main problem?"
     options: ["k-means needs at least 3 dimensions", "t-SNE can create and resize apparent clusters, so the segments may be artefacts", "t-SNE coordinates are always negative", "Nothing; t-SNE is designed for clustering"]
     answer: 1
@@ -72,6 +72,19 @@ sources:
 4. **Similarities in 2-D with a heavy tail:** qᵢⱼ ∝ 1 / (1 + ‖yᵢ − yⱼ‖²), a Student-t with one degree of freedom, normalised over all pairs.
 5. **Move the 2-D points** yᵢ by gradient descent to minimise the KL divergence KL(P‖Q) = Σ pᵢⱼ log(pᵢⱼ / qᵢⱼ).
 
+The whole algorithm in language-neutral pseudocode:
+
+```text
+for each point i:
+    binary-search σᵢ until perplexity(p(·|i)) = target      # p(j|i) ∝ exp(−dist(i,j)² / 2σᵢ²)
+pᵢⱼ = (p(j|i) + p(i|j)) / 2n                                 # symmetric, sums to 1
+y = small random (or PCA) starting positions in 2-D
+repeat for ~1,000 iterations:
+    qᵢⱼ = (1 + |yᵢ − yⱼ|²)⁻¹ / sum over all pairs of the same   # Student-t similarities
+    move each yᵢ along −gradient of KL(P‖Q)                    # pulls neighbours in, pushes others out
+return y
+```
+
 The KL divergence is lopsided. If two points are true neighbours (large pᵢⱼ) but far apart in 2-D (small qᵢⱼ), the cost is large, so neighbours are kept together. If they are not neighbours (tiny pᵢⱼ), it hardly matters where they go. That is why local structure is preserved and global structure is not.
 
 **The crowding problem** explains step 4. In 10 dimensions a point can have many neighbours all at roughly the same moderate distance; in 2 dimensions there is not enough room to place them all at that distance. The Student-t tail decays like 1/d² instead of exp(−d²/2), so moderately distant points can be pushed much farther out at almost no cost. This opens clean gaps between groups — and it is also why gap widths carry no reliable meaning.
@@ -88,13 +101,15 @@ Point i has four neighbours at distances 1, 2, 3 and 10. Compute the Gaussian we
 
 Widening σ spreads the probability more evenly, so the effective number of neighbours rises towards 3 — the far point at distance 10 never counts. With real data and perplexity 30, the search runs over thousands of neighbours, but the logic is identical.
 
-The story's numbers come from a real run: groups with 10-D spreads of 3.1, 16.1 and 3.1 and centre gaps of 40 and 200 became 2-D blobs with spreads 3.2, 3.1 and 3.1 and gaps of 35 and 36 (scikit-learn, perplexity 30, seed 0). PCA on the same data kept the gaps at 40 and 200.
+The story's numbers come from a real run: groups with 10-D spreads of 3.1, 16.1 and 3.1 and centre gaps of 40 and 200 became 2-D blobs with spreads 3.2, 3.1 and 3.1 and gaps of 35 and 36 (perplexity 30, one fixed random seed). PCA on the same data kept the gaps at 40 and 200.
 
 ## UMAP in one paragraph
 
 UMAP builds a weighted graph linking each point to its **n_neighbors** nearest neighbours (default 15). Edge weights are exp(−(d − ρᵢ) / σᵢ), where ρᵢ is the distance to i's closest neighbour and σᵢ is tuned per point — the same density-adapting idea as t-SNE's σᵢ. It then lays the graph out in 2-D by stochastic gradient descent on a cross-entropy loss: edges pull their ends together, randomly sampled non-edges push apart. **min_dist** (default 0.1) sets how tightly points may pack. It uses approximate nearest-neighbour search and negative sampling, so it is typically several times faster than t-SNE and scales to millions of points; it starts from a spectral layout of the graph, which is a large part of why it tends to keep more of the global arrangement. Its gaps and blob sizes are still not to be trusted.
 
-## In code
+## Implement it in Python
+
+The same steps work in any language or library that offers PCA, t-SNE and UMAP; here they come from scikit-learn and the `umap-learn` package.
 
 ```python
 from sklearn.datasets import load_digits
@@ -123,13 +138,15 @@ for name, Z in emb.items():
 
 Output: PCA 0.816, t-SNE 0.987, UMAP 0.976. Two linear directions cannot keep the digits' neighbourhoods; both non-linear methods nearly can. Plot `emb["t-SNE"]` coloured by `y` and the ten digits appear as mostly separate islands.
 
+Library notes: scikit-learn's `TSNE` has only `fit_transform` — no `transform` for new points — and has defaulted to `init="pca"` since version 1.2. `umap.UMAP` has both `fit_transform` and `transform`. `trustworthiness` lives in `sklearn.manifold`. For very large data, faster t-SNE implementations (openTSNE, FIt-SNE) exist.
+
 ## Edge cases and pitfalls
 
 - **Sizes, gaps and density are not data.** A tight blob and a loose blob may have had the same spread, and two blobs far apart may be close in the original space.
 - **Perplexity changes the picture.** Too low (2–5) and t-SNE breaks even pure random noise into little clumps; too high and real groups merge. Perplexity must be smaller than the number of points. Show several settings before drawing conclusions.
 - **Runs differ.** Different seeds give rotated, reflected or rearranged maps. The axes have no units and no meaning.
 - **Not clustering evidence.** Finding clusters in the 2-D picture and then "confirming" them on the same picture is circular. Cluster on the original or PCA features and validate with stability checks or held-out data.
-- **Careful as model features.** scikit-learn's TSNE has no `transform`, so test data cannot be embedded consistently. UMAP can, but if you fit it on all data before splitting you leak test information; fit it inside the training pipeline only, and expect a plain PCA or the raw features to be a strong baseline.
+- **Careful as model features.** Standard t-SNE has no way to embed new points, so test data cannot be embedded consistently. UMAP can, but if you fit it on all data before splitting you leak test information; fit it inside the training pipeline only, and expect a plain PCA or the raw features to be a strong baseline.
 - **Preprocess.** Scale features, choose a sensible distance (cosine for text embeddings), and reduce to ~50 dimensions with PCA first for speed and noise removal.
 
 ## When to use which
@@ -138,7 +155,7 @@ Output: PCA 0.816, t-SNE 0.987, UMAP 0.976. Two linear directions cannot keep th
 |---|---|---|---|
 | Keeps | global variance and large distances | local neighbourhoods | local neighbourhoods, some global layout |
 | Speed | very fast | slowest; Barnes–Hut O(n log n) | fast, millions of points |
-| New points | `transform` | no (scikit-learn) | `transform` |
+| New points | yes (a fixed projection) | no (standard t-SNE) | yes (a learned mapping) |
 | Deterministic | yes | no | no (unless seeded) |
 | Good for | first look, preprocessing, features | publication-quality cluster pictures | large datasets, interactive exploration |
 

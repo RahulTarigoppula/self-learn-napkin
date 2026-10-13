@@ -48,6 +48,7 @@ export default (d) => {
     d.line(24, 392, 250, 392, { pen: 'muted', single: true });
     const bars = [[30, 70], [46, 82], [62, 56], [78, 30], [94, 14], [150, 6], [198, 5], [230, 6]];
     for (const [x, h] of bars) d.rect(x, 392 - h, 12, h, { pen: 'violet', fill: 'violet', rough: 0.5, single: true });
+    d.text(250, 408, 'slower →', { pen: 'muted', size: 14, anchor: 'end' });
   });
   d.group(() => {
     d.line(70, 302, 70, 392, { pen: 'blue', dashed: true });

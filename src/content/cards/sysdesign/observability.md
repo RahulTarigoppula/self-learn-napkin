@@ -133,7 +133,9 @@ In request terms, 10 million requests a month at 99.9 % allows 10,000 failures. 
 3. **Logs:** filtering by that trace id shows `lock wait timeout` errors that started with a deploy that added a long-running batch job holding row locks.
 4. **Fix and budget:** the batch job is rolled back. The incident consumed about 30 of the month's 43 minutes, so the team freezes non-urgent deploys until the window recovers.
 
-## In code
+## Implement it in Python
+
+The idea is language-independent; Python (with the Prometheus and OpenTelemetry client libraries, which exist for most languages) is used here only as compact, readable notation. The query below it is PromQL, Prometheus's query language.
 
 ```python
 from prometheus_client import Counter, Histogram
