@@ -31,15 +31,15 @@ quiz:
     answer: 2
     why: "Round trip = 2 × 15,700 km = 31,400 km. At ≈ 200,000 km/s that is ≈ 157 ms, before any routing detours or server time. Real measurements are higher."
   - q: "Active-passive with async replication. The primary region fails with a replication lag of 3 seconds. What is lost?"
-    options: ["Nothing", "Up to about the last 3 seconds of acknowledged writes", "All data in the primary region", "Only reads"]
+    options: ["Nothing, because acknowledged writes are always on both regions", "Up to about the last 3 seconds of acknowledged writes", "All data in the primary region until it comes back", "Only reads in flight; writes are never lost"]
     answer: 1
     why: "Async replicas trail the primary by the lag. Writes acknowledged in that window never reached the replica that gets promoted. That window is the recovery point objective (RPO)."
   - q: "Two regions concurrently increment a 'likes' counter, by 3 and by 2. Which approach ends with 5 everywhere?"
-    options: ["Last-writer-wins on the counter value", "A G-Counter CRDT that keeps a per-region count and sums them", "Taking the larger of the two values", "Rejecting both writes"]
+    options: ["Last-writer-wins on the counter, using the newest timestamp", "A G-Counter CRDT that keeps a per-region count and sums them", "Taking the larger of the two values when they merge", "Rejecting both writes and asking the users to retry"]
     answer: 1
     why: "LWW keeps one region's total and drops the other's increments. A G-Counter stores each region's own count, merges by per-region maximum and reports the sum, so 3 + 2 = 5 in both regions."
   - q: "What is the main difference between GeoDNS and anycast routing?"
-    options: ["GeoDNS is faster", "GeoDNS returns different IPs based on where the lookup comes from; anycast uses one IP announced from many places and lets BGP pick the nearest", "Anycast only works for UDP", "They are the same"]
+    options: ["GeoDNS is faster, because it skips the BGP route lookup entirely", "GeoDNS picks an IP per location; anycast shares one IP and lets BGP route", "Anycast only works for UDP, so web traffic must use GeoDNS", "They are the same; anycast is just GeoDNS done by the ISP"]
     answer: 1
     why: "GeoDNS decides at name resolution time (and is subject to DNS caching). Anycast decides at packet routing time, so withdrawing a failed region's route moves traffic quickly."
 bigO:

@@ -30,7 +30,7 @@ quiz:
     answer: 1
     why: "Dot product 1·1 + 0·1 = 1; lengths 1 and √2. 1 / √2 ≈ 0.71, the cosine of the 45° angle between them."
   - q: "Why are one-hot vectors a poor representation for similarity?"
-    options: ["Every pair of different words has dot product 0, so all words are equally dissimilar", "They are too short", "They contain negative numbers", "They cannot be stored"]
+    options: ["Any two different words have dot product 0, so all are equally unlike", "They are too short to hold meaning, so words blur together", "They contain negative numbers, which break the cosine similarity measure", "They cannot be stored, since the vocabulary has no fixed size"]
     answer: 0
     why: "Each one-hot vector has its single 1 in a different place, so any two are orthogonal. The encoding carries identity but no notion that cat is closer to dog than to car."
   - q: "An embedding table has a vocabulary of 50,000 words and 300 dimensions. How many learned numbers is that?"
@@ -38,7 +38,7 @@ quiz:
     answer: 2
     why: "One row of 300 numbers per word: 50,000 × 300 = 15 million parameters, about 60 MB in 32-bit floats."
   - q: "You compute king − man + woman with real word2vec vectors and search for the nearest word. What is the honest caveat?"
-    options: ["The answer is always exactly queen", "It only works for 2-dimensional embeddings", "Cosine cannot be used for analogies", "Standard evaluations exclude the three input words; without that, the nearest word is often king itself"]
+    options: ["The answer is always exactly queen, with cosine similarity 1", "It only works when the embeddings have 2 dimensions", "Cosine cannot be used for analogies, only Euclidean distance", "Without excluding the input words, the nearest is often king itself"]
     answer: 3
     why: "The result vector is usually still closest to king. The famous answer appears when the input words are excluded, and analogies hold only approximately and for some relation types."
 bigO:

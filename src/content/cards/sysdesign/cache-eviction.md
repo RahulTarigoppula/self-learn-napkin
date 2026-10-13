@@ -37,11 +37,11 @@ quiz:
     answer: 0
     why: "FIFO evicts by insertion order and ignores hits. A was inserted first, so it goes, even though it was just read."
   - q: "A nightly report reads 10 million rows once each through an LRU cache of 1 million keys. What happens?"
-    options: ["Nothing; LRU ignores one-time reads", "The hot working set is flushed and the hit rate collapses until it rewarms", "The cache grows to 10 million keys", "Only the report's keys miss"]
+    options: ["Nothing, because LRU does not promote keys that are read only once", "Hot keys are flushed out and the hit rate drops until the cache rewarms", "The cache grows past its limit to hold all 10 million scanned keys", "Only the report's own keys miss, while the hot keys stay cached"]
     answer: 1
     why: "Each scanned row becomes most recent and pushes out a hot key. After the scan the cache is full of rows nobody will read again. Scan-resistant policies (SLRU, LRU-K, TinyLFU) admit new keys on probation."
   - q: "Why does Redis approximate LRU by sampling instead of keeping an exact LRU list?"
-    options: ["Exact LRU is not correct for caches", "To avoid two extra pointers per key and list updates on every read", "Because Redis keys have no access time", "Sampling gives a higher hit rate than exact LRU"]
+    options: ["Because exact LRU cannot work once keys have different TTLs set", "Because a list costs two pointers per key and an update on every read", "Because Redis does not record when each key was last accessed", "Because sampling gives a higher hit rate than exact LRU would"]
     answer: 1
     why: "A linked list costs memory per key and a pointer shuffle on every access. Redis stores a small access clock per object and, on eviction, compares a handful of sampled keys. With 10 samples it is very close to true LRU."
 bigO:

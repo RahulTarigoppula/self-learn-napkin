@@ -28,11 +28,11 @@ keyIdeas:
   - "**Multiple comparisons** inflate false positives; use Bonferroni (α / m), Holm, or false-discovery-rate control."
 quiz:
   - q: "A test gives p = 0.03. Which statement is correct?"
-    options: ["There is a 3 % chance H₀ is true", "If H₀ were true, data at least this extreme would occur about 3 % of the time", "There is a 97 % chance the effect is real", "The effect is 3 % in size"]
+    options: ["There is a 3 % chance that H₀ is true, given the data observed", "If H₀ were true, data this extreme would occur about 3 % of the time", "There is a 97 % chance the effect is real, so it is likely genuine", "The effect is 3 % in size, measured against the control group"]
     answer: 1
     why: "The p-value is computed assuming H₀ holds; it measures how surprising the data are under that assumption. Turning it into the probability that H₀ is true needs prior information (Bayes' theorem)."
   - q: "100 flips give 60 heads; the exact two-sided p-value is 0.057. At α = 0.05, what do you conclude?"
-    options: ["The coin is proven fair", "The coin is biased with 94.3 % probability", "Reject H₀ because 60 is far from 50", "Fail to reject H₀: the data do not give strong evidence of bias"]
+    options: ["The coin is proven fair, because p is above 0.05", "The coin is biased with 94.3 % probability, since 1 − p = 0.943", "Reject H₀, because 60 heads is far from the expected 50", "Fail to reject H₀: the data do not give strong evidence of bias"]
     answer: 3
     why: "p > α, so we do not reject H₀. That is absence of evidence, not evidence of fairness: with only 100 flips a modest bias (say 0.55) would often go undetected."
   - q: "You test 10 independent hypotheses, all truly null, each at α = 0.05. What is the chance of at least one false positive?"
@@ -40,7 +40,7 @@ quiz:
     answer: 2
     why: "1 − 0.95¹⁰ = 0.40. Bonferroni would test each at 0.05 / 10 = 0.005 to bring the family-wise error rate back to at most 5 %."
   - q: "A test on 10 million users finds a statistically significant lift of 0.01 percentage points (p < 0.001). What follows?"
-    options: ["The effect is probably real but too small to matter; judge it by its confidence interval and the cost", "Ship it: p < 0.001 proves a big effect", "The test must be broken", "Re-run it with fewer users"]
+    options: ["The effect is likely real but tiny; judge it by its interval and cost", "Ship it, because p < 0.001 proves the effect is large", "The test must be broken, since tiny lifts cannot be significant", "Re-run it with fewer users to get a cleaner, more honest p-value"]
     answer: 0
     why: "With huge samples the standard error is tiny, so trivial effects become significant. Significance answers 'is it zero?'; the interval answers 'how big?', which is what the decision needs."
 related: [ds/ab-testing, ds/central-limit-theorem, ds/bayes-theorem]

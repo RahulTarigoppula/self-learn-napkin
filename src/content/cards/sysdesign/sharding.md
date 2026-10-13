@@ -26,11 +26,11 @@ keyIdeas:
   - "Hashing balances **keys**, not **traffic**: one celebrity key still lands on one shard."
 quiz:
   - q: "An orders table is range-sharded on created_at. What goes wrong?"
-    options: ["Range queries by date become slow", "All new inserts go to the newest shard, which runs hot", "Rows are spread too evenly", "Lookups by order id become impossible"]
+    options: ["Range queries by date get slow, since dates span many shards", "All new inserts go to the newest shard, which runs hot", "Rows are spread too evenly, so no shard can be cached well", "Lookups by order id become impossible without the date"]
     answer: 1
     why: "Every new order has the latest timestamp, so it lands in the last range. One shard takes the full write load while the others are idle."
   - q: "You hash-shard users on user_id across 8 shards. Which query is now the most expensive?"
-    options: ["Get user 42", "Update user 42's email", "Find all users who signed up last week", "Delete user 42"]
+    options: ["Get the profile of user 42 by its user_id", "Update the email address of user 42", "Find all users who signed up last week", "Delete user 42 from the users table"]
     answer: 2
     why: "Lookups by user_id hash to exactly one shard. 'Signed up last week' does not include the shard key, so it must be sent to all 8 shards and the results merged."
   - q: "Going from 3 to 4 shards with hash(key) % N, roughly what fraction of rows move?"

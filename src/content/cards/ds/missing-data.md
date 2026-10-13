@@ -32,15 +32,15 @@ quiz:
     answer: 2
     why: "Whether the score is missing depends on the unobserved score itself (how bad the patient feels). That is missing not at random, and analysing only the people who replied would make the treatment look better than it is."
   - q: "A sensor loses about 1 % of readings to random radio interference. What happens if you drop those rows?"
-    options: ["Estimates become biased", "Estimates stay unbiased, with slightly less data", "It turns into MNAR", "The variance of the data doubles"]
+    options: ["Estimates become biased, since some rows are now gone", "Estimates stay unbiased, with slightly less data", "The missingness turns into MNAR once rows are dropped", "The variance of the remaining data doubles"]
     answer: 1
     why: "Random loss unrelated to any value is MCAR. The remaining rows are a random sample of all rows, so averages and models stay unbiased. You only lose 1 % of the data."
   - q: "What does replacing missing values with the column mean do to that column?"
-    options: ["Increases its variance", "Leaves its variance unchanged", "Shrinks its variance and weakens its correlations", "Removes outliers"]
+    options: ["Increases its variance by adding extra rows", "Leaves its variance unchanged, since the mean is unchanged", "Shrinks its variance and weakens its correlations", "Removes outliers by pulling extreme values in"]
     answer: 2
     why: "Every imputed row sits exactly at the mean, which adds zero spread and ignores the other columns. The variance shrinks and the column's correlations with other features are pulled toward 0."
   - q: "You fill each column's gaps with its median computed over the full dataset, then split into train and test. What is wrong?"
-    options: ["Nothing; medians resist outliers", "Test rows influenced the fill values, which is leakage", "The median cannot be used for imputation", "You must use the mean instead"]
+    options: ["Nothing; medians resist outliers, so the fill is safe", "Test rows influenced the fill values, which is leakage", "The median cannot be used for imputing numeric columns", "You must use the mean, because the median is biased"]
     answer: 1
     why: "The fill value is a learned parameter. Computing it with test rows lets the test set shape training. Fit on the training rows, or better, put the imputer in a pipeline."
 related: [ds/feature-scaling, ds/categorical-encoding, ds/train-val-test, ds/k-nearest-neighbours]

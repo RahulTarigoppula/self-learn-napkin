@@ -28,19 +28,19 @@ keyIdeas:
   - "**Multi-leader** (a leader per region) and **leaderless** (quorum reads and writes) trade simpler failover for write conflicts you must resolve."
 quiz:
   - q: "A user updates their profile and immediately reloads, and the page shows the old data. Most likely cause?"
-    options: ["The write failed", "The read went to an asynchronous follower that has not applied the write yet", "The leader lost the write", "The cache is too large"]
+    options: ["The write failed, and the page shows the last value that saved", "The read hit an async follower that has not applied the write yet", "The leader lost the write, then recovered an older copy of the row", "The cache is too large, so old entries are never evicted in time"]
     answer: 1
     why: "The write succeeded on the leader, but reads are served by followers that lag behind. Route a user's reads to the leader for a short time after they write, or to a follower that has replayed past their write's log position."
   - q: "Why is a fully synchronous setup, where the leader waits for ALL followers, rarely used?"
-    options: ["It loses data", "Any single slow or dead follower blocks every write", "It does not support reads", "Followers cannot apply logs synchronously"]
+    options: ["It loses data whenever a follower restarts mid-write", "Any single slow or dead follower blocks every write", "Followers can no longer serve reads while writes are in flight", "Followers cannot apply log entries in synchronous mode"]
     answer: 1
     why: "If the leader must hear from every follower, one stuck machine halts all writes. Semi-synchronous setups wait for one follower (or a quorum) and replicate to the rest asynchronously."
   - q: "During failover the old leader was only partitioned, not dead. What prevents it from accepting writes when it reconnects?"
-    options: ["A longer heartbeat timeout", "A fencing epoch (term) number that the new leader increments; requests with an older epoch are rejected", "Restarting the client", "Asynchronous replication"]
+    options: ["A longer heartbeat timeout, so the old leader notices it was replaced", "A fencing epoch the new leader bumps; requests with an older one are refused", "Restarting each client, so they forget the old leader's address", "Asynchronous replication, which drops writes from a stale leader"]
     answer: 1
     why: "Each election increments the epoch. Followers and storage remember the highest epoch seen and refuse requests stamped with an older one, so a stale leader is fenced off."
   - q: "With asynchronous replication, the leader crashes 200 ms after acknowledging a write that no follower had received. What happens to the write after failover?"
-    options: ["It is recovered from the client", "It is lost", "The new leader fetches it from the old leader's log", "It is applied twice"]
+    options: ["The client resends it, so the new leader applies it after failover", "It is lost, because no follower ever received it before the crash", "The new leader fetches it from the old leader's log on promotion", "It is applied twice, once from the log and once from the client"]
     answer: 1
     why: "Asynchronous replication acknowledges before the change reaches any follower. If the leader dies first, the promoted follower never saw it. That is the price of not waiting."
 bigO:

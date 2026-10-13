@@ -38,7 +38,7 @@ quiz:
     answer: 3
     why: "It is right on all 99.5 % of legitimate transactions, so accuracy is 99.5 %, yet it catches no fraud: recall = 0 / (0 + all fraud) = 0. This is the accuracy paradox."
   - q: "You lower the threshold from 0.5 to 0.3. What usually happens?"
-    options: ["Recall rises, precision usually falls", "Both rise", "Precision rises, recall falls", "ROC AUC rises"]
+    options: ["Recall rises, while precision usually falls", "Both rise, since more true positives get flagged", "Precision rises, while recall falls", "ROC AUC rises, because more positives are caught"]
     answer: 0
     why: "More items get flagged, so you catch more positives (recall can only stay level or rise) but also flag more negatives, which usually lowers precision. AUC is computed over all thresholds, so moving the threshold cannot change it."
   - q: "A model has ROC AUC = 0.80. What does that mean?"

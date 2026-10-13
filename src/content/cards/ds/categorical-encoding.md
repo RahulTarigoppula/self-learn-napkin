@@ -28,7 +28,7 @@ keyIdeas:
   - "Plan for **unseen categories** at prediction time: an 'other' bucket, an all-zeros one-hot row, or the global mean."
 quiz:
   - q: "A logistic regression uses a 'colour' feature with values red, green and blue. Which encoding fits best?"
-    options: ["Ordinal: red 0, green 1, blue 2", "One-hot", "Hashing into 2 buckets", "Drop the feature"]
+    options: ["Ordinal: red 0, green 1, blue 2", "One-hot: one binary column per colour", "Hashing the colours into 2 buckets", "Drop the feature, since colour has no order"]
     answer: 1
     why: "Colours have no order. Ordinal codes would force the model to treat green as halfway between red and blue. One-hot gives each colour its own weight."
   - q: "A city seen in 2 training rows, both with y = 1. The global mean is 0.5 and the smoothing strength m = 2. What is its smoothed target encoding?"
@@ -36,11 +36,11 @@ quiz:
     answer: 1
     why: "(n·mean + m·global) / (n + m) = (2·1 + 2·0.5) / (2 + 2) = 3 / 4 = 0.75. The two observations are pulled halfway to the global mean."
   - q: "You target-encode with means from the whole training set. Training AUC is 0.99 and validation AUC is 0.70. What is the most likely cause?"
-    options: ["The model is too simple", "The encoding leaked each row's own label into its feature", "One-hot would have been worse", "The validation set is too large"]
+    options: ["The model is too simple for the encoded features", "Each row's own label leaked into its encoded feature", "One-hot would have done worse, so this gap is expected", "The validation set is too large to score reliably"]
     answer: 1
     why: "Each training row helped compute its own category mean, so rare categories almost memorise y. Out-of-fold target encoding removes this leakage."
   - q: "You have 5 million distinct user IDs. Which is NOT a practical encoding?"
-    options: ["Hashing trick", "Learned embeddings", "One-hot with 5 million columns in a dense matrix", "Target or count encoding computed out-of-fold"]
+    options: ["The hashing trick into a fixed number of buckets", "Learned embeddings of a few dozen dimensions", "One-hot with 5 million columns in a dense matrix", "Target or count encoding computed out-of-fold"]
     answer: 2
     why: "5 million dense columns per row is far too much memory, and most categories would have too few rows to learn a weight. Hashing, embeddings or out-of-fold statistics scale."
 bigO:

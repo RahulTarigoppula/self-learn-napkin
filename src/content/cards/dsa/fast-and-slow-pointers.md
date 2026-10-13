@@ -26,7 +26,7 @@ keyIdeas:
   - "Works on any **'next' function**, linked list or not: happy numbers, finding a duplicate in an array of 1..n, pseudo-random sequences."
 quiz:
   - q: "Why can't fast jump over slow inside the loop?"
-    options: ["Because fast checks every node it passes", "Because the gap between them shrinks by exactly 1 per step, so it hits 0 before it could go negative", "Because the loop length is always even", "It can, which is why we check twice"]
+    options: ["Fast checks every node it passes, so it would notice slow", "The gap closes by exactly 1 per step, so it hits 0 and cannot skip it", "The loop length is always even, so both land on the same node in time", "It can, which is why the meeting test runs twice per step"]
     answer: 1
     why: "Per step fast moves 2 and slow moves 1, so relative to slow, fast moves 1. Measured as 'steps fast is behind slow', the gap goes g, g−1, …, 0. It never skips 0."
   - q: "A list has 3 nodes before the loop and a loop of 5 nodes. After slow and fast meet, one pointer goes back to head and both move 1 step at a time. After how many steps do they meet again?"

@@ -3,7 +3,7 @@ import Icon from '../../components/Icon.astro';
 import NapkinTile from '../../components/NapkinTile.astro';
 import AppShell from '../../layouts/AppShell.astro';
 import { cardHref, href } from '../../lib/base';
-import { library, TRACK_IDS, type TrackId } from '../../lib/content';
+import { library, numberOf, pad3, TRACK_IDS, type TrackId } from '../../lib/content';
 
 export function getStaticPaths() {
   return TRACK_IDS.map((track) => ({ params: { track }, props: { track } }));
@@ -28,7 +28,8 @@ const first = t.cards[0];
         <li><b class="mono">{playgrounds}</b> playgrounds</li>
         <li><b class="mono" data-course-read>0</b> read</li>
       </ul>
-      <div class="course__meter" aria-hidden="true"><span data-course-bar></span></div>
+      <div class="course__meter" aria-hidden="true" data-course-meter hidden><span data-course-bar></span></div>
+      {first && <p class="course__start hand" data-course-start>Start with No. {pad3(numberOf(first.id))}: {first.data.title}</p>}
       <div class="course__cta">
         {first && <a class="btn btn--primary btn--lg" href={cardHref(first.id)} data-course-continue><Icon name="play" size={17} /> <span>Start the course</span></a>}
         <a class="btn btn--lg" href={href(`review/?track=${id}`)}><Icon name="cards" /> Review this track</a>
@@ -39,7 +40,6 @@ const first = t.cards[0];
       {
         t.cards.map((c, i) => (
           <li class="course__step">
-            <span class="course__n mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
             <NapkinTile card={c} index={i % 6} />
           </li>
         ))
@@ -61,6 +61,11 @@ const first = t.cards[0];
     if (read) read.textContent = String(done);
     const bar = document.querySelector<HTMLElement>('[data-course-bar]');
     if (bar) bar.style.width = `${Math.round((done / Math.max(1, ids.length)) * 100)}%`;
+    // An empty bar reads as "you are behind"; until something is read, point at the first napkin instead.
+    const meter = document.querySelector<HTMLElement>('[data-course-meter]');
+    if (meter) meter.hidden = done === 0;
+    const startNote = document.querySelector<HTMLElement>('[data-course-start]');
+    if (startNote) startNote.hidden = done > 0;
     const next = ids.find((i) => !s.read.has(i));
     const cta = document.querySelector<HTMLAnchorElement>('[data-course-continue]');
     if (cta && next && done > 0) {
@@ -130,6 +135,11 @@ const first = t.cards[0];
     background: var(--surface-3);
     overflow: hidden;
   }
+  .course__start {
+    margin-top: var(--space-4);
+    font-size: 1.2rem;
+    color: var(--track-ink);
+  }
   .course__meter span {
     display: block;
     height: 100%;
@@ -148,24 +158,10 @@ const first = t.cards[0];
     padding: 0;
     margin-top: var(--space-8);
     display: grid;
-    gap: var(--space-6) var(--space-4);
+    gap: var(--space-5) var(--space-4);
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
   .course__step {
-    position: relative;
     display: grid;
-  }
-  .course__n {
-    position: absolute;
-    top: -12px;
-    left: 14px;
-    z-index: 2;
-    padding: 2px 9px;
-    border-radius: var(--radius-full);
-    background: var(--ink);
-    color: var(--bg);
-    font-size: var(--text-xs);
-    font-weight: 800;
-    box-shadow: var(--shadow-1);
   }
 </style>

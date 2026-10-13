@@ -26,11 +26,11 @@ keyIdeas:
   - "Cost: **O(log(hi − lo)) checks × cost of one check**."
 quiz:
   - q: "In the ship-capacity problem, why is lo = max(weights) rather than 1?"
-    options: ["To make the loop shorter only", "A capacity below the heaviest package can never ship it, so no smaller answer exists", "Because binary search needs lo > 0", "It is the average weight"]
+    options: ["It only shortens the loop; the answer could still be smaller", "Below the heaviest package, that package can never ship at all", "Binary search needs lo > 0, and max(weights) is a safe positive", "max(weights) is the average weight, so it splits the range evenly"]
     answer: 1
     why: "Packages can't be split. Any capacity smaller than the heaviest package fails for every D, so the answer is at least max(weights). Starting there also keeps the greedy check from looping on an unshippable package."
   - q: "With the first-true template, ok(mid) is True. What should you do?"
-    options: ["lo = mid + 1", "hi = mid", "hi = mid − 1", "Return mid immediately"]
+    options: ["lo = mid + 1, to look for a larger working value", "hi = mid, keeping mid as a possible answer", "hi = mid − 1, since mid has already been tested", "Return mid at once, since it already works"]
     answer: 1
     why: "mid works, so the first working value is mid or something smaller. hi = mid keeps mid as a candidate; hi = mid − 1 could throw away the answer, and returning early misses smaller working values."
   - q: "You want the LARGEST x with ok(x) True (pattern ✓ ✓ ✓ ✗ ✗) and update lo = mid on success. Which midpoint avoids an infinite loop?"

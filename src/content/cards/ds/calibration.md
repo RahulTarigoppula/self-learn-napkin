@@ -38,7 +38,7 @@ quiz:
     answer: 2
     why: "Spam emails: (0.4 − 1)² = 0.36 each; good emails: (0.4 − 0)² = 0.16 each. (2 × 0.36 + 3 × 0.16) / 5 = 1.20 / 5 = 0.24. That is worse than the story model's 0.118, even though this lazy model is perfectly calibrated on average."
   - q: "You have only 300 held-out examples to calibrate a gradient-boosted model. Which method is the safer choice?"
-    options: ["Isotonic regression", "Retrain with class weights", "No calibration is possible", "Platt scaling"]
+    options: ["Isotonic regression, which fits a free-form step function", "Retrain with class weights to fix the probabilities", "None; calibration needs at least 10,000 examples", "Platt scaling, which fits just two parameters"]
     answer: 3
     why: "Platt scaling estimates just two numbers, so 300 points are plenty. Isotonic regression fits a free-form step function and tends to overfit below roughly a thousand calibration points."
 related: [ds/logistic-regression, ds/precision-recall-roc, ds/class-imbalance, ds/loss-functions]

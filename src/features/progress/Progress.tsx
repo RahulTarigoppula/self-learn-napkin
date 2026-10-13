@@ -1,3 +1,4 @@
+import '../../styles/progress.css';
 import { useEffect, useState } from 'preact/hooks';
 import { type DayStat, getDb, type Session } from '../../db/dexie';
 import { streakNow, tz } from '../../db/review';
@@ -30,9 +31,11 @@ interface Data {
   lastBackupAt: number | null;
 }
 
+/** Weeks of heatmap on a wide card. Under 600px the card shows only the last WEEKS_NARROW (see progress.css). */
 const WEEKS = 18;
+const WEEKS_NARROW = 8;
 
-export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
+export default function Progress({ tracks, startHref }: { tracks: TrackTotal[]; startHref: string }) {
   const [d, setD] = useState<Data | null>(null);
   const [hover, setHover] = useState<string | null>(null);
 
@@ -117,6 +120,47 @@ export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
   const weekMinutes = Math.max(1, Math.round((weekCards * 8) / 60));
   const backupDays = d.lastBackupAt ? Math.floor((Date.now() - d.lastBackupAt) / 86_400_000) : null;
   const hovered = hover ? d.days.get(hover) : undefined;
+  const totalRead = [...d.read.values()].reduce((a, b) => a + b, 0);
+
+  if (d.days.size === 0 && d.reviews === 0 && d.learned === 0 && totalRead === 0 && !d.last)
+    return (
+      <div class="pg">
+        <section class="pg-empty paper" aria-labelledby="pg-empty-h">
+          <svg class="pg-empty__doodle" viewBox="0 0 132 96" width="132" height="96" aria-hidden="true">
+            <g transform="rotate(-5 58 46)">
+              <rect class="d-napkin" x="14" y="12" width="88" height="68" rx="6" />
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <rect
+                  key={i}
+                  class={i === 5 ? 'd-lit' : 'd-cell'}
+                  x={24 + i * 12}
+                  y="30"
+                  width="8"
+                  height="8"
+                  rx="2"
+                />
+              ))}
+              {[0, 1, 2, 3, 4].map((i) => (
+                <rect key={i} class="d-cell" x={24 + i * 12} y="42" width="8" height="8" rx="2" />
+              ))}
+              <path class="d-line" d="M24 64c8-4 14 3 22-1s14-3 22 0" />
+            </g>
+            <g transform="rotate(38 104 58)">
+              <rect class="d-pencil" x="96" y="30" width="12" height="44" rx="2" />
+              <path class="d-tip" d="M96 74h12l-6 12z" />
+            </g>
+          </svg>
+          <h2 id="pg-empty-h">A clean napkin</h2>
+          <p>
+            This page fills in as you go: a square for each day you study, a ring for each track and a look at
+            the cards coming up. It all starts with one napkin, about five minutes of reading.
+          </p>
+          <a class="btn btn--primary btn--lg" href={startHref}>
+            <Icon name="play" size={17} /> Read your first napkin
+          </a>
+        </section>
+      </div>
+    );
 
   return (
     <div class="pg">
@@ -137,14 +181,18 @@ export default function Progress({ tracks }: { tracks: TrackTotal[] }) {
           <small>{d.mature} long-term</small>
         </div>
         <div class="pg__stat">
-          <b class="mono">{d.retention === null ? 'n/a' : `${Math.round(d.retention * 100)}%`}</b>
+          <b class="mono">{d.retention === null ? '–' : `${Math.round(d.retention * 100)}%`}</b>
           <span>recall, 30 days</span>
+          {d.retention === null && <small>no reviews this month</small>}
         </div>
       </div>
 
-      <section class="pg__card card" aria-labelledby="pg-heat">
+      <section class="pg__card pg__card--heat card" aria-labelledby="pg-heat">
         <div class="pg__head">
-          <h2 id="pg-heat">Your last {WEEKS} weeks</h2>
+          <h2 id="pg-heat">
+            Your last <span class="pg__wide">{WEEKS}</span>
+            <span class="pg__narrow">{WEEKS_NARROW}</span> weeks
+          </h2>
           <p class="muted pg__hover" aria-live="polite">
             {hover
               ? `${ringLabel(hover, hovered?.reviews ?? 0)}${hovered?.napkinsRead ? `, ${hovered.napkinsRead} napkin${hovered.napkinsRead === 1 ? '' : 's'} read` : ''}`

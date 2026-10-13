@@ -33,11 +33,11 @@ quiz:
     answer: 1
     why: "The value changed between two reads of the same row by a committed write: a non-repeatable read. Read committed allows it because each statement sees the latest committed data; repeatable read forbids it."
   - q: "Two on-call doctors each run 'if at least 2 doctors are on call, take myself off call' at the same moment under snapshot isolation. Both commit. What happened?"
-    options: ["A dirty read", "A lost update", "Write skew", "Nothing, the result is correct"]
+    options: ["A dirty read anomaly", "A lost update anomaly", "A write skew anomaly", "No anomaly; the result is correct"]
     answer: 2
     why: "Each read a snapshot showing 2 on call and updated a different row, so no write-write conflict was detected. Together they broke the invariant 'at least 1 on call'. That is write skew; only serializable isolation (or an explicit lock) prevents it."
   - q: "Your app runs at SERIALIZABLE in PostgreSQL. What must the code be ready for?"
-    options: ["Reads that return uncommitted data", "Serialization failures that require retrying the whole transaction", "Writes that silently disappear", "Commits that are not durable"]
+    options: ["Reads that can return rows from uncommitted transactions", "Serialization errors that need the whole transaction retried", "Writes that are silently dropped when two sessions update one row", "Commits that are not durable if the server crashes"]
     answer: 1
     why: "Serializable snapshot isolation detects dangerous patterns and aborts one transaction with a serialization failure (SQLSTATE 40001). Correctness is guaranteed, but the application must catch the error and rerun the transaction."
   - q: "Which statement about MVCC is true?"

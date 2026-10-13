@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 30
     env:
       VERSION_CODE: ${{ github.run_number }}
-      VERSION_NAME: ${{ github.ref_type == 'tag' && github.ref_name || format('v1.1.{0}', github.run_number) }}
+      VERSION_NAME: ${{ github.ref_type == 'tag' && github.ref_name || format('v1.2.{0}', github.run_number) }}
     steps:
       - uses: actions/checkout@v4
 

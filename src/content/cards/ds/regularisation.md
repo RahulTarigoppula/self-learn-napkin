@@ -38,7 +38,7 @@ quiz:
     answer: 0
     why: "Ridge divides each weight by 1 + λ = 2. Lasso subtracts λ/2 = 0.5 from each magnitude and clips at zero: 3.0 → 2.5 and 0.4 → 0."
   - q: "Why standardise features before ridge or lasso?"
-    options: ["It makes training faster but changes nothing else", "The penalty treats all weights alike, so a feature's units would decide how hard it is penalised", "Lasso cannot run on unscaled data", "To remove outliers"]
+    options: ["It makes training faster, but changes nothing about the solution", "The penalty treats all weights alike, so units would decide the penalty", "Lasso cannot run on unscaled data, since its solver needs z-scores", "To remove outliers, which would otherwise dominate the penalty"]
     answer: 1
     why: "A feature measured in metres needs a weight 1000× larger than the same feature in millimetres, so it would be penalised far more. Scaling makes the penalty fair."
 bigO:

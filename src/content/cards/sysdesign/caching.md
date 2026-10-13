@@ -32,11 +32,11 @@ quiz:
     answer: 1
     why: "Hits cost 1 ms; misses cost 1 ms for the cache plus 20 ms for the database. 0.9 × 1 + 0.1 × 21 = 3 ms."
   - q: "On a write, why delete the cache key rather than write the new value into it?"
-    options: ["Deleting is faster than writing", "Two concurrent writers can leave the older value in the cache if both overwrite it", "Caches cannot update keys", "It stops the TTL from expiring"]
+    options: ["Deleting is faster than writing, so the request returns to the user sooner", "Two writers' overwrites can land out of order and leave the old value", "Most caches cannot update a key once it already holds a value", "It stops the TTL from expiring the key while it is being read"]
     answer: 1
     why: "If writer A sets v1 and writer B sets v2 but their cache writes land in the opposite order, the cache holds v1 forever (until the TTL). Deleting means the next reader loads whatever the database holds."
   - q: "A key read 50,000 times per second expires. What happens without protection?"
-    options: ["Nothing; the next read refills it", "Thousands of requests miss at once and all query the database", "The cache evicts other keys", "Reads return an error until the TTL resets"]
+    options: ["Nothing, because the very next read refills it for everyone", "Thousands of requests miss at once and all query the database", "The cache evicts other keys to make room for the refill", "Reads return an error until the TTL resets on its own"]
     answer: 1
     why: "Every request that arrives before the first one refills the key also misses, so the database takes a burst of identical queries, known as a thundering herd. A single-flight lock lets one request refill while others wait."
 bigO:

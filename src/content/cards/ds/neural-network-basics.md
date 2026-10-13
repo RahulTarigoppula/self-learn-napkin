@@ -30,7 +30,7 @@ quiz:
     answer: 0
     why: "z = 2·1 + (−1)·4 + 1 = −1, and ReLU(−1) = max(0, −1) = 0."
   - q: "You stack five dense layers with no activation functions. What can the network represent?"
-    options: ["Any continuous function", "Only linear (affine) functions, like a single layer", "Only XOR-like functions", "Anything a five-layer ReLU net can"]
+    options: ["Any continuous function, given enough units per layer", "Only affine functions, the same as a single layer", "Only XOR-like functions, since depth adds bends", "Anything a five-layer ReLU network can represent"]
     answer: 1
     why: "Composing affine maps gives another affine map: W₅…W₁x plus a constant. Depth adds nothing without a non-linearity between layers."
   - q: "How many parameters does a dense layer from 100 inputs to 50 outputs have?"

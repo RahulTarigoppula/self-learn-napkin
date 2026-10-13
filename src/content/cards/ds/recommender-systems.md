@@ -32,7 +32,7 @@ quiz:
     answer: 1
     why: "Dot product: 2.0·0.3 + 0.3·2.3 = 0.6 + 0.69 = 1.29. Ann's vector points towards the first factor, this item's towards the second, so the prediction is low."
   - q: "A brand-new film has no ratings yet. Which approach can still recommend it?"
-    options: ["User-based collaborative filtering", "Matrix factorisation on the ratings alone", "Content-based recommendation from its genre, cast and description", "None"]
+    options: ["User-based collaborative filtering, which borrows similar users' tastes", "Matrix factorisation on the ratings alone, with a fresh factor", "Content-based recommendation from its genre, cast and description", "None, since every recommender needs ratings to start"]
     answer: 2
     why: "Collaborative methods need interactions to place the item; with none, it is the item cold-start problem. Content features let you score or embed the film immediately."
   - q: "Your top 10 recommendations contain 3 items the user later bought. The user bought 6 items in total. What are precision@10 and recall@10?"
@@ -40,7 +40,7 @@ quiz:
     answer: 0
     why: "Precision@10 = hits / 10 = 3 / 10 = 0.3. Recall@10 = hits / all relevant = 3 / 6 = 0.5."
   - q: "Why do large recommenders use a retrieval stage before ranking?"
-    options: ["Ranking models cannot use features", "Scoring every item with an expensive model per request is far too slow, so a cheap stage narrows millions of items to hundreds first", "Retrieval improves the A/B test", "To avoid storing embeddings"]
+    options: ["Ranking models cannot use features, so retrieval adds them", "A heavy model cannot score millions of items per request in time", "Retrieval improves A/B test results by adding more variety", "To avoid storing embeddings, which would take too much space"]
     answer: 1
     why: "Latency budgets are tens of milliseconds. Approximate nearest-neighbour search over embeddings and other cheap sources fetch candidates; the heavy ranker only has to score a few hundred."
 bigO:

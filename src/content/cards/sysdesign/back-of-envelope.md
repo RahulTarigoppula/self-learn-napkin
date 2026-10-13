@@ -30,7 +30,7 @@ quiz:
     answer: 1
     why: "5 × 10^7 requests ÷ 10^5 seconds ≈ 500 QPS (exactly 50,000,000 / 86,400 ≈ 579). Then multiply by 2–3 for the peak."
   - q: "Which is fastest?"
-    options: ["One random SSD read", "One round trip inside the same data centre", "One spinning-disk seek", "One round trip from Europe to the US"]
+    options: ["One random read from a local SSD", "One round trip inside the same data centre", "One seek on a spinning hard disk", "One round trip from Europe to the US"]
     answer: 0
     why: "SSD random read ≈ 100 µs, same-DC round trip ≈ 500 µs, disk seek ≈ 10 ms, transatlantic round trip ≈ 70–150 ms depending on the cities."
   - q: "2 million photos a day at 2 MB each, kept for a year. About how much raw storage is that before replication?"
@@ -38,7 +38,7 @@ quiz:
     answer: 2
     why: "2 × 10^6 × 2 × 10^6 bytes = 4 × 10^12 B = 4 TB per day. 4 TB × 365 ≈ 1,460 TB ≈ 1.5 PB. Three replicas make it ≈ 4.4 PB."
   - q: "Why do estimates round 86,400 seconds up to 100,000?"
-    options: ["Because a day really has 100,000 seconds", "Because dividing by a power of ten is easy and the ~14 % error does not change any decision", "Because servers count time in decimal", "Because peak traffic is exactly 16 % higher"]
+    options: ["Because a day has 100,000 seconds once leap seconds are added", "Because dividing by a power of ten is easy and ~14 % error changes nothing", "Because the extra 14 % is a built-in safety margin for peak load", "Because peak traffic is always exactly 16 % above the average"]
     answer: 1
     why: "The rounding makes the arithmetic a shift of the decimal point. It understates QPS by about 14 %, which is noise next to the 2–3× peak factor and your guesses about user behaviour."
 bigO:

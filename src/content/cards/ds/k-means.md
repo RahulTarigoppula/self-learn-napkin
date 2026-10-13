@@ -29,7 +29,7 @@ keyIdeas:
   - "Assumes **round, similar-sized clusters in scaled features**. Scale first; use DBSCAN, Gaussian mixtures or spectral clustering for other shapes."
 quiz:
   - q: "In the update step, why does k-means move each centroid to the mean of its points?"
-    options: ["The mean minimises the sum of squared distances to those points", "The mean is always one of the data points", "It makes the clusters equal in size", "It guarantees the global optimum"]
+    options: ["The mean minimises the sum of squared distances to those points", "The mean is always one of the data points, so it stays on the data", "It makes the clusters equal in size, which keeps inertia balanced", "It guarantees the global optimum after a single update step"]
     answer: 0
     why: "For a fixed set of points, Σ‖x − c‖² is minimised exactly at c = mean. That is why the update step can only lower inertia."
   - q: "Points (0, 0), (2, 0) and (10, 0) are in one cluster. Where does the centroid move?"

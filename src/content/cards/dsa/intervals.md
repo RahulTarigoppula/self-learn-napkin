@@ -34,11 +34,11 @@ quiz:
     answer: 1
     why: "[5,10] and [15,20] each overlap [0,30] but not each other, so at most two meetings run at once. The second room is reused at 15 because [5,10] has ended."
   - q: "With half-open intervals [start, end), do a = [5, 8) and b = [8, 10) overlap?"
-    options: ["Yes, they share the point 8", "No: b.start < a.end is 8 < 8, which is false", "Only if sorted", "It depends on their lengths"]
+    options: ["Yes, they share the point 8, so they overlap", "No: b.start < a.end is 8 < 8, which is false", "Only if the list is sorted by start first", "It depends on their lengths, since b is shorter"]
     answer: 1
     why: "a ends at 8 and b starts at 8, so a meeting can end and the next begin in the same room. The strict < makes back-to-back intervals non-overlapping."
   - q: "Why is the list sorted by start before merging?"
-    options: ["Sorting by start makes the result unique", "After sorting, an interval can only overlap the current merged block, so one comparison per interval suffices", "It makes merging O(log n)", "Sorting by end would give a wrong overlap test"]
+    options: ["Without sorting, the merged result would not be unique", "Each interval can then only overlap the last merged block", "It lets merging run in O(log n) by binary searching blocks", "Sorting by end would make the overlap test itself wrong"]
     answer: 1
     why: "Every earlier interval starts no later than the current one. If the current one does not reach the block's end, nothing before the block can reach it either, so comparing with the last block is enough."
 bigO:

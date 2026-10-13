@@ -71,6 +71,10 @@ export interface Achievement {
   how: string;
   icon: IconName;
   test: (g: GameInput) => boolean;
+  /** How far along a multi-step goal is, for the progress text under a locked badge. */
+  measure?: (g: GameInput) => { n: number; of: number };
+  /** What `measure` counts, in the plural: "napkins", "reviews", "days". */
+  unit?: string;
 }
 
 const TRACK_NAMES: Record<string, string> = {
@@ -80,6 +84,7 @@ const TRACK_NAMES: Record<string, string> = {
 };
 const trackDone = (t: string) => (g: GameInput) =>
   (g.trackTotals[t] ?? 0) > 0 && (g.readByTrack[t] ?? 0) >= (g.trackTotals[t] ?? 0);
+const totalOf = (g: GameInput) => Object.values(g.trackTotals).reduce((a, b) => a + b, 0);
 
 export const ACHIEVEMENTS: readonly Achievement[] = [
   {
@@ -95,6 +100,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Read 10 napkins',
     icon: 'library',
     test: (g) => g.read >= 10,
+    measure: (g) => ({ n: g.read, of: 10 }),
+    unit: 'napkins',
   },
   {
     id: 'half-library',
@@ -102,9 +109,11 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Read half of all napkins',
     icon: 'chart',
     test: (g) => {
-      const total = Object.values(g.trackTotals).reduce((a, b) => a + b, 0);
+      const total = totalOf(g);
       return total > 0 && g.read * 2 >= total;
     },
+    measure: (g) => ({ n: g.read, of: Math.ceil(totalOf(g) / 2) }),
+    unit: 'napkins',
   },
   ...Object.keys(TRACK_NAMES).map(
     (t): Achievement => ({
@@ -113,6 +122,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
       how: `Read every napkin in the ${TRACK_NAMES[t]?.toLowerCase()} track`,
       icon: 'award',
       test: trackDone(t),
+      measure: (g) => ({ n: g.readByTrack[t] ?? 0, of: g.trackTotals[t] ?? 0 }),
+      unit: 'napkins',
     }),
   ),
   {
@@ -128,6 +139,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Do 100 flashcard reviews',
     icon: 'cards',
     test: (g) => g.reviews >= 100,
+    measure: (g) => ({ n: g.reviews, of: 100 }),
+    unit: 'reviews',
   },
   {
     id: 'reviews-1000',
@@ -135,6 +148,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Do 1,000 flashcard reviews',
     icon: 'zap',
     test: (g) => g.reviews >= 1000,
+    measure: (g) => ({ n: g.reviews, of: 1000 }),
+    unit: 'reviews',
   },
   {
     id: 'streak-3',
@@ -142,6 +157,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Keep a 3-day streak',
     icon: 'flame',
     test: (g) => g.bestStreak >= 3,
+    measure: (g) => ({ n: g.bestStreak, of: 3 }),
+    unit: 'days',
   },
   {
     id: 'streak-7',
@@ -149,6 +166,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Keep a 7-day streak',
     icon: 'flame',
     test: (g) => g.bestStreak >= 7,
+    measure: (g) => ({ n: g.bestStreak, of: 7 }),
+    unit: 'days',
   },
   {
     id: 'streak-30',
@@ -156,6 +175,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Keep a 30-day streak',
     icon: 'trophy',
     test: (g) => g.bestStreak >= 30,
+    measure: (g) => ({ n: g.bestStreak, of: 30 }),
+    unit: 'days',
   },
   {
     id: 'quiz-ace',
@@ -170,6 +191,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Ace 10 napkin quizzes',
     icon: 'star',
     test: (g) => g.quizzesAced >= 10,
+    measure: (g) => ({ n: g.quizzesAced, of: 10 }),
+    unit: 'quizzes',
   },
   {
     id: 'daily-first',
@@ -184,6 +207,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Answer the daily challenge 7 days in a row',
     icon: 'sparkles',
     test: (g) => g.dailyStreak >= 7,
+    measure: (g) => ({ n: g.dailyStreak, of: 7 }),
+    unit: 'days',
   },
   {
     id: 'tinkerer',
@@ -191,6 +216,8 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Play with 5 different playgrounds',
     icon: 'hand',
     test: (g) => g.played >= 5,
+    measure: (g) => ({ n: g.played, of: 5 }),
+    unit: 'playgrounds',
   },
   {
     id: 'mad-scientist',
@@ -198,10 +225,42 @@ export const ACHIEVEMENTS: readonly Achievement[] = [
     how: 'Play with 20 different playgrounds',
     icon: 'bulb',
     test: (g) => g.played >= 20,
+    measure: (g) => ({ n: g.played, of: 20 }),
+    unit: 'playgrounds',
   },
 ];
 
 export const unlockedIds = (g: GameInput): string[] => ACHIEVEMENTS.filter((a) => a.test(g)).map((a) => a.id);
+
+/**
+ * Progress towards a badge as "n of a goal", capped at the goal. Null when the badge is a single step
+ * (read one napkin, ace one quiz) or the goal is empty, because "0/1" says nothing a reader needs.
+ */
+export function progressOf(a: Achievement, g: GameInput): { n: number; of: number } | null {
+  if (!a.measure) return null;
+  const { n, of } = a.measure(g);
+  if (of <= 1) return null;
+  return { n: Math.max(0, Math.min(n, of)), of };
+}
+
+/**
+ * The one locked badge closest to done, to point at as "Next up". Closeness is the fraction of the
+ * goal reached; single-step badges count as zero, and ties go to the earlier badge in the list.
+ */
+export function nextUp(g: GameInput, unlocked: ReadonlySet<string>): string | null {
+  let best: string | null = null;
+  let score = -1;
+  for (const a of ACHIEVEMENTS) {
+    if (unlocked.has(a.id) || a.test(g)) continue;
+    const p = progressOf(a, g);
+    const s = p ? p.n / p.of : 0;
+    if (s > score) {
+      best = a.id;
+      score = s;
+    }
+  }
+  return best;
+}
 
 /** The same question for everyone on a given day, cycling through the whole pool. */
 export function dailyIndex(day: string, poolSize: number): number {

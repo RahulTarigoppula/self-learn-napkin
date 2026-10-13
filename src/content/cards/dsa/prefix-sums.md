@@ -30,11 +30,11 @@ quiz:
     answer: 1
     why: "sum(a[2..5]) = P[6] − P[2] = 16 − 4 = 12, which matches 4 + 1 + 5 + 2."
   - q: "In the subarray-sum-equals-k algorithm, why is the hash map started with {0: 1}?"
-    options: ["To avoid looking up a missing key", "So that subarrays starting at index 0 are counted", "To skip the empty array", "It is only needed when k is 0"]
+    options: ["To avoid looking up a missing key in the map", "So that subarrays starting at index 0 are counted", "To skip the empty subarray, which also has sum 0", "It is only needed when k is 0, to count empty sums"]
     answer: 1
     why: "A subarray a[0..j] has sum P[j+1] − P[0], and P[0] = 0. Seeding the map with one zero prefix represents P[0], so such subarrays are found when total − k = 0."
   - q: "The array contains negative numbers. Which technique still counts subarrays with sum exactly k in O(n)?"
-    options: ["Variable sliding window", "Prefix sums with a hash map of prefix counts", "Sorting then two pointers", "Binary search on the prefix array"]
+    options: ["A variable sliding window that shrinks while sum > k", "Prefix sums with a hash map of prefix counts", "Sorting the array, then two pointers from both ends", "Binary search on the prefix array for each end"]
     answer: 1
     why: "The prefix-difference argument holds for any integers. A sliding window needs sums to grow monotonically, and P is no longer sorted, so binary search on it fails too."
   - q: "How many lookups into a 2D prefix table does one rectangle-sum query need?"

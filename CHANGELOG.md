@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.2.0 (2026-10-14)
+
+- **Profiles without accounts**: everyone sharing a device gets their own progress, streaks and settings. Names live only in that browser.
+- **Updates apply themselves**: a new release downloads in the background and the page reloads onto it. Your progress is never touched. Settings has a "Get the latest version" button.
+- **How Napkin is made**: every source and what it gave, every check the content goes through, the algorithms inside, and exactly what is stored on your device.
+- **Human voice**: about 1,050 sentences rewritten without em-dashes or stock phrases; the build now fails if one creeps back in.
+- **Fair quizzes**: 238 questions rewritten so the right answer is no longer the longest one.
+- **Flashcards unlock as you read**, so day one never starts with a pile of "due" cards for topics you have not seen.
+- Design pass across the app: phone story player with sticky controls, quiz bottom sheet, library grid view and per-track progress, a real empty state on Progress, achievements with progress bars, dark-mode thumbnails, keyboard shortcuts (press ?), a reading progress bar and many smaller fixes.
+
 ## v1.1.0 (2026-10-13)
 
 - **31 playgrounds** (15 new): quicksort partitioning, two pointers, sliding window, monotonic stack, min-heap, union-find, Dijkstra (with a negative edge that fools it), topological sort with cycle detection, Kruskal, LCS, edit distance, 0/1 knapsack vs greedy, load balancing strategies, circuit breaker with retries and jitter, and attention weights.

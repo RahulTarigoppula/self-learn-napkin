@@ -32,15 +32,15 @@ quiz:
     answer: 2
     why: "TCP handshake 1 RTT, TLS 1.3 handshake 1 RTT, then the request and its response 1 RTT: 3 × 50 ms = 150 ms. With TLS 1.2 it would be 4 RTTs, 200 ms."
   - q: "What does it mean that HTTP is stateless?"
-    options: ["Responses can never be cached", "The server remembers nothing between requests by protocol; each request must carry its own context", "Connections close after every request", "Cookies are not allowed"]
+    options: ["Responses can never be cached, since each one is unique", "Each request carries its own context; the protocol keeps no session", "The TCP connection must close after every request and response", "Cookies are not allowed, so a login cannot persist from page to page"]
     answer: 1
     why: "The protocol keeps no session. Apps add state on top (cookies, tokens) that the client sends every time, which is exactly why any server behind a load balancer can handle any request."
   - q: "A request returns 503. Whose problem is it, most likely?"
-    options: ["The client sent a malformed request", "The client is not logged in", "The server or something behind it is overloaded or down", "The resource has moved"]
+    options: ["The client sent a malformed request the server cannot parse", "The client is not logged in or its token has expired", "The server or something behind it is overloaded or down", "The resource has moved and the client should follow it"]
     answer: 2
     why: "5xx codes are server-side failures; 503 Service Unavailable means the server cannot handle the request right now (overload, maintenance). Retrying later with backoff is reasonable."
   - q: "Why does keep-alive make the second request on a page faster?"
-    options: ["It caches the HTML on disk", "It skips the TCP and TLS handshakes by reusing the open connection", "It compresses the request", "It uses UDP instead of TCP"]
+    options: ["It caches the HTML on disk so the page loads locally", "It reuses the open connection, so no new TCP or TLS handshake", "It compresses each request, so fewer bytes have to cross the wire", "It switches to UDP, which needs no connection setup"]
     answer: 1
     why: "The connection stays open after the first response, so the next request goes straight out: one RTT instead of three."
 bigO:

@@ -41,7 +41,7 @@ quiz:
     answer: 0
     why: "Exploding loss is the classic sign of steps that overshoot and land ever higher until the numbers overflow. Cutting η (often by 3–10×) is the first fix; gradient clipping and checking the input scaling come next."
   - q: "Why do most deep-learning runs use mini-batches rather than the full dataset per step?"
-    options: ["Mini-batches give the exact gradient", "Each step is far cheaper, so the same compute buys many more steps", "They remove the need for a learning rate", "They guarantee the global minimum"]
+    options: ["Mini-batches give the exact gradient, so each step is more accurate", "Each step is far cheaper, so the same compute buys many more steps", "They remove the need for a learning rate, since noise sets the step", "They guarantee the global minimum, because the noise escapes every trap"]
     answer: 1
     why: "A 32-row batch gives a noisy but unbiased estimate of the full gradient at a tiny fraction of the cost. Many cheap noisy steps beat a few exact ones, and batches fit the parallel hardware well."
 related: [ds/sgd-and-mini-batch, ds/linear-regression, ds/logistic-regression, ds/feature-scaling]

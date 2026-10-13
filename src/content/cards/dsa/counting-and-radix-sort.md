@@ -32,7 +32,7 @@ quiz:
     answer: 0
     why: "Each start is the sum of the counts of all smaller keys: 0, then 0 + 2 = 2, then 2 + 0 = 2, then 2 + 3 = 5. Key 1 has no items, so its empty block starts where key 2's does."
   - q: "Why must each digit pass in LSD radix sort be stable?"
-    options: ["To keep it O(n)", "So that ties on the current digit keep the order set by the lower digits", "Stability is optional for radix sort", "To save memory"]
+    options: ["To keep each pass O(n), which unstable sorts cannot reach", "So ties on the current digit keep the order the lower digits set", "It need not be; radix sort is correct with any per-digit sort", "To save memory, since a stable pass can reuse the input array"]
     answer: 1
     why: "After sorting by tens, 512 and 523 tie on the hundreds digit. Only a stable pass keeps 512 first, which is the order the earlier passes worked out."
   - q: "How many passes does LSD radix sort need for 32-bit unsigned integers with base 256 (one byte per digit)?"
@@ -40,7 +40,7 @@ quiz:
     answer: 1
     why: "32 bits ÷ 8 bits per digit = 4 digits, so 4 counting-sort passes, each O(n + 256)."
   - q: "You must sort 1,000 integers whose values range up to 1,000,000,000. Is counting sort a good idea?"
-    options: ["Yes, it is always O(n)", "No: the count array would need 10⁹ slots, so O(n + k) is dominated by k", "Yes, if the integers are distinct", "No, counting sort cannot handle integers"]
+    options: ["Yes, because counting sort is always O(n) for integers", "No: the count array needs 10⁹ slots, so k dominates O(n + k)", "Yes, if the integers are distinct, since each count is then 0 or 1", "No, because counting sort only works on single-digit keys"]
     answer: 1
     why: "O(n + k) with k = 10⁹ is a billion steps and gigabytes of memory, versus about 10,000 comparisons for an n log n sort. Radix sort with base 256 would need just 4 passes of O(n + 256)."
 bigO:

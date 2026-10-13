@@ -36,11 +36,11 @@ quiz:
     answer: 0
     why: "40 = 101000. x & −x isolates the lowest set bit, which is the 8s place: 001000 = 8."
   - q: "For x > 0, what does (x & (x − 1)) == 0 tell you?"
-    options: ["x is even", "x is a power of two", "x is odd", "x has all bits set"]
+    options: ["x is even, since its lowest bit is 0", "x is a power of two, with a single 1 bit", "x is odd, since x − 1 clears the low bit", "x has all its bits set, like 7 or 15"]
     answer: 1
     why: "x & (x − 1) clears the lowest 1 bit. The result is 0 only if that was the only 1 bit, which is true exactly for the powers of two: 1, 2, 4, 8, …"
   - q: "In 8-bit two's complement, which value does 11111111 stand for?"
-    options: ["255", "−1", "−127", "−128"]
+    options: ["255, since all eight bits add up to 255", "−1, as the top bit is −128 and the rest 127", "−127, read as a sign bit with a magnitude of 127", "−128, the most negative 8-bit value"]
     answer: 1
     why: "The top bit is worth −128 and the rest add 127: −128 + 127 = −1. Check: ~1 + 1 = 11111110 + 1 = 11111111."
   - q: "A loop runs mask from 0 up to (1 << n) − 1. How many masks does it visit for n = 10 items?"

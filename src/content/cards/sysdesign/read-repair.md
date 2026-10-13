@@ -26,19 +26,19 @@ keyIdeas:
   - "Run full repair more often than tombstones are purged (Cassandra's `gc_grace_seconds`, 10 days by default), or deleted data can come back."
 quiz:
   - q: "Why is read repair alone not enough to keep replicas in sync?"
-    options: ["It is too slow", "It only repairs keys that are read; cold keys can stay stale forever", "It needs a leader", "It deletes data"]
+    options: ["It is too slow, since every read must wait for all replicas", "It only repairs keys that are read; cold keys can stay stale forever", "It needs a leader, so it fails when no leader is elected", "It deletes the stale copies, so replicas lose data over time"]
     answer: 1
     why: "Read repair piggybacks on reads. A key that nobody reads never gets compared, so a background process (Merkle-tree anti-entropy) is still needed."
   - q: "Two replicas each hold 1,000,000 keys in a Merkle tree with 1,024 leaves. Exactly one key differs. Roughly what gets compared and sent?"
-    options: ["All 1,000,000 keys", "About 20 hashes along one root-to-leaf path, then one leaf's range of about 1,000 keys", "Only the root hash", "1,024 leaf hashes and nothing else"]
+    options: ["All 1,000,000 keys, since hashes cannot say which key differs", "About 20 hashes down one path, then one leaf's range of ~1,000 keys", "Only the root hash, since it already names the differing key", "All 1,024 leaf hashes, then the single differing key itself"]
     answer: 1
     why: "The tree has log₂ 1024 = 10 levels. At each level you compare two children and descend into the one that differs: about 2 × 10 hashes. Then only the differing leaf's key range, ~1,000 keys, is exchanged."
   - q: "A replica was down for 5 hours. Cassandra's hint window is 3 hours. What brings it fully up to date?"
-    options: ["Hinted handoff replays everything", "Read repair on every key", "A full anti-entropy repair (Merkle trees)", "Nothing is needed"]
+    options: ["Hinted handoff, which replays every missed write on return", "Read repair, which fixes every key the moment the replica returns", "A full anti-entropy repair, which compares Merkle trees", "Nothing, since the replica catches up from its own log"]
     answer: 2
     why: "Hints stop being stored after the window, so writes from the last 2 hours are missing. Read repair will fix only keys that get read. A full repair compares Merkle trees and fixes the rest."
   - q: "During read repair, how does the coordinator decide which copy is newest?"
-    options: ["The copy from the fastest replica", "By comparing version metadata such as timestamps or version vectors", "By majority vote of values", "The copy with the longest value"]
+    options: ["By trusting the copy from whichever replica answered the coordinator fastest", "By comparing version metadata, like timestamps or version vectors", "By majority vote, picking the value most replicas returned", "By keeping the longest value, since it holds the most data"]
     answer: 1
     why: "Values carry versions. With last-write-wins timestamps the highest one wins; with version vectors, concurrent versions are detected and kept as siblings for the application to merge."
 bigO:

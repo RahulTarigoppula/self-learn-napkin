@@ -26,15 +26,15 @@ keyIdeas:
   - "Often you need no lock at all: **compare-and-set**, unique constraints, idempotency keys or one writer per partition."
 quiz:
   - q: "Client A holds a lock with a 30 s lease. It pauses for 45 s, wakes up and writes. What prevents corrupting B's newer write?"
-    options: ["A longer lease, say 60 s", "A's own clock check before writing", "A fencing token: the storage rejects A's token because B's higher token was already seen", "Releasing the lock in a finally block"]
+    options: ["A longer lease, say 60 s, so the pause fits inside it", "A's own clock check before writing, to see if the lease expired", "A fencing token: storage rejects A's token after seeing B's higher one", "Releasing the lock in a finally block so it is never left held"]
     answer: 2
     why: "Any lease length can be exceeded by some pause, and A cannot detect a pause from the inside. Only the resource, which saw B's newer token, can reliably refuse A's stale write."
   - q: "What makes ZooKeeper or etcd better than a single Redis node for a correctness-critical lock?"
-    options: ["They are faster", "They replicate the lock state through consensus, so a single node failure does not lose or duplicate the lock, and they expose ever-increasing revision numbers usable as fencing tokens", "They never use leases", "They store locks on disk only"]
+    options: ["They are faster, so the lock is granted before any lease can expire", "Consensus replicates the lock, and revision numbers work as fencing tokens", "They never use leases, so a lock cannot expire under a paused client", "They store locks on disk only, so a restart never loses them"]
     answer: 1
     why: "A lone Redis node is a single point of failure, and with asynchronous replication a failover can lose a granted lock so two clients hold it. Consensus systems commit the grant on a majority and give monotonic version numbers."
   - q: "You want each order to be charged at most once even if the 'charge' job runs on two machines. What is the simplest safe option?"
-    options: ["A Redis lock around the job", "An idempotency key: the payment provider or a unique constraint on order_id rejects the second charge", "Make the lease 10 minutes long", "Run the job less often"]
+    options: ["A Redis lock around the job, so only one machine can run it", "An idempotency key on order_id, so the second charge is refused", "A 10-minute lease, so the lock outlives any slow job", "Run the job less often so two copies rarely overlap"]
     answer: 1
     why: "If the operation itself refuses duplicates (unique key, conditional write, idempotency key), you need no distributed lock at all, and there is no lease that can expire at the wrong moment."
 bigO:

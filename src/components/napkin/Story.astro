@@ -34,7 +34,11 @@ const n = scenes.length;
   data-after={after}
   data-steps={n} aria-label={`The story of ${title}, in ${n} scenes`}>
   <div class="story__stage paper">
-    <figure class="story__figure" style={`aspect-ratio:${manifest.width}/${manifest.height}`} set:html={svg} />
+    <figure
+      class="story__figure"
+      style={`aspect-ratio:${manifest.width}/${manifest.height};--w:${manifest.width};--h:${manifest.height}`}
+      set:html={svg}
+    />
     <div class="story__stage-bar">
       <span class="story__hint hand" aria-hidden="true">tap Next to draw the next scene →</span>
       <button class="story__mini" type="button" data-replay aria-label="Redraw this scene">
@@ -100,8 +104,17 @@ const n = scenes.length;
   @container main (min-width: 880px) {
     .story {
       grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
-      align-items: stretch;
+      align-items: start;
       gap: var(--space-5);
+    }
+  }
+  /* Wide: the caption card matches the drawing's height and the controls sit at its foot. */
+  @container main (min-width: 1024px) {
+    .story {
+      align-items: stretch;
+    }
+    .story__nav {
+      margin-top: auto;
     }
   }
   .story__stage {
@@ -133,7 +146,12 @@ const n = scenes.length;
   }
   .story__hint {
     font-size: var(--text-sm);
-    color: var(--ink-faint);
+    color: var(--ink-muted);
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+  .story[data-moved] .story__hint {
+    opacity: 0;
+    visibility: hidden;
   }
   :global(html:not(.js)) .story__hint,
   :global(html:not(.js)) .story__mini {
@@ -206,7 +224,6 @@ const n = scenes.length;
 
   .story__scenes {
     display: grid;
-    flex: 1;
   }
   .scene {
     grid-area: 1 / 1;
@@ -244,7 +261,7 @@ const n = scenes.length;
     text-transform: uppercase;
   }
   .scene__count span {
-    color: var(--ink-faint);
+    color: var(--ink-muted);
   }
   .scene__title {
     font-size: var(--text-xl);
@@ -266,6 +283,50 @@ const n = scenes.length;
   @media (max-width: 380px) {
     .story__nav-label {
       display: none;
+    }
+  }
+
+  /* Phone: drawing, caption and controls read as one card, and the controls stay in reach above the
+     tab bar while any part of the story is on screen. The panel dissolves (display: contents) so the
+     controls stick to the whole story, not just the caption. No overflow on .story: it would break sticky. */
+  @media (max-width: 767px) {
+    .story {
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-2);
+    }
+    .story__stage {
+      padding: var(--space-3) var(--space-3) 0;
+      border: 0;
+      border-bottom: 1px solid var(--border);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      box-shadow: none;
+    }
+    /* Keep the drawing from eating the whole screen on short phones. */
+    .story__figure {
+      max-width: min(680px, 100%, calc(44svh * var(--w, 520) / var(--h, 420)));
+    }
+    .story__panel {
+      display: contents;
+    }
+    .story__progress {
+      padding: var(--space-2) var(--space-4) 0;
+    }
+    .story__scenes {
+      padding: var(--space-2) var(--space-4) var(--space-4);
+    }
+    .story__nav {
+      position: sticky;
+      bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 8px);
+      z-index: 2;
+      margin: 0 var(--space-2) var(--space-2);
+      padding: 6px;
+      border-radius: var(--radius-full);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-2);
     }
   }
 </style>

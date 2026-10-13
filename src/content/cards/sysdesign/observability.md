@@ -38,7 +38,7 @@ quiz:
     answer: 2
     why: "The page waits for the slowest call. P(all 100 fast) = 0.99¹⁰⁰ ≈ 0.37, so about 63 % of loads hit at least one slow call. Tail latency dominates in fan-out."
   - q: "Users report slow checkouts. Metrics show p99 up, but which of 12 services is at fault?"
-    options: ["Read every log file", "Open a trace of a slow checkout and find the long span", "Restart all services", "Look at the average CPU"]
+    options: ["Search every service's log files for errors around that time", "Open a trace of a slow checkout and find the long span", "Restart all 12 services and see whether p99 recovers", "Compare each service's average CPU and pick the busiest"]
     answer: 1
     why: "A trace shows the request's path with timings for each span, so the slow hop stands out. Then use its trace id to pull the matching logs for the reason."
 bigO:

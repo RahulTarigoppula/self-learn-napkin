@@ -34,7 +34,7 @@ quiz:
     answer: 0
     why: "Each level doubles the size of the sorted pieces: 1 → 2 → 4 → … → 1024 is 10 doublings, because log₂ 1024 = 10."
   - q: "Why does the merge use `left[i] <= right[j]` rather than `<`?"
-    options: ["It is faster", "To take the left value on ties, which keeps the sort stable", "To avoid an index error", "It makes no difference at all"]
+    options: ["It is faster, since fewer swaps happen on equal keys", "To take the left value on ties, which keeps the sort stable", "To avoid an index error when one half runs out early", "It makes no difference at all, since equal keys are identical"]
     answer: 1
     why: "Equal keys from the left half came first in the input. Taking them first on a tie preserves that order. With `<`, the right one would jump ahead and the sort would not be stable."
   - q: "What is the worst-case extra memory for top-down merge sort on an array?"

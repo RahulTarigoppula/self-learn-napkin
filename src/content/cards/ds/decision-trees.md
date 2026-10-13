@@ -34,7 +34,7 @@ quiz:
     answer: 1
     why: "Weight each child by its share of rows: 0.4 × 0 + 0.6 × 0.5 = 0.30."
   - q: "Your tree has 100 % training accuracy and 71 % test accuracy. What is the most direct fix?"
-    options: ["Grow it deeper", "Limit depth or require more samples per leaf", "Standardise the features", "Switch Gini to entropy"]
+    options: ["Grow it deeper so it captures more patterns", "Limit depth or require more samples per leaf", "Standardise the features before splitting", "Switch the split criterion from Gini to entropy"]
     answer: 1
     why: "The gap says the tree memorised training noise (high variance). Constraining growth or pruning removes the tiny, noisy leaves. Scaling does nothing for trees, and the impurity measure rarely changes the result."
   - q: "What does a leaf of a regression tree predict?"

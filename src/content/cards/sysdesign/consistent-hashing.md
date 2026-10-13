@@ -34,7 +34,7 @@ quiz:
     answer: 1
     why: "The new server takes roughly an equal share, ≈ K/N = 1,000,000 / 11 ≈ 91,000 keys. With hash % N about 909,000 (10/11) would move."
   - q: "Why do real systems give each server many virtual nodes?"
-    options: ["To make lookups O(1)", "To spread each server's share evenly around the ring", "To encrypt keys", "To avoid hashing server names"]
+    options: ["To make each key lookup O(1) instead of O(log n)", "To spread each server's share evenly around the ring", "To encrypt keys before they are placed on the ring", "To avoid hashing server names onto the ring at all"]
     answer: 1
     why: "With one position per server, arcs are random lengths and one server may own a huge slice. Many small positions average out, and a failed server's load spreads over all the others instead of one neighbour."
 bigO:

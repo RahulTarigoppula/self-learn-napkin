@@ -18,21 +18,23 @@ const segs = (text: string) =>
     cards.map((c, i) => (
       <li class="fc" data-flip>
         <button class="fc__inner" type="button" aria-expanded="false" aria-label={`Card ${i + 1}: reveal the answer`}>
-          <span class="fc__face fc__front">
-            <span class="fc__tag mono">{c.kind === 'qa' ? 'Q' : 'Fill the blank'}</span>
-            <span class="fc__q">
-              {c.kind === 'qa'
-                ? <Fragment set:html={inlineMd(c.q)} />
-                : segs(c.text).map((s) => ('blank' in s ? <span class="fc__blank"><span class="sr-only">blank</span>____</span> : <Fragment set:html={inlineMd(s.text ?? '')} />))}
+          <span class="fc__card">
+            <span class="fc__face fc__front">
+              <span class="fc__tag mono">{c.kind === 'qa' ? 'Q' : 'Fill the blank'}</span>
+              <span class="fc__q">
+                {c.kind === 'qa'
+                  ? <Fragment set:html={inlineMd(c.q)} />
+                  : segs(c.text).map((s) => ('blank' in s ? <span class="fc__blank"><span class="sr-only">blank</span>____</span> : <Fragment set:html={inlineMd(s.text ?? '')} />))}
+              </span>
+              <span class="fc__cta">Tap to reveal</span>
             </span>
-            <span class="fc__cta">Tap to reveal</span>
-          </span>
-          <span class="fc__face fc__back" aria-hidden="true">
-            <span class="fc__tag mono">A</span>
-            <span class="fc__a">
-              {c.kind === 'qa' ? <Fragment set:html={inlineMd(c.a)} /> : segs(c.text).map((s) => ('blank' in s ? <mark set:html={inlineMd(s.blank ?? '')} /> : <Fragment set:html={inlineMd(s.text ?? '')} />))}
+            <span class="fc__face fc__back" aria-hidden="true">
+              <span class="fc__tag mono">A</span>
+              <span class="fc__a">
+                {c.kind === 'qa' ? <Fragment set:html={inlineMd(c.a)} /> : segs(c.text).map((s) => ('blank' in s ? <mark set:html={inlineMd(s.blank ?? '')} /> : <Fragment set:html={inlineMd(s.text ?? '')} />))}
+              </span>
+              <span class="fc__cta">Tap to hide</span>
             </span>
-            <span class="fc__cta">Tap to hide</span>
           </span>
         </button>
       </li>
@@ -61,20 +63,30 @@ const segs = (text: string) =>
     display: grid;
     gap: var(--space-4);
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    /* every card in a row as tall as the tallest one */
+    align-items: stretch;
   }
   .fc {
-    perspective: 1200px;
+    display: grid;
   }
+  /* The button only takes the click; the inner card does the 3D turn (a transformed <button> can
+     flatten its 3D children in some engines). Both faces share one grid cell, so the card is as tall
+     as its longer side and does not jump when it turns. */
   .fc__inner {
-    position: relative;
     display: grid;
     width: 100%;
-    min-height: 190px;
     text-align: left;
-    transform-style: preserve-3d;
-    transition: transform var(--dur-slow) var(--ease-flip);
+    perspective: 1200px;
+    border-radius: var(--radius-lg);
   }
-  .fc[data-open] .fc__inner {
+  .fc__card {
+    position: relative;
+    display: grid;
+    min-height: 190px;
+    transform-style: preserve-3d;
+    transition: transform calc(var(--dur-slow) * 0.75) var(--ease-flip);
+  }
+  .fc[data-open] .fc__card {
     transform: rotateY(180deg);
   }
   .fc__face {
@@ -136,12 +148,13 @@ const segs = (text: string) =>
     font-weight: 600;
     color: var(--ink-muted);
   }
+  /* Still motion: no turn, the answer simply swaps in. */
   @media (prefers-reduced-motion: reduce) {
-    :global(html:not([data-motion='full'])) .fc__inner {
+    :global(html:not([data-motion='full'])) .fc__card {
       transition: none;
     }
   }
-  :global(html[data-motion='reduced']) .fc__inner {
+  :global(html[data-motion='reduced']) .fc__card {
     transition: none;
   }
 </style>

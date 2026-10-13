@@ -32,7 +32,7 @@ quiz:
     answer: 2
     why: "SE = σ / √n = 12 / √36 = 12 / 6 = 2. The sample mean varies far less than individual values."
   - q: "What exactly does the central limit theorem say becomes approximately normal?"
-    options: ["The data themselves, once you collect enough", "The distribution of the sample mean (or sum) over repeated samples", "The population, as it grows", "Any statistic, such as the maximum"]
+    options: ["The data themselves, once you collect enough of them", "The sample mean (or sum) across repeated samples", "The population itself, as it grows larger", "Any statistic, such as the sample maximum"]
     answer: 1
     why: "The raw data keep their shape: exponential waits stay skewed however many you collect. It is the mean of n draws, viewed across many repeated samples, that becomes bell-shaped."
   - q: "You want a confidence interval half as wide. How must the sample size change?"

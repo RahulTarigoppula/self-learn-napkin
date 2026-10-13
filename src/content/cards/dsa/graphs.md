@@ -36,11 +36,11 @@ quiz:
     answer: 1
     why: "Each edge adds 1 to the degree of each of its two endpoints, so the sum of degrees is always 2E = 14."
   - q: "With an adjacency list, what does checking whether edge (u, v) exists cost?"
-    options: ["O(1) always", "O(deg u), scanning u's list (O(1) on average if neighbours are stored in a set)", "O(V²)", "O(E log V)"]
+    options: ["O(1) always, since lists support direct lookup", "O(deg u), since you scan u's neighbour list", "O(V²), since every pair may need checking", "O(E log V), from a search over sorted edges"]
     answer: 1
     why: "You must look through u's neighbours. A matrix answers in O(1); a list of hash sets also does, on average, at extra memory cost."
   - q: "Which kind of graph always has a topological order (an ordering where every edge points forward)?"
-    options: ["Any connected graph", "A directed acyclic graph (DAG)", "Any weighted graph", "An undirected tree"]
+    options: ["Any connected graph (directed or not)", "A directed graph with no cycles (a DAG)", "Any weighted graph (with positive weights)", "An undirected tree, which has no cycles"]
     answer: 1
     why: "If a directed cycle existed, some edge in it would have to point backwards in any ordering. Without directed cycles, an order always exists: repeatedly take a vertex with no incoming edges."
 bigO:

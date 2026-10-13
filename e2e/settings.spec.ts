@@ -24,3 +24,17 @@ test('backup export produces a schema-1 file', async ({ page }) => {
   expect(json.schema).toBe(1);
   expect(json.app).toBe('napkin');
 });
+
+test('profiles keep progress apart and switch from the sidebar', async ({ page }) => {
+  await page.goto('settings/');
+  await page.getByLabel('Name or nickname').fill('Asha');
+  await page.getByRole('button', { name: /Add and switch/ }).click();
+  await expect(page.locator('.pf__item[data-active]')).toContainText('Asha');
+  await expect(page.locator('.pf__item[data-active]')).toHaveCount(1);
+  await page.goto('');
+  await expect(page.locator('.dash__hello')).toContainText('Asha');
+  await page.locator('.pchip__btn:visible').first().click();
+  await page.getByRole('menuitemradio', { name: /You/ }).click();
+  await page.waitForLoadState('load');
+  await expect(page.locator('.dash__hello')).not.toContainText('Asha');
+});

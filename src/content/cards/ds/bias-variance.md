@@ -32,7 +32,7 @@ quiz:
     answer: 0
     why: "Training and validation errors are close, so the model generalises what it learned. It just learned too little. The 13-point gap to the expert is bias. Fix it with a richer model or better features, not more data."
   - q: "Which change usually lowers variance but raises bias?"
-    options: ["Adding more input features", "Increasing the L2 regularisation strength (a penalty on large weights)", "Training for more epochs", "Letting a decision tree grow deeper"]
+    options: ["Adding more input features to the model", "Increasing the L2 penalty on large weights", "Training for more epochs on the same data", "Letting each decision tree grow deeper"]
     answer: 1
     why: "A stronger penalty shrinks the weights, so the fitted function can bend less: it reacts less to the particular sample (lower variance) but can no longer follow every real wiggle (higher bias). The other three all add flexibility."
   - q: "Over many training sets, a model's predictions at x average 2.9 with variance 0.02. The truth at x is 3.0 and the noise variance is 0.25. What is the expected squared error at x?"

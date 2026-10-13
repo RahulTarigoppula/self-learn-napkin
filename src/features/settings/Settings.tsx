@@ -9,6 +9,7 @@ import { APP_VERSION, href, PLATFORM } from '../../lib/base';
 import { toast } from '../../lib/toast';
 import { shareFile } from '../../platform/share';
 import { sound } from '../../platform/sound';
+import { refreshToLatest } from '../pwa/register';
 import { Icon } from '../ui/Icon';
 
 function Seg<T extends string>({
@@ -219,8 +220,9 @@ export default function Settings({ credits }: { credits: { name: string; url: st
       <section id="backup" class="st__group card" aria-labelledby="st-data">
         <h2 id="st-data">Your data</h2>
         <p class="st__help">
-          Progress is stored only on this device (IndexedDB). Nothing is uploaded, ever. Export a backup to
-          move it to another device.
+          Progress is stored only on this device (IndexedDB). Nothing is uploaded, ever: no account, no
+          cookies, no analytics. Export a backup to move it to another device.{' '}
+          <a href={href('made/#priv-h')}>See exactly what is stored</a>.
         </p>
         <div class="st__buttons">
           <button type="button" class="btn" onClick={() => void doExport()}>
@@ -303,6 +305,17 @@ export default function Settings({ credits }: { credits: { name: string; url: st
               ? 'offline ready ✓'
               : 'offline mode activates after this visit'}
         </p>
+        {PLATFORM !== 'android' && (
+          <p>
+            <button type="button" class="btn btn--ghost" onClick={() => void refreshToLatest()}>
+              <Icon name="replay" size={16} /> Get the latest version
+            </button>
+            <span class="st__help">
+              {' '}
+              Updates install on their own. This forces it now; your progress stays.
+            </span>
+          </p>
+        )}
       </section>
     </div>
   );

@@ -36,7 +36,7 @@ quiz:
     answer: 1
     why: "z = (58 − 40) / 12 = 18 / 12 = 1.5: one and a half standard deviations above the mean."
   - q: "You fit a standard scaler on the full dataset, then split into train and test. What is the problem?"
-    options: ["None, scaling has no parameters", "The test rows influenced μ and σ, so test information leaked into training", "The scaler must be fit on the test set", "The model will not converge"]
+    options: ["None, since a standard scaler has no learned parameters", "Test rows shaped μ and σ, so test information leaked into training", "The scaler should have been fit on the test set alone, then applied to train", "The model will not converge on the scaled test features"]
     answer: 1
     why: "μ and σ are learned parameters. Computing them with test rows lets the test set shape the training inputs, so the test score is slightly optimistic. Fit on train, then transform test."
   - q: "Incomes are £35k–£65k plus one at £1,000,000. What does min-max scaling do to the normal incomes?"

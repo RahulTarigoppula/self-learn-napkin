@@ -5,7 +5,7 @@
 - Repo: `RahulTarigoppula/self-learn-napkin` (public). Pages source = **GitHub Actions** (set via the API on first deploy).
 - Every push to `main` runs `.github/workflows/pages.yml`: unit tests → `npm run build` with `VITE_BASE_PATH=/self-learn-napkin/` → deploy.
 - URL: https://rahultarigoppula.github.io/self-learn-napkin/
-- Rollback: re-run an older successful "Deploy to GitHub Pages" run, or `git revert` and push. The service worker uses `skipWaiting: false`, so a bad deploy only shows a "New napkins are ready." toast with a Refresh button; it never hijacks an open session.
+- Rollback: re-run an older successful "Deploy to GitHub Pages" run, or `git revert` and push. The service worker uses `skipWaiting: true`: a new deploy downloads in the background, takes over, and the page reloads once onto it (during a review session it asks first). Progress in IndexedDB/localStorage is never touched by an update, and Settings has a "Get the latest version" button that clears only the cached app files.
 
 ## Android (signed APK)
 

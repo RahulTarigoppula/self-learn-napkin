@@ -32,15 +32,15 @@ quiz:
     answer: 2
     why: "n scales with 1 / MDE², so halving the MDE multiplies n by about 4. Exactly: (1.96 + 0.8416)² × (0.09 + 0.105 × 0.895) / 0.005² ≈ 57,760."
   - q: "You randomise each page view rather than each user. What goes wrong?"
-    options: ["Nothing; more units means more power", "One user sees both versions, so the groups are not independent and the variance is underestimated", "The test becomes one-sided", "SRM becomes impossible to check"]
+    options: ["Nothing; more units means more power, so the test finishes sooner", "One user lands in both arms, so units are correlated and variance is understated", "The test becomes one-sided, so it can only detect positive lifts", "SRM becomes impossible to check, since page views cannot be counted per arm at all"]
     answer: 1
     why: "The same person contributes to both arms, behaviour carries over between versions, and page views from one user are correlated. The usual standard errors come out too small and the p-values too optimistic. Randomise at the level you analyse, usually the user."
   - q: "A 50 / 50 test shows 50,000 users in A and 48,800 in B. What should you do first?"
-    options: ["Ship B if its metric is better", "Re-weight B by 50,000 / 48,800", "Investigate the assignment and logging: χ² ≈ 14.6, p ≈ 0.0001 is a sample ratio mismatch", "Nothing; a 1 % gap is normal"]
+    options: ["Ship B if its metric is better, since the split barely affects it", "Re-weight B by 50,000 / 48,800 so both arms count equally", "Check assignment and logging: χ² ≈ 14.6, p ≈ 0.0001 is a sample ratio mismatch", "Nothing; a gap of about 1 % between arms is normal noise at this scale"]
     answer: 2
     why: "With ~99,000 users, chance alone almost never produces a gap this size. SRM usually means bots, redirects, crashes or logging that hit one arm more, and those users are not random, so re-weighting does not fix it."
   - q: "The test ends with lift +0.85 pp, 95 % CI +0.15 to +1.54 pp. Which reading is right?"
-    options: ["There is a 95 % chance the true lift is exactly 0.85 pp", "The data are consistent with lifts from about 0.15 to 1.54 pp, so the real gain may be small", "The lift is at least 1 pp because the MDE was 1 pp", "The test failed because the interval does not contain 1 pp"]
+    options: ["There is a 95 % chance the true lift is exactly 0.85 pp, the point estimate", "Lifts from about 0.15 to 1.54 pp fit the data, so the real gain may be small", "The lift is at least 1 pp, because the test was powered for a 1 pp MDE", "The result is not significant, because the interval is wider than 1 pp"]
     answer: 1
     why: "The interval lists the effect sizes compatible with the data at the 95 % level. It excludes 0, so the result is significant, but its lower end (0.15 pp) may be too small to justify the change: that is a business decision."
 related: [ds/p-values-and-confidence-intervals, ds/central-limit-theorem, ds/ml-problem-framing]

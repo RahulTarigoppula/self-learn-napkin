@@ -28,15 +28,15 @@ keyIdeas:
   - "**Offline:** push notification now, sync everything above the last seq on reconnect. **E2EE:** the server relays ciphertext only."
 quiz:
   - q: "Why do chat apps use WebSockets rather than having phones poll the server every few seconds?"
-    options: ["WebSockets encrypt messages and polling cannot", "An open connection lets the server push each message immediately without millions of empty requests", "Polling cannot carry text", "WebSockets need no servers"]
+    options: ["WebSockets encrypt messages, while polling has to send them in clear text", "The server can push each message at once, without millions of empty polls", "Polling requests cannot carry message text in their responses", "WebSockets run without servers, so they cost nothing to operate"]
     answer: 1
     why: "Polling 100 M phones every 5 s is 20 M requests a second, nearly all empty, and still adds up to 5 s of delay. A persistent connection costs memory on the gateway but delivers in milliseconds."
   - q: "Two messages in the same conversation are sent within one millisecond from different phones. What decides their order?"
-    options: ["Each phone's clock", "A per-conversation sequence number assigned by the single owner of that conversation", "The gateway that received them first", "Alphabetical order of the text"]
+    options: ["Each phone's clock, since the sender's timestamp is most accurate", "A sequence number from the single owner of that conversation", "The gateway that received them first, by its arrival time", "Alphabetical order of the text, to break the tie fairly"]
     answer: 1
     why: "Phone and server clocks drift, so timestamps can invert. One owner per conversation hands out 41, 42, 43 in the order it accepts messages, and every client displays by that number."
   - q: "Which partition key fits the message history table?"
-    options: ["The message text", "The sender's user id", "The conversation id, with the sequence number as the sort key", "A random UUID per message"]
+    options: ["The message text, hashed to spread writes evenly", "The sender's user id, so each user's messages sit together", "The conversation id, with the sequence number as the sort key", "A random UUID per message, so no partition ever gets hot"]
     answer: 2
     why: "The common read is 'the latest messages in this conversation'. Partitioning by conversation and sorting by seq puts them together, so the read touches one partition in order."
   - q: "500 million daily users each send 40 messages a day. Roughly what is the average message rate?"

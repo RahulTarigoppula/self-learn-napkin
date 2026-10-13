@@ -34,7 +34,7 @@ quiz:
     answer: 2
     why: "Swaps equal inversions, which are out-of-order pairs. (3,2), (3,1) and (2,1) are all inverted, so exactly 3 swaps."
   - q: "Why is bubble sort stable?"
-    options: ["It uses extra memory to remember positions", "It only swaps when the left value is strictly bigger, so equal values never pass each other", "It sorts from right to left", "It always makes n² comparisons"]
+    options: ["It uses extra memory to remember each equal value's original position", "It swaps only if the left is strictly bigger, so equals never cross", "It sorts from right to left, so equal values keep their order", "It always makes n² comparisons, so every pair gets checked"]
     answer: 1
     why: "Two equal values are never swapped, and every move is between neighbours, so one can never jump over the other. Their original order survives."
 bigO:

@@ -34,11 +34,11 @@ quiz:
     answer: 1
     why: "The key must identify the intended action, not the attempt. Generate it once when the user taps Pay, persist it, and reuse it for every retry of that payment."
   - q: "A consumer remembers processed message ids for 1 hour, but the stream keeps messages 7 days and a group may be replayed. What is the risk?"
-    options: ["None", "Replayed or very late messages older than 1 hour are processed twice", "Messages are lost", "The broker rejects old ids"]
+    options: ["None, since the broker already dedupes messages it has delivered", "Replayed messages older than 1 hour slip past the check and run twice", "Messages older than 1 hour are dropped, because their ids have expired", "The broker rejects old ids, so the replay fails partway through"]
     answer: 1
     why: "Deduplication only works inside its window. The window must cover the longest possible gap between duplicates, or the effect itself must be naturally idempotent (an upsert keyed by the business id)."
   - q: "The same idempotency key arrives with amount $50, then again with amount $500. What should the server do?"
-    options: ["Charge $500", "Replay the $50 response silently", "Reject the second request as a misuse of the key (e.g. 422)", "Charge both"]
+    options: ["Charge $500, since the latest request body should replace the first", "Replay the $50 response silently, since the key was already used", "Reject it as a misuse of the key, for example with a 422 error", "Charge both, since a different amount means a new payment"]
     answer: 2
     why: "Store a fingerprint of the request with the key. A different body under the same key is a client bug; replaying the $50 result would hide it and charging $500 would break the guarantee."
 bigO:

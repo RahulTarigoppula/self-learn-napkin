@@ -28,7 +28,7 @@ keyIdeas:
   - "**Cost**: O(1) to train, O(n·d) per brute-force query, O(n·d) memory. KD-trees and ball trees help in low dimensions; approximate nearest neighbour indexes (HNSW, FAISS) in high."
 quiz:
   - q: "What is the training accuracy of a 1-nearest-neighbour classifier (no duplicate points with conflicting labels)?"
-    options: ["100 %", "About 50 %", "The same as on the test set", "It depends on the metric"]
+    options: ["100 %, since each point is its own nearest neighbour", "About 50 %, since one neighbour is a coin flip", "The same as on the test set, as with any classifier", "It depends on the distance metric you choose"]
     answer: 0
     why: "Each training point is its own nearest neighbour at distance 0, so it always gets its own label. That perfect training score says nothing about generalisation: 1-NN has the highest variance of any k."
   - q: "The 5 nearest neighbours of Q, nearest first, are blue, red, red, blue, blue. What do k = 3 and k = 5 predict?"
@@ -40,7 +40,7 @@ quiz:
     answer: 0
     why: "Euclidean distance adds squared differences. Income differences are thousands of times larger than age differences, so age barely affects the distance. Standardise both first."
   - q: "Why does kNN degrade with 1,000 features even with plenty of data?"
-    options: ["Distances concentrate: the nearest and farthest points are almost equally far", "Majority voting fails with more than two classes", "Sorting distances becomes impossible", "Manhattan distance is undefined in high dimensions"]
+    options: ["Distances concentrate: nearest and farthest points are almost equally far", "Majority voting fails once there are more than two classes in the data", "Sorting distances becomes impossible beyond 1,000 features", "Manhattan distance is undefined in high dimensions, so it breaks"]
     answer: 0
     why: "For random data the ratio of farthest to nearest distance tends to 1 as dimension grows (about 1.1 at d = 1,000 for 1,000 points). The 'nearest' neighbours are then barely more similar than anyone else."
 bigO:

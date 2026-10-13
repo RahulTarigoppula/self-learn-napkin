@@ -36,7 +36,8 @@ export async function buildSw({ dist = 'dist', base = '/', maxMb = 25 } = {}) {
     globIgnores: ['diagrams/*.svg', 'diagrams/*.json', 'sw.js', 'workbox-*.js', '**/*.map', 'videos/**'],
     modifyURLPrefix: { '': base },
     swDest: `${dist}/sw.js`,
-    skipWaiting: false,
+    // A new deploy takes over as soon as it has downloaded; the page reloads onto it (src/features/pwa/register.ts).
+    skipWaiting: true,
     clientsClaim: true,
     cleanupOutdatedCaches: true,
     // Precached pages are served from the cache; anything newer than this worker (e.g. a napkin added by a

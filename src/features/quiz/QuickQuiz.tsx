@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { getDb } from '../../db/dexie';
+import { recordQuickQuiz } from '../../db/review';
+import { prefersReducedMotion } from '../../db/settings';
 import { shuffleOptions } from '../../engine/quiz/shuffle';
 import { cardHref, withBase } from '../../lib/base';
 import { haptic } from '../../platform/haptics';
 import { sound } from '../../platform/sound';
 import { celebrate } from '../game/celebrate';
 import { Icon } from '../ui/Icon';
+import '../../styles/quiz-review.css';
 
 interface QuizItem {
   id: string;
@@ -58,6 +62,9 @@ export default function QuickQuiz() {
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [answers, setAnswers] = useState<{ item: QuizItem; ok: boolean }[]>([]);
+  const root = useRef<HTMLDivElement>(null);
+  const nextBtn = useRef<HTMLButtonElement>(null);
+  const playing = round !== null && i < round.length;
 
   useEffect(() => {
     fetch(withBase('quiz-index.json'))
@@ -112,13 +119,39 @@ export default function QuickQuiz() {
     if (!finished || !round) return;
     const score = answers.filter((a) => a.ok).length;
     if (score >= round.length * 0.8) celebrate();
+    recordQuickQuiz(getDb(), score, round.length)
+      .then(() => document.dispatchEvent(new CustomEvent('napkin:progress')))
+      .catch((e: unknown) => console.warn('quiz round not saved', e));
   }, [finished]);
+
+  // While a round runs the page is a focus screen: no tab bar, no intro, just the question.
+  useLayoutEffect(() => {
+    const el = root.current;
+    const shell = el?.closest('.shell');
+    const page = el?.closest('.quiz-page');
+    shell?.classList.toggle('shell--focus', playing);
+    page?.classList.toggle('is-playing', playing);
+    return () => {
+      shell?.classList.remove('shell--focus');
+      page?.classList.remove('is-playing');
+    };
+  }, [playing]);
+
+  // Each new question (and the results) starts at the top; the answer sheet takes focus so Enter or a tap moves on.
+  useEffect(() => {
+    if (round) window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+  }, [i, round]);
+  useEffect(() => {
+    if (picked !== null) nextBtn.current?.focus({ preventScroll: true });
+  }, [picked]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!round || i >= round.length) return;
       if (picked === null && ['1', '2', '3', '4'].includes(e.key)) choose(Number(e.key) - 1);
-      else if (picked !== null && (e.key === 'Enter' || e.key === 'ArrowRight')) next();
+      else if (picked !== null && e.key === 'ArrowRight') next();
+      else if (picked !== null && e.key === 'Enter' && !(e.target as HTMLElement).closest?.('a, button'))
+        next();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -139,7 +172,7 @@ export default function QuickQuiz() {
 
   if (!round)
     return (
-      <div class="qq qq--setup card">
+      <div class="qq qq--setup card" ref={root}>
         <p class="eyebrow">Set up a round</p>
         <div class="qq__row">
           <span class="qq__label">Topics</span>
@@ -186,7 +219,7 @@ export default function QuickQuiz() {
     const score = answers.filter((a) => a.ok).length;
     const misses = answers.filter((a) => !a.ok);
     return (
-      <div class="qq">
+      <div class="qq" ref={root}>
         <div class="qq__result card">
           <p class="qq__score mono">
             {score}/{round.length}
@@ -232,21 +265,43 @@ export default function QuickQuiz() {
   const item = round[i] as QuizItem;
   let combo = 0;
   for (let k = answers.length - 1; k >= 0 && answers[k]?.ok; k--) combo++;
+  const right = picked === item.answer;
   return (
-    <div class={`qq t-${item.track}`}>
+    <div class={`qq qq--play t-${item.track}`} ref={root}>
       <div class="qq__bar">
-        <span class="mono">
-          {i + 1}/{round.length}
-        </span>
-        <span class="rv__progress" aria-hidden="true">
+        <button
+          type="button"
+          class="btn btn--ghost btn--icon"
+          aria-label="End this round"
+          onClick={() => setRound(null)}
+        >
+          <Icon name="x" />
+        </button>
+        <span
+          class="rv__progress"
+          role="progressbar"
+          aria-label="Round progress"
+          aria-valuemin={0}
+          aria-valuemax={round.length}
+          aria-valuenow={i}
+        >
           <span style={{ width: `${(i / round.length) * 100}%` }} />
         </span>
+        <span class="mono qq__count">
+          {i + 1}/{round.length}
+        </span>
+      </div>
+      <div class="qq__status">
+        {answers.length > 0 && (
+          <span class="mono qq__tally">
+            {answers.filter((a) => a.ok).length} of {answers.length} right
+          </span>
+        )}
         {combo >= 3 && (
           <span class="qq__combo mono" key={combo}>
             <Icon name="flame" size={14} /> {combo} in a row
           </span>
         )}
-        <span class="mono qq__tally">{answers.filter((a) => a.ok).length} ✓</span>
       </div>
       <article class="qq__card card" key={item.id}>
         <a class="chip chip--track qq__src" href={cardHref(item.slug)}>
@@ -272,23 +327,39 @@ export default function QuickQuiz() {
             );
           })}
         </div>
-        {picked !== null && (
-          <div class="qq__why" aria-live="polite">
-            <strong>{picked === item.answer ? 'Right. ' : 'Not quite. '}</strong>
-            <Md text={item.why} />
-            <div class="qq__row">
-              <button type="button" class="btn btn--primary" onClick={next}>
-                {i + 1 === round.length ? 'See results' : 'Next question'}{' '}
-                <Icon name="arrowRight" size={16} />
-              </button>
-              <a class="btn btn--ghost" href={cardHref(item.slug)}>
-                Open the napkin
-              </a>
-            </div>
-          </div>
-        )}
       </article>
-      <p class="muted qq__hint">Keys 1–4 answer, Enter moves on.</p>
+      {picked === null && <p class="muted qq__hint">Keys 1 to 4 answer, Enter moves on.</p>}
+      {picked !== null && (
+        <div
+          class={`qq__why qq__sheet ${right ? 'is-right' : 'is-wrong'}`}
+          role="region"
+          aria-label="Answer"
+          aria-live="polite"
+        >
+          <p class="qq__verdict-line">
+            <span class="qq__badge" aria-hidden="true">
+              <Icon name={right ? 'check' : 'x'} size={18} stroke={3} />
+            </span>
+            <strong>{right ? 'Right.' : 'Not quite.'}</strong>
+          </p>
+          {!right && (
+            <p class="qq__correct">
+              Answer: <Md text={item.options[item.answer] ?? ''} />
+            </p>
+          )}
+          <p class="qq__explain">
+            <Md text={item.why} />
+          </p>
+          <div class="qq__sheet-row">
+            <button type="button" class="btn btn--primary btn--lg qq__next" onClick={next} ref={nextBtn}>
+              {i + 1 === round.length ? 'See results' : 'Next question'} <Icon name="arrowRight" size={16} />
+            </button>
+            <a class="btn btn--ghost" href={cardHref(item.slug)}>
+              Open the napkin
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

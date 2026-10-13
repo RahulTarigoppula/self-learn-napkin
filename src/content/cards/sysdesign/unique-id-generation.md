@@ -28,15 +28,15 @@ keyIdeas:
   - "Time-based schemes must handle **clock steps backwards** and need **unique machine ids**; otherwise they silently duplicate."
 quiz:
   - q: "A Snowflake generator has 12 sequence bits. How many IDs can one machine issue per second at most?"
-    options: ["4,096", "About 4.1 million", "About 1 million", "2^64"]
+    options: ["4,096 in total, one per sequence value", "About 4.1 million, 4,096 per millisecond", "About 1 million, about 1,000 per millisecond", "2^64, one for every value of the full ID"]
     answer: 1
     why: "2^12 = 4,096 IDs per millisecond × 1,000 ms ≈ 4.1 million per second. When the counter wraps within one millisecond, the generator waits for the next one."
   - q: "Why are random UUIDv4 primary keys slow to insert into a large B-tree index?"
-    options: ["They are too long to hash", "Each new key lands on a random leaf page, causing cache misses and page splits all over the index", "B-trees cannot store 128-bit values", "They require a central counter"]
+    options: ["They are too long to hash, so each insert spends time hashing keys", "Each new key lands on a random leaf page, causing cache misses and splits", "B-trees cannot store 128-bit values, so each key is split in two", "They need a central counter, so every insert waits on one lock"]
     answer: 1
     why: "Ordered keys always append near the right edge, which stays in memory. Random keys touch pages everywhere, so with an index bigger than RAM almost every insert reads a page from disk and splits pages that stay half empty."
   - q: "An NTP correction moves a Snowflake server's clock back by 20 ms. What should the generator do?"
-    options: ["Keep going; the sequence makes IDs unique", "Refuse (or wait) until the clock is past the last timestamp it used", "Switch to a new machine id permanently", "Subtract 20 ms from all future IDs"]
+    options: ["Keep going; the sequence number alone keeps the IDs unique", "Wait or refuse until the clock passes the last timestamp it used", "Switch permanently to a new machine id, then carry on as before", "Subtract 20 ms from every future ID so they stay in order"]
     answer: 1
     why: "The same (timestamp, machine) pairs would come round again with sequence numbers restarting from 0, producing duplicates. Remembering the last timestamp and waiting is the standard fix."
 bigO:

@@ -32,7 +32,7 @@ quiz:
     answer: 1
     why: "The local derivative ∂u/∂w is the other input, x = 2. Chain rule: 4 × 2 = 8."
   - q: "Why is backprop much faster than estimating each gradient by nudging each weight?"
-    options: ["One backward sweep reuses shared intermediate results to get every gradient at once", "It uses smaller numbers", "It skips the forward pass", "It only updates the last layer"]
+    options: ["One backward sweep reuses shared intermediate results to get every gradient", "It works with smaller numbers, so each multiplication runs faster", "It skips the forward pass and reads gradients straight from the loss", "It only updates the last layer, which is where most of the weights live"]
     answer: 0
     why: "Nudging needs a forward pass per weight, which means millions of passes. Backprop computes each node's gradient once and reuses it for everything upstream, so all gradients cost a small constant times one forward pass."
   - q: "A deep network uses sigmoid activations, whose derivative is at most 0.25. Through 10 such layers, the gradient can shrink by a factor of about…"

@@ -84,6 +84,8 @@ class StoryPlayer {
         else this.go(this.k - 1);
       }
     });
+    // "Start the story" (or anything else) can ask for a fresh scene 1 with keyboard focus on Next.
+    this.root.addEventListener('story:start', () => this.start());
     // Only the story in view keeps playing.
     new IntersectionObserver((entries) => {
       for (const en of entries) if (!en.isIntersecting) this.stop();
@@ -130,10 +132,20 @@ class StoryPlayer {
     if (prev) prev.disabled = k === 0;
     const label = this.q('[data-next-label]');
     if (label) label.textContent = k === this.n - 1 ? (this.finished ? 'Start over' : 'Finish') : 'Next';
+    // The "tap Next" hint has done its job once the reader moves on.
+    if (!initial && k > 0) this.root.dataset.moved = '';
     if (!initial) {
       sound.tick();
       void haptic.selection();
     }
+  }
+
+  /** Back to scene 1, drawn fresh, with focus on Next so Enter or Space moves the story on. */
+  start(): void {
+    this.stop();
+    if (this.k === 0) this.redraw();
+    else this.go(0);
+    this.q<HTMLButtonElement>('[data-next]')?.focus({ preventScroll: true });
   }
 
   private redraw(): void {

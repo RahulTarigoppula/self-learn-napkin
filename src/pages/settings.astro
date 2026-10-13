@@ -1,15 +1,17 @@
 ---
+import Profiles from '../features/profiles/Profiles';
 import Settings from '../features/settings/Settings';
 import credits from '../generated/credits.json';
 import AppShell from '../layouts/AppShell.astro';
 ---
 
-<AppShell title="Settings" active="settings" description="Theme, motion, sounds, daily cards and your data.">
+<AppShell title="Settings" active="settings" description="Profiles, theme, motion, sounds, daily cards and your data.">
   <div class="container settings-page">
     <header>
       <p class="eyebrow">Preferences</p>
       <h1>Settings</h1>
     </header>
+    <Profiles client:load />
     <Settings client:load credits={credits} />
   </div>
 </AppShell>
@@ -17,6 +19,8 @@ import AppShell from '../layouts/AppShell.astro';
 <style>
   .settings-page {
     padding-top: var(--space-6);
+  }
+  .settings-page > :global(*) {
     max-width: 820px;
   }
   header h1 {

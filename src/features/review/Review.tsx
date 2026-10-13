@@ -10,6 +10,7 @@ import {
   saveSession,
   streakNow,
   tz,
+  unlockedNewCount,
 } from '../../db/review';
 import { readSettings } from '../../db/settings';
 import { parseCloze } from '../../engine/cloze/parse';
@@ -29,8 +30,9 @@ import { toast } from '../../lib/toast';
 import { haptic } from '../../platform/haptics';
 import { shareFile } from '../../platform/share';
 import { sound } from '../../platform/sound';
-import { celebrate } from '../game/celebrate';
+import { celebrate, setCelebrateScope } from '../game/celebrate';
 import { Icon } from '../ui/Icon';
+import '../../styles/quiz-review.css';
 
 const TRACK = { dsa: 'DSA', sysdesign: 'System Design', ds: 'Data Science' } as const;
 const LABEL: Record<RatingName, string> = { again: 'Again', hard: 'Hard', good: 'Good', easy: 'Easy' };
@@ -84,6 +86,10 @@ export default function Review() {
   const startedAt = useRef(Date.now());
   const total = useRef(0);
   const pointer = useRef<{ x: number; y: number; t: number } | null>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const lastBtn = useRef<Element | null>(null);
+  /** For the empty screen: how many napkins are read, and how many new cards they still hold. */
+  const [unlock, setUnlock] = useState<{ read: number; waiting: number } | null>(null);
 
   const load = useCallback(async (extraNew = 0) => {
     try {
@@ -102,6 +108,10 @@ export default function Review() {
       total.current = q.length;
       setIdx(0);
       setRevealed(false);
+      if (!q.length && !topic) {
+        const [read, waiting] = await Promise.all([db.reads.count(), unlockedNewCount(db)]);
+        setUnlock({ read, waiting });
+      }
       setPhase(q.length ? 'session' : 'empty');
       setStreak((await streakNow(db)).current);
     } catch (e) {
@@ -113,6 +123,23 @@ export default function Review() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  // During a session, any burst (an achievement unlocking after a rating) pops briefly from the button that
+  // was pressed and sits behind the card, so it never covers the next question.
+  useEffect(() => {
+    if (phase !== 'session') return;
+    setCelebrateScope(() => {
+      const r = lastBtn.current?.getBoundingClientRect();
+      return {
+        origin: r ? { x: r.left + r.width / 2, y: r.top } : undefined,
+        count: 40,
+        duration: 600,
+        zIndex: 0,
+        parent: root.current ?? undefined,
+      };
+    });
+    return () => setCelebrateScope(null);
+  }, [phase]);
 
   const card = queue[idx];
   const item = card ? deck.get(card.id) : undefined;
@@ -135,7 +162,7 @@ export default function Review() {
       text: formatReceipt({ lines: finalLines, order: s.receiptNo, streak: st.current, now, tz: tz() }),
     });
     setPhase('done');
-    celebrate();
+    celebrate(undefined, 90, {});
     document.dispatchEvent(new CustomEvent('napkin:progress'));
   }, []);
 
@@ -143,6 +170,7 @@ export default function Review() {
     async (name: RatingName) => {
       if (!card || !item || !revealed || busy) return;
       setBusy(true);
+      lastBtn.current = root.current?.querySelector(`.rv__btn--${name}`) ?? null;
       const now = new Date();
       try {
         const next = await rate(getDb(), card, GRADE[name], sessionId.current, now);
@@ -251,20 +279,30 @@ export default function Review() {
       </div>
     );
 
+  const locked = !scope.topic && unlock?.read === 0;
   if (phase === 'empty')
     return (
       <div class="rv rv--center">
         <div class="rv__done-art" aria-hidden="true">
           <Icon name="check" size={40} stroke={2.5} />
         </div>
-        <h2>All caught up.</h2>
+        <h2>{locked ? 'Your deck fills as you read' : 'All caught up.'}</h2>
         <p class="muted">
           {scope.topic
             ? 'No cards left for this napkin right now.'
-            : 'Nothing is due. Spaced repetition works best a little every day, so come back tomorrow or learn a few new cards now.'}
+            : locked
+              ? "Flashcards unlock once you've read their napkin, so you only ever recall things you've seen. Read one and mark it read, and its cards show up here."
+              : unlock && unlock.waiting === 0
+                ? "Nothing is due, and you've started every card from the napkins you've read. Read another napkin to unlock more."
+                : 'Nothing is due. Spaced repetition works best a little every day, so come back tomorrow or learn a few new cards now.'}
         </p>
         <div class="rv__row">
-          {!scope.topic && (
+          {locked && (
+            <a class="btn btn--primary" href={href('library/')}>
+              <Icon name="library" size={16} /> Pick a napkin to read
+            </a>
+          )}
+          {!scope.topic && !locked && (unlock?.waiting ?? 1) > 0 && (
             <button type="button" class="btn btn--primary" onClick={() => void load(5)}>
               <Icon name="plus" size={16} /> Learn 5 new cards
             </button>
@@ -272,9 +310,11 @@ export default function Review() {
           <a class="btn" href={href('quiz/')}>
             Take a quick quiz
           </a>
-          <a class="btn btn--ghost" href={href('library/')}>
-            Browse napkins
-          </a>
+          {!locked && (
+            <a class="btn btn--ghost" href={href('library/')}>
+              Browse napkins
+            </a>
+          )}
         </div>
       </div>
     );
@@ -309,7 +349,7 @@ export default function Review() {
   const pct = Math.round((idx / Math.max(1, queue.length)) * 100);
 
   return (
-    <div class={`rv t-${item.track}`}>
+    <div class={`rv rv--session t-${item.track}`} ref={root} data-review-active>
       <div class="rv__bar">
         <a
           class="btn btn--ghost btn--icon"
@@ -365,16 +405,18 @@ export default function Review() {
                 No. {String(item.number).padStart(3, '0')} · {item.title} ↗
               </a>
             </div>
-            {item.kind === 'qa' && (
-              <p class="rv__q rv__q--small" dangerouslySetInnerHTML={{ __html: inlineMd(item.front) }} />
-            )}
-            <p class="rv__a">
-              {item.kind === 'cloze' && item.cloze ? (
-                <Cloze text={item.cloze} reveal />
-              ) : (
-                <span dangerouslySetInnerHTML={{ __html: inlineMd(item.back) }} />
+            <div class="rv__qa">
+              {item.kind === 'qa' && (
+                <p class="rv__asked" dangerouslySetInnerHTML={{ __html: inlineMd(item.front) }} />
               )}
-            </p>
+              <p class="rv__a">
+                {item.kind === 'cloze' && item.cloze ? (
+                  <Cloze text={item.cloze} reveal />
+                ) : (
+                  <span dangerouslySetInnerHTML={{ __html: inlineMd(item.back) }} />
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </div>

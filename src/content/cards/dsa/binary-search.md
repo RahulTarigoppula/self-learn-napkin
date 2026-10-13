@@ -34,7 +34,7 @@ quiz:
     answer: 2
     why: "Each probe halves the range, and 2²⁰ ≈ 1,048,576, so after 20 halvings a million candidates are down to one."
   - q: "Why can't you binary search an unsorted array?"
-    options: ["mid would be out of range", "A comparison with a[mid] tells you nothing about which half holds the target", "It would be O(n²)", "Most languages forbid it"]
+    options: ["mid could fall out of range, since the indices are not in order", "Comparing with a[mid] says nothing about which half holds the target", "It would degrade to O(n²) comparisons in the worst case", "Most languages forbid it, so the library call throws an error instead"]
     answer: 1
     why: "Discarding a half is only safe because every element on that side is known to be smaller (or larger). Without order, the target could be anywhere."
 bigO:

@@ -26,7 +26,7 @@ keyIdeas:
   - "The **outbox pattern** writes the state change and the event in one local transaction, so a saga step never updates its DB without announcing it."
 quiz:
   - q: "In 2PC, a participant voted YES and then lost contact with the coordinator. What may it do?"
-    options: ["Commit, since it voted yes", "Abort after a timeout", "Nothing: it must keep its locks and wait until it learns the decision", "Ask another participant to become coordinator and decide"]
+    options: ["Commit, since it voted yes and the others probably did too", "Abort after a timeout, then release its locks for other work", "Nothing: it keeps its locks and waits until it learns the decision", "Elect another participant as coordinator and let it decide fresh"]
     answer: 2
     why: "After a YES vote the participant has promised to follow the coordinator's decision, which may already be commit or abort. Deciding alone could break atomicity, so it blocks. (It can ask other participants; if any of them knows the outcome it can follow it, but if all voted yes and none heard, they all wait.)"
   - q: "A trip saga books the flight (T1), the hotel (T2) and the car (T3). T3 fails. What runs next?"
@@ -34,7 +34,7 @@ quiz:
     answer: 1
     why: "Committed local transactions cannot be rolled back, so the saga runs the compensations of the completed steps in reverse order: cancel the hotel, then cancel the flight. (If T3's failure is transient, retrying T3 first is also a valid design.)"
   - q: "A service updates its database and then publishes an event to Kafka. It crashes between the two. Which pattern prevents the lost event?"
-    options: ["Two-phase locking", "The transactional outbox: insert the event into an outbox table in the same DB transaction, and a relay publishes it", "A longer Kafka retention", "Publishing the event first"]
+    options: ["Two-phase locking around the database write and the publish", "A transactional outbox: write the event in the same DB transaction", "A longer Kafka retention, so the event is kept until it is read", "Publishing the event to Kafka first, then updating the database after it"]
     answer: 1
     why: "The state change and the outbox row commit atomically in one local transaction. A relay (polling or change-data-capture) publishes outbox rows at least once, so consumers must be idempotent."
 bigO:

@@ -28,11 +28,11 @@ keyIdeas:
   - "**The log is the source of truth** for replication (Postgres streaming, MySQL binlog) and change data capture."
 quiz:
   - q: "When may a database tell the client that a transaction has committed?"
-    options: ["When its data pages are written to disk", "When its COMMIT record is flushed to the log on stable storage", "As soon as the change is in the buffer pool", "After the next checkpoint"]
+    options: ["When all of its changed data pages have been written to disk", "When its COMMIT record is flushed to the log on stable storage", "As soon as its changes are applied to pages in the buffer pool", "After the next checkpoint has copied its changes to disk"]
     answer: 1
     why: "Durability only needs the log record on stable storage: recovery can rebuild the pages from it. Waiting for data pages would mean random writes on every commit; waiting for a checkpoint could take minutes."
   - q: "Why does a database take checkpoints?"
-    options: ["To make transactions atomic", "To limit how much log must be replayed after a crash and allow old log to be recycled", "To compress the log", "To acquire locks"]
+    options: ["To make transactions atomic by grouping all of their writes on disk together", "To bound replay after a crash and let old log segments be reused", "To compress the log by merging records for the same page", "To acquire locks on every page before it is flushed"]
     answer: 1
     why: "A checkpoint guarantees that changes before a certain log position are in the data files. Recovery starts from there, so restart time is bounded, and log segments before it can be deleted or reused."
   - q: "A disk can do about 1,000 fsyncs per second. Without group commit, roughly what is the commit ceiling for one log?"

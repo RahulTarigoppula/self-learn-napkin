@@ -28,7 +28,7 @@ keyIdeas:
   - "Too little data to spare 15 % for validation? Use **k-fold cross-validation** instead."
 quiz:
   - q: "You tried 40 hyperparameter settings; the best scored 91 % on the 150 validation rows. What should you expect on the test set?"
-    options: ["Exactly 91 %", "Probably a little lower than 91 %", "Probably higher than 91 %", "The training accuracy"]
+    options: ["Exactly 91 %, the same as validation", "Probably a little lower than 91 %", "Probably a little higher than 91 %", "About the same as its training accuracy"]
     answer: 1
     why: "Each validation score is noisy. Picking the maximum of 40 noisy scores favours a setting that also got lucky on those particular 150 rows. The test set played no part in the choice, so the luck does not carry over."
   - q: "Which of these is data leakage?"

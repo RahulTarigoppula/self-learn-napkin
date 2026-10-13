@@ -30,15 +30,15 @@ quiz:
     answer: 1
     why: "n must grab p's old successor before p.next is overwritten. Doing p.next = n first makes n.next = p.next point n at itself, and the rest of the list is lost."
   - q: "In a singly linked list you have a pointer to node X only. Why is deleting X normally O(n)?"
-    options: ["Freeing memory is slow", "You must find X's predecessor to change its next pointer, which means walking from head", "All later nodes must shift left", "It is O(1)"]
+    options: ["Freeing the node's memory takes time proportional to n", "You must walk from head to find X's predecessor and fix its next", "All later nodes must shift one place left to close the gap", "It is not; unlinking a node is always O(1) in any list"]
     answer: 1
     why: "Deleting X means setting pred.next = X.next, and a singly linked node does not know its predecessor. A doubly linked list stores prev, making it O(1)."
   - q: "What does reverse(head) return for an empty list (head is null)?"
-    options: ["It raises an error", "null", "A node holding the value null", "head.next"]
+    options: ["It raises an error on the first head.next", "null, since the loop body never runs", "A new node holding the value null", "head.next, read before the loop starts"]
     answer: 1
     why: "curr starts as null, so the loop body never runs and prev, still null, is returned. The empty list reversed is the empty list."
   - q: "Summing an array and summing a linked list are both O(n). Why is the array usually several times faster?"
-    options: ["Arrays use fewer comparisons", "Array elements are contiguous, so each cache line fetched brings many next elements; list nodes are scattered and each hop can miss the cache", "Linked lists are O(n log n)", "Compilers only optimise array loops"]
+    options: ["Arrays need fewer comparisons, since the loop has no null check", "Arrays are contiguous and cache-friendly; list nodes are scattered in memory", "Linked lists are really O(n log n), because each hop costs log n", "Compilers only optimise loops over arrays, never pointer-chasing loops"]
     answer: 1
     why: "Big-O counts steps, not memory stalls. The CPU loads 64-byte cache lines and prefetches sequential data; a pointer chase to a random address can cost ~100 ns from RAM versus ~1 ns from cache."
 bigO:

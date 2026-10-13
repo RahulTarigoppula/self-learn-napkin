@@ -34,7 +34,7 @@ quiz:
     answer: 2
     why: "ways(6) = ways(5) + ways(4) = 8 + 5 = 13. The table runs 1, 2, 3, 5, 8, 13."
   - q: "Coins {1, 3, 4}, amount 6. A greedy approach takes the biggest coin first. What happens?"
-    options: ["Greedy finds the optimum, 2 coins", "Greedy uses 3 coins (4 + 1 + 1), but DP finds 2 (3 + 3)", "Both need 3 coins", "There is no way to make 6"]
+    options: ["Greedy finds the optimum of 2 coins, matching DP exactly", "Greedy uses 3 coins (4 + 1 + 1), but DP finds 2 (3 + 3)", "Both need 3 coins (4 + 1 + 1), since no pair sums to 6", "No combination makes exactly 6, so both return −1"]
     answer: 1
     why: "Greedy grabs 4 and is left with 2, which needs 1 + 1. DP checks every last coin: best[6] = best[3] + 1 = 2. Greedy is not safe for arbitrary coin systems."
   - q: "How many distinct subproblems does memoised ways(n) solve?"

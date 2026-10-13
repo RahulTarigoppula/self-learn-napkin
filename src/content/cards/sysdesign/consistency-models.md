@@ -29,7 +29,7 @@ keyIdeas:
   - "**The cost of strong:** a round trip to a leader or majority per operation, and unavailability on the minority side of a partition (CAP)."
 quiz:
   - q: "A write of x = 1 has been acknowledged. Later, a different client reads x and gets 0. Which models allow this?"
-    options: ["Only linearisable", "Sequential, causal and eventual, but not linearisable", "None of them", "Only eventual"]
+    options: ["Only linearisable, since an acknowledged write is final", "Sequential, causal and eventual, but not linearisable", "None of them, because every model must show acked writes", "Only eventual, because causal forbids any stale read"]
     answer: 1
     why: "Linearisability respects real time, so a read that starts after a completed write must see it. Sequential and causal do not tie order to the wall clock, and eventual promises nothing about individual reads."
   - q: "A user refreshes a page and sees a comment, refreshes again and it is gone, then it reappears. Which guarantee is violated?"
@@ -37,11 +37,11 @@ quiz:
     answer: 1
     why: "Monotonic reads says that once you have seen a value, later reads never show an older state. Pinning a user's session to one replica is the usual fix."
   - q: "Alice posts 'Lunch?' and Bob, having read it, replies 'Yes'. Carol sees 'Yes' but not 'Lunch?'. Which is the weakest model that forbids this?"
-    options: ["Eventual", "Causal", "Linearisable", "Read-your-writes"]
+    options: ["Eventual consistency", "Causal consistency", "Linearisability", "Read-your-writes consistency"]
     answer: 1
     why: "Bob's reply causally depends on Alice's post because he read it first. Causal consistency requires everyone to see a cause before its effect. Eventual consistency allows the reply to show up first."
   - q: "Why do many systems default to eventual consistency for reads?"
-    options: ["It is always correct", "Strong reads need a round trip to a leader or a quorum, costing latency and availability", "Eventual reads are more durable", "Strong consistency is impossible"]
+    options: ["Eventual reads are always correct, so there is no real downside", "Strong reads must reach a leader or quorum, which is slower and less available", "Eventual reads are more durable, because every replica keeps a copy", "Strong consistency is impossible once data lives on several replicas"]
     answer: 1
     why: "A linearisable read must confirm it has the latest value, which means talking to a leader or majority. A local replica read is faster and keeps working during partitions, at the price of possible staleness."
 bigO:

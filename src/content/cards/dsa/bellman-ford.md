@@ -28,19 +28,19 @@ keyIdeas:
   - "Limit to **k edges** by running k passes that read only the previous pass's distances (*Cheapest Flights Within K Stops*: K stops = K + 1 edges, so K + 1 passes)."
 quiz:
   - q: "Why are V − 1 passes always enough when there is no negative cycle?"
-    options: ["Because each pass settles exactly one node", "A shortest path visits each node at most once, so it has at most V − 1 edges, and each pass extends correct paths by at least one edge", "Because the edges are sorted", "They are not; you need V² passes"]
+    options: ["Each pass settles exactly one node, and there are V − 1 others", "A shortest path has at most V − 1 edges, and each pass fixes one more edge", "The edges are sorted by weight, so each pass relaxes in order", "They are not; without sorting, you need V² passes to be certain"]
     answer: 1
     why: "Without negative cycles, some shortest path is simple: at most V nodes, so V − 1 edges. Pass i guarantees every path of i edges has been accounted for."
   - q: "Bellman-Ford's extra pass lowers dist[X]. What can you conclude?"
-    options: ["X is unreachable", "Some negative cycle is reachable from the source", "The edge order was wrong", "X has a negative edge into it but all is fine"]
+    options: ["X is unreachable, so its distance is still infinite", "Some negative cycle is reachable from the source", "The edges were relaxed in the wrong order", "X has a negative edge into it, but distances are fine"]
     answer: 1
     why: "With no reachable negative cycle, all distances are final after V − 1 passes. A further improvement is only possible if a cycle keeps lowering the cost."
   - q: "Exchange rates USD→EUR 0.9, EUR→GBP 0.9, GBP→USD 1.3. How do you detect the arbitrage with Bellman-Ford?"
-    options: ["Use the rates as weights and look for a positive cycle", "Use weights −log(rate); the loop's product 1.053 > 1 becomes a negative cycle", "Use weights 1/rate and run Dijkstra", "Sort the rates"]
+    options: ["Use the raw rates as weights, then look for any positive-weight cycle", "Use weights −log(rate); the product 1.053 > 1 becomes a negative cycle", "Use weights 1/rate, then run Dijkstra from USD to find the loop", "Sort the rates; any loop whose sum exceeds 3 is an arbitrage"]
     answer: 1
     why: "Multiplying rates becomes adding logs. A product above 1 means a sum of logs above 0, so the sum of −log(rate) is below 0: a negative cycle."
   - q: "When should you pick Bellman-Ford over Dijkstra?"
-    options: ["Always, because it is faster", "When some edge weights are negative or you must detect negative cycles", "When the graph is unweighted", "When the graph is very dense"]
+    options: ["Always, because it is faster than Dijkstra on any graph", "When some weights are negative or negative cycles must be found", "When the graph is unweighted, since every edge costs 1", "When the graph is very dense, because it skips the heap"]
     answer: 1
     why: "With non-negative weights Dijkstra's O((V + E) log V) is far faster. Bellman-Ford earns its O(V · E) only when negative edges or cycle detection matter."
 bigO:

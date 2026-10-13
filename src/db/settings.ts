@@ -1,5 +1,7 @@
 /** Settings live in localStorage (read by the pre-paint script before first paint) and are mirrored to
  *  Dexie so they travel with a backup. localStorage is the source of truth at runtime. */
+import { scopedKey } from '../lib/profiles';
+
 export type Theme = 'system' | 'light' | 'dark';
 export type Motion = 'system' | 'reduced' | 'full';
 
@@ -21,11 +23,12 @@ export const DEFAULTS: Settings = {
   lastBackupAt: null,
 };
 
-export const KEY = 'napkin:settings';
+/** Per-profile key: settings belong to whoever is learning on this device right now. */
+export const settingsKey = (): string => scopedKey('napkin:settings');
 
 export function readSettings(): Settings {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(settingsKey());
     if (!raw) return { ...DEFAULTS };
     return { ...DEFAULTS, ...(JSON.parse(raw) as Partial<Settings>) };
   } catch (e) {
@@ -51,7 +54,7 @@ export function writeSettings(patch: Partial<Settings>): Settings {
   const next = { ...readSettings(), ...patch };
   next.newPerDay = Math.max(0, Math.min(50, Math.round(next.newPerDay)));
   try {
-    localStorage.setItem(KEY, JSON.stringify(next));
+    localStorage.setItem(settingsKey(), JSON.stringify(next));
   } catch (e) {
     console.error('settings not saved', e);
   }

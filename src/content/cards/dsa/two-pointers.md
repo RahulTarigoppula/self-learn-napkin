@@ -30,7 +30,7 @@ quiz:
     answer: 1
     why: "2 + 14 = 16 < 17. Since 14 is the largest value left, 2 cannot reach 17 with any partner, so 2 is discarded: L moves right. Next, 5 + 14 = 19 is too big, R moves left, and 5 + 10 = 15 is too small, L moves right, then 7 + 10 = 17."
   - q: "Why does the opposite-ends pair search run in O(n) rather than O(n²)?"
-    options: ["It uses a hash map", "Each comparison moves one pointer inwards and they never move back", "It only checks every other element", "Sorting makes comparisons faster"]
+    options: ["It uses a hash map to find each value's partner in O(1)", "Each step moves one pointer inwards, and none ever moves back", "It only checks every other element, halving the work", "Sorting makes the comparisons cheaper, so each costs less"]
     answer: 1
     why: "The gap between L and R shrinks by one on every step and starts at n − 1, so there can be at most n − 1 comparisons."
   - q: "remove_duplicates([0, 0, 1, 1, 1, 2]) with the read/write pointers returns what?"

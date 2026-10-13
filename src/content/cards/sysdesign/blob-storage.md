@@ -28,7 +28,7 @@ keyIdeas:
   - "**Storage classes** and **lifecycle rules** move cold objects to cheaper tiers; a **CDN** in front serves hot reads near users."
 quiz:
   - q: "Users upload 500 MB videos. What is the best upload path?"
-    options: ["POST the file to the app server, which writes it into a BLOB column", "POST to the app server, which forwards it to object storage", "The app returns a pre-signed URL and the client does a multipart upload straight to object storage", "Email the file to the operations team"]
+    options: ["POST the file to the app server, which stores it in a BLOB column", "POST to the app server, which streams it on to object storage", "The client gets a pre-signed URL and uploads parts straight to storage", "Email the file to the operations team for manual upload"]
     answer: 2
     why: "The app only authorises and records the key. The bytes go directly to object storage in parallel parts, so app servers and the database never carry 500 MB per request, and a failed part is retried alone."
   - q: "An object is erasure-coded 6+3. How much raw storage does a 1.2 GB object use, and how many lost chunks can it survive?"
@@ -36,7 +36,7 @@ quiz:
     answer: 1
     why: "Each chunk is 1.2 / 6 = 0.2 GB and there are 9 of them: 1.8 GB, i.e. 1.5×. Any 6 chunks rebuild the object, so up to 3 can be lost."
   - q: "You rename the 'folder' photos/ to images/ in an S3-style bucket holding 2 million objects under that prefix. What actually happens?"
-    options: ["One metadata update", "2 million copy operations plus 2 million deletes, because folders are only key prefixes", "Nothing; renames are not allowed but are free", "The bucket is locked until the rename finishes"]
+    options: ["One metadata update to the folder entry, done in milliseconds", "2 million copies plus 2 million deletes, since folders are only key prefixes", "An error, since keys under a prefix can never be renamed or moved", "The whole bucket is locked for writes until the rename completes"]
     answer: 1
     why: "The namespace is flat. photos/a.jpg is one key; there is no folder object to rename. Each key must be copied to a new name and the old one deleted."
 bigO:

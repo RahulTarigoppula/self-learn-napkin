@@ -38,7 +38,7 @@ quiz:
     answer: 1
     why: "Amortised bounds cover the total cost of any sequence, with no probability involved. Individual appends can still take O(n), which matters for hard real-time systems."
   - q: "To keep both push and pop O(1) amortised, when should a doubling array shrink to half its capacity?"
-    options: ["When it is half full", "When it is a quarter full", "Never", "After every pop"]
+    options: ["When it drops to half full, mirroring the doubling", "When it drops to a quarter of its capacity", "Never, since any shrink costs O(n)", "After every pop, so no slot is wasted"]
     answer: 1
     why: "If it shrank at half full, alternating push and pop at that boundary would grow and shrink on every operation, costing O(n) each time. Shrinking at a quarter full leaves a buffer of cheap operations between resizes."
 bigO:

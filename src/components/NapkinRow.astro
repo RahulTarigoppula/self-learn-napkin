@@ -26,11 +26,11 @@ const text = `${d.title} ${d.tldr} ${d.tags.join(' ')}`.toLowerCase();
       <img src={withBase(`thumbs/${d.diagram}.svg`)} alt="" width="96" height="60" loading="lazy" decoding="async" />
     </span>
     <span class="row__main">
-      <span class="row__title">{d.title}{d.griddle && <span class="row__badge" title="Has an interactive playground"><Icon name="hand" size={13} /></span>}</span>
+      <span class="row__title">{d.title}{d.griddle && <span class="row__badge" role="img" aria-label="Has a playground" title="Has a playground"><Icon name="hand" size={13} /></span>}</span>
       <span class="row__tldr">{d.tldr}</span>
     </span>
     <span class="row__meta">
-      <span class="difficulty" role="img" aria-label={`difficulty ${d.difficulty} of 3`}>
+      <span class="difficulty" role="img" aria-label={`Difficulty ${d.difficulty} of 3`} title={`Difficulty ${d.difficulty} of 3`}>
         {[1, 2, 3].map((i) => <i class:list={{ on: i <= d.difficulty }} />)}
       </span>
       <span class="row__min mono">{d.minutes}m</span>
@@ -100,6 +100,10 @@ const text = `${d.title} ${d.tldr} ${d.tags.join(' ')}`.toLowerCase();
     gap: 6px;
     font-weight: 650;
     font-size: var(--text-md);
+  }
+  .row__badge,
+  .row .difficulty {
+    cursor: help;
   }
   .row__badge {
     display: inline-grid;

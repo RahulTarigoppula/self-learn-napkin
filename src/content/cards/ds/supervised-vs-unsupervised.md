@@ -32,11 +32,11 @@ quiz:
     answer: 1
     why: "The target is a number on a continuous scale and you have historical examples with the answer, so it is supervised regression."
   - q: "k-means splits your customers into 4 clusters. Can you report the clustering's accuracy?"
-    options: ["Yes, k-means outputs an accuracy", "Not directly: there are no true labels to compare against", "Yes, if k is 4", "Only on the training set"]
+    options: ["Yes: k-means reports an accuracy along with the inertia", "Not directly: there are no true labels to compare against", "Yes, because k = 4 tells it how many classes exist", "Only on the training set, since there is no test set"]
     answer: 1
     why: "Clusters are unnamed groups, with no answer key. You judge them by internal measures such as the silhouette score, by whether they help a later task, or by inspecting them."
   - q: "You have 2 million product photos, and only 5,000 of them are labelled with a category. What is the most sensible approach?"
-    options: ["Train only on the 5,000 labelled photos", "Cluster the photos and call the clusters categories", "Pre-train on all photos without labels (self-supervised), then fine-tune on the 5,000", "Treat it as regression"]
+    options: ["Train only on the 5,000 labelled photos and discard the rest", "Cluster all 2 million photos and treat each cluster as a category", "Self-supervised pre-training on all photos, then fine-tune on the 5,000", "Treat it as regression, predicting each category's ID as a number"]
     answer: 2
     why: "Unlabelled photos still teach useful visual features. Pre-training on them and then fine-tuning on the small labelled set usually beats using the labelled set alone."
   - q: "Which target makes a classification problem?"

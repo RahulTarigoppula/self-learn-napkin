@@ -29,7 +29,7 @@ keyIdeas:
   - "Squared error makes the fit **sensitive to outliers**, above all to points with extreme x (high leverage)."
 quiz:
   - q: "A model predicts house price = 40,000 + 2,500 × area_m² + 8,000 × bedrooms. What does 2,500 mean?"
-    options: ["Each m² adds 2,500 to the price, whatever the bedrooms", "With bedrooms held fixed, each extra m² goes with 2,500 more in predicted price", "Area causes 2,500 of the price", "2,500 is the average price per m² in the data"]
+    options: ["Each m² adds 2,500 to the price, even when bedrooms change as well", "With bedrooms held fixed, each extra m² goes with 2,500 more in price", "Area causes 2,500 of the price, so adding space adds exactly that", "2,500 is the average price per m² across all houses in the data"]
     answer: 1
     why: "A multiple-regression coefficient is a partial effect: the change in the prediction for one more unit of that feature while the others stay the same. It describes an association in the data, not a causal effect."
   - q: "A model leaves a sum of squared residuals of 30. Around the mean, the targets have a total sum of squares of 120. What is R²?"
@@ -37,7 +37,7 @@ quiz:
     answer: 1
     why: "R² = 1 − SSE / SST = 1 − 30 / 120 = 0.75. The model explains 75 % of the variation around the mean."
   - q: "Plotting residuals against predictions shows a funnel: small spread for small predictions, large spread for large ones. Which assumption is broken?"
-    options: ["Linearity", "Homoscedasticity (constant error variance)", "Independence", "No multicollinearity"]
+    options: ["Linearity (a straight-line relationship)", "Homoscedasticity (constant error variance)", "Independence (errors unrelated to each other)", "No multicollinearity (uncorrelated features)"]
     answer: 1
     why: "A funnel means the error variance grows with the prediction, which is called heteroscedasticity. The coefficients stay unbiased, but standard errors and p-values are wrong. Use robust standard errors, model log(y) or use weighted least squares."
   - q: "Which single new point changes the fitted slope the most?"

@@ -34,11 +34,11 @@ quiz:
     answer: 3
     why: "Each of the 3 layers makes up to 4 attempts (1 + 3 retries), and each of those attempts triggers up to 4 at the next layer: 4 × 4 × 4 = 64. Retry at one layer only, or use budgets."
   - q: "A breaker is open. What happens to a call made 5 s later, with a 30 s cool-down?"
-    options: ["It is sent to the dependency", "It fails immediately, so the caller can use a fallback", "It waits until the breaker closes", "It is queued for 25 s"]
+    options: ["It is sent to the dependency as a single trial request", "It fails immediately, so the caller can use a fallback", "It waits until the breaker closes, then goes through", "It is queued for 25 s and sent when the cool-down ends"]
     answer: 1
     why: "While open, the breaker rejects calls without any network I/O. That frees the caller's threads at once and stops adding load to the struggling dependency."
   - q: "Payments has 200 worker threads. Bank calls are slow but card-validation calls are fine. What stops bank slowness from blocking card validation?"
-    options: ["A larger thread pool", "A bulkhead: cap bank calls at, say, 40 concurrent in their own pool", "Longer timeouts", "More retries"]
+    options: ["A larger shared pool, say 400 threads, so none run out", "A bulkhead: bank calls get their own pool, capped at say 40", "Longer timeouts, so slow bank calls get time to finish", "More retries on the bank calls until they succeed"]
     answer: 1
     why: "With a separate, bounded pool for the bank, at most 40 threads can be stuck there; the other 160 keep serving everything else."
 bigO:

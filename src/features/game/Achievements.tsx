@@ -1,7 +1,40 @@
+import '../../styles/progress.css';
 import { useEffect, useState } from 'preact/hooks';
-import { ACHIEVEMENTS, type GameInput, LEVELS, type Level, levelOf, XP, xpOf } from '../../engine/game/game';
+import {
+  ACHIEVEMENTS,
+  type GameInput,
+  LEVELS,
+  type Level,
+  levelOf,
+  nextUp,
+  progressOf,
+  XP,
+  xpOf,
+} from '../../engine/game/game';
 import { Icon } from '../ui/Icon';
 import { type GameRecord, gameInput, loadGame } from './store';
+
+/** One colour family per kind of badge, so the wall reads at a glance. Tones live in progress.css. */
+const TONE: Record<string, string> = {
+  'first-napkin': 'read',
+  'ten-napkins': 'read',
+  'half-library': 'read',
+  'track-dsa': 'dsa',
+  'track-sysdesign': 'sys',
+  'track-ds': 'ds',
+  'first-review': 'review',
+  'reviews-100': 'review',
+  'reviews-1000': 'review',
+  'streak-3': 'streak',
+  'streak-7': 'streak',
+  'streak-30': 'streak',
+  'quiz-ace': 'quiz',
+  'quiz-ace-10': 'quiz',
+  'daily-first': 'daily',
+  'daily-7': 'daily',
+  tinkerer: 'play',
+  'mad-scientist': 'play',
+};
 
 const fmt = (t: number) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 
@@ -29,6 +62,7 @@ export default function Achievements() {
   const level = state?.level ?? levelOf(0);
   const got = state?.rec.unlocked ?? {};
   const count = ACHIEVEMENTS.filter((a) => a.id in got).length;
+  const next = state ? nextUp(state.g, new Set(Object.keys(got))) : null;
 
   return (
     <section id="achievements" class="ach" aria-labelledby="ach-h">
@@ -82,13 +116,36 @@ export default function Achievements() {
       <ul class="ach__grid">
         {ACHIEVEMENTS.map((a) => {
           const at = got[a.id];
+          const p = !at && state ? progressOf(a, state.g) : null;
+          const isNext = !at && a.id === next;
           return (
-            <li key={a.id} class="ach__item" data-on={at ? '' : undefined}>
+            <li
+              key={a.id}
+              class={`ach__item ach__item--${TONE[a.id] ?? 'read'}`}
+              data-on={at ? '' : undefined}
+              data-next={isNext ? '' : undefined}
+            >
+              {isNext && <span class="ach__next">Next up</span>}
               <span class="ach__icon" aria-hidden="true">
-                <Icon name={at ? a.icon : 'lock'} size={22} />
+                <Icon name={a.icon} size={22} />
+                {!at && (
+                  <span class="ach__lock">
+                    <Icon name="lock" size={11} stroke={2.5} />
+                  </span>
+                )}
               </span>
               <span class="ach__title">{a.title}</span>
               <span class="ach__how">{at ? `Earned ${fmt(at)}` : a.how}</span>
+              {p && (
+                <span class="ach__prog">
+                  <span class="ach__pbar" aria-hidden="true">
+                    <span style={{ width: `${Math.round((p.n / p.of) * 100)}%` }} />
+                  </span>
+                  <span class="ach__pnum mono">
+                    {p.n.toLocaleString()}/{p.of.toLocaleString()} {a.unit}
+                  </span>
+                </span>
+              )}
               <span class="sr-only">{at ? 'unlocked' : 'locked'}</span>
             </li>
           );

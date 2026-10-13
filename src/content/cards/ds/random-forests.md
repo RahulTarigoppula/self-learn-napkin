@@ -32,15 +32,15 @@ quiz:
     answer: 1
     why: "Each row is missed with probability (1 − 1/n)ⁿ ≈ e⁻¹ ≈ 0.368, so about 63.2 % of rows appear at least once. The sample still has 1,000,000 entries; the rest are repeats."
   - q: "Why does a random forest pick a random subset of features at each split?"
-    options: ["To make each tree train faster, nothing more", "To make the trees less correlated, so averaging cancels more of their errors", "To reduce the bias of each tree", "To avoid needing bootstrap samples"]
+    options: ["To make each tree train faster, which is the only real benefit", "To decorrelate the trees, so averaging cancels more of their errors", "To reduce the bias of each tree, so it fits the training data more closely", "To avoid needing bootstrap samples, since features already vary"]
     answer: 1
     why: "If one feature is very strong, every bagged tree splits on it first and the trees end up alike. Averaging highly correlated trees barely reduces variance (the ρσ² term stays). Restricting the choice forces diversity. The speed-up is a side benefit."
   - q: "Your forest's test error stops improving at 300 trees. What happens at 3,000 trees?"
-    options: ["It overfits badly", "About the same error, ten times the training and prediction cost", "Error drops to zero", "OOB error becomes unavailable"]
+    options: ["It overfits badly, since each new tree memorises more noise", "About the same error, at ten times the training and prediction cost", "Error drops close to zero, because more votes remove all noise", "OOB error becomes unavailable, since every row is now in-bag"]
     answer: 1
     why: "Extra trees only shrink the (1 − ρ)σ²/B term, which is already tiny. The forest does not overfit from more trees, but cost grows linearly with B."
   - q: "A customer-ID-like column with thousands of unique values tops the impurity-based importance ranking. What should you suspect?"
-    options: ["It really is the most predictive feature", "A bias: high-cardinality features offer many split points and win by chance on training data", "The forest needs more trees", "Gini should be replaced by entropy"]
+    options: ["It really is the most predictive feature, so keep it at the top of the list", "Bias: many split points let high-cardinality columns win by chance", "The forest needs more trees, so that the ranking settles down", "Gini should be replaced by entropy, which ranks features fairly"]
     answer: 1
     why: "Mean-decrease-in-impurity is computed on the training data and favours features with many possible thresholds. Check with permutation importance on held-out data, which measures how much accuracy actually drops when the column is shuffled."
 bigO:

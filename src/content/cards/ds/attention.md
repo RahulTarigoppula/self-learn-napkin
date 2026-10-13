@@ -30,7 +30,7 @@ quiz:
     answer: 2
     why: "e² = 7.39 and e⁰ = 1, total 8.39, so 7.39 / 8.39 ≈ 0.88 and 1 / 8.39 ≈ 0.12. Softmax keeps every option alive but strongly favours the higher score."
   - q: "Why are the scores divided by √d before the softmax?"
-    options: ["So the weights sum to 1", "Dot products grow with the vector length d; unscaled, softmax saturates and its gradients vanish", "To save memory", "To stop tokens attending to future tokens"]
+    options: ["So the attention weights in each row sum to 1 after the softmax", "Dot products grow with d; unscaled, softmax saturates and gradients vanish", "To save memory, since smaller scores need fewer bits to store", "To stop tokens attending to future tokens, which would leak answers"]
     answer: 1
     why: "With independent entries of variance 1, a dot product of length-d vectors has variance d. Large scores push softmax to almost one-hot, where gradients are nearly zero. Dividing by √d brings the variance back to 1."
   - q: "The input grows from 2,000 to 4,000 tokens. How does the attention score matrix grow?"
@@ -38,7 +38,7 @@ quiz:
     answer: 1
     why: "The score matrix is n × n: 4,000² / 2,000² = 4. This quadratic cost is the main obstacle to very long contexts."
   - q: "A text generator must not look at tokens it has not produced yet. How does attention enforce that?"
-    options: ["It deletes future tokens from the input", "It uses a smaller √d", "It averages the values instead", "A causal mask sets scores for later positions to −∞ before the softmax"]
+    options: ["It deletes future tokens from the input text before the attention step runs", "It uses a smaller √d so that scores for distant positions shrink", "It averages the values evenly instead of using softmax weights", "A causal mask sets scores for later positions to −∞ before the softmax"]
     answer: 3
     why: "e^(−∞) = 0, so masked positions get weight exactly 0 and the rest still sum to 1. Token i then mixes only tokens 1 … i."
 related: [ds/transformers, ds/embeddings, ds/neural-network-basics, ds/backpropagation]

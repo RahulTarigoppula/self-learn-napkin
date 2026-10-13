@@ -31,15 +31,15 @@ quiz:
     answer: 2
     why: "Every pair is out of order: there are 4·3/2 = 6 inversions, and each shift removes exactly one. Key 3 shifts 1, key 2 shifts 2, key 1 shifts 3: 1 + 2 + 3 = 6."
   - q: "Which input makes insertion sort run in linear time?"
-    options: ["Random order", "Reverse sorted", "Already sorted or nearly sorted", "All values distinct"]
+    options: ["Random order, since shifts average out", "Reverse sorted, since each key goes to the front", "Already sorted or nearly sorted, with few inversions", "All values distinct, so no ties need shifting"]
     answer: 2
     why: "Each key costs one comparison plus one per shift. With few inversions there are few shifts, so the total is about n − 1 comparisons: O(n)."
   - q: "You replace the inner scan with a binary search for the insert position. What is the new worst case?"
-    options: ["O(n log n)", "O(n²): comparisons drop to O(n log n) but the shifts are still O(n²)", "O(n)", "O(log n)"]
+    options: ["O(n log n), since each insert now costs O(log n)", "O(n²), because shifting elements is still O(n²)", "O(n), since binary search skips most comparisons", "O(log n), as only one search per array is needed"]
     answer: 1
     why: "Binary search finds the spot in O(log i) comparisons, but making room still moves up to i values. Moves dominate, so the worst case stays O(n²). It helps only when comparisons are expensive."
   - q: "Why does Timsort sort short runs with insertion sort rather than merge sort?"
-    options: ["Insertion sort is O(n log n)", "For a few dozen items its tiny constant factor and sequential memory access beat merge sort's overhead, and it is stable", "Merge sort cannot sort short arrays", "Insertion sort uses less recursion stack than heapsort"]
+    options: ["Insertion sort is O(n log n) on short runs, like merge sort", "For a few dozen items its low overhead wins, and it is stable", "Merge sort cannot sort arrays shorter than its block size", "Insertion sort uses less recursion stack than heapsort does"]
     answer: 1
     why: "Below about 32–64 items, n² is small and insertion sort's simple loop wins in practice. It is also stable, which Timsort must preserve."
 bigO:

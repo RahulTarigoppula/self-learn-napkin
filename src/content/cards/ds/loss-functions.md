@@ -36,11 +36,11 @@ quiz:
     answer: 2
     why: "Beyond δ Huber is linear: δ(|r| − ½δ) = 1 × (3 − 0.5) = 2.5. Squared error would charge 9 (or 4.5 for ½r²)."
   - q: "A classifier gives a true spam email p(spam) = 0.01. What is its log-loss (natural log)?"
-    options: ["0.01", "0.99", "About 4.6", "Infinite"]
+    options: ["0.01, the probability itself", "0.99, which is 1 − 0.01", "About 4.6, which is −ln 0.01", "Infinite, since the label is wrong"]
     answer: 2
     why: "−ln 0.01 ≈ 4.61, compared with 0.105 for p = 0.9. Confident mistakes cost far more than hesitant ones; the loss only becomes infinite at p = 0."
   - q: "Why do SVMs ignore points that are correctly classified with margin ≥ 1?"
-    options: ["They are deleted from the data", "Hinge loss is exactly zero there, so they add no gradient", "Log-loss is zero there", "Because of regularisation"]
+    options: ["They are deleted from the data before training, so they never count", "Hinge loss is exactly zero there, so they add no gradient", "Log-loss is zero there, so those points stop pulling", "Because regularisation shrinks their weights to zero"]
     answer: 1
     why: "max(0, 1 − m) = 0 once m ≥ 1, so those points do not affect the solution. Only points on or inside the margin (the support vectors) shape the boundary. Log-loss is never exactly zero, so every point still pulls a little."
 bigO:

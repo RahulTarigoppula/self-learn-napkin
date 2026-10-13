@@ -37,6 +37,7 @@
   --accent-ink: #2541d6;
   --accent-soft: #e5eaff;
   --hl: #ffe45c;
+  --hl-mark: color-mix(in srgb, #ffe45c 75%, transparent);
   --hl-ink: #16181d;
   --code-bg: #ffffff;
   --success: #12884a;
@@ -185,6 +186,7 @@
   --accent-ink: #a5b4ff;
   --accent-soft: rgb(129 151 255 / 0.16);
   --success: #3ddc97;
+  --hl-mark: rgb(245 200 76 / 0.82);
   --success-ink: #3ddc97;
   --warning: #fbbf24;
   --danger: #ff6b6f;
@@ -249,6 +251,7 @@
     --accent-ink: #a5b4ff;
     --accent-soft: rgb(129 151 255 / 0.16);
     --success: #3ddc97;
+    --hl-mark: rgb(245 200 76 / 0.82);
     --success-ink: #3ddc97;
     --warning: #fbbf24;
     --danger: #ff6b6f;

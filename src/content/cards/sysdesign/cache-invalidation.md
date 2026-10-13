@@ -28,19 +28,19 @@ keyIdeas:
   - "**Stampede protection:** request coalescing (single-flight or a lock), jittered TTLs, and early probabilistic refresh."
 quiz:
   - q: "Why do most teams delete the cached key after a database write instead of writing the new value into the cache?"
-    options: ["Deleting is faster than writing", "Two concurrent writers' cache updates can arrive in the opposite order to their database writes, leaving an old value cached", "Caches cannot overwrite keys", "It saves memory"]
+    options: ["A delete is cheaper than a set, so the write path finishes much sooner", "Two writers' cache sets can land out of order and leave an old value", "Most caches cannot overwrite a key that already holds a value", "It saves memory, since a deleted key is never cached again"]
     answer: 1
     why: "W1 writes A, W2 writes B to the database, but W2's cache SET lands before W1's: the cache says A, the database B, indefinitely. Two deletes in any order leave the same result: no entry."
   - q: "A writer deletes the cache key FIRST and then updates the database. What can go wrong?"
-    options: ["Nothing; the order does not matter", "A reader between the two steps misses, reads the old row and caches it, so the cache stays stale after the update", "The database rejects the update", "The cache deletes the wrong key"]
+    options: ["Nothing, because the order of the two steps does not matter", "A read in the gap caches the old row, which then outlives the update", "The database rejects the update since the key is already gone", "The cache then deletes the wrong key, because the row has not changed yet"]
     answer: 1
     why: "In the gap between delete and update, a read misses, loads the old row and writes it back. The update then completes but nobody deletes the key again, so the old value lives until its TTL."
   - q: "Which write strategy can lose writes that were already acknowledged to the client?"
-    options: ["Write-through", "Write-around", "Write-behind (write-back)", "Cache-aside"]
+    options: ["Write-through", "Write-around", "Write-behind", "Cache-aside"]
     answer: 2
     why: "Write-behind acknowledges once the cache has the value and flushes to the database later. If the cache node dies before the flush, those writes are gone."
   - q: "10,000 product keys are bulk-loaded at 09:00 with TTL = 1 hour. What should you change?"
-    options: ["Nothing", "Add random jitter, e.g. 1 hour ± 10 %, so they do not all expire at 10:00", "Use a shorter TTL for all of them", "Disable the TTL"]
+    options: ["Nothing, since one hour is a sensible TTL for product data", "Add random jitter, about ± 10 %, so they do not all expire at 10:00", "Use a shorter TTL for all of them so stale prices clear faster", "Disable the TTL so the keys stay cached forever, even after they go stale"]
     answer: 1
     why: "Identical TTLs make all keys expire in the same instant and the database takes every miss at once. Jitter spreads the expiries over minutes."
 bigO:

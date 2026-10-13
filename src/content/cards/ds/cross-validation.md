@@ -32,11 +32,11 @@ quiz:
     answer: 1
     why: "Each round holds out one fold of 200 and trains a fresh model on the other four folds, 800 rows. Five rounds, five models; every row is validated exactly once."
   - q: "Model A scores 0.82, 0.85, 0.80, 0.84, 0.83 across 5 folds. Model B scored 0.85 on one random split. What is the sound conclusion?"
-    options: ["B is better: 0.85 beats 0.83", "B's single score is within A's fold-to-fold spread; run B on the same 5 folds before deciding", "A is better because it has more scores", "Average B's 0.85 into A's scores"]
+    options: ["B is better, because its 0.85 beats the 0.83 that A averages", "B's 0.85 is within A's fold spread; run B on the same 5 folds first", "A is better, because five scores beat a single one", "Average B's 0.85 into A's five scores and then compare the two means"]
     answer: 1
     why: "A's own folds range from 0.80 to 0.85, so one split can easily land at 0.85 by luck. Compare models on the same folds so the noise from the split affects both equally."
   - q: "You tried 100 configurations with 5-fold CV. Is the winner's mean CV score a fair estimate of its real performance?"
-    options: ["Yes, CV removes all bias", "No: choosing the best of 100 makes that score optimistic", "No: CV scores are always pessimistic", "Yes, as long as k = 10"]
+    options: ["Yes: cross-validation removes all selection bias", "No: picking the best of 100 makes that score optimistic", "No: CV scores are always pessimistic, so it is too low", "Yes, as long as you use k = 10 instead of 5"]
     answer: 1
     why: "The winner was selected partly for being lucky on these folds. Confirm it on an untouched test set, or use nested CV, where an outer loop scores the whole tuning procedure."
   - q: "You predict churn and each customer contributes 50 monthly rows. Which splitter fits best?"

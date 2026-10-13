@@ -111,8 +111,35 @@ export async function currentQueue(
       .toArray();
     return cards.sort((a, b) => a.due.getTime() - b.due.getTime());
   }
-  const all = await db.cards.orderBy('due').toArray();
-  return buildQueue(all, now, newPerDay, dayKey(now, tz())).items;
+  const [all, read] = await Promise.all([db.cards.orderBy('due').toArray(), readSlugs(db)]);
+  return buildQueue(unlockedCards(all, read), now, newPerDay, dayKey(now, tz())).items;
+}
+
+const readSlugs = async (db: NapkinDB): Promise<Set<string>> =>
+  new Set((await db.reads.toArray()).map((r) => r.slug));
+
+/**
+ * A new deck card is only introduced once the learner has marked its napkin read, so nobody is asked to
+ * recall a topic they have never seen. Cards already introduced (any state but New) and the learner's own
+ * highlight cards always pass.
+ */
+export function unlockedCards<C extends Pick<ReviewCard, 'state' | 'slug' | 'origin'>>(
+  cards: readonly C[],
+  read: ReadonlySet<string>,
+): C[] {
+  return cards.filter((c) => c.state !== State.New || c.origin === 'highlight' || read.has(c.slug));
+}
+
+/** New cards still waiting in napkins the learner has read (ignores today's new-card limit). */
+export async function unlockedNewCount(db: NapkinDB): Promise<number> {
+  const [fresh, read] = await Promise.all([
+    db.cards.where('state').equals(State.New).toArray(),
+    readSlugs(db),
+  ]);
+  return unlockedCards(
+    fresh.filter((c) => c.orphan === 0),
+    read,
+  ).length;
 }
 
 export async function dueCount(db: NapkinDB, now: Date, newPerDay: number): Promise<number> {
@@ -179,6 +206,33 @@ export async function markRead(db: NapkinDB, slug: string, now = new Date()): Pr
       await db.days.put({ ...d, napkinsRead: d.napkinsRead + 1 });
     }
   });
+}
+
+/** Settings key for finished quick-quiz rounds (the home checklist ticks off "Try a quick quiz" from it). */
+export const QUICK_QUIZ_KEY = 'quickQuiz';
+interface QuickQuizStat {
+  rounds: number;
+  best: number;
+  at: number;
+}
+
+export async function recordQuickQuiz(
+  db: NapkinDB,
+  score: number,
+  total: number,
+  now = Date.now(),
+): Promise<void> {
+  const prev = (await db.settings.get(QUICK_QUIZ_KEY))?.value as Partial<QuickQuizStat> | undefined;
+  const value: QuickQuizStat = {
+    rounds: (prev?.rounds ?? 0) + 1,
+    best: Math.max(prev?.best ?? 0, total ? score / total : 0),
+    at: now,
+  };
+  await db.settings.put({ key: QUICK_QUIZ_KEY, value });
+}
+
+export async function quickQuizRounds(db: NapkinDB): Promise<number> {
+  return ((await db.settings.get(QUICK_QUIZ_KEY))?.value as Partial<QuickQuizStat> | undefined)?.rounds ?? 0;
 }
 
 export async function streakNow(db: NapkinDB, now = new Date()): Promise<{ current: number; best: number }> {

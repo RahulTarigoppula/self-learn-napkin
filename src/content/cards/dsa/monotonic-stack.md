@@ -30,7 +30,7 @@ quiz:
     answer: 0
     why: "Nothing to the right of 5 is bigger → −1. For 3 and for 1 the first bigger value to the right is 4. 4 is last → −1. In the scan, 4 pops 1 and then 3, and stops at 5."
   - q: "The inner while-loop can pop many items in one step. Why is the algorithm still O(n)?"
-    options: ["The stack never holds more than two items", "Each index is pushed once and popped at most once, so all pops together are at most n", "Popping costs nothing", "It is actually O(n log n)"]
+    options: ["The stack never holds more than two items, so each loop is short", "Each index is pushed once and popped at most once, so pops total ≤ n", "Popping costs nothing, since it only moves a pointer", "It is actually O(n log n), since pops are bounded by log n"]
     answer: 1
     why: "Count work per element, not per step: every index enters the stack once and can leave it at most once. Total pushes + pops ≤ 2n, which is amortised O(1) per element."
   - q: "Daily temperatures [30, 40, 35, 50]: how many days until a warmer day, for each day?"
@@ -38,7 +38,7 @@ quiz:
     answer: 0
     why: "30 → 40 the next day (1). 40 waits through 35 until 50, two days later (2). 35 → 50 the next day (1). Nothing is warmer than 50 → 0."
   - q: "You need the next SMALLER element to the right. How should the stack be kept?"
-    options: ["Decreasing; pop while top < x", "Increasing from bottom to top; pop while top > x", "Sorted by index only", "A queue instead of a stack"]
+    options: ["Decreasing from bottom to top; pop while top < x", "Increasing from bottom to top; pop while top > x", "Sorted by index only; never pop, just scan back", "As a queue instead; pop from the front while front > x"]
     answer: 1
     why: "Mirror the rule: a waiter is answered by the first value smaller than it, so pop while the top is bigger than x. The survivors then increase from bottom to top."
 bigO:

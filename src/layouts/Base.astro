@@ -34,9 +34,14 @@ const isWeb = PLATFORM !== 'android';
         var r = document.documentElement;
         r.classList.add('js');
         try {
-          var s = JSON.parse(localStorage.getItem('napkin:settings') || '{}');
+          // Settings belong to the active local profile (see src/lib/profiles.ts).
+          var pr = JSON.parse(localStorage.getItem('napkin:profiles') || 'null');
+          var pid = pr && pr.active && pr.active !== 'default' ? ':' + pr.active : '';
+          var s = JSON.parse(localStorage.getItem('napkin:settings' + pid) || '{}');
           if (s.theme === 'light' || s.theme === 'dark') r.setAttribute('data-theme', s.theme);
           if (s.motion === 'reduced' || s.motion === 'full') r.setAttribute('data-motion', s.motion);
+          // Library Grid/List view, so the page never flashes the other layout.
+          if (localStorage.getItem('napkin:libview') === 'grid') r.setAttribute('data-libview', 'grid');
         } catch (e) {}
         // A cross-document view transition can be skipped (fast clicks, hidden tab); that is not an error.
         var quiet = function (e) {

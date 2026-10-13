@@ -1,5 +1,6 @@
 import Dexie, { type Table } from 'dexie';
 import type { Card as FsrsCard, ReviewLog as FsrsLog } from 'ts-fsrs';
+import { dbName } from '../lib/profiles';
 
 export interface ReviewCard extends FsrsCard {
   /** DeckItem.id, or 'hl-' + sha1(slug + '|' + sentence) for a learner-made cloze */
@@ -89,6 +90,6 @@ export class NapkinDB extends Dexie {
 let instance: NapkinDB | null = null;
 /** Lazily opened so pages that never touch progress never open IndexedDB. */
 export const getDb = (): NapkinDB => {
-  instance ??= new NapkinDB();
+  instance ??= new NapkinDB(dbName());
   return instance;
 };

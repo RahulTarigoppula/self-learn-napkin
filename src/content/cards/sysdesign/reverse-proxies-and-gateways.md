@@ -32,7 +32,7 @@ quiz:
     answer: 1
     why: "It acts on behalf of the clients going out to the internet. External sites see the proxy's IP, not each employee's."
   - q: "After adding a reverse proxy, your app logs show every request coming from 10.0.0.5. Why, and what fixes it?"
-    options: ["The proxy is broken", "The app sees the proxy as its client; read the real client IP from X-Forwarded-For set by the proxy", "Clients share one IP", "TLS hides IPs"]
+    options: ["The proxy is misconfigured; reinstall it so it passes packets through", "The app sees the proxy as its client; read X-Forwarded-For instead", "All clients share one NAT IP; ask users to turn off their VPNs", "TLS hides client IPs; terminate TLS at the app to see them again"]
     answer: 1
     why: "The TCP connection now comes from the proxy. The proxy passes the original IP in X-Forwarded-For (or Forwarded). Trust that header only when it was set by your own proxy, since clients can forge it."
   - q: "A phone needs data from 3 services; mobile RTT is 80 ms. Roughly what does gateway aggregation save versus three sequential calls from the phone?"
@@ -40,7 +40,7 @@ quiz:
     answer: 1
     why: "Three sequential calls cost ~3 × 80 = 240 ms of round trips. One call costs ~80 ms plus the gateway's parallel internal calls (a few ms each), saving about 160 ms."
   - q: "Which belongs in an API gateway rather than in a service?"
-    options: ["Calculating an order's tax", "Verifying the caller's token and enforcing a per-client rate limit", "Deciding whether a cart is eligible for a discount", "Writing the order to the database"]
+    options: ["Calculating each order's tax from the customer's full shipping address", "Verifying the caller's token and enforcing a per-client rate limit", "Deciding whether a customer's cart qualifies for a discount code", "Writing the confirmed order and its line items to the database"]
     answer: 1
     why: "Cross-cutting checks that are the same for every service fit the gateway. Business rules belong in services; putting them in the gateway couples every team to one shared component."
 bigO:

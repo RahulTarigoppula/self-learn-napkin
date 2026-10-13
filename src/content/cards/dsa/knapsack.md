@@ -28,7 +28,7 @@ keyIdeas:
   - "**Greedy by value per kg fails** for 0/1 knapsack; it is only correct for the fractional version, where items can be cut."
 quiz:
   - q: "In the one-array version of 0/1 knapsack, why must the capacity loop run from W down to w?"
-    options: ["It is faster", "So dp[c − w] still holds the previous item's row, and each item is used at most once", "So the answer ends up in dp[0]", "It avoids negative indices"]
+    options: ["It is faster, since the larger capacities are filled first", "So dp[c − w] still holds the previous row, and each item is used once", "So the final answer ends up in dp[0], which saves a lookup", "It avoids negative indices, which an upward loop would read at c = 0"]
     answer: 1
     why: "Going upwards, dp[c − w] may already include the current item, so the item could be added again and again. That is the unbounded knapsack. Downwards, every read sees the previous row."
   - q: "Capacity 50; items (10 kg, $60), (20 kg, $100), (30 kg, $120). What is the best 0/1 value?"
@@ -36,7 +36,7 @@ quiz:
     answer: 2
     why: "Greedy by $/kg (6, 5, 4) takes the first two for $160 and then the 30 kg item no longer fits. The optimum is 20 kg + 30 kg = 50 kg for $220."
   - q: "Why is the O(nW) knapsack algorithm called pseudo-polynomial?"
-    options: ["It uses recursion", "Its running time depends on the numeric value of W, which can be exponential in the input's size in bits", "It only works for small n", "It is polynomial only on average"]
+    options: ["It uses recursion, which hides an exponential number of calls", "Its time grows with the value of W, which is exponential in W's bit length", "It only works when n is small, since n appears in the bound", "It is polynomial only on average, and exponential in the worst case"]
     answer: 1
     why: "Writing W takes about log₂ W bits. A W of 2⁶⁴ is a 64-bit number but would need 2⁶⁴ table columns, so the running time is exponential in the input length."
   - q: "In the worked table, dp[3][5] = 6. Which items make that $6?"

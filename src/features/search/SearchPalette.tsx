@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { prepare, type SearchDoc, type SearchHit, search } from '../../engine/search';
 import { cardHref, href, withBase } from '../../lib/base';
+import { scopedKey } from '../../lib/profiles';
 import { Icon } from '../ui/Icon';
 
 const TRACK_LABEL = { dsa: 'DSA', sysdesign: 'System Design', ds: 'Data Science' } as const;
-const RECENT_KEY = 'napkin:recent';
+const recentKey = () => scopedKey('napkin:recent');
 const HINTS = ['LRU', 'quorum', 'softmax', 'binary search', 'load factor', 'token bucket'];
 
 let indexPromise: Promise<ReturnType<typeof prepare>> | null = null;
@@ -23,7 +24,7 @@ const loadIndex = () => {
 
 function readRecent(): string[] {
   try {
-    return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') as string[];
+    return JSON.parse(localStorage.getItem(recentKey()) ?? '[]') as string[];
   } catch {
     return [];
   }

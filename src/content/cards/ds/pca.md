@@ -32,15 +32,15 @@ quiz:
     answer: 2
     why: "Total variance is 6 + 3 + 1 = 10. The first two components explain (6 + 3) / 10 = 0.9, i.e. 90 %."
   - q: "One feature is income in pounds (std ≈ 20,000) and another is age in years (std ≈ 12). You run PCA without scaling. What will PC1 be?"
-    options: ["A 50/50 mix of both", "Almost exactly the income axis", "Almost exactly the age axis", "Undefined"]
+    options: ["An even 50/50 mix of income and age", "Almost exactly the income axis", "Almost exactly the age axis", "Undefined until the features are scaled"]
     answer: 1
     why: "PCA maximises raw variance, and income's variance is millions of times larger. PC1 just points along income. Standardise first (PCA on the correlation matrix) when units differ."
   - q: "Why might the first few principal components be useless for a classification task?"
-    options: ["PCA ignores the labels: the direction separating the classes may have low variance", "Principal components are always correlated", "PCA only works on images", "PCA removes the mean, which carries the class information"]
+    options: ["PCA ignores labels, so the class-separating direction may have low variance", "Principal components are always correlated, so they repeat the same information", "PCA only works on images, where pixels share a common scale", "PCA removes the mean, which is where all of the class information lives"]
     answer: 0
     why: "PCA is unsupervised; it keeps high-variance directions whatever their link to the target. A low-variance direction can be exactly what separates the classes. Compare with a supervised method or validate the downstream model."
   - q: "Your data lies on a circle (a ring) in 2-D. What does PCA do?"
-    options: ["It recovers the angle around the ring as PC1", "It puts about 90 % of the variance in PC1", "It finds two components of roughly equal variance and cannot unroll the ring", "It fails to run"]
+    options: ["It recovers the angle around the ring as PC1, unrolling it into a line", "It puts about 90 % of the variance in PC1, along the ring's diameter", "Two components of nearly equal variance; it cannot unroll the ring", "It fails to run, because the data are not linearly separable"]
     answer: 2
     why: "PCA can only rotate the axes. A ring has about the same spread in every direction, so the eigenvalues are nearly equal and no straight line captures the angle. Non-linear methods (kernel PCA, UMAP) are needed."
 bigO:

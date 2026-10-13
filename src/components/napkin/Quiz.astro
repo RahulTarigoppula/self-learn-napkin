@@ -55,6 +55,7 @@ const letters = ['A', 'B', 'C', 'D'];
   import { haptic } from '../../platform/haptics';
   import { celebrateFrom } from '../../features/game/celebrate';
   import { recordQuiz } from '../../features/game/store';
+  import { prefersReducedMotion } from '../../db/settings';
 
   for (const quiz of document.querySelectorAll<HTMLElement>('[data-quiz]')) {
     const total = Number(quiz.dataset.total);
@@ -77,13 +78,6 @@ const letters = ['A', 'B', 'C', 'D'];
               : 'Worth another pass through the story. Then try again.';
       if (correct === total) celebrateFrom(score.querySelector('.quiz__score-num'));
       void recordQuiz(quiz.dataset.quiz ?? '', correct, total).catch(() => undefined);
-      try {
-        const key = `napkin:quiz:${quiz.dataset.quiz}`;
-        const best = Number(localStorage.getItem(key) ?? '0');
-        if (correct > best) localStorage.setItem(key, String(correct));
-      } catch {
-        /* storage unavailable: the score just isn't remembered */
-      }
     };
     for (const item of items) {
       const answer = Number(item.dataset.answer);
@@ -102,7 +96,14 @@ const letters = ['A', 'B', 'C', 'D'];
           opts[answer]?.setAttribute('data-correct', '');
           for (const o of opts) o.setAttribute('aria-disabled', 'true');
           if (verdict) verdict.textContent = ok ? 'Right. ' : 'Not quite. ';
-          if (why) why.hidden = false;
+          if (why) {
+            why.dataset.verdict = ok ? 'right' : 'wrong';
+            why.hidden = false;
+            // On a phone the explanation can open below the fold; bring it just into view.
+            requestAnimationFrame(() =>
+              why.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion() ? 'auto' : 'smooth' }),
+            );
+          }
           if (ok) {
             sound.good();
             void haptic.light();
@@ -118,7 +119,10 @@ const letters = ['A', 'B', 'C', 'D'];
       for (const item of items) {
         delete item.dataset.done;
         const why = item.querySelector<HTMLElement>('.quiz__why');
-        if (why) why.hidden = true;
+        if (why) {
+          why.hidden = true;
+          delete why.dataset.verdict;
+        }
         for (const o of item.querySelectorAll<HTMLElement>('.quiz__opt')) {
           delete o.dataset.picked;
           o.removeAttribute('data-correct');
@@ -255,8 +259,30 @@ const letters = ['A', 'B', 'C', 'D'];
     padding: var(--space-3) var(--space-4);
     border-radius: var(--radius-md);
     background: var(--surface-2);
+    border-left: 3px solid transparent;
     font-size: var(--text-base);
     animation: fade-up var(--dur-slow) var(--ease-out) both;
+    scroll-margin-bottom: var(--space-4);
+  }
+  /* Below the desktop layout the tab bar covers the bottom of the screen. */
+  @media (max-width: 1023px) {
+    .quiz__why {
+      scroll-margin-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 16px);
+    }
+  }
+  .quiz__why[data-verdict='right'] {
+    background: color-mix(in srgb, var(--success) 11%, var(--surface));
+    border-left-color: var(--success-ink);
+  }
+  .quiz__why[data-verdict='wrong'] {
+    background: color-mix(in srgb, var(--danger) 10%, var(--surface));
+    border-left-color: var(--danger-ink);
+  }
+  .quiz__why[data-verdict='right'] .quiz__verdict {
+    color: var(--success-ink);
+  }
+  .quiz__why[data-verdict='wrong'] .quiz__verdict {
+    color: var(--danger-ink);
   }
   .quiz__why :global(code) {
     font-size: 0.9em;

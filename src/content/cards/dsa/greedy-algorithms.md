@@ -36,7 +36,7 @@ quiz:
     answer: 1
     why: "Greedy takes 4, leaving 2, which needs 1 + 1: three coins. Two 3s use only two coins, so greedy fails for this coin system."
   - q: "What does an exchange argument show?"
-    options: ["That the algorithm runs in O(n log n)", "That any optimal solution can be changed to include the greedy choice without getting worse", "That greedy and DP give the same answer for every input", "That the input must be sorted"]
+    options: ["That the algorithm runs in O(n log n) once the input is sorted", "That any optimal solution can swap in the greedy choice at no loss", "That greedy beats DP on running time for every input", "That the input must be sorted before any choice is made"]
     answer: 1
     why: "If some optimal solution contains the greedy choice, committing to it is safe; then optimal substructure lets you repeat the argument on what remains."
   - q: "Which problem is NOT solved correctly by a simple greedy?"

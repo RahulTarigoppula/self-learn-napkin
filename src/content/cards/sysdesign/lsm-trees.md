@@ -27,11 +27,11 @@ keyIdeas:
   - "Used by RocksDB, LevelDB, Cassandra, ScyllaDB, HBase and Bigtable. **B-trees** favour reads; **LSM-trees** favour writes."
 quiz:
   - q: "Why are LSM-tree writes fast compared with a B-tree's?"
-    options: ["They skip durability", "They turn random in-place page updates into sequential appends and flushes", "They never write to disk", "They use bigger pages"]
+    options: ["They skip durability and only acknowledge writes held in memory", "They turn random page updates into sequential appends and flushes", "They never touch disk until a nightly compaction job runs", "They use bigger pages, so each write covers more keys at once"]
     answer: 1
     why: "A B-tree updates the page that holds the key, a random write of a whole page. An LSM-tree appends to the WAL and buffers in memory, then writes large sorted files sequentially, which disks and SSDs handle far better."
   - q: "A key was deleted yesterday, but an old SSTable still holds its value. Why does get() correctly return 'not found'?"
-    options: ["Deletes rewrite every SSTable immediately", "The delete wrote a newer tombstone, and reads stop at the newest entry", "Bloom filters remove deleted keys", "The WAL is checked last"]
+    options: ["Deletes rewrite every SSTable at once, so the old value is gone", "The delete wrote a newer tombstone, and reads stop at the newest entry", "Bloom filters drop deleted keys, so the old SSTable is skipped", "The WAL is checked last, and its entries override whatever the SSTables say"]
     answer: 1
     why: "A delete is a write of a special marker, a tombstone. Reads scan newest to oldest and stop at the first entry, which is the tombstone. Compaction later drops both the tombstone and the old value."
   - q: "Which compaction strategy usually gives lower write amplification but higher space amplification?"
@@ -39,7 +39,7 @@ quiz:
     answer: 1
     why: "Size-tiered merges groups of similar-sized files, so each byte is rewritten fewer times. But several overlapping copies of a key can coexist, and a big merge needs free space for its output, so disk usage can temporarily double."
   - q: "Bloom filters on SSTables speed up which kind of read the most?"
-    options: ["Range scans", "Lookups of keys that do not exist", "Full table scans", "Reads from the memtable"]
+    options: ["Range scans, since the filter can rule out whole key ranges", "Point lookups of keys that do not exist in any SSTable", "Full table scans, since filters skip files with no rows", "Reads of hot keys that are still in the memtable"]
     answer: 1
     why: "For a missing key, every SSTable would otherwise need an index probe. The filter answers 'definitely not here' from memory for almost all of them. Range scans cannot use a per-key filter."
 bigO:

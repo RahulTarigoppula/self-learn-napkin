@@ -6,7 +6,9 @@ import {
   type GameInput,
   LEVELS,
   levelOf,
+  nextUp,
   previousDay,
+  progressOf,
   unlockedIds,
   xpOf,
 } from './game';
@@ -86,6 +88,61 @@ describe('achievements', () => {
 
   it('a track with no napkins is never "finished"', () => {
     expect(unlockedIds({ ...zero, trackTotals: {}, readByTrack: {} })).toEqual([]);
+  });
+});
+
+describe('badge progress', () => {
+  const byId = (id: string) => {
+    const a = ACHIEVEMENTS.find((x) => x.id === id);
+    if (!a) throw new Error(id);
+    return a;
+  };
+
+  it('counts towards multi-step goals and caps at the goal', () => {
+    expect(progressOf(byId('ten-napkins'), { ...zero, read: 3 })).toEqual({ n: 3, of: 10 });
+    expect(progressOf(byId('ten-napkins'), { ...zero, read: 25 })).toEqual({ n: 10, of: 10 });
+    expect(progressOf(byId('reviews-100'), { ...zero, reviews: 12 })).toEqual({ n: 12, of: 100 });
+    expect(progressOf(byId('streak-7'), { ...zero, bestStreak: 2 })).toEqual({ n: 2, of: 7 });
+    expect(progressOf(byId('half-library'), { ...zero, read: 5 })).toEqual({ n: 5, of: 61 });
+    expect(progressOf(byId('track-ds'), { ...zero, readByTrack: { ds: 4 } })).toEqual({ n: 4, of: 38 });
+  });
+
+  it('has nothing to measure for single-step badges or empty tracks', () => {
+    expect(progressOf(byId('first-napkin'), zero)).toBeNull();
+    expect(progressOf(byId('quiz-ace'), zero)).toBeNull();
+    expect(progressOf(byId('track-ds'), { ...zero, trackTotals: {} })).toBeNull();
+  });
+
+  it('a measured badge is full exactly when it unlocks', () => {
+    const cases: Partial<GameInput>[] = [
+      { read: 9 },
+      { read: 10 },
+      { reviews: 99 },
+      { reviews: 100 },
+      { bestStreak: 29 },
+      { bestStreak: 30 },
+      { played: 4 },
+      { played: 20 },
+      { quizzesAced: 10 },
+      { dailyStreak: 7 },
+      { readByTrack: { dsa: 42 } },
+    ];
+    for (const c of cases) {
+      const g = { ...zero, ...c };
+      for (const a of ACHIEVEMENTS) {
+        const p = progressOf(a, g);
+        if (p) expect(p.n >= p.of, `${a.id} with ${JSON.stringify(c)}`).toBe(a.test(g));
+      }
+    }
+  });
+
+  it('points at the locked badge closest to done', () => {
+    expect(nextUp(zero, new Set())).toBe('first-napkin');
+    const g = { ...zero, read: 8, reviews: 30, bestStreak: 2 };
+    expect(nextUp(g, new Set(['first-napkin']))).toBe('ten-napkins');
+    expect(nextUp({ ...g, read: 1 }, new Set(['first-napkin']))).toBe('streak-3');
+    const all = new Set(ACHIEVEMENTS.map((a) => a.id));
+    expect(nextUp(zero, all)).toBeNull();
   });
 });
 

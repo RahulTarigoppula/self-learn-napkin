@@ -37,7 +37,7 @@ quiz:
     answer: 1
     why: "Bits per key ≈ 1.44 · log₂(100) ≈ 9.6, so 1,000,000 × 9.6 ≈ 9.6 million bits ≈ 1.2 MB, with k ≈ 7 hash functions. The size does not depend on how long the keys are."
   - q: "Why can't you remove an item from a standard Bloom filter by clearing its k bits?"
-    options: ["Clearing bits is too slow", "Other items may share those bits, so you would create false negatives", "Hash functions cannot be reversed", "Bits can only be cleared in pairs"]
+    options: ["Clearing bits is too slow because each one must be rehashed", "Other items may share those bits, so you would cause false negatives", "Hash functions cannot be reversed, so the item's bits cannot be found", "Bits can only be cleared in pairs, so odd k values would break"]
     answer: 1
     why: "In the example, cat and dog both set bit 8. Removing cat by clearing bit 8 would make the filter answer 'definitely not' for dog, breaking the one guarantee it has. Counting Bloom filters keep a counter per position so deletes are safe."
   - q: "A filter has m = 16 bits and k = 3. After adding more and more items, what happens to its false-positive rate?"

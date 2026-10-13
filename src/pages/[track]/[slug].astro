@@ -71,12 +71,19 @@ const flashcardCount = d.flashcards.length;
         <h1 class="hero__title">{d.title}</h1>
         <p class="hero__tldr">{d.tldr}</p>
         <div class="hero__actions">
-          <a class="btn btn--primary" href="#story"><Icon name="play" size={16} /> Start the story</a>
+          <a class="btn btn--primary" href="#story" data-start-story><Icon name="play" size={16} /> Start the story</a>
           <a class="btn" href={href(`review/?topic=${encodeURIComponent(id)}`)}>
-            <Icon name="cards" size={17} /> Quiz me <span class="muted">({flashcardCount})</span>
+            <Icon name="cards" size={17} /> Quiz me <span class="hero__count muted">({flashcardCount})</span>
           </a>
-          <button class="btn btn--ghost" type="button" data-share={`${PUBLIC_URL}${id}/`} data-title={d.title} data-text={d.tldr}>
-            <Icon name="share" size={17} /> Share
+          <button
+            class="btn btn--ghost hero__share"
+            type="button"
+            aria-label="Share"
+            data-share={`${PUBLIC_URL}${id}/`}
+            data-title={d.title}
+            data-text={d.tldr}
+          >
+            <Icon name="share" size={17} /> <span class="hero__share-label">Share</span>
           </button>
         </div>
         {
@@ -91,22 +98,25 @@ const flashcardCount = d.flashcards.length;
         }
       </header>
 
-      {
-        d.analogy && (
-          <aside class="analogy">
-            <span class="analogy__icon" aria-hidden="true">
-              <Icon name="bulb" size={20} />
-            </span>
-            <div>
-              <p class="analogy__label hand">Think of it like this</p>
-              <p class="analogy__text">{d.analogy}</p>
-            </div>
-          </aside>
-        )
-      }
+      <!-- On a phone the story moves up beside the summary and the analogy follows it (CSS order). -->
+      <div class="lead">
+        {
+          d.analogy && (
+            <aside class="analogy">
+              <span class="analogy__icon" aria-hidden="true">
+                <Icon name="bulb" size={20} />
+              </span>
+              <div>
+                <p class="analogy__label hand">Think of it like this</p>
+                <p class="analogy__text">{d.analogy}</p>
+              </div>
+            </aside>
+          )
+        }
 
-      <div id="story" class="block">
-        <Story slug={id} diagram={d.diagram} title={d.title} tldr={d.tldr} story={d.story} />
+        <div id="story" class="block">
+          <Story slug={id} diagram={d.diagram} title={d.title} tldr={d.tldr} story={d.story} />
+        </div>
       </div>
 
       <div class:list={['cols block', { 'cols--solo': !(d.bigO && d.bigO.length > 0) }]}>
@@ -177,7 +187,7 @@ const flashcardCount = d.flashcards.length;
             <p class="eyebrow">Recall beats re-reading</p>
             <h2 id="quiz-h" class="block__title"><Icon name="cards" size={20} /> Flashcards</h2>
           </div>
-          <a class="btn btn--accent" href={href(`review/?topic=${encodeURIComponent(id)}`)}>Spaced review <Icon name="arrowRight" /></a>
+          <a class="btn btn--primary" href={href(`review/?topic=${encodeURIComponent(id)}`)}>Spaced review <Icon name="arrowRight" /></a>
         </div>
         <Flashcards cards={d.flashcards} />
       </section>
@@ -198,7 +208,7 @@ const flashcardCount = d.flashcards.length;
       <div class="done block" data-done-bar data-slug={id}>
         <div>
           <p class="done__title">Finished this napkin?</p>
-          <p class="muted">Mark it read to track your progress. Your flashcards join the review queue either way.</p>
+          <p class="muted">Mark it read to unlock its flashcards for spaced review and to track your progress.</p>
         </div>
         <button class="btn btn--primary" type="button" data-mark-read>
           <Icon name="check" size={17} /> <span>Mark as read</span>
@@ -266,8 +276,10 @@ const flashcardCount = d.flashcards.length;
 <script>
   import { getDb } from '../../db/dexie';
   import { markRead } from '../../db/review';
+  import { prefersReducedMotion } from '../../db/settings';
   import { celebrateFrom } from '../../features/game/celebrate';
   import { lastStats } from '../../features/shell/shell';
+  import { scopedKey } from '../../lib/profiles';
   import { toast } from '../../lib/toast';
 
   // "Mark as read" + reflect the read state that the shell computed.
@@ -283,18 +295,48 @@ const flashcardCount = d.flashcards.length;
     const s = (e as CustomEvent<{ read: Set<string> }>).detail;
     setDone(s.read.has(bar?.dataset.slug ?? ''));
   });
+  // A rubber-stamp press on the button and a "+20 XP" that floats up from it (still motion: no float).
+  const stamp = (b: HTMLButtonElement) => {
+    if (prefersReducedMotion()) return;
+    b.classList.remove('is-stamped');
+    void b.offsetWidth;
+    b.classList.add('is-stamped');
+    const xp = document.createElement('span');
+    xp.className = 'xp-float';
+    xp.setAttribute('aria-hidden', 'true');
+    xp.textContent = '+20 XP';
+    b.append(xp);
+    xp.addEventListener('animationend', () => xp.remove(), { once: true });
+    setTimeout(() => xp.remove(), 2000);
+  };
   btn?.addEventListener('click', async () => {
     try {
       await markRead(getDb(), bar?.dataset.slug ?? '');
       const was = bar?.hasAttribute('data-is-read');
       setDone(true);
       document.dispatchEvent(new CustomEvent('napkin:progress'));
-      if (!was) celebrateFrom(btn, 50);
+      if (!was) {
+        stamp(btn);
+        celebrateFrom(btn, 50);
+      }
       toast(was ? 'Already in your read list.' : 'Marked as read · +20 XP', { icon: 'check' });
     } catch (err) {
       console.error(err);
       toast("Couldn't save that. Try again.", { danger: true });
     }
+  });
+
+  // "Start the story": glide to the story, then rewind it to scene 1 with focus on Next.
+  // Without JS the plain #story link still jumps there.
+  document.querySelector<HTMLAnchorElement>('[data-start-story]')?.addEventListener('click', (e) => {
+    const story = document.querySelector<HTMLElement>('#story [data-story]');
+    if (!story) return;
+    e.preventDefault();
+    document.getElementById('story')?.scrollIntoView({
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+      block: 'start',
+    });
+    story.dispatchEvent(new CustomEvent('story:start'));
   });
 
   // Share the public web link of this napkin (works from the APK too).
@@ -319,7 +361,7 @@ const flashcardCount = d.flashcards.length;
 
   // Remember recently opened napkins for the search palette.
   try {
-    const key = 'napkin:recent';
+    const key = scopedKey('napkin:recent');
     const id = bar?.dataset.slug ?? '';
     const prev = JSON.parse(localStorage.getItem(key) ?? '[]') as string[];
     localStorage.setItem(key, JSON.stringify([id, ...prev.filter((x) => x !== id)].slice(0, 8)));
@@ -404,6 +446,58 @@ const flashcardCount = d.flashcards.length;
     --btn-bd: var(--success);
     --btn-fg: #fff;
   }
+  [data-mark-read] {
+    position: relative;
+  }
+  [data-mark-read].is-stamped {
+    animation: stamp var(--dur-slow) var(--ease-spring);
+  }
+  @keyframes stamp {
+    0% {
+      transform: scale(1);
+    }
+    30% {
+      transform: scale(1.14) rotate(-4deg);
+    }
+    60% {
+      transform: scale(0.94) rotate(1deg);
+    }
+    100% {
+      transform: none;
+    }
+  }
+  .done :global(.xp-float) {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    background: var(--hl);
+    color: var(--hl-ink);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    pointer-events: none;
+    animation: xp-float calc(var(--dur-slow) * 2.5) var(--ease-out) forwards;
+  }
+  @keyframes xp-float {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, 8px) scale(0.8);
+    }
+    20% {
+      opacity: 1;
+      transform: translate(-50%, -6px) scale(1.05);
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -42px) scale(1);
+    }
+  }
   .toc a[aria-current] {
     color: var(--ink);
     font-weight: 600;
@@ -468,6 +562,38 @@ const flashcardCount = d.flashcards.length;
     gap: var(--space-2);
     margin-top: var(--space-2);
   }
+  /* Phone: one row. Share shrinks to a 44px icon button instead of wrapping onto a row of its own. */
+  @media (max-width: 767px) {
+    .hero__actions {
+      flex-wrap: nowrap;
+    }
+    .hero__actions .btn {
+      padding-inline: var(--space-4);
+    }
+    .hero__actions .hero__share {
+      flex: none;
+      width: 44px;
+      padding: 0;
+      margin-left: auto;
+    }
+    .hero__share-label {
+      display: none;
+    }
+  }
+  @media (max-width: 380px) {
+    .hero__actions {
+      gap: 6px;
+    }
+    .hero__actions .btn {
+      padding-inline: var(--space-3);
+    }
+    .hero__actions .hero__share {
+      padding: 0;
+    }
+    .hero__count {
+      display: none;
+    }
+  }
   .hero__prereq {
     display: flex;
     flex-wrap: wrap;
@@ -518,6 +644,19 @@ const flashcardCount = d.flashcards.length;
   }
   #story {
     margin-top: var(--space-6);
+    /* html's scroll-padding-top already clears the top bar; any margin here would double it. */
+    scroll-margin-top: 0;
+  }
+  /* Phone: the drawing comes straight after the summary, and the analogy follows the story. */
+  @media (max-width: 767px) {
+    .lead {
+      display: flex;
+      flex-direction: column;
+    }
+    .lead .analogy {
+      order: 1;
+      margin-top: var(--space-6);
+    }
   }
   .block__title {
     display: flex;

@@ -26,7 +26,7 @@ keyIdeas:
   - "**Space complexity** uses the same notation for memory: an extra array of size n is O(n) space."
 quiz:
   - q: "A function runs an outer loop over n items, and for each item an inner loop of exactly 10 iterations. What is its complexity?"
-    options: ["O(n)", "O(n²)", "O(10n²)", "O(n log n)"]
+    options: ["O(n), since 10 inner steps is a constant", "O(n²), since one loop is nested inside another", "O(10n²), counting the 10 inner steps per item", "O(n log n), since the inner loop is short"]
     answer: 0
     why: "The inner loop does a fixed 10 steps no matter how big n is, so the total is 10n. Constants are dropped, leaving O(n). Nested loops only multiply into n² when both depend on n."
   - q: "Algorithm A takes 100n steps and algorithm B takes n² steps. When is A faster?"

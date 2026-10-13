@@ -27,11 +27,11 @@ keyIdeas:
   - "**Version by addition:** add fields freely; never remove or rename one without a new version."
 quiz:
   - q: "A client's POST /payments times out. What makes a retry safe?"
-    options: ["Switching to GET", "Sending the same Idempotency-Key header so the server can return the first result instead of charging twice", "Waiting 10 seconds", "Using PUT on /payments"]
+    options: ["Retrying as a GET request, since GET has no side effects", "Reusing the same Idempotency-Key so the server returns the first result", "Waiting 10 seconds before retrying so the first call can finish", "Resending as PUT /payments, since PUT is always idempotent by definition"]
     answer: 1
     why: "POST is not idempotent, and the first attempt may have succeeded. The server stores the key with the result; a repeat with the same key returns the stored result."
   - q: "Why does ?offset=100000&limit=20 get slow on a large table?"
-    options: ["JSON gets bigger", "The database must walk past 100,000 rows to throw them away before returning 20", "Offsets are not indexed by HTTP", "The query string becomes too long to parse"]
+    options: ["The JSON grows, because skipped rows are still sent to the client", "The database reads and discards 100,000 rows before returning 20", "HTTP cannot use an index for offset values in the query string", "The query string becomes too long for the server to parse"]
     answer: 1
     why: "OFFSET skips rows by reading them. A cursor (WHERE id < :last ORDER BY id DESC LIMIT 20) seeks straight to the position with an index and reads only 20 rows."
   - q: "A GraphQL query fetches 100 posts and each post's author. Without batching, how many database queries run?"

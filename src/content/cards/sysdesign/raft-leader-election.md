@@ -33,15 +33,15 @@ quiz:
     answer: 1
     why: "A majority of 5 is 3. The candidate's own vote counts, so it needs two more."
   - q: "Why can two servers never both be leader in the same term?"
-    options: ["The leader with the lower id wins ties", "Each server votes once per term, and any two majorities share at least one server", "Leaders check a global clock", "Only the first server to start may lead"]
+    options: ["The candidate with the lower id wins ties, so the other backs off", "Each server votes once per term, and two majorities always overlap", "Leaders check a global clock, so only one can hold a term at a time", "Only the first server to start may lead, and the rest follow it"]
     answer: 1
     why: "Two majorities of the same cluster must overlap. The overlapping server cast only one vote in that term, so only one candidate can collect a majority."
   - q: "What is the main purpose of randomising election timeouts?"
-    options: ["To save network bandwidth", "To make it unlikely that several followers become candidates at once and split the vote", "To pick the fastest server as leader", "To hide the leader's identity"]
+    options: ["To spread heartbeats out over time so the network is never flooded", "So followers rarely become candidates at the same time and split the vote", "To make the fastest server time out first and become leader", "To hide which server is leader from clients, for security"]
     answer: 1
     why: "If every follower used the same timeout they would all become candidates together, split the votes, and repeat. Random timeouts let one server start (and usually win) before the others' timers fire."
   - q: "A leader that was cut off by a partition rejoins and sends heartbeats with term 3, but the rest elected a new leader in term 4. What happens?"
-    options: ["Two leaders share the cluster", "Followers reject term 3; the old leader sees term 4 in their replies and steps down", "The old leader wins because it was first", "The cluster stops until an operator intervenes"]
+    options: ["Both leaders keep serving, each with its own half of the followers", "Followers reject term 3, and the old leader sees term 4 and steps down", "The old leader wins, because it was elected first and has more log", "The cluster stops, so an operator must pick which leader to keep"]
     answer: 1
     why: "Messages from an older term are rejected. When the old leader sees a higher term, it updates its term and becomes a follower."
 bigO:

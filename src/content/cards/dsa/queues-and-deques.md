@@ -34,11 +34,11 @@ quiz:
     answer: 2
     why: "Each pop(0) shifts every remaining element left: (n−1) + (n−2) + … + 0 ≈ n²/2 moves. With a ring buffer or a deque the same job is O(n)."
   - q: "In a ring buffer without a size counter, head == tail. What do you know?"
-    options: ["The buffer is empty", "The buffer is full", "It is either empty or full; you cannot tell", "The indices have overflowed"]
+    options: ["The buffer is empty, since nothing is left to read", "The buffer is full, since tail has caught up with head", "It could be either empty or full; you cannot tell", "The indices have overflowed, so both wrapped to 0"]
     answer: 2
     why: "Both an empty buffer and one that has just filled every slot leave tail sitting on head. Fix it with a size counter, or by never using the last free slot so that 'full' means (tail + 1) mod cap == head."
   - q: "Sliding-window maximum keeps a deque of indices. Why pop smaller values from the BACK when a new value x arrives?"
-    options: ["To keep the deque sorted by index", "They are older and smaller than x, so they can never be the window maximum again", "Deques can only pop from the back", "To keep the window size equal to k"]
+    options: ["To keep the deque sorted by index, which the front needs", "Older and smaller than x, they can never be the maximum again", "Deques can only pop from the back, so that is the only option", "To keep the window size equal to k, as each step adds one"]
     answer: 1
     why: "Any smaller value before x will leave the window before x does, and while both are inside, x beats it. It is useless forever, so it is dropped. That keeps the values decreasing, and the front is the maximum."
 bigO:

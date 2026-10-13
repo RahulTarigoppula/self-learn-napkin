@@ -34,11 +34,11 @@ quiz:
     answer: 2
     why: "1,000,000 ÷ 5 s = 200,000 requests per second, almost all of them answered 'nothing new'."
   - q: "Ann's WebSocket is on server 1 and Bob's on server 2. Why can't server 1 just send Ann's message to Bob?"
-    options: ["WebSockets are one-way", "Bob's connection exists only on server 2; server 1 must hand the message to it, typically via a pub/sub backplane", "Server 1 must wait for Bob to poll", "Messages must go through the load balancer"]
+    options: ["WebSockets are one-way, so servers can only receive, never push", "Bob's socket lives only on server 2, so server 1 must pass it on via pub/sub", "Server 1 must wait for Bob to poll, since sockets cannot push data", "Every message must go back through the load balancer to be routed"]
     answer: 1
     why: "A socket lives in exactly one server process. Servers publish to a shared channel and each server delivers to the sockets it holds."
   - q: "Connections through a load balancer keep dropping after exactly 60 s of silence. What fixes it?"
-    options: ["Switch to polling", "Send heartbeat pings, e.g. every 25–30 s", "Use bigger frames", "Disable TLS"]
+    options: ["Switch to polling, since sockets cannot stay open past 60 s", "Send heartbeat pings every 25–30 s so the link never sits idle", "Use bigger frames, so each message keeps the link busy longer", "Disable TLS, since the handshake is what times out at 60 s"]
     answer: 1
     why: "Load balancers and proxies close connections that are idle longer than their timeout (60 s by default on an AWS Application Load Balancer). Regular pings keep the connection active and detect dead peers."
 bigO:

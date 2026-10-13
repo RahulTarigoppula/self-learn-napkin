@@ -28,7 +28,7 @@ keyIdeas:
   - "**Shard by document** and scatter-gather queries; writes become visible after a **refresh** (about 1 s), not instantly: search is near-real-time."
 quiz:
   - q: "Why does WHERE body LIKE '%dog%' get slow as a table grows, even with a B-tree index on body?"
-    options: ["LIKE is not supported on text columns", "A B-tree is ordered by the start of the value, so a leading wildcard cannot use it and every row must be scanned", "The database caches too much", "LIKE only works on the primary key"]
+    options: ["LIKE is not supported on text columns, so the query falls back to a scan", "A B-tree is sorted by a value's start, so a leading % forces a full scan", "The database caches too much, so each query evicts the index", "LIKE only uses the primary key index, never one on body"]
     answer: 1
     why: "A B-tree can find values that start with a prefix, like 'dog%'. '%dog%' can match anywhere, so the database reads and pattern-matches every row: O(N) per query."
   - q: "Postings: cat → 2, 5, 9, 14 and dog → 5, 6, 14, 20. Which documents match cat AND dog?"
@@ -36,7 +36,7 @@ quiz:
     answer: 1
     why: "Walk both sorted lists: 2 < 5 advance cat; 5 = 5 match; 9 > 6 advance dog; 9 < 14 advance cat; 14 = 14 match; cat is exhausted. The union (OR) would be every id from both lists: 2, 5, 6, 9, 14, 20."
   - q: "In a document-sharded index with 20 shards, what does a search for 'red' cost?"
-    options: ["One shard, chosen by hashing 'red'", "All 20 shards are queried, each returns its top k, and the results are merged", "Only the shard that holds the newest documents", "A full table scan"]
+    options: ["One shard, found by hashing the term 'red' to the shard that owns it", "All 20 shards are queried, then their top k results are merged", "Only the shard that holds the newest documents for 'red'", "A full table scan of the documents, one shard at a time"]
     answer: 1
     why: "Any shard may hold matching documents, so the query fans out to all of them. Writes are cheap (one shard per document); reads pay the scatter-gather, and the slowest shard sets the latency."
 bigO:

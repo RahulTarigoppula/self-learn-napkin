@@ -54,6 +54,22 @@ export async function importBackup(db: NapkinDB, text: string): Promise<string |
     const mine = ((await db.settings.get('game'))?.value ?? {}) as GameRecord;
     await db.settings.put({ key: 'game', value: mergeGame(mine, theirs) });
   }
+  const qq = b.settings.quickQuiz as { rounds?: number; best?: number; at?: number } | undefined;
+  if (qq && typeof qq === 'object') {
+    const cur = ((await db.settings.get('quickQuiz'))?.value ?? {}) as {
+      rounds?: number;
+      best?: number;
+      at?: number;
+    };
+    await db.settings.put({
+      key: 'quickQuiz',
+      value: {
+        rounds: Math.max(cur.rounds ?? 0, qq.rounds ?? 0),
+        best: Math.max(cur.best ?? 0, qq.best ?? 0),
+        at: Math.max(cur.at ?? 0, qq.at ?? 0),
+      },
+    });
+  }
   return null;
 }
 

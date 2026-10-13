@@ -32,15 +32,15 @@ quiz:
     answer: 1
     why: "50,000 / 250 = 200 steps per epoch, times 20 epochs = 4,000 updates."
   - q: "You raise the batch size from 64 to 256 and keep everything else fixed. Roughly what happens to the noise (standard deviation) of each gradient estimate?"
-    options: ["It falls to a quarter", "It halves", "It stays the same", "It doubles"]
+    options: ["It falls to a quarter, since the batch is 4× larger", "It halves, because noise scales like 1/√B", "It stays the same, since the data are unchanged", "It doubles, since more samples add more noise"]
     answer: 1
     why: "The standard deviation of an average of B independent samples scales like 1/√B. 4× the batch gives 1/√4 = 1/2 the noise, at 4× the compute per step."
   - q: "Why use learning-rate warmup?"
-    options: ["To make the final model smaller", "Early gradients from random weights are large and unreliable, and a full-size step can blow training up", "Warmup replaces the need for decay", "It makes the batch size larger"]
+    options: ["To make the final model smaller by pruning weights early on", "Early gradients are large and erratic, so full-size steps can blow up training", "Warmup replaces learning-rate decay, so no schedule is needed later", "It grows the batch size step by step, which smooths the gradients"]
     answer: 1
     why: "At the start the weights are random, gradients are big and erratic, and Adam's running averages have seen few samples. Ramping η up over the first few hundred or thousand steps avoids an early divergence, especially with large batches and transformers."
   - q: "Plain SGD zig-zags across a narrow valley. What does momentum do?"
-    options: ["It uses a bigger batch", "It averages recent gradients so the cross-valley components cancel and the along-valley components accumulate", "It resets the learning rate every epoch", "It computes second derivatives"]
+    options: ["It uses a bigger batch, so each gradient points straight down the valley", "It averages recent gradients, so zig-zags cancel and downhill steps add up", "It resets the learning rate every epoch, so steps start small again", "It computes second derivatives to find the valley's curvature"]
     answer: 1
     why: "v ← βv + g sums gradients with decaying weights. Components that flip sign every step cancel; components that keep pointing downhill add up, to about 1/(1 − β) = 10× for β = 0.9."
 bigO:

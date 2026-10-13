@@ -32,11 +32,11 @@ quiz:
     answer: 1
     why: "2 → 1 → 0, and parent[0] = 0, so the root is 0. Element 3 is its own root and 4 points to it, so {3, 4} is a second set."
   - q: "Why must union(a, b) link the ROOTS of a and b instead of setting parent[a] = b?"
-    options: ["It is faster to write", "Setting parent[a] = b would cut a off from the rest of its old set", "Roots have smaller indices", "It doesn't matter"]
+    options: ["It is faster, since roots are cached and a is not", "parent[a] = b would cut a off from the rest of its old set", "Roots have smaller indices, which keeps the tree sorted", "It doesn't matter; either way both sets end up fully joined"]
     answer: 1
     why: "Other members of a's set reach their root through their own chains, which may not pass through a. Repointing a alone would split a's old set; linking root to root moves the whole set at once."
   - q: "Kruskal's algorithm considers edge (u, v) and finds that find(u) == find(v). What does it do?"
-    options: ["Adds the edge", "Skips it, because u and v are already connected and the edge would create a cycle", "Restarts the algorithm", "Swaps u and v"]
+    options: ["Adds the edge, because it is the lightest one not yet used", "Skips it: u and v are already linked, so it would close a cycle", "Restarts the algorithm, with the remaining edges in a new order", "Swaps u and v, so the smaller root becomes the parent"]
     answer: 1
     why: "Equal roots mean a path between u and v already exists among the chosen edges. Adding another edge between them would form a cycle, so it cannot belong to a spanning tree."
   - q: "What does union-find NOT support efficiently?"

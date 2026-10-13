@@ -32,11 +32,11 @@ quiz:
     answer: 1
     why: "Refusing to answer keeps every successful read correct (consistency) but means a live node is not giving non-error responses, which is exactly what availability promises."
   - q: "Why is 'we picked CA' not a sensible design for a system spread across datacentres?"
-    options: ["CA systems are too slow", "Network partitions will happen, so you must decide what to do when they do", "CA is only possible with three replicas", "Consistency and availability cannot coexist even without partitions"]
+    options: ["CA systems are too slow, since every write needs all replicas", "Network partitions will happen, so you must decide what to do then", "CA only works with exactly three replicas, which costs too much", "Consistency and availability cannot coexist even without partitions"]
     answer: 1
     why: "A CA system assumes the network never partitions. Across machines and datacentres that is false, so the design must still choose between refusing and serving stale data when it happens."
   - q: "No partition is happening, but writes still wait for a replica in another region before returning. Which part of PACELC describes this cost?"
-    options: ["P → A", "P → C", "E → L vs C: paying latency for consistency", "It is not a trade-off at all"]
+    options: ["P → A: staying available during a partition", "P → C: staying consistent during a partition", "E → L vs C: paying latency for consistency", "Not a trade-off: it is just network overhead"]
     answer: 2
     why: "Else (no partition) you trade latency against consistency. Waiting for the remote replica keeps reads consistent but adds a cross-region round trip, often tens of milliseconds or more, to every write."
 related: [sysdesign/consistency-models, sysdesign/quorum-n-r-w, sysdesign/raft-leader-election, sysdesign/geo-replication]

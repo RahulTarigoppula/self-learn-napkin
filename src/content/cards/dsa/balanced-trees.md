@@ -28,7 +28,7 @@ keyIdeas:
   - "**B-trees** keep many keys per node so the tree is shallow: the standard for database and file-system indexes on disk."
 quiz:
   - q: "In an AVL tree, a node has balance factor +2 and its left child has −1. What fixes it?"
-    options: ["One right rotation at the node", "One left rotation at the node", "A left rotation at the left child, then a right rotation at the node", "Recolouring"]
+    options: ["One right rotation at the node, as in the left-left case", "One left rotation at the node, since the child leans right", "A left rotation at the left child, then a right rotation at the node", "Recolour the node and its left child, as in a red-black tree"]
     answer: 2
     why: "This is the left-right case: the extra height sits in the left child's right subtree. Rotating the child left turns it into the left-left case, which a right rotation at the node then fixes."
   - q: "During a right rotation at node x with left child y, where does y's old right subtree go?"
@@ -36,11 +36,11 @@ quiz:
     answer: 0
     why: "Its keys are bigger than y and smaller than x. After the rotation x is y's right child, and x's left slot (vacated by y) is exactly where keys between y and x belong."
   - q: "Why is a red-black tree's height at most 2·log₂(n+1)?"
-    options: ["Every node has exactly two children", "Reds cannot be adjacent, so at least half of any path is black, and every path has the same number of black nodes", "Rotations happen after every insert", "The root is always black"]
+    options: ["Every node has exactly two children, so the tree is always perfect", "No red has a red child, and every path has the same black count", "A rotation after every insert keeps all leaves on one level", "The root is always black, which caps each path at log n"]
     answer: 1
     why: "If every path has b black nodes, the tree has at least 2^b − 1 nodes. No red node has a red child, so a path is at most 2b long. So n ≥ 2^(h/2) − 1, giving h ≤ 2·log₂(n+1)."
   - q: "Why do databases index with B-trees rather than red-black trees?"
-    options: ["B-trees use less memory per key", "Red-black trees cannot store strings", "Each node is one disk page with hundreds of keys, so lookups need only a few slow disk reads", "B-trees never need rebalancing"]
+    options: ["B-trees need less RAM, so the whole index fits in memory", "Red-black trees cannot store strings or variable-length keys", "Each node is a disk page holding hundreds of keys, so few disk reads", "B-trees never need rebalancing, so writes stay cheap"]
     answer: 2
     why: "A disk or SSD read fetches a whole page at once. A binary tree uses one read per level, about 30 for a billion keys; a B-tree with fan-out of a few hundred needs about 4."
 bigO:

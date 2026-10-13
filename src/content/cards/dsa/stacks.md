@@ -38,7 +38,7 @@ quiz:
     answer: 0
     why: "\"(()\" never meets a wrong closer; it just ends with one ( still on the stack. \"())\" and \"}\" hit a closer with an empty stack, and \"([)]\" hits a mismatch. All three fail inside the loop."
   - q: "You build a stack on a dynamic array. Why push and pop at the end rather than at index 0?"
-    options: ["Index 0 cannot be written to", "Removing or inserting at the front shifts every other element: O(n)", "Dynamic arrays are linked lists underneath", "The end is the only index you can read"]
+    options: ["Index 0 cannot be written to once the array has been resized", "Removing or inserting at the front shifts every other element: O(n)", "Dynamic arrays are linked lists underneath, so the end is always cheaper", "The end is the only index you can read in O(1) time, by design"]
     answer: 1
     why: "The end of a dynamic array grows and shrinks in O(1) (amortised for push). Working at index 0 moves all n − 1 other elements one slot each time."
 bigO:

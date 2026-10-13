@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Icon from '../components/Icon.astro';
 import Logo from '../components/Logo.astro';
+import ProfileChip from '../features/profiles/ProfileChip';
 import SearchPalette from '../features/search/SearchPalette';
 import { href } from '../lib/base';
 import Base from './Base.astro';
@@ -45,12 +46,16 @@ const totals = Object.fromEntries(
   <a class="skip-link" href="#main">Skip to content</a>
   <div class:list={['shell', { 'shell--focus': focus }]} data-track-totals={JSON.stringify(totals)}>
     <aside class="sidebar" aria-label="Main">
-      <a class="sidebar__logo" href={href('')} aria-label="Napkin home"><Logo /></a>
+      <div class="sidebar__top">
+        <a class="sidebar__logo" href={href('')} aria-label="Napkin home"><Logo /></a>
+        <span class="sidebar__streak" data-streak-chip hidden title="Day streak"><Icon name="flame" size={15} /><span></span><span class="sidebar__streak-unit">d</span><span class="sr-only"> day streak</span></span>
+      </div>
       <button class="search-trigger" type="button" data-open-search aria-label="Search napkins (Control K)">
         <Icon name="search" size={17} />
         <span>Search</span>
         <kbd class="search-trigger__kbd">Ctrl K</kbd>
       </button>
+      <ProfileChip client:idle />
       <nav class="sidenav">
         {
           nav.map((n) => (
@@ -84,10 +89,9 @@ const totals = Object.fromEntries(
           <span>Why Napkin</span>
         </a>
         <a class="sidenav__link sidenav__link--small" href={href('settings/')} aria-current={active === 'settings' ? 'page' : undefined}>
-          <Icon name="sliders" size={18} />
+          <Icon name="gear" size={18} />
           <span>Settings</span>
         </a>
-        <p class="sidebar__streak" data-streak-chip hidden><Icon name="flame" size={16} /><span></span><span class="sr-only"> day streak</span></p>
       </div>
     </aside>
 
@@ -98,8 +102,9 @@ const totals = Object.fromEntries(
         <button class="btn btn--ghost btn--icon" type="button" data-open-search aria-label="Search napkins">
           <Icon name="search" />
         </button>
+        <ProfileChip client:idle compact />
         <a class="btn btn--ghost btn--icon" href={href('settings/')} aria-label="Settings" aria-current={active === 'settings' ? 'page' : undefined}>
-          <Icon name="sliders" />
+          <Icon name="gear" />
         </a>
       </div>
     </header>
@@ -124,11 +129,61 @@ const totals = Object.fromEntries(
   </div>
   <SearchPalette client:load />
   <div class="toast-region" role="status" aria-live="polite"></div>
+  <dialog class="keys" aria-labelledby="keys-h">
+    <div class="keys__head">
+      <h2 id="keys-h">Keyboard shortcuts</h2>
+      <form method="dialog"><button class="btn btn--ghost btn--icon" aria-label="Close"><Icon name="x" size={18} /></button></form>
+    </div>
+    <div class="keys__grid">
+      <section>
+        <h3>Anywhere</h3>
+        <dl>
+          <div><dt><kbd>Ctrl</kbd> <kbd>K</kbd> or <kbd>/</kbd></dt><dd>Search every napkin</dd></div>
+          <div><dt><kbd>?</kbd></dt><dd>This list</dd></div>
+          <div><dt><kbd>Esc</kbd></dt><dd>Close whatever is open</dd></div>
+        </dl>
+      </section>
+      <section>
+        <h3>Story and playgrounds</h3>
+        <dl>
+          <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Previous or next scene / step</dd></div>
+          <div><dt><kbd>Space</kbd></dt><dd>Play or pause a playground</dd></div>
+          <div><dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Playground speed ½×, 1×, 2×</dd></div>
+        </dl>
+      </section>
+      <section>
+        <h3>Review</h3>
+        <dl>
+          <div><dt><kbd>Space</kbd></dt><dd>Show the answer</dd></div>
+          <div><dt><kbd>1</kbd> to <kbd>4</kbd></dt><dd>Again, Hard, Good, Easy</dd></div>
+        </dl>
+      </section>
+      <section>
+        <h3>Quick quiz</h3>
+        <dl>
+          <div><dt><kbd>1</kbd> to <kbd>4</kbd></dt><dd>Pick an answer</dd></div>
+          <div><dt><kbd>Enter</kbd></dt><dd>Next question</dd></div>
+        </dl>
+      </section>
+    </div>
+  </dialog>
   <script>
     import { initShell } from '../features/shell/shell';
     import { checkAchievements } from '../features/game/store';
     initShell();
     document.addEventListener('napkin:stats', () => void checkAchievements());
+    // "?" opens the shortcut list (not while typing).
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== '?' || (e.target as HTMLElement).closest('input, textarea, [contenteditable]')) return;
+      const d = document.querySelector<HTMLDialogElement>('dialog.keys');
+      if (d && !d.open) {
+        e.preventDefault();
+        d.showModal();
+      }
+    });
+    document.querySelector<HTMLDialogElement>('dialog.keys')?.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) (e.currentTarget as HTMLDialogElement).close();
+    });
   </script>
 </Base>
 
@@ -157,9 +212,9 @@ const totals = Object.fromEntries(
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
-    backdrop-filter: saturate(1.4) blur(14px);
+    background: color-mix(in srgb, var(--bg) 93%, transparent);
     -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    backdrop-filter: saturate(1.4) blur(14px);
     border-bottom: 1px solid var(--border);
   }
   .topbar__actions {
@@ -190,9 +245,9 @@ const totals = Object.fromEntries(
     grid-template-columns: repeat(4, 1fr);
     height: calc(var(--tabbar-h) + var(--safe-bottom));
     padding-bottom: var(--safe-bottom);
-    background: color-mix(in srgb, var(--bg) 86%, transparent);
-    backdrop-filter: saturate(1.4) blur(14px);
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
     -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    backdrop-filter: saturate(1.4) blur(14px);
     border-top: 1px solid var(--border);
   }
   .shell--focus .tabbar {
@@ -233,9 +288,10 @@ const totals = Object.fromEntries(
     border-radius: var(--radius-full);
     background: var(--badge-bg);
     color: var(--badge-ink);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
+    font-size: 11.5px;
+    font-weight: 750;
     display: inline-grid;
     place-items: center;
   }
@@ -246,7 +302,7 @@ const totals = Object.fromEntries(
     min-width: 18px;
     height: 18px;
     padding: 0 5px;
-    font-size: 10px;
+    font-size: 11px;
     box-shadow: 0 0 0 2px var(--bg);
   }
 
@@ -375,14 +431,30 @@ const totals = Object.fromEntries(
     display: grid;
     gap: var(--space-2);
   }
-  .sidebar__streak {
+  .sidebar__top {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 0 var(--space-3);
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+  .sidebar__streak {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: var(--dsa-soft, var(--surface-2));
     color: var(--dsa-ink);
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
     font-size: var(--text-sm);
-    font-weight: 700;
+    font-weight: 750;
+  }
+  .sidebar__streak[hidden] {
+    display: none;
+  }
+  .sidebar__streak-unit {
+    font-weight: 600;
+    opacity: 0.8;
   }
 </style>

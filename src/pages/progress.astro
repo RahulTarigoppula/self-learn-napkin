@@ -2,10 +2,13 @@
 import Achievements from '../features/game/Achievements';
 import Progress from '../features/progress/Progress';
 import AppShell from '../layouts/AppShell.astro';
+import { cardHref, href } from '../lib/base';
 import { library } from '../lib/content';
 
 const { tracks } = await library();
 const totals = tracks.map((t) => ({ id: t.id, name: t.subtitle, total: t.cards.length }));
+const first = tracks[0]?.cards[0];
+const start = first ? cardHref(first.id) : href('library/');
 ---
 
 <AppShell title="Progress" active="progress" description="Your streak, review history and what's coming up.">
@@ -15,7 +18,7 @@ const totals = tracks.map((t) => ({ id: t.id, name: t.subtitle, total: t.cards.l
       <h1>Little and often.</h1>
       <p class="muted">Ten minutes a day beats a three-hour cram. Here is how your habit is shaping up.</p>
     </header>
-    <Progress client:load tracks={totals} />
+    <Progress client:load tracks={totals} startHref={start} />
     <Achievements client:idle />
   </div>
 </AppShell>

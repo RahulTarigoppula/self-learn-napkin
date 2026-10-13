@@ -30,11 +30,11 @@ quiz:
     answer: 1
     why: "Children are at 2i+1 and 2i+2: 2·5+1 = 11 and 2·5+2 = 12. Index 2 is its parent, ⌊(5−1)/2⌋."
   - q: "You need the 100 largest values from a stream of 10 million numbers. Which is best?"
-    options: ["Sort everything: O(n log n)", "A max-heap of all n items, pop 100 times", "A min-heap of size 100, replacing its root when a bigger value arrives", "A hash set"]
+    options: ["Sort all 10 million values, then take the last 100 of them", "A max-heap of all 10 million, then pop the top 100 times", "A min-heap of size 100, swapping out its root for bigger values", "A hash set of the values seen, scanned at the end"]
     answer: 2
     why: "The size-100 min-heap holds the best 100 so far, and its root is the weakest of them, so each new value needs one comparison and, if it wins, one O(log 100) replacement. Memory stays at 100 items."
   - q: "Why does building a heap with heapify take O(n) and not O(n log n)?"
-    options: ["It skips the leaves and most nodes are near the bottom, where sifting down is short", "It uses a hash table", "Because the input must already be sorted", "It doesn't; heapify is O(n log n)"]
+    options: ["Most nodes sit near the bottom, where sifting down is short", "It uses a hash table to place each value directly", "The input must already be sorted, so nothing moves", "It doesn't; heapify is O(n log n), just like n separate inserts"]
     answer: 0
     why: "Half the nodes are leaves and need no work, a quarter sift down at most 1 level, an eighth at most 2, and so on. The sum n/4·1 + n/8·2 + n/16·3 + … stays below n."
   - q: "What is the value at index 0 of a min-heap?"

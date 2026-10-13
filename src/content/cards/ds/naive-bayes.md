@@ -28,7 +28,7 @@ keyIdeas:
   - "Fast, tiny and data-efficient: a strong baseline for text. Its probabilities are overconfident, so calibrate them if you need real probabilities."
 quiz:
   - q: "Why is the method called 'naive'?"
-    options: ["It ignores the class priors", "It assumes features are independent of each other given the class", "It looks at only one feature at a time when predicting", "It cannot handle more than two classes"]
+    options: ["It ignores the class priors and uses only the likelihoods", "It assumes features are independent given the class", "It looks at only one feature at a time when predicting", "It cannot handle more than two classes at once"]
     answer: 1
     why: "It factorises P(x | class) as a product over features, which is exact only if features are conditionally independent given the class. Words in real text are not, but the ranking of classes often survives."
   - q: "Without smoothing, a new email contains a word that appeared in spam training emails but never in a ham one. What is P(ham | email)?"
@@ -40,7 +40,7 @@ quiz:
     answer: 3
     why: "Spam: 0.5 × 0.2 = 0.1. Ham: 0.5 × 0.05 = 0.025. Normalise: 0.1 / (0.1 + 0.025) = 0.8."
   - q: "You accidentally include the same feature twice. How does naive Bayes react?"
-    options: ["It counts that evidence twice and becomes more overconfident", "Nothing changes", "It ignores the copy automatically", "Training fails"]
+    options: ["It counts that evidence twice and becomes overconfident", "Nothing changes, since the copy carries no new information", "It spots the copy and ignores it automatically", "Training fails because the features are perfectly correlated"]
     answer: 0
     why: "Independence is assumed, so the duplicated feature's likelihood ratio is multiplied in twice. Correlated features have the same effect in milder form, which is why naive Bayes probabilities are pushed towards 0 and 1."
 bigO:

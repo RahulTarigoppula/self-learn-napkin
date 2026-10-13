@@ -34,11 +34,11 @@ quiz:
     answer: 1
     why: "Little's law: L = λ × W = 2,000/s × 0.05 s = 100. If a dependency slows the latency to 500 ms, the same traffic needs 1,000 concurrent slots."
   - q: "A stock-price feed overwhelms a dashboard that only needs the latest value. Which overflow policy fits best?"
-    options: ["Block the feed", "Drop the oldest updates and keep the newest", "Return 503 to the exchange", "Use an unbounded queue"]
+    options: ["Block the feed until the dashboard has caught up with every update", "Drop the oldest updates and keep only the newest", "Return 503 to the exchange so it slows down", "Buffer everything in an unbounded queue"]
     answer: 1
     why: "Old prices are worthless once a newer one exists, so dropping them loses nothing important. Blocking would make the dashboard ever more stale."
   - q: "Why is rejecting excess requests with 503 often better than queueing them?"
-    options: ["503s are cached", "Queued requests may wait past the client's timeout, so the server does work nobody is waiting for", "It increases throughput above capacity", "Clients never retry after a 503"]
+    options: ["503 responses are cached, so repeats never reach the server", "Queued requests can outlive the client's timeout, wasting the work", "Rejecting lets the server push throughput above its capacity", "Clients never retry after a 503, so the extra load simply goes away"]
     answer: 1
     why: "A request that waits 15 s behind a backlog is usually abandoned and retried by its client. Failing fast keeps latency low for the work you accept and tells callers to back off."
 bigO:

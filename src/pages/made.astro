@@ -81,7 +81,7 @@ const stats = [
 ].map(([v, l]) => ({ v: String(v), l: String(l) }));
 ---
 
-<AppShell title="How Napkin is made" active="about" description="Every source Napkin learned from, how each one was used and checked, and the algorithms inside the app.">
+<AppShell title="How Napkin is made" active="about" description="Every source Napkin learned from, how each one was used and checked, the algorithms inside the app, and exactly what it stores on your device.">
   <div class="container made">
     <header class="made__hero">
       <p class="made__kicker hand">the receipts</p>
@@ -90,7 +90,7 @@ const stats = [
         Napkin took almost <strong>12 weeks</strong> of planning, building, gathering sources and cleaning them up.
         Most of that time went into the parts nobody sees: checking a number twice, redrawing a diagram until it was
         obvious, cutting a paragraph that sounded clever but taught nothing. This page lays all of it out, because an app
-        that says "no superstition" should show its own working.
+        that asks you to trust its facts should show its working.
       </p>
       <p class="made__sig hand">Rahul</p>
     </header>
@@ -111,8 +111,7 @@ const stats = [
       <h2 id="src-h">Sources, and what each one gave</h2>
       <p class="muted">
         I only learned from openly licensed material (MIT, CC BY and similar), so I could credit it properly. Nothing was
-        copied: I read, cross-checked, then wrote every explanation in my own words and drew every diagram myself.{' '}
-        {own} of the {cards.length} napkins also carry my own explanation as a source, because the framing, the examples
+        copied: I read, cross-checked, then wrote every explanation in my own words and drew every diagram myself. {own} of the {cards.length} napkins also carry my own explanation as a source, because the framing, the examples
         and the mistakes I point out came from my own learning.
       </p>
       <div class="made__sources">
@@ -182,13 +181,11 @@ const stats = [
           again.
         </li>
         <li>
-          <b>Fair quizzes.</b> Authors tend to put the right answer in the same slot. One review found 113 of 149 answers in
-          one track sitting in position B. Options are now shuffled with a fixed seed per question, so the answer moves
-          around but stays put for you.
-        </li>
-        <li>
-          <b>Voice check.</b> Plain words only. The build fails on em-dashes and on the stock phrases that make writing
-          sound machine-made.
+          <b>Fair quizzes.</b> Authors tend to put the right answer in the same slot and make it the longest. One review
+          found 113 of 149 answers in a track sitting in position B, and in half of all questions the right answer was
+          simply the longest one. I rewrote 238 questions so the wrong answers are just as specific and believable. Now
+          the right answer is the longest about 1 time in 4, which is what chance gives you with four options, and the
+          options are shuffled with a fixed seed per question.
         </li>
         <li>
           <b>Accessibility and offline checks.</b> Every napkin is scanned for accessibility problems in light and dark mode,
@@ -246,6 +243,50 @@ const stats = [
       </div>
     </section>
 
+    <section class="made__block" aria-labelledby="priv-h">
+      <p class="eyebrow">Your data</p>
+      <h2 id="priv-h">What Napkin stores, and where</h2>
+      <p class="muted">
+        Short version: everything stays in your own browser, and I never see any of it. There is no account, no name, no
+        email, no cookies, no analytics, no ads and no tracking. The app's security policy tells the browser to refuse any
+        connection to a server other than the one the files came from, so even a bug could not send your progress anywhere.
+      </p>
+      <div class="privacy card">
+        <table>
+          <thead>
+            <tr><th scope="col">What</th><th scope="col">Where</th><th scope="col">Why it is needed</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Flashcard schedule</th>
+              <td>IndexedDB</td>
+              <td>When each card is next due. Cards are named by a SHA-1 hash of the napkin and question, not by anything about you.</td>
+            </tr>
+            <tr><th scope="row">Review log</th><td>IndexedDB</td><td>Card, rating and time of each review, for streaks and your recall rate.</td></tr>
+            <tr><th scope="row">Napkins read</th><td>IndexedDB</td><td>Which napkins you finished and when, for the ticks and progress rings.</td></tr>
+            <tr><th scope="row">Daily totals</th><td>IndexedDB</td><td>Counts per day, for the activity calendar.</td></tr>
+            <tr><th scope="row">Game record</th><td>IndexedDB</td><td>Best quiz scores, daily challenge answers, playgrounds tried, achievements.</td></tr>
+            <tr>
+              <th scope="row">Profiles</th>
+              <td>localStorage</td>
+              <td>The nickname and emoji you pick for each person on this device, and a random id that keeps their progress apart. Never sent anywhere.</td>
+            </tr>
+            <tr><th scope="row">Settings</th><td>localStorage</td><td>Theme, motion, sound and new cards per day, applied before the first paint.</td></tr>
+            <tr><th scope="row">Recently opened</th><td>localStorage</td><td>The last 8 napkins you opened.</td></tr>
+            <tr><th scope="row">App files</th><td>Browser cache</td><td>Pages, drawings and fonts, so Napkin works offline.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="privacy__notes">
+        <li>Delete everything at any time: <a href={href('settings/')}>Settings</a> → hold to reset, or clear this site's data in your browser.</li>
+        <li>Moving devices? Export a backup file. It goes wherever you put it, and nowhere else.</li>
+        <li>
+          The website is served by GitHub Pages. Like any web host, GitHub may keep standard server logs of requests for
+          files. The Android app makes no network requests at all.
+        </li>
+      </ul>
+    </section>
+
     <section class="made__block" aria-labelledby="oss-h">
       <p class="eyebrow">Standing on shoulders</p>
       <h2 id="oss-h">Open-source pieces</h2>
@@ -276,6 +317,8 @@ const stats = [
   .made {
     padding-top: var(--space-6);
     padding-bottom: var(--space-8);
+  }
+  .made > :global(*) {
     max-width: 980px;
   }
   .made__kicker {
@@ -383,35 +426,34 @@ const stats = [
   }
   .steps {
     margin-top: var(--space-5);
-    padding: 0;
+    padding: var(--space-2) var(--space-5);
     list-style: none;
-    counter-reset: step;
-    display: grid;
-    gap: var(--space-3);
-  }
-  .steps li {
-    counter-increment: step;
-    position: relative;
-    padding: var(--space-4) var(--space-5) var(--space-4) 64px;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     border: 1px solid var(--border);
     background: var(--surface);
+    box-shadow: var(--shadow-1);
+  }
+  .steps li {
+    position: relative;
+    padding: var(--space-4) 0 var(--space-4) 44px;
     line-height: 1.6;
   }
+  .steps li + li {
+    border-top: 1px dashed var(--border-strong);
+  }
   .steps li::before {
-    content: counter(step);
+    content: '✓';
     position: absolute;
-    left: var(--space-4);
+    left: 0;
     top: var(--space-4);
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     display: grid;
     place-items: center;
-    border-radius: 10px;
-    background: var(--ink);
-    color: var(--bg);
-    font-family: var(--font-mono);
-    font-weight: 800;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--success) 16%, var(--surface));
+    color: var(--success-ink);
+    font-weight: 900;
     font-size: var(--text-sm);
   }
   .algos {
@@ -432,6 +474,51 @@ const stats = [
     color: var(--ink-muted);
     line-height: 1.6;
   }
+  .privacy {
+    margin-top: var(--space-4);
+    padding: var(--space-2) var(--space-5);
+    overflow-x: auto;
+  }
+  .privacy table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+  .privacy th,
+  .privacy td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  }
+  .privacy thead th {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border-bottom: 2px solid var(--ink);
+  }
+  .privacy tbody tr + tr {
+    border-top: 1px solid var(--border);
+  }
+  .privacy tbody th {
+    white-space: nowrap;
+    font-weight: 650;
+  }
+  .privacy td:nth-child(2) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+    color: var(--ink-muted);
+  }
+  .privacy__notes {
+    margin-top: var(--space-4);
+    padding-left: var(--space-5);
+    display: grid;
+    gap: var(--space-2);
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+  }
+  .privacy__notes a,
   .oss a {
     text-decoration: underline;
   }

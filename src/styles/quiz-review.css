@@ -1,0 +1,339 @@
+/* Quick quiz, review session and home dashboard polish.
+   Loaded by those islands after islands.css; selectors carry a parent class so they win regardless of order. */
+
+/* ---- One progress accent for quiz and review ---- */
+.rv .rv__progress,
+.qq .rv__progress {
+  display: block;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.rv .rv__progress span,
+.qq .rv__progress span {
+  display: block;
+  height: 100%;
+  background: var(--pen-orange);
+  border-radius: inherit;
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+/* ================= Quick quiz ================= */
+/* Left-aligned with the page container like every other page; the width stays capped. */
+.quiz-page .qq {
+  margin-inline: 0;
+  max-width: 760px;
+}
+/* While a round runs the page is a focus screen: eat the shell's bottom padding so the answer sheet can
+   sit on the very bottom edge. */
+.quiz-page.is-playing {
+  margin-bottom: calc(-1 * (var(--safe-bottom) + var(--space-6)));
+}
+.quiz-page .qq--play {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: calc(100dvh - var(--topbar-h) - var(--safe-top) - var(--space-4));
+}
+@media (min-width: 1024px) {
+  .quiz-page .qq--play {
+    min-height: calc(100dvh - var(--space-6) - var(--space-4));
+  }
+}
+.qq--play .qq__bar {
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-2);
+}
+.qq--play .qq__bar .btn--icon {
+  margin-left: calc(-1 * var(--space-2));
+}
+.qq__count {
+  color: var(--ink-muted);
+}
+.qq__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 24px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+.qq--play .qq__card {
+  padding: var(--space-5);
+}
+@media (min-width: 640px) {
+  .qq--play .qq__card {
+    padding: var(--space-6);
+  }
+}
+.qq--play .qq__hint {
+  margin-top: auto;
+  padding-bottom: var(--space-4);
+}
+
+/* Feedback + Next as a bottom sheet: pinned to the bottom of the screen above the safe area. */
+.qq .qq__sheet {
+  --sheet: var(--success);
+  --sheet-ink: var(--success-ink);
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-top: auto;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4) calc(var(--space-4) + var(--safe-bottom));
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border: 0;
+  border-top: 3px solid var(--sheet);
+  background: color-mix(in srgb, var(--sheet) 14%, var(--surface));
+  color: var(--ink);
+  box-shadow: 0 -12px 32px -12px rgb(22 24 29 / 0.28);
+  animation: qq-sheet-up var(--dur-slow) var(--ease-out) both;
+}
+.qq .qq__sheet.is-wrong {
+  --sheet: var(--danger);
+  --sheet-ink: var(--danger-ink);
+}
+@keyframes qq-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@media (max-width: 639px) {
+  .qq .qq__sheet {
+    margin-inline: calc(-1 * var(--space-4));
+  }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .qq .qq__sheet {
+    margin-inline: calc(-1 * var(--space-6));
+    padding-inline: var(--space-6);
+  }
+}
+@media (min-width: 1024px) {
+  .qq .qq__sheet {
+    padding-inline: var(--space-6);
+  }
+}
+.qq__verdict-line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.2;
+  color: var(--sheet-ink);
+}
+.qq__badge {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--sheet-ink);
+  color: var(--surface);
+}
+.qq__correct {
+  font-weight: 650;
+}
+.qq__explain {
+  line-height: 1.55;
+  max-height: 32dvh;
+  overflow-y: auto;
+}
+.qq__sheet code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--sheet) 12%, var(--surface));
+}
+.qq__sheet-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.qq__sheet .qq__next {
+  --btn-bg: var(--sheet-ink);
+  --btn-bd: var(--sheet-ink);
+  --btn-fg: var(--surface);
+  flex: 1 1 220px;
+  font-weight: 700;
+}
+.qq__sheet .qq__next:hover {
+  --btn-bd: var(--sheet-ink);
+}
+.qq__sheet .btn--ghost {
+  color: var(--ink);
+}
+.qq__sheet .btn--ghost:hover {
+  --btn-bg: color-mix(in srgb, var(--sheet) 12%, var(--surface));
+}
+.qq .qq__opt.is-right {
+  border-width: 2px;
+}
+.qq .qq__opt.is-wrong {
+  border-width: 2px;
+}
+.qq .qq__opt.is-right .quiz__letter,
+.qq .qq__opt.is-wrong .quiz__letter {
+  color: var(--surface);
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion="full"]) .qq .qq__sheet {
+    animation: none;
+  }
+}
+html[data-motion="reduced"] .qq .qq__sheet {
+  animation: none;
+}
+
+/* ================= Review session ================= */
+/* Confetti mounted inside the session sits at z-index 0, behind the card and the rating buttons. */
+.rv.rv--session {
+  position: relative;
+  isolation: isolate;
+}
+.rv--session > .rv__bar,
+.rv--session > .rv__card,
+.rv--session > .rv__rate,
+.rv--session > .rv__tip {
+  position: relative;
+  z-index: 1;
+}
+.rv--session .rv__inner {
+  min-height: min(50vh, 380px);
+}
+/* Revealed: the question shrinks to a muted line above a strong answer, and the pair sits mid-card. */
+.rv--session .rv__back {
+  gap: var(--space-3);
+}
+.rv__qa {
+  display: grid;
+  gap: var(--space-3);
+  margin-block: auto;
+  padding-block: var(--space-2);
+}
+.rv__asked {
+  font-size: var(--text-base);
+  line-height: 1.45;
+  color: var(--ink-muted);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px dashed var(--border-strong);
+}
+.rv--session .rv__a {
+  flex: none;
+  font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.rv--session .rv__a code {
+  font-size: 0.85em;
+}
+
+/* ================= Home dashboard ================= */
+.dash .dash__review--locked {
+  grid-template-columns: auto 1fr;
+}
+.dash__lock {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--bg) 14%, transparent);
+}
+.dash__review--locked .dash__due-label {
+  font-size: var(--text-md);
+  opacity: 1;
+}
+.dash__go-meta {
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-decoration: none;
+  opacity: 0.85;
+}
+.dash__first {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+.dash__first-title {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+.dash__first ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.dash__first li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 40px;
+}
+.dash__tick {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+.dash__first li.is-next .dash__tick {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.dash__first li.is-done .dash__tick {
+  border-color: var(--success);
+  background: var(--success);
+  color: var(--surface);
+}
+.dash__step {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-weight: 650;
+}
+a.dash__step {
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+a.dash__step:hover {
+  text-decoration-color: currentColor;
+}
+.dash__first li.is-next a.dash__step {
+  text-decoration-color: var(--hl);
+  text-decoration-thickness: 3px;
+}
+.dash__first li.is-done .dash__step {
+  color: var(--ink-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--border-strong);
+}
+.dash__step-note {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--ink-muted);
+}

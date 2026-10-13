@@ -40,7 +40,7 @@ quiz:
     answer: 1
     why: "The score is the log-odds, so +0.7 in z multiplies p / (1 − p) by e^0.7 ≈ 2.01. The change in probability itself depends on where you start on the S-curve."
   - q: "A spam email gets p = 0.01. What is its log-loss, and why does that matter?"
-    options: ["0.01: tiny, so ignore it", "About 4.6: confident mistakes dominate the loss", "0.99: one minus p", "Infinite: the model is broken"]
+    options: ["0.01: tiny, so the model can safely ignore it", "About 4.6: confident mistakes dominate the loss", "0.99: one minus p, the distance from the label", "Infinite: any wrong label means the model is broken"]
     answer: 1
     why: "−ln(0.01) ≈ 4.61, versus 0.13 for a correct p = 0.88. Log-loss grows without limit as the probability of the true class goes to 0, so training works hardest to fix confident errors."
 related: [ds/linear-regression, ds/loss-functions, ds/precision-recall-roc, ds/calibration]

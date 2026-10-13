@@ -28,15 +28,15 @@ keyIdeas:
   - "Unweighted graph → BFS is enough; negative edges → Bellman-Ford."
 quiz:
   - q: "After popping A (dist 0) you have B = 4 via a direct edge. Why can't you declare B final yet?"
-    options: ["Because B has more than one neighbour", "Because a cheaper route through another node, like C at 1, may still exist", "Because the heap is not sorted", "You can; Dijkstra finalises neighbours immediately"]
+    options: ["B has more than one neighbour, so it must wait for them all", "A cheaper route through another node, like C at 1, may still exist", "The heap is not sorted until every edge has been pushed", "You can; Dijkstra finalises neighbours as soon as it sees them"]
     answer: 1
     why: "Only the smallest entry in the heap is safe to finalise. C at 1 is smaller than B at 4, and indeed A→C→B costs 3."
   - q: "Why does Dijkstra fail with negative edge weights?"
-    options: ["The heap cannot store negative numbers", "A settled node might later be reached more cheaply through a negative edge", "It loops forever on every graph", "It only fails on undirected graphs"]
+    options: ["The heap cannot order negative numbers, so pops come out wrong", "A settled node may later be reached more cheaply via a negative edge", "It loops forever on every graph that has a negative edge", "It fails only on undirected graphs, where each edge can go both ways"]
     answer: 1
     why: "Settling relies on extending a path never making it cheaper. A negative edge can make a longer path cheaper after the node was already finalised."
   - q: "Using a binary heap with lazy deletion, what is the running time?"
-    options: ["O(V²)", "O(V + E)", "O((V + E) log V)", "O(V · E)"]
+    options: ["O(V²), from scanning every node per pop", "O(V + E), one visit per node and edge", "O((V + E) log V), from heap pushes and pops", "O(V · E), relaxing every edge per node"]
     answer: 2
     why: "Every successful relaxation pushes once (at most E pushes) and every pop costs O(log E) = O(log V). Plus O(V + E) to scan nodes and edges."
   - q: "Your heap pops (9, D) but dist[D] is already 8. What should the code do?"

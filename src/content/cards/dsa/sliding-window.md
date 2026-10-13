@@ -29,11 +29,11 @@ quiz:
     answer: 1
     why: "\"wke\" (indices 2 to 4) has length 3. \"pwke\" is not a substring, because the letters are not contiguous in the original string."
   - q: "Why does the variable sliding window fail for \"shortest subarray with sum ≥ k\" when the array has negative numbers?"
-    options: ["Negative numbers overflow", "Validity is no longer monotone: dropping a negative element from the left can raise the sum", "The window must be fixed size", "Hash maps cannot store negatives"]
+    options: ["Negative numbers overflow the running sum, so it wraps around", "Validity is not monotone: dropping a negative can raise the sum", "The window must be a fixed size, so it cannot shrink at all", "Hash maps cannot store negative keys, so the lookups fail"]
     answer: 1
     why: "The loop stops shrinking as soon as the sum drops below the target, assuming removing more can only lower it further. With negatives, dropping one raises the sum, so a shorter valid window is missed. Use prefix sums with a monotonic deque."
   - q: "In the longest-unique-substring loop, why test last[ch] >= left before moving left?"
-    options: ["To skip letters that appear only once", "An older copy left of the window is not a repeat, and left must never move backwards", "It makes the algorithm O(n log n)", "To handle uppercase letters"]
+    options: ["To skip letters that appear only once in the whole string", "A copy left of the window is no repeat, and left must never move back", "It brings the loop down from O(n²) to O(n log n) overall", "To handle uppercase letters, which share an index with lowercase"]
     answer: 1
     why: "In \"abba\", when the final a arrives its last index is 0 but left is already 2. Without the check, left would jump back to 1 and the window \"bba\" would wrongly be counted."
   - q: "Fixed window of size k over n elements. How many windows are there, and what is the total time with the add-one/drop-one update?"

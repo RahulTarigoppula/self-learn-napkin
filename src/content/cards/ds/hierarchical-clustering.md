@@ -40,7 +40,7 @@ quiz:
     answer: 3
     why: "The first four merges happen at small heights (≤ 1.1), then the next one jumps to 6.0. A cut anywhere in that gap undoes the last two merges and leaves 7 − 4 = 3 clusters."
   - q: "Two leaves sit right next to each other at the bottom of a dendrogram, but the link joining them is at the very top. What does that tell you?"
-    options: ["They are near-duplicates", "They are very dissimilar; leaf order on the axis means little", "The dendrogram is drawn wrongly", "They must be outliers"]
+    options: ["They are near-duplicates, since adjacent leaves are the most similar", "They are very dissimilar; leaf order along the axis means little", "The dendrogram is drawn wrongly, because neighbours must join low", "They must be outliers, since they sit far from every cluster"]
     answer: 1
     why: "Only the height of the joining link measures dissimilarity. Any branch can be flipped left-to-right without changing the tree, so neighbouring leaves can belong to the two biggest, most different clusters."
 bigO:

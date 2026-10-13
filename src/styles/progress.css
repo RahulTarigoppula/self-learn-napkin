@@ -1,0 +1,202 @@
+/* Progress page: the brand-new empty state, the narrow heatmap and the achievement wall.
+   Loaded by Progress.tsx and Achievements.tsx; base styles for both live in islands.css. */
+
+/* ---- Small print that islands.css draws in --ink-faint: text should be muted, never faint. ---- */
+.pg__stat small,
+.ringc small {
+  color: var(--ink-muted);
+}
+
+/* ---- A brand-new learner: one tilted napkin instead of a wall of empty squares. ---- */
+.pg-empty {
+  max-width: 520px;
+  margin: var(--space-2) auto var(--space-4);
+  padding: var(--space-8) var(--space-6);
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  box-shadow: var(--shadow-3);
+  transform: rotate(-1.2deg);
+}
+.pg-empty h2 {
+  font-size: var(--text-2xl);
+}
+.pg-empty p {
+  max-width: 42ch;
+  color: var(--ink-muted);
+}
+.pg-empty .btn {
+  margin-top: var(--space-2);
+}
+.pg-empty__doodle {
+  margin-bottom: var(--space-1);
+}
+.pg-empty__doodle .d-napkin {
+  fill: var(--surface);
+  stroke: var(--ink-muted);
+  stroke-width: 2;
+}
+.pg-empty__doodle .d-cell {
+  fill: var(--surface-3);
+}
+.pg-empty__doodle .d-lit {
+  fill: var(--success);
+}
+.pg-empty__doodle .d-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.pg-empty__doodle .d-pencil {
+  fill: var(--hl);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.pg-empty__doodle .d-tip {
+  fill: var(--surface-2);
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+/* ---- Heatmap: 18 weeks on a wide card, the last 8 on a narrow one (10 weeks x 7 days = 70 cells). ---- */
+.pg__card--heat {
+  container: pgheat / inline-size;
+}
+.pg__narrow {
+  display: none;
+}
+@container pgheat (max-width: 599.98px) {
+  .pg__wide {
+    display: none;
+  }
+  .pg__narrow {
+    display: inline;
+  }
+  .heat > .heat__cell:nth-child(-n + 70) {
+    display: none;
+  }
+  .heat {
+    gap: 6px;
+  }
+}
+
+/* ---- Achievement wall: a colour family per kind of badge, greyscale (but still distinct) while locked. ---- */
+.ach__item--read {
+  --a-bg: var(--sys-soft);
+  --a-ink: var(--sys-ink);
+}
+.ach__item--dsa {
+  --a-bg: var(--dsa-soft);
+  --a-ink: var(--dsa-ink);
+}
+.ach__item--sys {
+  --a-bg: var(--sys-soft);
+  --a-ink: var(--sys-ink);
+}
+.ach__item--ds {
+  --a-bg: var(--ds-soft);
+  --a-ink: var(--ds-ink);
+}
+.ach__item--review {
+  --a-bg: var(--wash-violet);
+  --a-ink: var(--pen-violet);
+}
+.ach__item--streak {
+  --a-bg: var(--wash-orange);
+  --a-ink: var(--text-orange);
+}
+.ach__item--quiz {
+  --a-bg: var(--hl);
+  --a-ink: var(--hl-ink);
+}
+.ach__item--daily {
+  --a-bg: var(--wash-red);
+  --a-ink: var(--danger-ink);
+}
+.ach__item--play {
+  --a-bg: var(--wash-green);
+  --a-ink: var(--success-ink);
+}
+
+.ach .ach__item {
+  position: relative;
+  align-content: start;
+}
+.ach .ach__icon {
+  position: relative;
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border: 1px dashed var(--border-strong);
+}
+.ach .ach__item[data-on] {
+  border-color: color-mix(in srgb, var(--a-ink) 45%, var(--border));
+}
+.ach .ach__item[data-on] .ach__icon {
+  background: var(--a-bg);
+  color: var(--a-ink);
+  border: 0;
+  transform: rotate(-4deg);
+  box-shadow: var(--shadow-1);
+}
+.ach__lock {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--ink-muted);
+}
+
+.ach .ach__item[data-next] {
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--accent);
+  color: var(--ink);
+  box-shadow: var(--shadow-2);
+}
+.ach__next {
+  position: absolute;
+  top: -11px;
+  right: 12px;
+  padding: 1px 9px;
+  border-radius: 6px;
+  background: var(--hl);
+  color: var(--hl-ink);
+  font-family: var(--font-hand);
+  font-size: 0.95rem;
+  transform: rotate(3deg);
+  box-shadow: var(--shadow-1);
+}
+
+.ach__prog {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  margin-top: var(--space-1);
+}
+.ach__pbar {
+  display: block;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.ach__pbar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--a-ink, var(--accent));
+  transition: width var(--dur-slow) var(--ease-out);
+}
+.ach__pnum {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}

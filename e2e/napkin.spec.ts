@@ -18,10 +18,20 @@ test('the story draws scene by scene and finishing marks the napkin read', async
   await expect(story.locator('g.is-future')).toHaveCount(0);
   await page.waitForTimeout(400);
   await page.goto('library/');
-  await expect(page.locator('[data-slug="sysdesign/consistent-hashing"]')).toHaveAttribute(
+  await expect(page.locator('.row[data-slug="sysdesign/consistent-hashing"]')).toHaveAttribute(
     'data-read',
     'true',
   );
+});
+
+test('"Start the story" rewinds to scene 1 and puts focus on Next', async ({ page }) => {
+  await page.goto('dsa/binary-search/');
+  const story = page.locator('[data-story]');
+  await story.locator('[data-next]').click();
+  await expect(story.locator('.scene[data-active]')).toContainText('Scene 2');
+  await page.locator('[data-start-story]').click();
+  await expect(story.locator('.scene[data-active]')).toContainText('Scene 1');
+  await expect(story.locator('[data-next]')).toBeFocused();
 });
 
 test('the quiz explains every answer and scores the round', async ({ page }) => {

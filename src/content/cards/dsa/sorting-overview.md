@@ -26,7 +26,7 @@ keyIdeas:
   - "**Libraries ship hybrids**: Timsort (stable, O(n) on sorted input) and introsort (quicksort speed with a heapsort safety net)."
 quiz:
   - q: "Why can no comparison-based sort guarantee fewer than about n log₂ n comparisons in the worst case?"
-    options: ["Because swaps are expensive", "Because the decision tree needs n! leaves, so its height is at least log₂ n!", "Because recursion has a log n depth", "Because every element must be moved at least log n times"]
+    options: ["Swaps are expensive, so each one must be counted as log n", "A decision tree needs n! leaves, so its height is at least log₂ n!", "Recursion is log n levels deep, and each level costs n comparisons", "Every element must be moved at least log n times, so n log n"]
     answer: 1
     why: "Each input order must reach a different leaf, so the tree has at least n! leaves. A binary tree of height h has at most 2^h leaves, so h ≥ log₂ n!, which is about n log₂ n − 1.44n."
   - q: "You sort employees by name, then sort the result by department with a stable sort. How are people ordered inside each department?"
@@ -34,11 +34,11 @@ quiz:
     answer: 0
     why: "Within one department all keys tie, and a stable sort keeps tied items in the order they arrived in, which was alphabetical after the first sort."
   - q: "C++ std::sort is quicksort-based, yet guarantees O(n log n) comparisons. How?"
-    options: ["It always picks the median as pivot", "It checks if the input is sorted first", "Introsort switches to heapsort once recursion depth exceeds about 2·log₂ n", "It uses counting sort for integers"]
+    options: ["It always picks the true median as pivot, found by sorting", "It checks if the input is sorted first and skips those cases", "It switches to heapsort once recursion depth passes about 2·log₂ n", "It uses counting sort for integer keys, so most inputs are linear time"]
     answer: 2
     why: "Introsort tracks recursion depth. Bad pivots make the recursion deep, so when it passes a limit of about 2·log₂ n the current range is finished with heapsort, which is O(n log n) in the worst case."
   - q: "Timsort is the built-in sort in Python, in Java (for objects) and in V8. How many comparisons does it make on an already-sorted list of 1,000 numbers?"
-    options: ["999", "About 8,530", "About 10,000", "499,500"]
+    options: ["999, one comparison per neighbouring pair", "About 8,530, the log₂(1000!) lower bound", "About 10,000, as for any n log n sort", "499,500, one for every pair of values"]
     answer: 0
     why: "Timsort first scans for runs of already-ordered values. The whole list is one run, found with 999 neighbour comparisons, and there is nothing left to merge."
 bigO:

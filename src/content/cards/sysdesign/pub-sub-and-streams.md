@@ -38,7 +38,7 @@ quiz:
     answer: 1
     why: "The same key always hashes to the same partition, and a partition is an ordered log read by one consumer per group. Without a key, the events can land in different partitions and be processed in any order."
   - q: "A consumer processes a batch, then crashes before committing its offset. What happens after the rebalance?"
-    options: ["The batch is lost", "The new owner starts from the last committed offset and processes the batch again", "Kafka deletes the batch", "The new owner skips to the newest event"]
+    options: ["The batch is lost, since it was already read from the partition", "The new owner resumes at the last committed offset and redoes the batch", "Kafka deletes the uncommitted batch, because the consumer that read it died", "The new owner skips to the newest event to avoid duplicates"]
     answer: 1
     why: "The committed offset is the restart point. Work done after it is repeated, which is at-least-once delivery, so handlers must be idempotent."
 bigO:

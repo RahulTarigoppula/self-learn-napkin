@@ -26,7 +26,7 @@ keyIdeas:
   - "A **dead-letter queue** catches poison messages after N failed attempts so they cannot block the rest."
 quiz:
   - q: "A consumer charges a card, then crashes before acking. What does a standard at-least-once queue do?"
-    options: ["Deletes the message because it was delivered", "Redelivers it after the visibility timeout, so the charge may run twice", "Moves it straight to the dead-letter queue", "Rolls back the charge"]
+    options: ["Deletes it, because it was delivered and that counts as done", "Redelivers it after the visibility timeout, so the charge may run twice", "Moves it straight to the dead-letter queue, so no retry happens", "Rolls back the charge automatically, since the consumer never acknowledged it"]
     answer: 1
     why: "Without an ack the queue cannot tell 'processed' from 'lost', so it makes the message visible again. The handler must be idempotent, for example by recording processed order ids, or the customer is charged twice."
   - q: "Producers send 1,000 msg/s for 60 s. Two consumers each handle 200 msg/s. How big is the backlog when the burst ends?"
@@ -34,7 +34,7 @@ quiz:
     answer: 2
     why: "Inflow 1,000/s minus outflow 400/s leaves 600/s queuing. 600 × 60 s = 36,000 messages wait to be drained."
   - q: "Why move a message to a dead-letter queue after a few failures instead of retrying forever?"
-    options: ["To save disk space", "A message that always fails would burn consumer time and can block messages behind it", "Dead-letter queues are faster", "To guarantee exactly-once delivery"]
+    options: ["To save disk space, since failed messages are stored twice", "A message that always fails wastes consumers and can block the queue", "Dead-letter queues are faster, so the retries finish sooner there", "To get exactly-once delivery, which endless retries cannot give"]
     answer: 1
     why: "A poison message fails the same way each time. Parking it after a retry limit keeps the main queue flowing and preserves it for debugging and replay."
 bigO:

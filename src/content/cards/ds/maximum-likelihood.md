@@ -32,11 +32,11 @@ quiz:
     answer: 2
     why: "L(p) = p³ increases all the way to p = 1, so p̂ = 3/3 = 1.0. MLE trusts small samples completely, which is why priors (MAP) or more data are needed."
   - q: "Why do we maximise the log-likelihood instead of the likelihood?"
-    options: ["It gives a different, better estimate", "Log is increasing, so the argmax is the same, and sums are easier to differentiate and do not underflow", "Because probabilities can be negative", "It is required for discrete data only"]
+    options: ["It gives a different, better estimate than the raw likelihood", "Log keeps the argmax, turns products into sums and avoids underflow", "Because probabilities can be negative and logs make them positive", "It is only required for discrete data, where products are exact"]
     answer: 1
     why: "The log of a product is a sum of logs; derivatives of sums are simple, and a product of thousands of small probabilities underflows to 0 in floating point. The maximising θ does not change."
   - q: "Assume y = f(x) + noise, where the noise is Gaussian with constant variance. Maximum likelihood for f is equivalent to minimising…"
-    options: ["Absolute error", "Log-loss", "Hinge loss", "Mean squared error"]
+    options: ["Mean absolute error", "Binary log-loss", "Hinge loss on the margin", "Mean squared error"]
     answer: 3
     why: "−log of a Gaussian density is (y − f(x))² / (2σ²) plus a constant, so maximising the likelihood minimises the sum of squared errors. Laplace noise would give absolute error instead."
   - q: "What is the MLE of a Gaussian's variance for the data 2, 4, 6, 8?"

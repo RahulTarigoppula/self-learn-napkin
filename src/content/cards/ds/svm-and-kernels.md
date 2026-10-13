@@ -36,11 +36,11 @@ quiz:
     answer: 0
     why: "The kerbs are w·x + b = ±1, which are 2/‖w‖ apart. ‖w‖ = √(9 + 16) = 5, so the width is 2/5 = 0.4."
   - q: "Your RBF SVM gets 100 % training accuracy and 70 % validation accuracy, with small islands around individual points. What should you try first?"
-    options: ["Increase γ", "Decrease γ (and possibly C)", "Remove feature scaling", "Switch to hinge loss"]
+    options: ["Increase γ (and possibly C)", "Decrease γ (and possibly C)", "Remove the feature scaling", "Switch to hinge loss instead"]
     answer: 1
     why: "Large γ makes each support vector's influence very local, so the boundary wraps individual points. Lowering γ widens each bump and smooths the boundary; lowering C also tolerates more training errors."
   - q: "Why is a kernel SVM a poor choice for 10 million training rows?"
-    options: ["It cannot handle more than two classes", "Training scales roughly O(n²) to O(n³) and the full kernel matrix has n² entries", "It needs one-hot encoded features", "Hinge loss is not differentiable"]
+    options: ["It cannot handle more than two classes, even with one-vs-rest", "Training scales roughly O(n²) to O(n³), and the kernel matrix has n² entries", "It needs one-hot encoded features, which explode at this size", "Hinge loss is not differentiable, so it cannot be optimised at all"]
     answer: 1
     why: "A kernel SVM compares pairs of points. 10⁷ rows means 10¹⁴ kernel entries, far beyond memory, and solver time grows at least quadratically. Use a linear SVM, SGD with hinge loss, or kernel approximations instead."
 bigO:

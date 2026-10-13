@@ -34,7 +34,7 @@ quiz:
     answer: 1
     why: "The load factor is 3,000 ÷ 1,000 = 3, so chains hold about 3 keys on average. That is why tables resize: to pull the load factor back below a limit like 0.75."
   - q: "Why must a growing table rehash every key instead of copying each bucket to the same index?"
-    options: ["To remove duplicate keys", "Because the index is hash mod capacity, and the capacity just changed", "Because hash values expire", "To sort the keys"]
+    options: ["To remove duplicate keys that piled up in the old buckets while growing", "Because the index is hash mod capacity, and capacity just changed", "Because hash values expire, so each key needs a fresh one", "To sort the keys, so the new buckets fill in order"]
     answer: 1
     why: "emu has hash 27: 27 mod 8 = 3 but 27 mod 16 = 11. With the new capacity, many keys belong in different buckets, so each one is recomputed."
 bigO:

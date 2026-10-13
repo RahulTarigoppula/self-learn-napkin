@@ -36,11 +36,11 @@ quiz:
     answer: 2
     why: "Each level multiplies by the fan-out: 200 × 200 × 200 = 8,000,000 leaves. With ~200 entries per leaf that is over a billion keys, found with 4 page reads."
   - q: "Why are leaves in a B+tree linked to each other?"
-    options: ["To make inserts faster", "So range scans can read neighbouring keys without going back up the tree", "To store the row data twice", "To balance the tree"]
+    options: ["So inserts can split pages without locking the parent node", "So range scans can walk to the next keys without climbing the tree", "So each row is stored twice, once per leaf, for crash safety", "So lookups of a single key can skip the root and start at a leaf"]
     answer: 1
     why: "After one descent to the start of a range, the scan follows sibling pointers leaf to leaf in key order. That makes BETWEEN, ORDER BY and LIMIT queries cheap."
   - q: "SELECT email FROM users WHERE id = 7 runs on an index on (id) INCLUDE (email). What is special about this plan?"
-    options: ["It needs a full table scan", "It is an index-only scan: the index covers the query", "It must sort the results", "It cannot use the index because of INCLUDE"]
+    options: ["It needs a full table scan, since email is not a key column", "It is an index-only scan: the index alone covers the query", "It must sort the results, because INCLUDE columns are unordered", "It cannot use the index, because INCLUDE columns block lookups"]
     answer: 1
     why: "The index leaf already stores email next to id, so the database answers from the index without fetching the row. That saves one random read per row."
 bigO:

@@ -28,7 +28,7 @@ keyIdeas:
   - "**Scaling up first is often right** for small systems and for databases. It buys time without distributed-systems complexity."
 quiz:
   - q: "Users randomly lose their carts after you add a second app server. What is the most likely cause?"
-    options: ["The load balancer is down", "Carts are stored in each server's local memory", "The database is too slow", "The servers have different CPUs"]
+    options: ["The load balancer is overloaded and drops some requests", "Each server keeps carts in its own memory, so the other one has none", "The database is too slow to save each cart before the next request arrives", "The two servers run different CPUs, which corrupts session data"]
     answer: 1
     why: "With local session state, a request routed to the other server finds no cart. Move sessions to a shared store (or use sticky sessions as a stopgap)."
   - q: "Each app server handles 400 requests/s at your target CPU. Peak is 3,000 requests/s across 3 zones, and you must survive losing a whole zone. How many servers?"
@@ -36,11 +36,11 @@ quiz:
     answer: 2
     why: "You need ⌈3,000 / 400⌉ = 8 servers left after a zone fails. With equal spread, 2 of 3 zones must hold 8, so 4 per zone: 12 in total."
   - q: "When is scaling up usually the better first move?"
-    options: ["When you need to survive a data-centre outage", "When a single relational database is near its limits and the data is hard to split", "When traffic is 100× the largest machine's capacity", "Never"]
+    options: ["When the system must keep running through a full data-centre outage", "When one relational database is near its limit and is hard to shard", "When traffic is 100× what the largest machine on the market can handle", "Never, because adding servers is always cheaper than a bigger box"]
     answer: 1
     why: "Moving the database to a bigger machine buys headroom with no code changes, while sharding is a large, risky project. Add replicas for failover either way."
   - q: "Why do auto-scalers usually scale out fast but scale in slowly?"
-    options: ["Removing servers costs money", "New instances take minutes to boot, so removing capacity too eagerly causes flapping and overload on the next spike", "Load balancers cannot remove servers quickly", "To save logs"]
+    options: ["Removing servers costs extra, so scalers wait out the billing hour", "New servers take minutes to boot, so dropping them early risks overload", "Load balancers can remove only one server per hour, so scale-in always lags", "Scale-in rules are evaluated only once an hour by the cloud provider"]
     answer: 1
     why: "Under-capacity hurts users immediately, over-capacity only costs money. A cool-down window prevents adding and removing the same boxes over and over."
 bigO:

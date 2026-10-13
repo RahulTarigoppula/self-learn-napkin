@@ -26,15 +26,15 @@ keyIdeas:
   - "Worst cases are exponential: subsets O(n · 2ⁿ), permutations O(n · n!). Pruning shrinks the real tree."
 quiz:
   - q: "In the subsets template, what goes wrong if you forget path.pop() after exploring?"
-    options: ["Nothing; returning from the call undoes it automatically", "Earlier choices leak into later branches, so subsets come out wrong", "The recursion never ends", "It only affects performance"]
+    options: ["Nothing; returning from the call undoes it automatically", "Earlier choices leak into later branches, so subsets come out wrong", "The recursion never ends, because path keeps growing", "Only speed suffers, from copying a longer path; subsets stay correct"]
     answer: 1
     why: "path is shared by every branch. Without the undo, the 'skip' branch still contains the element you just took, so the results are wrong."
   - q: "At a leaf, why record a copy of path rather than path itself?"
-    options: ["Copying is faster", "Recording path stores a reference to the one list that keeps changing, so every result ends up identical (and empty at the end)", "A list cannot be stored inside another list", "To keep the results sorted"]
+    options: ["Copying is faster than storing a reference to a live list", "path is one list that keeps changing, so all results end up identical", "A list cannot be stored inside another list in most languages", "Copying keeps the recorded results in sorted order, as the output needs"]
     answer: 1
     why: "A copy is a snapshot (path[:] in Python, new ArrayList<>(path) in Java). Without it, every recorded entry points at the same list object, which is empty once the search finishes."
   - q: "How does N-Queens check whether square (r, c) is attacked in O(1)?"
-    options: ["Scan the whole board", "Keep sets of used columns, used r − c diagonals and used r + c anti-diagonals", "Only check the row above", "Sort the queens"]
+    options: ["Scan outward from (r, c) in all eight directions for a queen", "Keep sets of used columns, r − c diagonals and r + c anti-diagonals", "Check only the row above, since queens go row by row", "Keep the queens sorted by column and binary search for c"]
     answer: 1
     why: "Squares on one diagonal share r − c, and squares on one anti-diagonal share r + c. With one queen per row, rows never clash, so three set lookups decide it."
   - q: "How many leaves does the full permutations tree of 4 distinct items have?"

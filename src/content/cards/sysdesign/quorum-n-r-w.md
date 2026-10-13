@@ -34,7 +34,7 @@ quiz:
     answer: 1
     why: "Writes need acknowledgements from all 3 replicas, so they cannot succeed with one down. Reads need only 1 replica, and 2 are still alive."
   - q: "With R + W > N, a reader gets back v7 from one replica and v6 from another. Why can it trust v7?"
-    options: ["The first reply is always newest", "The overlap guarantees the latest version is among the replies, and versions tell it which reply is newest", "Majority vote: more replicas said v7", "Replicas never disagree when R + W > N"]
+    options: ["The first reply to arrive is always from the most up-to-date replica", "The overlap puts the latest write in some reply; versions show which", "Majority vote: more of the replicas that answered reported v7", "Replicas never disagree when R + W > N, so v6 must be a glitch"]
     answer: 1
     why: "The overlap only promises that at least one reply holds the latest write. It says nothing about most of them. The version number (or timestamp) identifies which reply that is."
 bigO:

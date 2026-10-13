@@ -32,15 +32,15 @@ quiz:
     answer: 0
     why: "'car' ends at a node marked as a word end, so search is True. startsWith only needs the path d-o to exist, and it does."
   - q: "Why does a trie need an end-of-word flag on nodes?"
-    options: ["To make search O(1)", "Because a word can be a prefix of another word, and the path alone cannot tell them apart", "To store the number of children", "To keep the children sorted"]
+    options: ["To make search O(1), since the flag skips the walk down", "A word may be a prefix of another; the path alone can't tell which", "To store how many children sit below each node, for counting", "To keep the children sorted, so iteration runs in order"]
     answer: 1
     why: "Inserting 'cart' creates the path c-a-r-t, which also passes through c-a-r. Without a flag, you could not tell whether 'car' was inserted or is merely on the way to 'cart'."
   - q: "You only need to test whether exact words are in a set of 1 million words. What is usually the better choice?"
-    options: ["A trie: lookups are O(L) instead of O(1)", "A hash set: also O(L) to hash the word, and usually far less memory", "A sorted array with linear search", "A heap"]
+    options: ["A trie, since its O(L) lookups beat a hash set's O(L log n)", "A hash set: hashing is O(L) too, and it usually needs far less memory", "A sorted array with linear search, to keep memory to a minimum", "A heap of the words, which keeps the smallest one on top"]
     answer: 1
     why: "Hashing a word also reads all L characters, so lookups are O(L) in both. A hash set stores each word once in a compact table; a trie allocates an object per node. Choose a trie when you need prefix queries."
   - q: "What is the time to list all words starting with prefix p (length m) in a trie?"
-    options: ["O(m)", "O(m + size of the subtree below p)", "O(number of words in the trie)", "O(m log n)"]
+    options: ["O(m), just the walk down to p", "O(m + size of the subtree below p)", "O(number of words in the whole trie)", "O(m log n), from searching each level"]
     answer: 1
     why: "Walking to the prefix node costs O(m). Then every node below it has to be visited to collect the words, so the work also grows with that subtree's size, which includes the length of the output."
 bigO:

@@ -1,6 +1,7 @@
 ---
 import Icon from '../components/Icon.astro';
 import NapkinRow from '../components/NapkinRow.astro';
+import NapkinTile from '../components/NapkinTile.astro';
 import AppShell from '../layouts/AppShell.astro';
 import { href } from '../lib/base';
 import { library } from '../lib/content';
@@ -16,7 +17,7 @@ const topTags = [...tagCounts.entries()]
 ---
 
 <AppShell title="Library" active="library" description="Every napkin: data structures and algorithms, system design, and data science.">
-  <div class="container lib">
+  <div class="container lib" data-view="list">
     <header class="lib__head">
       <p class="eyebrow">The library</p>
       <h1>Every napkin, in one place.</h1>
@@ -34,7 +35,6 @@ const topTags = [...tagCounts.entries()]
           <button type="button" class:list={['fchip', `t-${t.id}`]} data-track-filter={t.id} aria-pressed="false">{t.subtitle}</button>
         ))}
       </div>
-      <p class="lib__shown mono" aria-live="polite" data-shown></p>
       <div class="lib__chips" role="group" aria-label="More filters">
         <button type="button" class="fchip" data-unread aria-pressed="false">Unread</button>
         <button type="button" class="fchip" data-diff-filter="1" aria-pressed="false">Gentle</button>
@@ -43,41 +43,93 @@ const topTags = [...tagCounts.entries()]
           <button type="button" class="fchip fchip--tag" data-tag-filter={t} aria-pressed="false">#{t}</button>
         ))}
       </div>
+      <p class="lib__shown mono" aria-live="polite" data-shown></p>
+    </div>
+
+    <div class="lib__bar">
+      <div class="lib__views" role="group" aria-label="Layout">
+        <button type="button" class="lib__view" data-view-btn="list" aria-pressed="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+          List
+        </button>
+        <button type="button" class="lib__view" data-view-btn="grid" aria-pressed="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
+          Grid
+        </button>
+      </div>
     </div>
 
     {
       tracks.map((t) => (
         <section class:list={['lib__track', `t-${t.id}`]} data-section={t.id} aria-labelledby={`h-${t.id}`}>
           <div class="lib__track-head">
-            <div>
+            <div class="lib__title">
               <p class="lib__course hand">{t.name}</p>
               <h2 id={`h-${t.id}`}>{t.subtitle}</h2>
-              <p class="lib__progress mono">
-                <span class="lib__meter" aria-hidden="true"><span data-lib-bar={t.id} /></span>
-                <span><b data-lib-read={t.id}>0</b> of {t.cards.length} read</span>
-              </p>
             </div>
-            <a class="btn btn--ghost" href={href(`${t.id}/`)}>
+            <p class="lib__progress mono">
+              <span class="lib__meter" aria-hidden="true"><span data-lib-bar={t.id} /></span>
+              <span class="lib__count"><b data-lib-read={t.id}>0</b> of {t.cards.length} read</span>
+            </p>
+            <a class="btn btn--ghost lib__open" href={href(`${t.id}/`)}>
               Course view <Icon name="arrowRight" />
             </a>
           </div>
-          <ol class="lib__list card">
+          <ol class="lib__list card" id={`list-${t.id}`}>
             {t.cards.map((c) => (
               <NapkinRow card={c} />
             ))}
           </ol>
+          <ol class="lib__grid" id={`grid-${t.id}`}>
+            {t.cards.map((c, i) => (
+              <li data-tile={c.id}>
+                <NapkinTile card={c} index={i % 6} />
+              </li>
+            ))}
+          </ol>
+          <div class="lib__morewrap">
+            <button
+              type="button"
+              class="btn lib__more"
+              data-more={t.id}
+              data-total={t.cards.length}
+              aria-expanded="false"
+              aria-controls={`list-${t.id} grid-${t.id}`}
+            >
+              <span data-more-label>Show all {t.cards.length}</span>
+              <Icon name="chevronDown" size={16} />
+            </button>
+          </div>
         </section>
       ))
     }
-    <p class="lib__empty card" hidden>
-      No napkin matches that. Try a broader word, or <button type="button" class="link" data-clear>clear the filters</button>.
-    </p>
+    <div class="lib__empty" hidden>
+      <div class="lib__empty-paper paper">
+        <svg class="lib__doodle" viewBox="0 0 124 92" width="124" height="92" aria-hidden="true">
+          <g transform="rotate(-6 50 46)">
+            <rect class="d-napkin" x="10" y="12" width="78" height="64" rx="6" />
+            <path class="d-line" d="M22 30h44M22 42h30M22 54h38" />
+          </g>
+          <circle class="d-glass" cx="86" cy="50" r="17" />
+          <path class="d-handle" d="M99 63l15 15" />
+          <path class="d-q" d="M80.5 45a5.5 5.5 0 1 1 7.6 5.1c-1.3.6-2.1 1.5-2.1 3M86 58.5v.4" />
+        </svg>
+        <h2>No napkin matches that</h2>
+        <p>Try a shorter or broader word, or clear the filters to see all {cards.length} napkins again.</p>
+        <button type="button" class="btn btn--primary" data-clear>Clear the filters</button>
+      </div>
+    </div>
   </div>
 </AppShell>
 
 <script>
+  const VIEW_KEY = 'napkin:libview';
+  const lib = document.querySelector<HTMLElement>('.lib');
   const q = document.querySelector<HTMLInputElement>('#lib-q');
   const rows = [...document.querySelectorAll<HTMLElement>('.lib__list > li')];
+  const tiles = new Map(
+    [...document.querySelectorAll<HTMLElement>('[data-tile]')].map((li) => [li.dataset.tile ?? '', li]),
+  );
   const sections = [...document.querySelectorAll<HTMLElement>('[data-section]')];
   const empty = document.querySelector<HTMLElement>('.lib__empty');
   const state = { track: '', tag: '', diff: '', unread: false };
@@ -88,6 +140,19 @@ const topTags = [...tagCounts.entries()]
 
   const press = (sel: string, on: (b: HTMLElement) => boolean) => {
     for (const b of document.querySelectorAll<HTMLElement>(sel)) b.setAttribute('aria-pressed', String(on(b)));
+  };
+
+  const setView = (v: string, remember: boolean) => {
+    if (!lib) return;
+    lib.dataset.view = v === 'grid' ? 'grid' : 'list';
+    document.documentElement.dataset.libview = lib.dataset.view;
+    press('[data-view-btn]', (b) => b.dataset.viewBtn === lib.dataset.view);
+    if (remember)
+      try {
+        localStorage.setItem(VIEW_KEY, lib.dataset.view);
+      } catch {
+        // Private windows can refuse storage; the choice simply lasts for this visit.
+      }
   };
 
   const apply = () => {
@@ -101,11 +166,15 @@ const topTags = [...tagCounts.entries()]
         (!state.unread || r.dataset.read !== 'true') &&
         (!text || text.split(/\s+/).every((w) => (r.dataset.text ?? '').includes(w)));
       r.hidden = !ok;
+      const tile = tiles.get(r.dataset.slug ?? '');
+      if (tile) tile.hidden = !ok;
       if (ok) shown++;
     }
-    for (const s of sections) s.hidden = ![...s.querySelectorAll<HTMLElement>('li')].some((li) => !li.hidden);
+    for (const s of sections) s.hidden = ![...s.querySelectorAll<HTMLElement>('.lib__list > li')].some((li) => !li.hidden);
     if (empty) empty.hidden = shown > 0;
     const filtered = Boolean(text || state.track || state.tag || state.diff || state.unread);
+    // While filtering, every match shows; the "first few per track" collapse is only for browsing.
+    if (lib) lib.toggleAttribute('data-filtered', filtered);
     const shownEl = document.querySelector<HTMLElement>('[data-shown]');
     if (shownEl) shownEl.textContent = filtered ? `${shown} of ${rows.length} napkins` : '';
     for (const el of document.querySelectorAll<HTMLElement>('[data-lib-read]')) {
@@ -128,12 +197,28 @@ const topTags = [...tagCounts.entries()]
     history.replaceState(null, '', url);
   };
 
+  const toggleMore = (b: HTMLElement) => {
+    const s = b.closest<HTMLElement>('[data-section]');
+    if (!s) return;
+    const open = !s.hasAttribute('data-open');
+    const before = b.getBoundingClientRect().top;
+    s.toggleAttribute('data-open', open);
+    b.setAttribute('aria-expanded', String(open));
+    const label = b.querySelector('[data-more-label]');
+    if (label) label.textContent = open ? 'Show fewer' : `Show all ${b.dataset.total}`;
+    // Collapsing pulls the page up under the reader; keep the button where their finger was.
+    if (!open) window.scrollBy(0, b.getBoundingClientRect().top - before);
+  };
+
   document.addEventListener('click', (e) => {
-    const b = (e.target as HTMLElement).closest<HTMLElement>('.fchip, [data-clear]');
+    const b = (e.target as HTMLElement).closest<HTMLElement>('.fchip, [data-clear], [data-view-btn], [data-more]');
     if (!b) return;
+    if (b.dataset.viewBtn) return setView(b.dataset.viewBtn, true);
+    if (b.dataset.more !== undefined) return toggleMore(b);
     if (b.hasAttribute('data-clear')) {
       Object.assign(state, { track: '', tag: '', diff: '', unread: false });
       if (q) q.value = '';
+      q?.focus();
     } else if (b.dataset.trackFilter !== undefined) state.track = b.dataset.trackFilter;
     else if (b.dataset.tagFilter) state.tag = state.tag === b.dataset.tagFilter ? '' : b.dataset.tagFilter;
     else if (b.dataset.diffFilter) state.diff = state.diff === b.dataset.diffFilter ? '' : b.dataset.diffFilter;
@@ -142,6 +227,7 @@ const topTags = [...tagCounts.entries()]
   });
   q?.addEventListener('input', apply);
   document.addEventListener('napkin:stats', apply);
+  setView(document.documentElement.dataset.libview ?? 'list', false);
   apply();
 </script>
 
@@ -210,11 +296,13 @@ const topTags = [...tagCounts.entries()]
     font-size: var(--text-xs);
     color: var(--ink-muted);
     min-height: 0;
+    margin-top: calc(var(--space-1) * -1);
   }
   .lib__shown:empty {
     display: none;
   }
   .lib__progress {
+    grid-area: meter;
     display: flex;
     align-items: center;
     gap: var(--space-2);
@@ -222,7 +310,11 @@ const topTags = [...tagCounts.entries()]
     font-size: var(--text-xs);
     color: var(--ink-muted);
   }
+  .lib__count {
+    white-space: nowrap;
+  }
   .lib__meter {
+    flex: none;
     width: 120px;
     height: 6px;
     border-radius: var(--radius-full);
@@ -266,11 +358,41 @@ const topTags = [...tagCounts.entries()]
     margin-top: var(--space-8);
   }
   .lib__track-head {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title open'
+      'meter open';
     align-items: end;
-    justify-content: space-between;
-    gap: var(--space-4);
+    column-gap: var(--space-4);
     margin-bottom: var(--space-3);
+  }
+  .lib__title {
+    grid-area: title;
+    min-width: 0;
+  }
+  .lib__open {
+    grid-area: open;
+    white-space: nowrap;
+  }
+  /* Phones: the heading and the link share the top line, the meter runs full width beneath. */
+  @media (max-width: 479.98px) {
+    .lib__track-head {
+      grid-template-areas:
+        'title open'
+        'meter meter';
+    }
+    .lib__open {
+      align-self: center;
+      padding-inline: var(--space-3);
+    }
+    .lib__progress {
+      margin-top: var(--space-2);
+    }
+    .lib__meter {
+      flex: 1;
+      width: auto;
+    }
   }
   .lib__course {
     color: var(--track-ink);
@@ -283,15 +405,127 @@ const topTags = [...tagCounts.entries()]
     list-style: none;
     padding: var(--space-2);
   }
+  /* ---- Grid / List ---- */
+  .lib__bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--space-4);
+  }
+  .lib__views {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: var(--radius-full);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+  }
+  .lib__view {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+  .lib__view[aria-pressed='true'] {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: var(--shadow-1);
+  }
+  .lib__bar + .lib__track {
+    margin-top: var(--space-4);
+  }
+  .lib__grid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  .lib__grid > li {
+    display: grid;
+  }
+  /* The Grid/List choice is restored by the pre-paint script in Base.astro (html[data-libview]). */
+  :global(html[data-libview='grid']) .lib__list,
+  :global(html:not([data-libview='grid'])) .lib__grid {
+    display: none;
+  }
+
+  /* ---- Browsing shows the first few per track (8 rows, 6 tiles); filtering shows every match. ---- */
+  .lib__morewrap {
+    display: none;
+    justify-content: center;
+    margin-top: var(--space-3);
+  }
+  :global(html.js) .lib:not([data-filtered]) .lib__morewrap {
+    display: flex;
+  }
+  :global(html.js) .lib:not([data-filtered]) .lib__track:not([data-open]) .lib__list > :global(li:nth-child(n + 9)),
+  :global(html.js) .lib:not([data-filtered]) .lib__track:not([data-open]) .lib__grid > li:nth-child(n + 7) {
+    display: none;
+  }
+  .lib__more :global(svg) {
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .lib__track[data-open] .lib__more :global(svg) {
+    transform: rotate(180deg);
+  }
+
+  /* ---- Nothing matches: a lone napkin, like the 404 page ---- */
   .lib__empty {
-    margin-top: var(--space-8);
-    padding: var(--space-8);
+    display: grid;
+    place-items: center;
+    padding: var(--space-8) var(--space-4);
+  }
+  .lib__empty-paper {
+    max-width: 440px;
+    padding: var(--space-7) var(--space-6);
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
     text-align: center;
+    box-shadow: var(--shadow-3);
+    transform: rotate(-1.2deg);
+  }
+  .lib__empty-paper h2 {
+    font-size: var(--text-xl);
+  }
+  .lib__empty-paper p {
     color: var(--ink-muted);
   }
-  .link {
-    color: var(--accent-ink);
-    text-decoration: underline;
-    min-height: 44px;
+  .lib__empty-paper .btn {
+    margin-top: var(--space-2);
+  }
+  .lib__doodle .d-napkin {
+    fill: var(--surface);
+    stroke: var(--ink-muted);
+    stroke-width: 2;
+  }
+  .lib__doodle .d-line {
+    fill: none;
+    stroke: var(--border-strong);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .lib__doodle .d-glass {
+    fill: color-mix(in srgb, var(--accent-soft) 70%, transparent);
+    stroke: var(--accent-ink);
+    stroke-width: 3;
+  }
+  .lib__doodle .d-handle {
+    stroke: var(--accent-ink);
+    stroke-width: 5;
+    stroke-linecap: round;
+  }
+  .lib__doodle .d-q {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.4;
+    stroke-linecap: round;
   }
 </style>

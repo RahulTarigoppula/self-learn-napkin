@@ -32,15 +32,15 @@ quiz:
     answer: 2
     why: "100 M × 200 = 20 billion inserts a day. 2 × 10^10 ÷ 86,400 s ≈ 231,000 writes per second. That's far more than the ~1,160 posts per second that cause them."
   - q: "Why are celebrity posts usually pulled at read time instead of pushed?"
-    options: ["Celebrities post more often", "One post would need tens of millions of cache writes and delay everyone's feeds", "Their posts are larger", "Pull is always faster for readers"]
+    options: ["Celebrities post far more often, so pushing them would never stop", "One post would need tens of millions of writes and stall the fan-out", "Their posts carry larger media that is too big to copy", "Pull is always faster for readers than a precomputed feed"]
     answer: 1
     why: "Push cost is proportional to follower count. 50 million writes for a single post ties up the fan-out workers for minutes, while pulling it costs one cached read per viewer of a list that stays hot."
   - q: "Why does a feed API return a cursor rather than accept ?offset=20?"
-    options: ["Cursors compress better", "New posts at the top shift offsets, so the next page repeats or skips items", "Offsets are not allowed in REST", "A cursor encrypts the user id"]
+    options: ["Cursors compress better, so the URLs stay short on mobile", "New posts at the top shift offsets, so pages repeat or skip items", "Offsets are not allowed in REST, which only permits cursors", "A cursor encrypts the user id, so other users cannot read it"]
     answer: 1
     why: "If three posts arrive between page 1 and page 2, offset 20 now points three items earlier and the reader sees duplicates. A cursor names the last item seen, so the next page starts right after it."
   - q: "What does a typical per-user feed cache entry hold?"
-    options: ["The full JSON of every post", "A capped list of recent post ids, newest first", "The user's followers", "Rendered HTML"]
+    options: ["The full JSON of every post, ready to send as is", "A capped list of recent post ids, newest first", "The user's followers, so new posts can be pushed", "Rendered HTML for the first page of the feed"]
     answer: 1
     why: "Ids are 8 bytes each, so 500 of them is about 4 KB per user. Bodies, like counts and author names are fetched for just the 20 being shown, so edits and deletes never need to touch millions of lists."
 bigO:

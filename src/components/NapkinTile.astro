@@ -22,7 +22,7 @@ const tilt = ((n * 37) % 7) / 10 - 0.3; // a stable, tiny tilt per napkin
   data-slug={card.id}
   style={`--tilt:${tilt.toFixed(2)}deg;--d:${index}`}
 >
-  <div class="tile__art">
+  <div class="tile__art" data-thumb>
     <img src={withBase(`thumbs/${d.diagram}.svg`)} alt="" width={m.width} height={m.height} loading="lazy" decoding="async" />
   </div>
   <div class="tile__body">
@@ -42,6 +42,21 @@ const tilt = ((n * 37) % 7) / 10 - 0.3; // a stable, tiny tilt per napkin
     </div>
   </div>
 </a>
+
+<script>
+  // Lazy thumbnails: a soft skeleton until the drawing arrives, then a fade in. Only images that are
+  // still on their way get marked, so with JS off (or if this never runs) every image stays visible.
+  const settle = (box: HTMLElement) => {
+    box.dataset.thumb = 'in';
+  };
+  for (const box of document.querySelectorAll<HTMLElement>('[data-thumb=""]')) {
+    const img = box.querySelector('img');
+    if (!img || img.complete) continue;
+    box.dataset.thumb = 'loading';
+    img.addEventListener('load', () => settle(box), { once: true });
+    img.addEventListener('error', () => settle(box), { once: true });
+  }
+</script>
 
 <style>
   .tile {
@@ -83,6 +98,24 @@ const tilt = ((n * 37) % 7) / 10 - 0.3; // a stable, tiny tilt per napkin
     width: 100%;
     height: 100%;
     object-fit: contain;
+    transition: opacity var(--dur-slow) var(--ease-out);
+  }
+  /* Skeleton: a gentle tint over the grid while the drawing loads. */
+  .tile__art[data-thumb='loading'] {
+    background-color: color-mix(in srgb, var(--thumb-paper) 82%, var(--surface-3));
+  }
+  .tile__art[data-thumb='loading'] img {
+    opacity: 0;
+  }
+  /* Night: the thumbnails are drawn on light paper. Turn the whole napkin into a dark one (inverted
+     lightness, hue spun back so the pens keep their colours) instead of a bright card on a dark page. */
+  :global([data-theme='dark']) .tile__art {
+    filter: invert(0.88) hue-rotate(180deg) saturate(1.25);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .tile__art {
+      filter: invert(0.88) hue-rotate(180deg) saturate(1.25);
+    }
   }
   .tile--sm .tile__art {
     aspect-ratio: 2 / 1;

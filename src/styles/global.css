@@ -547,3 +547,80 @@ pre.astro-code.has-bar {
   font-size: var(--text-xs);
   font-weight: 400;
 }
+
+/* ---- Keyboard shortcuts dialog ---- */
+dialog.keys {
+  width: min(720px, calc(100vw - 32px));
+  max-height: calc(100dvh - 64px);
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-3);
+}
+dialog.keys::backdrop {
+  background: rgb(10 12 18 / 0.45);
+  backdrop-filter: blur(4px);
+}
+.keys__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+.keys__head h2 {
+  font-size: var(--text-xl);
+}
+.keys__grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.keys__grid h3 {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  margin-bottom: var(--space-2);
+}
+.keys__grid dl {
+  display: grid;
+  gap: var(--space-2);
+}
+.keys__grid dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+.keys__grid dd {
+  color: var(--ink-muted);
+  text-align: right;
+}
+kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Night: thumbnails are drawn on light paper; flip them into a dark napkin with the pen colours intact.
+   NapkinTile applies the same treatment to its own art box. */
+html[data-theme="dark"] :is(.row__thumb, .path__stack, .why__art) img {
+  filter: invert(0.88) hue-rotate(180deg) saturate(1.25);
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) :is(.row__thumb, .path__stack, .why__art) img {
+    filter: invert(0.88) hue-rotate(180deg) saturate(1.25);
+  }
+}

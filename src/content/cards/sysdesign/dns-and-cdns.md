@@ -33,15 +33,15 @@ quiz:
     answer: 1
     why: "The root refers it to the .com TLD servers; the TLD refers it to shop.com's authoritative servers, which give the final answer."
   - q: "You plan to move shop.com to a new IP tomorrow. Its A record has a TTL of 86,400 s. What should you do today?"
-    options: ["Nothing; DNS updates instantly", "Lower the TTL (e.g. to 60 s) at least a day before the move", "Raise the TTL so the change sticks", "Purge the CDN"]
+    options: ["Nothing, because DNS changes reach every resolver instantly", "Lower the TTL, e.g. to 60 s, at least a day before the move", "Raise the TTL so the new record sticks once it is set", "Purge the CDN so edge caches pick up the new IP"]
     answer: 1
     why: "Resolvers may keep the old answer for up to the TTL they received. Lower it at least one old-TTL in advance so that at switch time caches hold the record for only a minute."
   - q: "Edge hit ratio goes from 95 % to 99 % at 10,000 requests/s. How does origin traffic change?"
-    options: ["Drops by 4 %", "Halves", "Drops five-fold, from 500 to 100 requests/s", "Does not change"]
+    options: ["It drops by 4 %, matching the change in hit ratio", "It roughly halves, from 500 to 250 requests/s", "It drops five-fold, from 500 to 100 requests/s", "It stays the same, because misses still reach the origin"]
     answer: 2
     why: "The origin sees only misses: 5 % of 10,000 = 500/s versus 1 % = 100/s. Small gains in hit ratio are large cuts in origin load."
   - q: "Why do teams name static files like app.3f9a1c.js?"
-    options: ["To hide the code", "The hash changes whenever the content changes, so the file can be cached forever and a new version is a new URL", "CDNs require hashes", "It makes files smaller"]
+    options: ["To obscure the code, so readers of the page source cannot follow it", "The hash changes with the content, so the file can be cached forever", "CDNs require a hash in every file name before caching it", "It makes files smaller, since the hash replaces long names"]
     answer: 1
     why: "A content hash in the name means a URL's content never changes. Set max-age to a year; a deploy simply references new URLs, and no purge is needed."
 bigO:

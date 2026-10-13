@@ -23,9 +23,15 @@ const lite = cards.map((c) => ({
   minutes: c.data.minutes,
 }));
 const ids = new Set(cards.map((c) => c.id));
-const paths = PATHS.map((p) => ({ ...p, ids: p.ids.filter((i) => ids.has(i)) })).filter(
-  (p) => p.ids.length > 0,
-);
+const byId = new Map(cards.map((c) => [c.id, c]));
+const paths = PATHS.map((p) => {
+  const mine = p.ids.filter((i) => ids.has(i));
+  const tally = new Map<string, number>();
+  for (const i of mine) tally.set(i.split('/')[0] ?? '', (tally.get(i.split('/')[0] ?? '') ?? 0) + 1);
+  const track = [...tally.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'dsa';
+  const thumbs = mine.slice(0, 3).map((i) => byId.get(i)?.data.diagram ?? '');
+  return { ...p, ids: mine, track, thumbs };
+}).filter((p) => p.ids.length > 0);
 const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
 // Each napkin's TL;DR is a self-contained fact for the "Did you know?" card.
 const facts = cards.map((c) => ({
@@ -147,9 +153,16 @@ const firstFact = facts[0];
           </div>
           <div class="paths">
             {paths.map((p, i) => (
-              <a class="path card reveal" href={href(`paths/${p.id}/`)} style={`--d:${i}`}>
-                <span class="path__icon">
-                  <Icon name={p.icon} size={22} />
+              <a class:list={['path card reveal', `t-${p.track}`]} href={href(`paths/${p.id}/`)} style={`--d:${i}`}>
+                <span class="path__top">
+                  <span class="path__icon">
+                    <Icon name={p.icon} size={22} />
+                  </span>
+                  <span class="path__stack" aria-hidden="true">
+                    {p.thumbs.map((d) => (
+                      <img src={withBase(`thumbs/${d}.svg`)} alt="" width="84" height="54" loading="lazy" decoding="async" />
+                    ))}
+                  </span>
                 </span>
                 <span class="path__title">{p.title}</span>
                 <span class="path__blurb">{p.blurb}</span>
@@ -198,7 +211,7 @@ const firstFact = facts[0];
         <h2>I started as a tester. Then came C++ for payments, Python, data science, system design and AI.</h2>
         <p class="muted">
           “At each of those stops I kept running into explanations that made simple things sound hard. What finally worked
-          was usually a small drawing. Napkin is the notebook I wish I’d had: simple pictures, checked facts, no superstition.”
+          was usually a small drawing. Napkin is the notebook I wish I’d had: simple pictures, and facts I checked myself.”
         </p>
         <p class="why__by hand">Rahul, Senior Software Engineer (AI)</p>
         <a class="btn" href={href('about/')}>Read the story <Icon name="arrowRight" /></a>
@@ -359,7 +372,7 @@ const firstFact = facts[0];
     bottom: 0.02em;
     height: 0.34em;
     z-index: -1;
-    background: color-mix(in srgb, var(--hl) 75%, transparent);
+    background: var(--hl-mark);
     border-radius: 40% 60% 55% 45% / 60% 40% 60% 40%;
     transform: rotate(-1.2deg);
   }
@@ -370,10 +383,28 @@ const firstFact = facts[0];
     max-width: 56ch;
   }
   .hero__cta {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: var(--space-3);
     margin-top: var(--space-6);
+  }
+  .hero__cta .btn {
+    justify-content: center;
+  }
+  .hero__cta [data-surprise] {
+    grid-column: 1 / -1;
+    justify-self: center;
+    min-height: 40px;
+  }
+  @container main (min-width: 640px) {
+    .hero__cta {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+    }
+    .hero__cta .btn--lg {
+      padding-inline: var(--space-5);
+    }
   }
   .block {
     margin-top: var(--space-10);
@@ -554,14 +585,63 @@ const firstFact = facts[0];
     transform: translateY(-3px);
     border-color: var(--border-strong);
   }
+  .path__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
   .path__icon {
     display: grid;
     place-items: center;
     width: 44px;
     height: 44px;
     border-radius: 14px;
-    background: var(--accent-soft);
-    color: var(--accent-ink);
+    background: var(--track-soft);
+    color: var(--track-ink);
+  }
+  .path__stack {
+    position: relative;
+    width: 128px;
+    height: 64px;
+    flex: none;
+  }
+  .path__stack img {
+    position: absolute;
+    top: 0;
+    width: 84px;
+    height: 54px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--thumb-paper);
+    box-shadow: var(--shadow-1);
+    transition: transform var(--dur-base) var(--ease-spring);
+  }
+  .path__stack img:nth-child(1) {
+    right: 44px;
+    transform: rotate(-6deg);
+  }
+  .path__stack img:nth-child(2) {
+    right: 22px;
+    top: 4px;
+    transform: rotate(2deg);
+  }
+  .path__stack img:nth-child(3) {
+    right: 0;
+    top: 8px;
+    transform: rotate(7deg);
+  }
+  .path:hover .path__stack img:nth-child(1) {
+    transform: rotate(-10deg) translateX(-6px);
+  }
+  .path:hover .path__stack img:nth-child(3) {
+    transform: rotate(11deg) translateX(6px);
+  }
+  .path {
+    background:
+      radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--track) 12%, transparent), transparent 60%),
+      var(--surface);
   }
   .path__title {
     font-family: var(--font-display);

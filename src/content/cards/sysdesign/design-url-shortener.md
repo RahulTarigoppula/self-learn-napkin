@@ -32,15 +32,15 @@ quiz:
     answer: 1
     why: "100,000,000 ÷ 86,400 s ≈ 1,157 writes per second (or 10^8 ÷ 10^5 = 1,000 with the rounded day). Plan for a peak of 2–3×."
   - q: "You must store about 183 billion links. Why is a 6-character base62 key not enough?"
-    options: ["Base62 cannot encode numbers that large", "62^6 ≈ 57 billion keys, fewer than the links you need", "Six characters cannot be sharded", "Browsers reject paths shorter than 7 characters"]
+    options: ["Base62 cannot encode numbers that large, so keys would overflow", "62^6 ≈ 57 billion keys, fewer than the links you need", "Six-character keys cannot be split across shards", "Browsers reject paths shorter than 7 characters, so links break"]
     answer: 1
     why: "62^6 = 56.8 billion < 183 billion. 62^7 ≈ 3.5 trillion gives about 19× headroom, so the key space stays only ~5 % used after five years."
   - q: "The product team wants a click count for every link. Which redirect should you return?"
-    options: ["301 Moved Permanently", "302 Found", "200 OK with the long URL in the body", "404 Not Found"]
+    options: ["301 Moved Permanently, the standard permanent redirect", "302 Found, the standard temporary redirect status", "200 OK with the long URL in the body for the app to follow", "404 Not Found, then a client-side lookup of the long URL"]
     answer: 1
     why: "Browsers cache a 301 and go straight to the destination next time, so repeat clicks never reach you. A 302 is not cached by default, so every click passes through and can be counted."
   - q: "You build the key from the first 7 characters of an MD5 of the long URL. What must the write path do?"
-    options: ["Nothing; MD5 never collides", "Check whether the key is already taken by a different URL and retry with a salt if so", "Encrypt the key", "Store the full 128-bit hash as the key"]
+    options: ["Nothing, because a 7-character MD5 prefix is unique for each URL", "Check if another URL already holds the key and retry with a salt if so", "Encrypt the key so two URLs cannot map to the same one", "Store the full 128-bit hash next to the key and skip any check"]
     answer: 1
     why: "Truncating to ~42 bits makes collisions likely at scale: with 183 billion keys in a 3.5 trillion space, a new key collides about 5 % of the time. Every write needs an atomic insert-if-absent and a retry."
 bigO:

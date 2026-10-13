@@ -30,11 +30,11 @@ quiz:
     answer: 1
     why: "Exactly three values (3, 1, 2) are ≤ 4, so they fill indices 0–2 and the pivot goes to index 3. The partition gives [3,1,2,4,9,8,7,5]."
   - q: "Why is quicksort with a last-element pivot O(n²) on an already-sorted array?"
-    options: ["Sorted arrays need more swaps", "The pivot is always the maximum, so each partition only removes one element", "The recursion stack overflows", "Comparisons become more expensive"]
+    options: ["Sorted arrays need more swaps, since every item must be moved once", "The pivot is always the maximum, so each split removes just one item", "The recursion stack overflows, which forces a slow restart", "Comparisons get more expensive as the values grow larger"]
     answer: 1
     why: "Each partition of size m does m − 1 comparisons and leaves a part of size m − 1. Summing (n−1) + (n−2) + … + 1 gives n(n−1)/2."
   - q: "What is the average running time of quickselect for the k-th smallest element?"
-    options: ["O(log n)", "O(n)", "O(n log n)", "O(n²)"]
+    options: ["O(log n), since it halves the range each time", "O(n), since it recurses into only one side", "O(n log n), the same as quicksort", "O(n²), since every pivot may be bad"]
     answer: 1
     why: "It recurses into only one side. With reasonable pivots the side shrinks geometrically: n + n/2 + n/4 + … < 2n, so O(n) on average (O(n²) worst case)."
   - q: "Is Lomuto quicksort stable? Partition [2a, 2b, 1] with pivot 1."

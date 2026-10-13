@@ -34,7 +34,7 @@ quiz:
     answer: 1
     why: "Several strings of length 4 work (BCBA, BCAB and BDAB), and no string of length 5 is common to both. An LCS is often not unique."
   - q: "When x[i−1] ≠ y[j−1], why is max(dp[i−1][j], dp[i][j−1]) correct?"
-    options: ["Because the two letters must both be in the LCS", "Because at least one of the two last letters is unused, so the answer equals the LCS after dropping it", "Because the diagonal is always smaller", "It is a heuristic that is usually right"]
+    options: ["Both last letters must be in the LCS, so either side gives the answer", "At least one of the two last letters is unused, so dropping it loses nothing", "Because the diagonal cell is always zero when the letters differ", "It is a heuristic: usually right, but it can miss the true LCS"]
     answer: 1
     why: "If a common subsequence used both last letters, both would be its final character and so paired together. That is impossible, as they differ. So one of them is unused, and dropping it loses nothing; we take the better of the two choices."
   - q: "You may only delete characters. How many deletions make \"sea\" and \"eat\" equal?"

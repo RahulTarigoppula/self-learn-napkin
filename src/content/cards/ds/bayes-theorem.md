@@ -37,7 +37,7 @@ quiz:
     answer: 1
     why: "0.10·0.90 = 0.090 true positives versus 0.90·0.09 = 0.081 false positives, so 0.090 / 0.171 ≈ 53 %. The same test means more when the prior is higher."
   - q: "What is base-rate neglect?"
-    options: ["Forgetting to normalise probabilities", "Using too small a sample", "Confusing correlation with causation", "Judging P(A|B) from P(B|A) while ignoring how rare A is"]
+    options: ["Forgetting to normalise, so the probabilities do not sum to 1", "Drawing firm conclusions from too small a sample of cases", "Confusing correlation with causation when A and B move together", "Judging P(A|B) from P(B|A) while ignoring how rare A is"]
     answer: 3
     why: "People read the test's accuracy as the answer and ignore the prior P(A). When A is rare, the prior dominates and the posterior stays low."
   - q: "A positive result has likelihood ratio 10. Prior odds are 1:99. What are the posterior odds after two independent positive results?"

@@ -30,7 +30,7 @@ quiz:
     answer: 2
     why: "Each point's σ adapts to its local density, so dense and sparse groups are stretched to similar sizes. In the story, a group five times wider came out the same size as the others."
   - q: "What does t-SNE's perplexity parameter control?"
-    options: ["The number of output dimensions", "Roughly how many neighbours each point pays attention to", "The learning rate of gradient descent", "The number of clusters to find"]
+    options: ["The number of output dimensions in the final embedding", "Roughly how many neighbours each point pays attention to", "The learning rate of the gradient descent optimiser", "The number of clusters the map should end up showing"]
     answer: 1
     why: "Perplexity = 2^H of a point's neighbour distribution, where H is its entropy in bits. Each point's Gaussian width σ is tuned by binary search until it hits the target, so perplexity 30 means about 30 effective neighbours."
   - q: "Every night you must place thousands of new points onto an existing 2-D map without moving the old ones. Which tool fits?"
@@ -38,7 +38,7 @@ quiz:
     answer: 2
     why: "Fitted UMAP and PCA models are functions that can map unseen points into the existing layout. Standard t-SNE only optimises positions for the points it was given, and a separate run on new points would produce an unrelated coordinate system."
   - q: "A colleague runs k-means on 2-D t-SNE coordinates and reports 8 customer segments. What is the main problem?"
-    options: ["k-means needs at least 3 dimensions", "t-SNE can create and resize apparent clusters, so the segments may be artefacts", "t-SNE coordinates are always negative", "Nothing; t-SNE is designed for clustering"]
+    options: ["k-means needs at least 3 dimensions, so 2-D input is invalid", "t-SNE can create and resize apparent clusters, so they may be artefacts", "t-SNE coordinates are always negative, which breaks k-means", "Nothing; t-SNE is designed for clustering, so the segments are real"]
     answer: 1
     why: "t-SNE distorts density and between-cluster distances, and a low perplexity can split noise into clumps. Clustering should happen on the original or PCA features and be checked with stability and validation metrics."
 related: [ds/pca, ds/k-means, ds/embeddings, ds/supervised-vs-unsupervised]

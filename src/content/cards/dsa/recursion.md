@@ -30,7 +30,7 @@ quiz:
     answer: 2
     why: "fact(4) waits for fact(3), which waits for fact(2), which waits for fact(1). All four are alive at once when fact(1) hits the base case."
   - q: "f(n) is defined as return 1 + f(n − 1), with no base case. What happens when you call f(5)?"
-    options: ["It returns 0", "It loops forever, using no extra memory", "Frames pile up until the stack overflows and the program fails", "It returns an empty value"]
+    options: ["It returns 0 by default once n has dropped to 0", "It loops forever, but uses no extra memory for each call", "Frames pile up until the stack overflows and it crashes", "It returns an empty value once the calls run out"]
     answer: 2
     why: "Every call makes another call, and each one pushes a frame that never pops. The stack is finite, so the program dies with a stack overflow: Java throws StackOverflowError, Python raises RecursionError at about 1,000 frames."
   - q: "How many calls does the naive fib(5) make (counting fib(5) itself), with fib(0) and fib(1) as base cases?"

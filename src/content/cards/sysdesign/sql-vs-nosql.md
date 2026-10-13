@@ -28,15 +28,15 @@ keyIdeas:
   - "Not either/or: PostgreSQL has JSONB, DynamoDB has transactions, and distributed SQL (Spanner, CockroachDB) scales out."
 quiz:
   - q: "A social app's key query is 'friends of friends who like jazz'. Which store fits best?"
-    options: ["Key-value", "Wide-column", "Graph", "Blob storage"]
+    options: ["A key-value store like Redis", "A wide-column store like Cassandra", "A graph database like Neo4j", "Blob storage like Amazon S3"]
     answer: 2
     why: "Multi-hop relationship queries are what graph databases are built for: each hop follows stored edges. In SQL it becomes repeated self-joins; in key-value or wide-column stores you would assemble it yourself with many lookups."
   - q: "In Cassandra you have a table keyed by user_id. Product asks for 'all orders over £100 across all users'. What is the usual fix?"
-    options: ["Add a JOIN", "Create another table partitioned for that query, or export to an analytics store", "Increase the replication factor", "Switch the table to a graph"]
+    options: ["Add a JOIN against the orders data, just as you would in Postgres", "Add a table partitioned for that query, or use an analytics store", "Raise the replication factor so more nodes can serve the scan", "Switch the table to a graph model, which handles global filters"]
     answer: 1
     why: "Wide-column stores serve queries that hit one partition. A query across all partitions means a full-cluster scan. You denormalise into a second table shaped for the new query, or answer it in a separate analytics system."
   - q: "Which is the strongest reason to start with a relational database for a new product?"
-    options: ["It is always faster", "Your queries will change and you need joins and multi-row transactions", "It cannot scale beyond one machine", "It has no schema"]
+    options: ["It is always faster than any NoSQL store for every workload", "Your queries will change and you need joins and multi-row transactions", "It cannot scale beyond one machine, which keeps operations simple early on", "It has no schema, so you can change the data model freely"]
     answer: 1
     why: "Early on you do not know every access pattern. A normalised schema lets you ask new questions with SQL, constraints protect data quality, and transactions keep related rows correct. One large server goes a long way before you need to shard."
 bigO:

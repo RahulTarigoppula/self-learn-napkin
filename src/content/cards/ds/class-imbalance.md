@@ -28,11 +28,11 @@ keyIdeas:
   - "The **threshold** is the real decision knob: set it from costs or a recall target on validation data. More real minority data beats every trick."
 quiz:
   - q: "On 10,000 transactions (100 fraud), model A always says 'legit'; model B catches 70 frauds with 200 false alarms. Which statement is true?"
-    options: ["A is better: 99 % vs 97.7 % accuracy", "B is better: recall 0.70 vs 0, and accuracy is the wrong yardstick", "They are equal because both make mistakes", "Neither can be judged without ROC AUC"]
+    options: ["A is better: 99 % accuracy beats B's 97.7 %", "B is better: recall 0.70 vs 0, and accuracy misleads here", "They are equal, since both models make mistakes", "Neither can be judged until you compute ROC AUC"]
     answer: 1
     why: "A's 99 % comes entirely from the majority class; it never catches fraud. B's accuracy (9,770 / 10,000) is lower, but it finds 70 % of the fraud with precision 0.26. Whether that is good enough depends on costs, not on accuracy."
   - q: "You apply SMOTE to the whole dataset and then split into train and test. What goes wrong?"
-    options: ["Nothing; SMOTE only adds rows", "The model can no longer use class weights", "SMOTE deletes the majority class", "Synthetic points built from test rows leak into training, and the test set no longer has the real ratio, so scores are inflated"]
+    options: ["Nothing; SMOTE only adds rows, so the split is still clean", "The model can no longer use class weights after resampling", "SMOTE deletes majority-class rows, so the test set loses most of its legit cases", "Synthetic points built from test rows leak into training, inflating scores"]
     answer: 3
     why: "A synthetic fraud point lies between two real ones, so a test fraud row's near-copy ends up in training. The test set is also artificially balanced, so its precision means nothing for production."
   - q: "9,900 legit rows and 100 fraud rows with balanced class weights, n / (2 × class count). What weight does each class get?"

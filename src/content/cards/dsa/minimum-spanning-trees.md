@@ -28,7 +28,7 @@ keyIdeas:
   - "With all weights distinct the MST is **unique**. An MST is not a shortest-path tree."
 quiz:
   - q: "Kruskal reaches edge X–Y and find(X) == find(Y). What does it do, and why?"
-    options: ["Adds it, because it is the cheapest left", "Skips it, because X and Y are already connected so it would form a cycle", "Stops the algorithm", "Swaps it with the heaviest edge so far"]
+    options: ["Adds it, because it is the cheapest edge still unused", "Skips it: X and Y are already connected, so it would form a cycle", "Stops the algorithm, since every node is now in one tree", "Swaps it with the heaviest edge chosen so far, to lower the total"]
     answer: 1
     why: "Same set means a path between X and Y already exists. The new edge would close a cycle and add weight without connecting anything new."
   - q: "A connected graph has 8 nodes. How many edges does any spanning tree have?"
@@ -36,11 +36,11 @@ quiz:
     answer: 1
     why: "A tree on V nodes always has exactly V − 1 edges: fewer would leave it disconnected, more would create a cycle."
   - q: "Is the path between two nodes in an MST always their shortest path in the graph?"
-    options: ["Yes, always", "No. The MST minimises total cable, not the distance between any particular pair", "Only for Prim's tree", "Only if weights are distinct"]
+    options: ["Yes, since an MST keeps only the cheapest edges, paths are shortest", "No: the MST minimises total weight, not any one pair's distance", "Only for Prim's tree, since it grows from a single source", "Only if all edge weights are distinct, so the MST is unique"]
     answer: 1
     why: "Example: a triangle with edges 2, 2 and 3. The MST keeps the two 2s, so the endpoints of the 3-edge are 4 apart in the tree but only 3 apart in the graph."
   - q: "Which property justifies keeping the cheapest edge crossing a cut?"
-    options: ["The cut property: some MST contains it, because swapping it in for any other crossing edge does not increase the weight", "Optimal substructure of shortest paths", "The handshake lemma", "Edges are sorted"]
+    options: ["The cut property: some MST contains the lightest crossing edge", "Optimal substructure of shortest paths, as Dijkstra relies on", "The handshake lemma: degrees sum to twice the edge count", "Edges are sorted, so any edge seen earlier is always kept"]
     answer: 0
     why: "Any spanning tree must cross the cut. Exchanging its crossing edge for the lightest one keeps a spanning tree and never increases the total."
 bigO:

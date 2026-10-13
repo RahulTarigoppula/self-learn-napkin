@@ -30,7 +30,7 @@ quiz:
     answer: 0
     why: "Slot = r × cols + c = 2 × 4 + 1 = 9, and each slot is 4 bytes, so the address is 9 × 4 = 36. 9 forgets the slot size, 28 multiplies by the row count instead of the column count, and 20 is the column-major position."
   - q: "Why does inserting at the front of an array of n elements cost O(n)?"
-    options: ["The array must be re-sorted", "Every existing element shifts one slot to the right", "The memory must be freed first", "Indexing becomes O(n) afterwards"]
+    options: ["The whole array must be re-sorted after the new insert", "Every existing element shifts one slot to the right", "The old block must be freed before writing index 0", "Indexing becomes O(n) once the front has moved"]
     answer: 1
     why: "Contiguous storage has no gaps, so making room at index 0 means moving all n elements up by one slot. Indexing stays O(1) afterwards; it is the shifting that costs."
   - q: "A dynamic array grows by adding 10 slots whenever it is full, instead of doubling. What do n appends cost in total?"
@@ -38,7 +38,7 @@ quiz:
     answer: 2
     why: "A resize happens every 10 appends and copies 10, 20, 30, … values: about n²/20 copies in all, which is O(n²). Growing by a constant factor makes the copies a geometric series under 2n instead."
   - q: "A 1000 × 1000 row-major matrix of 8-byte floats is summed column by column instead of row by row. What changes?"
-    options: ["It becomes O(n³)", "Same work, but much slower: each read jumps 8,000 bytes and misses the cache", "The sum comes out different", "It gets faster, because columns are contiguous"]
+    options: ["It becomes O(n³), since each column restarts the walk from row 0", "Same work, but slower: each read jumps 8,000 bytes and misses the cache", "The sum comes out different, because some elements are skipped", "It gets faster, because columns are stored contiguously"]
     answer: 1
     why: "Both orders read every element once. Row by row walks memory in order and uses all 8 values in each 64-byte cache line; column by column jumps a whole row (8,000 bytes) per read, so almost every read fetches a new line."
 bigO:

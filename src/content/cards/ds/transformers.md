@@ -28,15 +28,15 @@ keyIdeas:
   - "**Cost:** attention is O(n²·d) per layer in sequence length n, so long contexts are expensive."
 quiz:
   - q: "Why does a Transformer need positional encodings?"
-    options: ["Self-attention is permutation-equivariant, so without them word order is invisible", "To normalise the embeddings", "To reduce the vocabulary size", "To implement the causal mask"]
+    options: ["Attention treats tokens as a set, so word order is otherwise invisible", "To normalise the embeddings, so every token vector has unit length", "To shrink the vocabulary, since positions replace rare words", "To implement the causal mask, which hides future tokens"]
     answer: 0
     why: "Attention computes weighted sums over a set: shuffle the inputs and the outputs are shuffled the same way. \"Dog bites man\" and \"man bites dog\" would look identical without position information."
   - q: "What does the causal mask do in a decoder-only model?"
-    options: ["Removes padding tokens", "Drops random attention heads", "Masks 15 % of the input tokens", "Lets token i attend only to tokens 1 … i, so it cannot see the future"]
+    options: ["Removes padding tokens, so batches have equal length", "Drops random attention heads, which regularises training", "Masks 15 % of the input tokens, which the model must predict", "Lets token i attend only to tokens 1 … i, hiding the future"]
     answer: 3
     why: "Scores for j > i are set to −∞, giving weight 0 after softmax. Training can then predict all positions in parallel without any position seeing its own answer. Masking 15 % of tokens is BERT's training task, a different thing."
   - q: "Why do Transformers train faster than RNNs on GPUs?"
-    options: ["They have fewer parameters", "They do not need backpropagation", "An RNN must process tokens one after another; a Transformer handles all positions at once with matrix multiplications", "They use smaller vocabularies"]
+    options: ["They have fewer parameters, so each update is cheaper", "They skip backpropagation, so no backward pass is needed", "An RNN steps through tokens in order; a Transformer does all at once", "They use smaller vocabularies, so the softmax layer is cheaper"]
     answer: 2
     why: "An RNN's state at step t depends on step t − 1, forcing n sequential steps. A Transformer's layers are a few big matrix products over the whole sequence, which GPUs parallelise well."
   - q: "The context grows from 4,000 to 16,000 tokens. Roughly how does the attention score memory per layer change?"

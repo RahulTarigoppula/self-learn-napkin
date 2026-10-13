@@ -28,15 +28,15 @@ keyIdeas:
   - "**XGBoost / LightGBM / CatBoost** add second-order steps, leaf-weight regularisation, histogram splits and row/column subsampling."
 quiz:
   - q: "In gradient boosting with squared-error loss, what does tree m + 1 try to predict?"
-    options: ["The original targets y", "The residuals y − Fₘ(x) of the current model", "The errors of a random previous tree", "The class probabilities"]
+    options: ["The original targets y, with a fresh sample of rows", "The residuals y − Fₘ(x) of the current model", "The errors of a randomly chosen earlier tree", "The class probabilities of each training row"]
     answer: 1
     why: "Each new tree fits the pseudo-residuals, the negative gradient of the loss at the current predictions. For ½(y − F)² that gradient is −(y − F), so the target is the plain residual."
   - q: "You lower the learning rate from 0.1 to 0.01. What else should usually change?"
-    options: ["Use about 10× as many trees", "Use deeper trees", "Nothing", "Use fewer trees"]
+    options: ["Use about 10× as many trees to reach the same fit", "Use deeper trees so each one does more of the work", "Nothing, since the trees adapt on their own", "Use fewer trees, since each step is now finer"]
     answer: 0
     why: "Each tree now contributes a tenth as much, so reaching the same fit needs roughly ten times as many trees. With early stopping this happens automatically; the smaller steps often give slightly better test error."
   - q: "Which statement about bagging (random forests) vs boosting is correct?"
-    options: ["Both train trees in parallel", "Boosting trains trees sequentially on the previous model's errors and can overfit if you add too many", "Bagging uses shallow trees and boosting deep ones", "Boosting cannot be used for classification"]
+    options: ["Both train their trees in parallel, so both scale the same way with cores", "Boosting trains trees in sequence and can overfit with too many", "Bagging uses shallow trees, while boosting needs deep ones", "Boosting cannot be used for classification, only regression"]
     answer: 1
     why: "Boosting is sequential and keeps reducing training error, so with enough trees it overfits. That is what early stopping is for. Forests train independent deep trees in parallel and do not overfit from more trees."
   - q: "For binary log-loss with predicted probability p, what is the pseudo-residual for a positive example (y = 1) with p = 0.8?"

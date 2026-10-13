@@ -24,15 +24,15 @@ keyIdeas:
   - "**DFS suits structure questions**: connected components, cycle detection, topological order, backtracking."
 quiz:
   - q: "You need the fewest moves for a knight to reach a square on an empty chessboard. Which traversal?"
-    options: ["DFS, because it goes deep quickly", "BFS, because every move costs the same and it explores in order of distance", "Either; both always find the shortest path", "Neither; you need Dijkstra"]
+    options: ["DFS, because it goes deep quickly and stops at the first hit", "BFS, because every move costs 1 and it explores by distance", "Either; both always find the shortest path on a chessboard", "Neither; only Dijkstra guarantees the fewest moves"]
     answer: 1
     why: "All moves cost 1, so the graph is unweighted. BFS reaches each square first by a shortest route. Dijkstra also works but is unnecessary when every edge weighs the same."
   - q: "A BFS marks nodes visited only when they are dequeued. What goes wrong?"
-    options: ["It finds longer paths", "The same node can be enqueued many times by different neighbours, wasting time and memory", "It turns into DFS", "Nothing, that is the standard way"]
+    options: ["It finds longer paths, since late marks reorder the queue", "A node can be enqueued many times by different neighbours", "It turns into DFS, because nodes are processed out of order", "Nothing; marking on dequeue is the standard way"]
     answer: 1
     why: "Between being enqueued and dequeued, other neighbours see the node as unvisited and enqueue it again. Marking on enqueue guarantees each node enters the queue once."
   - q: "Roads have different lengths. Does BFS (counting roads) give the shortest driving distance?"
-    options: ["Yes, always", "Only if the graph is a tree", "No. It minimises the number of edges, not their total length; use Dijkstra", "Only if you run it twice"]
+    options: ["Yes, because fewer roads always means a shorter drive", "Only if the roads are one-way, so paths cannot double back", "No: it minimises edge count, not total length; use Dijkstra", "Only if you run it twice, once from each end, and take the min"]
     answer: 2
     why: "Two short roads can be shorter than one long one. BFS's guarantee is about edge count, so weighted graphs need Dijkstra's algorithm (non-negative weights)."
   - q: "During a DFS of a directed graph, which event proves the graph has a cycle?"

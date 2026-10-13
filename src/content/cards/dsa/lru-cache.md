@@ -30,7 +30,7 @@ quiz:
     answer: 1
     why: "get(1) made 1 the most recent, leaving 2 as the least recently used. put(3) on a full cache evicts 2."
   - q: "Why does the list need to be doubly linked?"
-    options: ["To traverse it backwards when printing", "To unlink a node in O(1) you need its predecessor, and only a prev pointer gives you that", "Singly linked lists cannot hold integers", "To make the hash map faster"]
+    options: ["To walk it backwards when printing entries from oldest to newest", "Unlinking in O(1) needs the predecessor, which only prev gives", "Singly linked nodes cannot store both a key and a value", "To make the hash map faster, since it hashes the prev pointer"]
     answer: 1
     why: "Removing a node means pointing its predecessor at its successor. With a singly linked list you would have to walk from the head to find the predecessor, which is O(n)."
   - q: "Capacity 2: put(1), put(2), put(1, new value), put(3). Which key is evicted?"

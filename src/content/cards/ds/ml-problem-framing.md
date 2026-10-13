@@ -30,7 +30,7 @@ quiz:
     answer: 1
     why: "It is right for the 97 % who stay, so accuracy is 97 %, but it never finds a single churner. With rare positives, measure precision and recall where you act instead."
   - q: "Which feature leaks the label in a 'will cancel in the next 30 days' model scored on 1 March?"
-    options: ["Logins in February", "Months since sign-up", "Number of support tickets in March", "Plan price on 1 March"]
+    options: ["Number of logins in February", "Months since the customer signed up", "Number of support tickets in March", "Monthly plan price as of 1 March"]
     answer: 2
     why: "March tickets happen after the prediction date. At scoring time you could not know them, and an upset customer about to leave raises many. Everything else was known on 1 March."
   - q: "A £10 offer saves 20 % of the churners who receive it, and a saved customer is worth £200. Above what precision does contacting the model's top list pay off?"
@@ -38,7 +38,7 @@ quiz:
     answer: 2
     why: "Each contact earns precision × 0.2 × £200 = £40 × precision on average and costs £10. Break-even is 40p = 10, so p = 0.25."
   - q: "When is ML usually the wrong tool?"
-    options: ["When labels are cheap and plentiful", "When a short, stable rule already meets the target", "When the data has many features", "When the problem is classification"]
+    options: ["When labels are cheap and plentiful, so training is easy", "When a short, stable rule already meets the target", "When the data has many features, which models handle poorly", "When the problem is classification, not regression"]
     answer: 1
     why: "If a rule a person can read already does the job, a model adds cost, latency, monitoring and opacity for little gain. ML earns its place when patterns are too many or too subtle to hand-write."
 related: [ds/supervised-vs-unsupervised, ds/train-val-test, ds/precision-recall-roc, ds/class-imbalance]

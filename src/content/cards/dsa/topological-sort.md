@@ -33,15 +33,15 @@ quiz:
     answer: 2
     why: "In A, B, D, C the node D comes before C, but the arrow C → D requires C first. The other two orders respect all four arrows."
   - q: "Kahn's algorithm finishes with 7 of 10 nodes in the output. What does that tell you?"
-    options: ["The graph is disconnected", "The 3 remaining nodes include at least one directed cycle", "The queue was implemented incorrectly", "The order is still valid, just partial"]
+    options: ["The graph is disconnected, so 3 nodes were never reached", "The 3 remaining nodes include at least one directed cycle", "The queue was implemented wrong, since it dropped 3 nodes", "The order is still valid, just partial; the 3 can go at the end"]
     answer: 1
     why: "Every node outside a cycle eventually reaches in-degree 0. The nodes that never do are on a cycle or downstream of one, so no topological order exists."
   - q: "In the DFS method, why is the post-order reversed?"
-    options: ["To make the algorithm stable", "A node is appended only after all nodes it points to, so post-order lists every arrow backwards", "Reversal removes cycles", "It is not needed; the post-order is already correct"]
+    options: ["To make the algorithm stable, so ties keep their input order", "Each node is appended after all it points to, so arrows run backwards", "Reversing turns back edges forward, which breaks any cycles found", "It is not needed; the post-order is already a valid order"]
     answer: 1
     why: "For an arrow u → v in a DAG, v finishes before u, so v appears earlier in post-order. Reversing puts u before v for every arrow."
   - q: "Which problem is a topological sort in disguise?"
-    options: ["Shortest path in a weighted graph", "Ordering build steps when some targets depend on others", "Finding the median of a stream", "Matching brackets"]
+    options: ["Shortest path in a weighted graph with positive edges", "Ordering build steps when some targets depend on others", "Finding the median of a stream as new values arrive", "Matching brackets when some pairs are nested in others"]
     answer: 1
     why: "Build systems, package managers, spreadsheet recalculation and course schedules all need an order in which every dependency comes first."
 bigO:
