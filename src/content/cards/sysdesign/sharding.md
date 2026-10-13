@@ -43,8 +43,8 @@ bigO:
   - { op: "range query, range sharding", avg: "1 shard", note: "or a few neighbours" }
   - { op: "range query, hash sharding", avg: "all shards", note: "scatter-gather" }
 bigOTitle: "Key numbers"
-related: [sysdesign/consistent-hashing, sysdesign/caching, sysdesign/quorum-n-r-w]
-prereqs: [dsa/hash-tables]
+related: [sysdesign/consistent-hashing, sysdesign/replication, sysdesign/horizontal-vs-vertical-scaling, sysdesign/two-phase-commit-vs-sagas]
+prereqs: [dsa/hash-tables, sysdesign/consistent-hashing]
 flashcards:
   - kind: qa
     q: "Why does range sharding on an auto-increment id or timestamp create a hot shard?"

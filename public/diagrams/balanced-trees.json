@@ -2,7 +2,7 @@
   "name": "balanced-trees",
   "width": 520,
   "height": 420,
-  "elements": 15,
+  "elements": 16,
   "steps": [
     {
       "index": 0,
@@ -32,15 +32,15 @@
       "index": 4,
       "caption": "Red-black: colours instead of heights",
       "firstElement": 9,
-      "lastElement": 11
+      "lastElement": 12
     },
     {
       "index": 5,
       "caption": "B-tree: many keys per node, few levels",
-      "firstElement": 12,
-      "lastElement": 14
+      "firstElement": 13,
+      "lastElement": 15
     }
   ],
-  "hash": "20c3c966c294d26921290ebad5b5d18ba901a7aa",
+  "hash": "7e5ee3e040029043d2d1465ec2f7931c79ab970f",
   "title": "Balanced trees: a degenerate chain, an AVL right rotation, a red-black tree and a B-tree node"
 }

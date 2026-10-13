@@ -63,7 +63,7 @@ export default (d) => {
     edge(d, 3, 4, { pen: 'red', thick: true });
   });
   d.text(14, 262, 'cycle 0–1–2–0', { pen: 'green', size: 15, anchor: 'start' });
-  d.text(166, 262, 'path 0–1–3–4', { pen: 'red', size: 15, anchor: 'start' });
+  d.text(166, 262, 'path 1–3–4', { pen: 'red', size: 15, anchor: 'start' });
 
   d.step('Directed and weighted: a DAG');
   d.line(14, 280, 506, 280, { pen: 'muted', dashed: true, thin: true, single: true });

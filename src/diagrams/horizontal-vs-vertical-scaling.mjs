@@ -46,6 +46,7 @@ export default (d) => {
   d.text(416, 64, 'next request\nhits B: "who\nare you?"', { pen: 'red', size: 14, anchor: 'start' });
 
   d.step('Move state out: stateless app tier');
+  d.line(XS[0] + 4, BOX_Y + 60, XS[0] + BOX_W - 4, BOX_Y + 30, { pen: 'green', thick: true });
   d.group(() => {
     const { cx, top, w, h } = DB;
     d.ellipse(cx, top, w, 20, { pen: 'green', fill: 'green' });
@@ -64,5 +65,5 @@ export default (d) => {
   d.step('Auto-scaling adds boxes under load');
   app(3, 'D', 'orange', { dashed: true });
   lbTo(3, { pen: 'orange', dashed: true });
-  d.text(452, 380, '+1 box when\nCPU > 70 %', { pen: 'orange', size: 15 });
+  d.text(462, 234, '+1 box when\nCPU > 70 %', { pen: 'orange', size: 15 });
 };

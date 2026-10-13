@@ -283,6 +283,16 @@ const flashcardCount = d.flashcards.length;
     }
   });
 
+  // Remember recently opened napkins for the search palette.
+  try {
+    const key = 'napkin:recent';
+    const id = bar?.dataset.slug ?? '';
+    const prev = JSON.parse(localStorage.getItem(key) ?? '[]') as string[];
+    localStorage.setItem(key, JSON.stringify([id, ...prev.filter((x) => x !== id)].slice(0, 8)));
+  } catch {
+    // storage unavailable (private mode): recents are simply not remembered
+  }
+
   // Scroll-spy for the deep-dive table of contents.
   const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
   if (links.length && 'IntersectionObserver' in window) {

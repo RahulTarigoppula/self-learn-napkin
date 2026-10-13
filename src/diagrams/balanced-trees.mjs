@@ -103,6 +103,10 @@ export default (d) => {
         ? { pen: 'red', fill: 'red', dia: 28 }
         : { pen: 'ink', fill: 'ink', textPen: 'paper', dia: 28 },
   );
+  d.group(() => {
+    d.text(90, 264, 'black', { pen: 'ink', size: 14, anchor: 'end' });
+    d.text(174, 298, 'red', { pen: 'red', size: 14, anchor: 'start' });
+  });
   d.text(14, 386, 'no red node has a red child\n2 black nodes on every path', {
     pen: 'muted',
     size: 14,

@@ -50,6 +50,11 @@ const tracks = (await getCollection('tracks')).sort(
         }
       </nav>
       <div class="sidebar__section">
+        <p class="eyebrow">Practice</p>
+        <a class="sidenav__track" href={href('quiz/')}><Icon name="target" size={16} /> Quick quiz</a>
+        <a class="sidenav__track" href={href('cheatsheet/')}><Icon name="library" size={16} /> Cheat sheet</a>
+      </div>
+      <div class="sidebar__section">
         <p class="eyebrow">Tracks</p>
         {
           tracks.map((t) => (

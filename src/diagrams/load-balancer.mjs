@@ -64,8 +64,8 @@ export default (d) => {
     d.line(mx - 9, 167 - 9, mx + 9, 167 + 9, { pen: 'red', thick: true });
     d.line(mx - 9, 167 + 9, mx + 9, 167 - 9, { pen: 'red', thick: true });
   });
-  d.arrow(lbRight + 4, lbMid - 4, SX - 6, 96, { pen: 'green', thick: true, bend: 14 });
-  d.arrow(lbRight + 4, lbMid + 18, SX - 6, 240, { pen: 'green', thick: true, bend: -14 });
+  d.arrow(lbRight + 4, LB.y + 6, SX - 6, SRV[0].y + SH - 6, { pen: 'green', thick: true });
+  d.arrow(lbRight + 4, LB.y + LB.h - 4, SX - 6, SRV[2].y + 8, { pen: 'green', thick: true });
   d.text(420, 362, 'B skipped until healthy', { pen: 'green', size: 15 });
 
   d.step('The balancer needs a partner');

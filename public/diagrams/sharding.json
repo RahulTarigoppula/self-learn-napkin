@@ -35,6 +35,6 @@
       "lastElement": 20
     }
   ],
-  "hash": "f3bced595097cc652760a0c68204bb83790e306d",
+  "hash": "24c92fa6d087aa482cd2706c3402cbdf214140db",
   "title": "One users table split into shards by range and by hash"
 }

@@ -41,6 +41,6 @@
       "lastElement": 15
     }
   ],
-  "hash": "0b1b8b29cf75ca2c68b934fccca3b1c256aab2b2",
+  "hash": "3dab8cfd88439da23e646e890adb1cbdc2bbd6e9",
   "title": "Leader-follower replication: sync, async, lag, failover and split brain"
 }

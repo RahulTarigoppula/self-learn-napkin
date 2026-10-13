@@ -31,3 +31,4 @@ public/search-index.json
 # stray scratch files
 /*.py
 /blk_*
+public/quiz-index.json

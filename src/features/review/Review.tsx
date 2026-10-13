@@ -268,7 +268,10 @@ export default function Review() {
               <Icon name="plus" size={16} /> Learn 5 new cards
             </button>
           )}
-          <a class="btn" href={href('library/')}>
+          <a class="btn" href={href('quiz/')}>
+            Take a quick quiz
+          </a>
+          <a class="btn btn--ghost" href={href('library/')}>
             Browse napkins
           </a>
         </div>

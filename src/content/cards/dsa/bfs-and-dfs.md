@@ -4,7 +4,7 @@ track: dsa
 tags: [graphs, traversal, queues]
 difficulty: 2
 minutes: 4
-tldr: "Same walk, different container: a queue explores level by level, a stack dives deep first."
+tldr: "Same walk, different container: a queue explores level by level (BFS, which finds fewest-edge paths); a stack dives deep first (DFS). Both are O(V + E)."
 analogy: "Dropping a stone in a pond versus exploring a cave. The ripple (BFS) reaches every point at distance 1, then 2, then 3. The caver (DFS) follows one tunnel to its end before backing up to try the next."
 diagram: bfs-vs-dfs
 story:
@@ -19,7 +19,7 @@ story:
 keyIdeas:
   - "**Same skeleton, different container**: take a node from the frontier, visit its unvisited neighbours. Queue → BFS, stack → DFS."
   - "**BFS finds shortest paths on unweighted graphs**, because it reaches nodes in order of distance."
-  - "**Mark a node visited when you add it to the frontier**, not when you take it out, or it will be added many times."
+  - "**In BFS, mark a node visited when you add it to the queue**, not when you take it out, or it will be queued many times."
   - "**Both run in O(V + E) time.** BFS memory is the widest level; DFS memory is the deepest path."
   - "**DFS suits structure questions**: connected components, cycle detection, topological order, backtracking."
 quiz:
@@ -35,12 +35,16 @@ quiz:
     options: ["Yes, always", "Only if the graph is a tree", "No — it minimises the number of edges, not their total length; use Dijkstra", "Only if you run it twice"]
     answer: 2
     why: "Two short roads can be shorter than one long one. BFS's guarantee is about edge count, so weighted graphs need Dijkstra's algorithm (non-negative weights)."
+  - q: "During a DFS of a directed graph, which event proves the graph has a cycle?"
+    options: ["Reaching a vertex that some earlier, finished branch already visited", "Reaching a vertex that is still on the current recursion path", "The stack becoming empty", "Finding a vertex with no outgoing edges"]
+    answer: 1
+    why: "An edge back to a vertex still on the current path (a back edge) closes a loop. An edge into a finished branch proves nothing: if that vertex could reach back to you, DFS would already have followed that route while exploring it."
 bigO:
   - { op: "BFS / DFS", avg: "O(V + E)" }
   - { op: "grid of R × C cells", avg: "O(R · C)", note: "each cell has at most 4 edges" }
   - { op: "space", avg: "O(V)", note: "the frontier, plus the visited set" }
-related: [dsa/hash-tables, dsa/big-o-basics, dsa/binary-search-trees]
-prereqs: [dsa/arrays-and-pointers]
+related: [dsa/graphs, dsa/dijkstra, dsa/topological-sort, dsa/backtracking]
+prereqs: [dsa/graphs, dsa/queues-and-deques, dsa/stacks]
 griddle: bfs-grid
 flashcards:
   - kind: qa
@@ -159,7 +163,7 @@ print(bfs(GRID, (0, 0), (4, 4)), len(dfs(GRID, (0, 0), (4, 4), set())) - 1)   # 
 - **Use a real queue.** `list.pop(0)` in Python is O(n); `collections.deque.popleft()` is O(1).
 - **Weighted edges** break BFS's guarantee: it minimises the *number* of edges, not their total weight. Use Dijkstra's algorithm for non-negative weights.
 - **Deep recursion.** Recursive DFS on a long path can exceed Python's default limit of about 1,000 frames. Use an explicit stack for big inputs.
-- **Iterative DFS order.** Pushing all neighbours onto a stack visits them in reverse order compared with the recursive version. Both are valid DFS, but traces will differ.
+- **Iterative DFS order.** Pushing all neighbours onto a stack visits them in reverse order compared with the recursive version, so traces differ. And if you mark vertices visited when they are *pushed*, you get a valid reachability search but not a true depth-first order; for anything that relies on DFS order (cycle detection, topological sort) mark a vertex when it is *popped* and skip pops of already-visited vertices.
 - **Disconnected graphs.** One traversal only reaches S's component; to cover everything, start a new traversal from every unvisited vertex (this also counts the components).
 
 ## When to use which

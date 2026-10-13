@@ -58,9 +58,17 @@ export default (d) => {
     pen: 'blue',
     thick: true,
     label: 'm1',
-    labelDx: -10,
+    labelDx: 12,
+    labelDy: 22,
   });
-  d.text(C1.x + CW / 2, 40, 'done → ack', { pen: 'green', size: 16, bold: true });
+  d.arrow(C1.x - 4, C1.y + 8, slotX(0) + SLOT / 2, QY - 6, {
+    pen: 'green',
+    bend: 30,
+    label: 'ack',
+    labelDx: -14,
+  });
+  d.text(C1.x + CW / 2, 40, 'm1 deleted', { pen: 'green', size: 16, bold: true });
+  d.line(slotX(0) + 6, QY + QH - 8, slotX(0) + SLOT - 6, QY + 8, { pen: 'green', thick: true });
 
   d.step('Crash before ack: delivered again');
   d.group(() => {

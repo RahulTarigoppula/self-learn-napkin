@@ -2,7 +2,7 @@
   "name": "message-queue",
   "width": 520,
   "height": 396,
-  "elements": 16,
+  "elements": 18,
   "steps": [
     {
       "index": 0,
@@ -20,21 +20,21 @@
       "index": 2,
       "caption": "Consume, then ack",
       "firstElement": 8,
-      "lastElement": 9
+      "lastElement": 11
     },
     {
       "index": 3,
       "caption": "Crash before ack: delivered again",
-      "firstElement": 10,
-      "lastElement": 12
+      "firstElement": 12,
+      "lastElement": 14
     },
     {
       "index": 4,
       "caption": "Poison message → dead-letter queue",
-      "firstElement": 13,
-      "lastElement": 15
+      "firstElement": 15,
+      "lastElement": 17
     }
   ],
-  "hash": "9f0b56a8910e329134deda0c815d9bc2cdefd66b",
+  "hash": "eacf809eef5f9d456870fc7dddca1f639590e433",
   "title": "A producer, a message queue, two consumers and a dead-letter queue"
 }

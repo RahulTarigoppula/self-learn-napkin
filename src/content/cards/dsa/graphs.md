@@ -15,7 +15,7 @@ story:
   - title: Adjacency matrix
     text: "Alternatively, a V × V grid where cell [u][v] is 1 when u and v are joined. 'Is there an edge 1–3?' is a single lookup, O(1). But it stores 25 cells for 5 edges, O(V²) space, and listing a vertex's neighbours scans its whole row. For an undirected graph it is symmetric."
   - title: Paths and cycles
-    text: "A path is a sequence of vertices where each consecutive pair is joined by an edge: 0–1–3–4. A cycle is a path that returns to its start without reusing an edge: 0–1–2–0. A connected graph with no cycles at all is a tree, with exactly V − 1 edges."
+    text: "A path is a sequence of vertices where each consecutive pair is joined by an edge: 1–3–4 (red). A cycle is a path that returns to its start without reusing an edge: 0–1–2–0 (green). A connected graph with no cycles at all is a tree, with exactly V − 1 edges."
   - title: Directed, weighted, acyclic
     text: "Edges can be one-way (S → A) and carry weights such as cost or distance. This graph has no directed cycle, so it is a DAG (directed acyclic graph), the shape of dependencies and build steps. The cheapest route from S to T is S → B → A → T, costing 1 + 2 + 5 = 8."
   - title: Implicit graphs

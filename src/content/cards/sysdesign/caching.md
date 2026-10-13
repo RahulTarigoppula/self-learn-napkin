@@ -24,7 +24,7 @@ keyIdeas:
   - "**Cache-aside**: the app reads the cache, falls back to the database on a miss, and fills the cache itself."
   - "**Hit rate** is everything: at 95 % hits the database sees 1 read in 20; at 50 % the cache barely helps."
   - "**TTL** bounds staleness; **delete on write** keeps it short. Update the database first, then delete the key."
-  - "**Eviction** (usually LRU) decides what to drop when memory is full."
+  - "**Eviction** (usually LRU or an approximation of it) decides what to drop when memory is full."
   - "A hot key expiring causes a **thundering herd** — fix with a single-flight lock and jittered TTLs."
 quiz:
   - q: "A cache answers in 1 ms, the database in 20 ms, and the hit rate is 90 %. What is the average read latency with cache-aside?"
@@ -43,8 +43,8 @@ bigO:
   - { op: "hit",  avg: "~1 ms",   note: "in-memory, same datacentre" }
   - { op: "miss", avg: "~10 ms+", note: "hit cost plus the database read" }
 bigOTitle: "Key numbers"
-related: [dsa/hash-tables, dsa/lru-cache, sysdesign/consistent-hashing, sysdesign/load-balancing]
-prereqs: [sysdesign/load-balancing]
+related: [sysdesign/cache-eviction, sysdesign/cache-invalidation, sysdesign/dns-and-cdns, sysdesign/consistent-hashing]
+prereqs: [sysdesign/back-of-envelope]
 flashcards:
   - kind: qa
     q: "In cache-aside, who writes to the cache and when?"
@@ -60,7 +60,7 @@ sources:
 
 ## Why cache
 
-Reading from memory is roughly 100 times faster than a database query that touches disk and crosses the network. Most workloads are also skewed: a small fraction of keys (the home page, popular products, logged-in users) takes most of the reads. A **cache** is a small, fast store, usually an in-memory key-value server such as Redis or Memcached, that keeps copies of those hot answers. Every read it serves is one the database does not have to.
+A lookup in an in-memory cache on the same network takes well under a millisecond; a database query that parses SQL, takes locks and may touch disk often takes 5–20 ms, and every query uses up some of the database's limited capacity. Most workloads are also skewed: a small fraction of keys (the home page, popular products, logged-in users) takes most of the reads. A **cache** is a small, fast store, usually an in-memory key-value server such as Redis or Memcached, that keeps copies of those hot answers. Every read it serves is one the database does not have to.
 
 The price is that a cache holds **copies**, and copies can go stale. Everything hard about caching is about deciding when a copy is no longer true.
 

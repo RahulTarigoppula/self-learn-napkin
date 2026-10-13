@@ -52,7 +52,7 @@ prereqs: [ds/neural-network-basics]
 flashcards:
   - kind: qa
     q: "What is an embedding layer, mechanically?"
-    a: "A trainable matrix with one row per token or ID. Looking up the row for an index is equivalent to multiplying its one-hot vector by the matrix; gradients update only the rows that were used."
+    a: "A trainable matrix with one row per token or ID. Looking up the row for an index is equivalent to multiplying its one-hot vector by the matrix; in each step only the rows that were looked up receive a non-zero gradient."
   - kind: cloze
     text: "Cosine similarity is the {{dot product}} divided by the {{product of the vector lengths}}, so it ranges from −1 to 1."
   - kind: qa

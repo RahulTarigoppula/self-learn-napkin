@@ -37,8 +37,8 @@ quiz:
     options: ["A layer-4 balancer", "A layer-7 balancer", "DNS round robin", "Sticky sessions"]
     answer: 1
     why: "The path is inside the HTTP request, which only a layer-7 balancer parses. Layer 4 sees only IP addresses and ports."
-related: [sysdesign/caching, sysdesign/consistent-hashing, sysdesign/rate-limiting]
-prereqs: []
+related: [sysdesign/horizontal-vs-vertical-scaling, sysdesign/reverse-proxies-and-gateways, sysdesign/consistent-hashing, sysdesign/dns-and-cdns]
+prereqs: [sysdesign/client-server-basics]
 flashcards:
   - kind: qa
     q: "Why does 'sticky sessions' make a load balancer harder to scale?"
@@ -98,12 +98,12 @@ The window from 1 s to 15 s is why short check intervals matter, and why layer-7
 
 ## In code
 
-A balancer config sketch (generic, nginx-like):
+A balancer config sketch (nginx-style). Note that open-source nginx's `max_fails` is a *passive* check — it counts failed real requests — while the active `GET /health` probes described above need a dedicated health-check feature or a cloud balancer:
 
 ```
 upstream app {
     least_conn;                       # algorithm
-    server 10.0.0.11:8080 max_fails=3 fail_timeout=10s;
+    server 10.0.0.11:8080 max_fails=3 fail_timeout=10s;   # 3 failures → out for 10 s
     server 10.0.0.12:8080 max_fails=3 fail_timeout=10s;
     server 10.0.0.13:8080 weight=2;   # bigger box, double share
 }

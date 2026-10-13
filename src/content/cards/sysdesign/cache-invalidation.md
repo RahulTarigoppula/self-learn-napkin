@@ -17,7 +17,7 @@ story:
   - title: "TTL: the stale copy dies on its own"
     text: "This is why every cached key gets a TTL (time to live) even when you invalidate explicitly. With a TTL of 60 seconds, the stale v1 can survive for at most a minute. The TTL bounds how wrong the cache can be when invalidation is lost, races or has a bug."
   - title: "Stampede: a hot key expires"
-    text: "TTLs bring their own problem. A key read 1,000 times per second expires. Within the few milliseconds it takes to reload it, every request misses and runs the same database query: a thundering herd, or cache stampede, that can take the database down."
+    text: "TTLs bring their own problem. A key read 10,000 times per second expires, and reloading it takes 100 ms. In that window about 1,000 requests miss and all run the same database query: a thundering herd, or cache stampede, that can take the database down."
   - title: "Fix: one rebuild, the rest wait"
     text: "Coalesce the misses: the first request takes a short lock or lease and rebuilds the key; the others wait briefly or are served the old value. Add random jitter to TTLs so keys loaded together do not expire together, and refresh very hot keys a little before they expire."
 keyIdeas:

@@ -125,7 +125,7 @@ The phone pays one 80 ms round trip plus ~55 ms of server work, about 135 ms. Th
 upstream orders { server 10.0.1.11:8080; server 10.0.1.12:8080; }   # load-balanced pool
 upstream users  { server 10.0.2.21:8080; }
 
-limit_req_zone $binary_remote_addr zone=per_ip:10m rate=10r/s;     # token-bucket-like limiter
+limit_req_zone $binary_remote_addr zone=per_ip:10m rate=10r/s;     # leaky-bucket limiter, 10 req/s per client IP
 
 server {
     listen 443 ssl;

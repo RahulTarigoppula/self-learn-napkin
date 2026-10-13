@@ -45,8 +45,8 @@ bigO:
   - { op: "fixed window, worst 2 s span", avg: "2 × limit" }
   - { op: "sliding window log, memory", avg: "O(limit)", note: "one timestamp per request in the window" }
 bigOTitle: "Key numbers"
-related: [sysdesign/load-balancing, sysdesign/message-queues, sysdesign/caching]
-prereqs: []
+related: [sysdesign/api-design, sysdesign/backpressure, sysdesign/reverse-proxies-and-gateways, sysdesign/circuit-breakers-and-retries]
+prereqs: [sysdesign/client-server-basics]
 griddle: token-bucket
 flashcards:
   - kind: qa

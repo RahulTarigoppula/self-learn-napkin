@@ -2,7 +2,7 @@
   "name": "horizontal-vs-vertical-scaling",
   "width": 520,
   "height": 420,
-  "elements": 25,
+  "elements": 26,
   "steps": [
     {
       "index": 0,
@@ -32,15 +32,15 @@
       "index": 4,
       "caption": "Move state out: stateless app tier",
       "firstElement": 18,
-      "lastElement": 21
+      "lastElement": 22
     },
     {
       "index": 5,
       "caption": "Auto-scaling adds boxes under load",
-      "firstElement": 22,
-      "lastElement": 24
+      "firstElement": 23,
+      "lastElement": 25
     }
   ],
-  "hash": "534d1ec9fc93954cb2849c281c7dc43648b54360",
+  "hash": "aaf9cfafeb0e74ade9e560cdcdaa44cecb5e477b",
   "title": "Scaling up to one bigger machine versus scaling out to many stateless machines that share a session store"
 }

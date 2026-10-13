@@ -17,7 +17,7 @@ story:
   - title: State on a box gets in the way
     text: "There is a catch. If box A keeps the user's shopping cart in its own memory, the next request may land on box B, which has never heard of that user. Any data held only on one app server breaks the 'any box can serve any request' promise."
   - title: "Move state out: stateless app tier"
-    text: "The fix is to move state out of the app servers into a shared store, such as Redis or a database. Now the boxes are stateless — interchangeable — and cart:42 is found no matter which box handles the request. This is what makes scale-out work."
+    text: "The fix is to move state out of the app servers: the cart leaves box A for a shared store such as Redis or a database. Now the boxes are stateless — interchangeable — and cart:42 is found no matter which box handles the request. This is what makes scale-out work."
   - title: Auto-scaling adds boxes under load
     text: "Because stateless boxes are interchangeable, a controller can add or remove them automatically: for example, add a box when average CPU stays above 70 %, remove one when it falls. You pay for capacity roughly in step with traffic."
 keyIdeas:
@@ -102,7 +102,7 @@ Once the app tier is stateless, the **state lives in the data tier**, which beco
 ## When vertical is the right first move
 
 - **Early on.** One well-sized server handles far more than most new products need; adding distributed machinery early costs engineering time you could spend on the product.
-- **Databases.** A relational database on a big machine with fast NVMe disks and plenty of RAM can serve a very large workload. Moving it to the next instance size is a weekend task; sharding is a quarter-long project. Stack Overflow is a well-known example of serving a huge site from a small number of large database servers.
+- **Databases.** A relational database on a big machine with fast NVMe disks and plenty of RAM can serve a very large workload. Moving it to the next instance size is a weekend task; sharding is a quarter-long project. Stack Overflow, for example, has publicly described serving a very large site from a handful of big SQL Server machines.
 - **Hard-to-split work.** Some workloads — a large in-memory graph, a single-threaded bottleneck — do not split well across machines.
 
 Even then, keep a **replica** for failover: scaling up does not fix the single point of failure.

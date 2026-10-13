@@ -26,7 +26,7 @@ keyIdeas:
   - "**FIFO** and **random** keep no per-access state: cheap and lock-friendly, but blind to what is hot."
   - "**TTL** expiry is about freshness, not space: a key dies after a set time even if memory is free."
   - "**Scan pollution**: one-time reads flush LRU. SLRU, LRU-K and W-TinyLFU make a key prove it is popular before it can push out hot ones."
-  - "**Redis** does not keep an exact LRU list: it samples a few keys (5 by default) and evicts the oldest of the sample."
+  - "**Redis** does not keep an exact LRU list: it samples a few keys (5 by default) and evicts the one that has been idle longest."
 quiz:
   - q: "LRU cache, capacity 3. Requests: A, B, C, A, D. Which key is evicted when D arrives?"
     options: ["A", "B", "C", "Nothing, D is rejected"]

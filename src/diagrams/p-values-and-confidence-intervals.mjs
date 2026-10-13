@@ -7,7 +7,7 @@ export const meta = {
 // Null distribution: heads in 100 fair flips, mean 50, SD 5 (normal approximation drawn).
 const BY = 196; // baseline
 const PK = 118; // peak height
-const hx = (h) => 44 + (h - 30) * 10.8; // 30..70 heads -> 44..476
+const hx = (h) => 44 + (h - 32) * 12; // 32..68 heads -> 44..476
 const dens = (h) => Math.exp(-((h - 50) ** 2) / 50);
 const hy = (h) => BY - PK * dens(h);
 const curvePts = (from, to, n) =>
@@ -17,53 +17,53 @@ const curvePts = (from, to, n) =>
   });
 
 // Confidence-interval axis: proportion 0.40..0.80
-const CY = 290;
+const CY = 300;
 const cx = (p) => 60 + (p - 0.4) * 1000;
 
 export default (d) => {
   d.step('Assume the null: a fair coin');
   d.group(() => {
-    d.line(hx(30), BY, hx(70), BY, { pen: 'muted', single: true });
-    for (const h of [30, 40, 50, 60, 70]) {
+    d.line(hx(32), BY, hx(68), BY, { pen: 'muted', single: true });
+    for (const h of [35, 40, 45, 50, 55, 60, 65]) {
       d.line(hx(h), BY, hx(h), BY + 5, { pen: 'muted', single: true });
       d.text(hx(h), BY + 16, String(h), { pen: 'muted', size: 14, mono: true });
     }
-    d.text(hx(70), BY + 34, 'heads in 100 flips', { pen: 'muted', size: 14, anchor: 'end' });
+    d.text(hx(68), BY + 34, 'heads in 100 flips', { pen: 'muted', size: 14, anchor: 'end' });
   });
-  d.curve(curvePts(30, 70, 24), { pen: 'blue', thick: true });
+  d.curve(curvePts(32, 68, 24), { pen: 'blue', thick: true });
   d.text(20, 24, 'H₀: fair coin → heads ≈ 50 ± 5 (SD)', { pen: 'blue', size: 16, anchor: 'start' });
 
   d.step('Our data: 62 heads');
   d.group(() => {
-    d.line(hx(62), BY, hx(62), 66, { pen: 'red', thick: true });
-    d.text(hx(62) + 8, 62, '62 heads: z = (62 − 50) / 5 = 2.4', { pen: 'red', size: 15, anchor: 'start' });
+    d.line(hx(62), BY, hx(62), 78, { pen: 'red', thick: true });
+    d.text(hx(62) + 8, 92, '62 heads\nz = 2.4', { pen: 'red', size: 15, anchor: 'start' });
   });
 
   d.step('p-value: as extreme or more, if H₀ is true');
-  d.poly([[hx(62), BY], ...curvePts(62, 70, 6), [hx(70), BY]], {
+  d.poly([[hx(62), BY], ...curvePts(62, 68, 6), [hx(68), BY]], {
     closed: true,
     pen: 'red',
     fill: 'red',
-    fillStyle: 'hachure',
     thin: true,
   });
-  d.poly([[hx(30), BY], ...curvePts(30, 38, 6), [hx(38), BY]], {
+  d.poly([[hx(32), BY], ...curvePts(32, 38, 6), [hx(38), BY]], {
     closed: true,
     pen: 'red',
     fill: 'red',
-    fillStyle: 'hachure',
     thin: true,
   });
   d.group(() => {
-    d.text(hx(66), 150, 'p = 0.021', { pen: 'red', size: 17, bold: true });
-    d.text(hx(34), 150, '≤ 38 counts too', { pen: 'red', size: 14 });
+    d.arrow(hx(64.6), 172, hx(64.2), BY - 6, { pen: 'red', thin: true, headSize: 7 });
+    d.arrow(hx(36), 178, hx(35.8), BY - 6, { pen: 'red', thin: true, headSize: 7 });
+    d.text(hx(62) + 8, 156, 'p = 0.021', { pen: 'red', size: 17, bold: true, anchor: 'start' });
+    d.text(hx(38) - 6, 150, '≤ 38 counts\ntoo', { pen: 'red', size: 14, anchor: 'end' });
   });
 
   d.step('Compare with α = 0.05');
   d.group(() => {
     d.line(hx(40.2), BY, hx(40.2), 96, { pen: 'orange', dashed: true });
     d.line(hx(59.8), BY, hx(59.8), 96, { pen: 'orange', dashed: true });
-    d.text(hx(50), 86, '95 % of fair runs', { pen: 'orange', size: 14 });
+    d.text(hx(50), 178, '95 % of fair runs', { pen: 'orange', size: 14 });
   });
   d.text(20, 48, 'p < α → reject H₀ (not "H₀ is 2 % likely")', {
     pen: 'orange',
@@ -84,9 +84,12 @@ export default (d) => {
     d.line(cx(0.525), CY - 21, cx(0.525), CY - 7, { pen: 'green', thick: true });
     d.line(cx(0.715), CY - 21, cx(0.715), CY - 7, { pen: 'green', thick: true });
     d.dot(cx(0.62), CY - 14, 10, { pen: 'green', single: true });
-    d.text(cx(0.62), CY - 34, '0.62 ± 0.095 → [0.525, 0.715]', { pen: 'green', size: 15 });
+    d.text(cx(0.62), CY - 38, '95 % CI: 0.62 ± 0.095 = [0.525, 0.715]', { pen: 'green', size: 15 });
   });
-  d.text(cx(0.5), CY - 34, '0.5 is\noutside', { pen: 'blue', size: 14, anchor: 'end' });
+  d.group(() => {
+    d.dot(cx(0.5), CY, 9, { pen: 'blue', single: true });
+    d.text(cx(0.5) - 8, CY - 14, 'H₀', { pen: 'blue', size: 15, anchor: 'end' });
+  });
 
   d.step('Twenty tests: Bonferroni');
   d.group(() => {

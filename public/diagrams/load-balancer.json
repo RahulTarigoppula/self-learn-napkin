@@ -35,6 +35,6 @@
       "lastElement": 24
     }
   ],
-  "hash": "32a9cfb6290885df9e473963cf6864cb20de7960",
+  "hash": "163200e72f1b1dbbb6f5a0103c4c1cd308d38cef",
   "title": "A load balancer spreading requests over three app servers"
 }

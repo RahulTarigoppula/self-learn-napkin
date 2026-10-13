@@ -91,6 +91,23 @@ export function buildSearchIndex(cards, numbers) {
   }));
 }
 
+/** Every multiple-choice question, for the cross-topic Quick quiz. */
+export function buildQuizIndex(cards, numbers) {
+  return cards.flatMap((c) =>
+    (c.data.quiz ?? []).map((q, i) => ({
+      id: `${c.id}#${i}`,
+      slug: c.id,
+      number: numbers[c.id],
+      title: c.data.title,
+      track: c.data.track,
+      q: q.q,
+      options: q.options,
+      answer: q.answer,
+      why: q.why,
+    })),
+  );
+}
+
 async function main() {
   const cards = await loadCards();
   const numbers = JSON.parse(await readFile('src/content/numbers.json', 'utf8'));
@@ -104,6 +121,7 @@ async function main() {
   for (const [name, deck] of Object.entries(decks))
     await writeFile(`public/decks/${name}.json`, JSON.stringify(deck));
   await writeFile('public/search-index.json', JSON.stringify(buildSearchIndex(cards, numbers)));
+  await writeFile('public/quiz-index.json', JSON.stringify(buildQuizIndex(cards, numbers)));
   console.log(`✓ decks: ${decks.all.cardCount} flashcards from ${cards.length} napkins`);
 }
 

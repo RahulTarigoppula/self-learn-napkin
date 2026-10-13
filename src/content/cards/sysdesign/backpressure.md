@@ -15,7 +15,7 @@ story:
   - title: "Bound it: block, drop or shed"
     text: "Give the buffer a fixed capacity, here 100. When it is full you must choose: block the producer until there is room, drop items (the oldest or the newest), or shed load by rejecting requests early with 429 or 503 so callers back off. Each choice is visible and bounded, unlike a silent pile-up."
   - title: "Pull: the consumer sets the pace"
-    text: "Better still, let the consumer ask for work. It sends request(50) and the producer may send at most 50 items until asked again. Reactive Streams work this way, and so does TCP: the receiver advertises a window and the sender may not have more unacknowledged bytes in flight."
+    text: "Better still, let the consumer ask for work. It sends request(50) and the producer may send at most 50 items until asked again. Reactive Streams work this way, and so does TCP: the receiver advertises a window, and the sender may not have more unacknowledged bytes in flight than that."
   - title: "Little's law: L = λW"
     text: "Little's law links the three numbers: items in the system L equals arrival rate λ times time spent W. A full buffer of 100 drained at 800 per second means each item waits about 100 ÷ 800 = 125 ms. Bounding the queue is how you bound latency."
 keyIdeas:

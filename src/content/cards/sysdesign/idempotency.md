@@ -49,7 +49,7 @@ bigO:
   - { op: "extra cost per request", avg: "1 indexed lookup + 1 write", note: "the key row" }
 bigOTitle: "Key numbers"
 related: [sysdesign/message-queues, sysdesign/circuit-breakers-and-retries, sysdesign/pub-sub-and-streams, sysdesign/two-phase-commit-vs-sagas]
-prereqs: [sysdesign/api-design]
+prereqs: [sysdesign/client-server-basics]
 flashcards:
   - kind: qa
     q: "Why can't a client simply avoid retrying payments?"

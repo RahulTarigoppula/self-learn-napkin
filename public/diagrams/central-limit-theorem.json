@@ -1,0 +1,46 @@
+{
+  "name": "central-limit-theorem",
+  "width": 520,
+  "height": 420,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "A skewed population: waiting times",
+      "firstElement": 0,
+      "lastElement": 3
+    },
+    {
+      "index": 1,
+      "caption": "Average 4 waits at a time",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 2,
+      "caption": "Average 25: a bell appears",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 3,
+      "caption": "Spread shrinks: SE = σ / √n",
+      "firstElement": 10,
+      "lastElement": 10
+    },
+    {
+      "index": 4,
+      "caption": "95 % of means: 2 ± 1.96 × 0.4",
+      "firstElement": 11,
+      "lastElement": 11
+    },
+    {
+      "index": 5,
+      "caption": "When it fails",
+      "firstElement": 12,
+      "lastElement": 13
+    }
+  ],
+  "hash": "5b33ac3c7985f524cc388e9ffb6e404e1357d1ce",
+  "title": "Central limit theorem: skewed waiting times, sample means of 4 and 25 turning into a bell, standard error"
+}

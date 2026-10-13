@@ -41,6 +41,6 @@
       "lastElement": 12
     }
   ],
-  "hash": "97391e7dd5176b7672e9d18c79dbeea9d2d95495",
+  "hash": "78c00c9aa0cd4a8569dcd2c9d848fe3306d75caa",
   "title": "Token bucket rate limiter: capacity 5, refill 1 per second, burst of 7"
 }

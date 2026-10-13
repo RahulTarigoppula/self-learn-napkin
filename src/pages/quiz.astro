@@ -1,0 +1,29 @@
+---
+import QuickQuiz from '../features/quiz/QuickQuiz';
+import AppShell from '../layouts/AppShell.astro';
+---
+
+<AppShell title="Quick quiz" active="review" description="A mixed round of interview questions across every napkin, with an explanation for each answer.">
+  <div class="container quiz-page">
+    <header>
+      <p class="eyebrow">Mixed practice</p>
+      <h1>Quick quiz</h1>
+      <p class="muted">A shuffled round across topics — the closest thing to an interviewer picking at random. Every answer comes with the reason.</p>
+    </header>
+    <QuickQuiz client:load />
+  </div>
+</AppShell>
+
+<style>
+  .quiz-page {
+    padding-top: var(--space-6);
+  }
+  header {
+    max-width: 760px;
+    margin: 0 auto var(--space-6);
+  }
+  header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin: var(--space-2) 0;
+  }
+</style>

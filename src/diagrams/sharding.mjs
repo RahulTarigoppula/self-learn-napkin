@@ -73,5 +73,5 @@ export default (d) => {
   d.step('Add a shard: most rows move');
   cyl(456, HASH_Y, 'S4', 'orange', { dashed: true });
   d.text(456, HASH_Y + 72, '% 4 moves\n~75 %', { pen: 'orange', size: 15 });
-  d.text(292, 368, '→ consistent hashing', { pen: 'orange', size: 16, bold: true });
+  d.text(292, 368, 'consistent hashing: only ~25 % move', { pen: 'orange', size: 16, bold: true });
 };

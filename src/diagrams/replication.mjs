@@ -80,7 +80,7 @@ export default (d) => {
     anchor: 'start',
   });
   d.group(() => {
-    d.text(L.cx - 8, 142, 'epoch 1', { pen: 'red', size: 15, bold: true });
+    d.text(L.cx, 272, 'epoch 1', { pen: 'red', size: 15, bold: true });
     d.text(F1.cx - CW / 2 - 16, 40, 'epoch 2', { pen: 'green', size: 15, bold: true, anchor: 'end' });
   });
   d.text(14, 112, 'fix: fencing epochs,\nepoch 2 beats epoch 1', {

@@ -115,7 +115,7 @@ m = 16, k = 3 (the drawing). Add `cat` → bits 1, 4, 8. Add `dog` → bits 8, 1
 
 No single item set all of fox's bits: cat set bit 4, dog set 11 and 14. That is how false positives arise — the bits of *several* items happen to cover a new key.
 
-The formula predicts p ≈ (1 − e^(−3·2/16))³ = (1 − 0.687)³ ≈ 3 % for a random query. (Exact check: 5 of 16 bits are set, and (5/16)³ ≈ 3 %.)
+The formula predicts p ≈ (1 − e^(−3·2/16))³ = (1 − 0.687)³ ≈ 3 % for a random query. (Direct check: 5 of 16 bits are set, and (5/16)³ ≈ 3 %.)
 
 ## In code
 

@@ -1,0 +1,40 @@
+{
+  "name": "arrays-and-pointers",
+  "width": 520,
+  "height": 420,
+  "elements": 18,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One block, one formula",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Neighbours arrive in one cache line",
+      "firstElement": 5,
+      "lastElement": 5
+    },
+    {
+      "index": 2,
+      "caption": "Insert in the middle: shift the tail",
+      "firstElement": 6,
+      "lastElement": 9
+    },
+    {
+      "index": 3,
+      "caption": "Full? Allocate double and copy",
+      "firstElement": 10,
+      "lastElement": 12
+    },
+    {
+      "index": 4,
+      "caption": "A 2-D grid is rows laid end to end",
+      "firstElement": 13,
+      "lastElement": 17
+    }
+  ],
+  "hash": "dac38b983593f7c5deaae1144a99ec68506a3526",
+  "title": "An array in memory: address arithmetic, cache lines, shifting, doubling and a row-major 2-D grid"
+}

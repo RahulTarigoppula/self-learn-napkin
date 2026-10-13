@@ -80,7 +80,7 @@ export default (d) => {
     d.arrow(chipX(6) + CHIP / 2, CY0 + 48, 422, 298, { pen: 'red', thick: true });
     d.rect(352, 304, 140, 48, { pen: 'red', fill: 'red', label: '429 Too Many', size: 16, bold: true });
   });
-  d.text(260, 254, 'empty', { pen: 'red', size: 16, bold: true });
+  d.text(326, 256, 'empty at t = 0', { pen: 'red', size: 16, bold: true });
 
   d.step('Three seconds later: 3 tokens back');
   d.group(() => SLOTS.slice(0, 3).forEach((p) => token(p, 'orange')));

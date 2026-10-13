@@ -41,6 +41,6 @@
       "lastElement": 27
     }
   ],
-  "hash": "d09c3d44760e9ff23fbd925664d8618b849d686c",
+  "hash": "e233b7f9de689bfbb8e97b1f11b91a300468396f",
   "title": "Forward proxy versus reverse proxy, then an API gateway that authenticates, rate-limits, routes and aggregates requests"
 }

@@ -15,7 +15,7 @@ story:
   - title: Consume, then ack
     text: "C1 receives m1. While C1 works on it, the queue hides m1 from other consumers but does not delete it. Only when C1 finishes and sends an ack (acknowledgement) does the queue remove m1 for good."
   - title: Crash before ack, delivered again
-    text: "C1 takes m2, charges the card, then crashes before acking. After the visibility timeout, say 30 s, m2 reappears and C2 receives it. This is at-least-once delivery: nothing is lost, but m2 may run twice. C2 must check whether order m2 was already processed and skip it."
+    text: "C1 takes m2, charges the card, then crashes before acking. After the visibility timeout, say 30 s, m2 reappears and C2 receives it. This is at-least-once delivery: nothing is lost, but m2 may run twice. So the handler must be idempotent: C2 sees order m2 was already handled and skips the second charge."
   - title: Poison message to the dead-letter queue
     text: "m3 has a malformed address and fails on every attempt. Retrying forever would waste consumers and block progress. After 3 failed attempts the queue moves m3 to a dead-letter queue, where an engineer can inspect it, fix the bug and replay it."
 keyIdeas:
@@ -43,8 +43,8 @@ bigO:
   - { op: "typical visibility timeout", avg: "30 s", note: "longer than the slowest handler" }
   - { op: "typical retries before DLQ", avg: "3–5" }
 bigOTitle: "Key numbers"
-related: [sysdesign/rate-limiting, sysdesign/load-balancing, sysdesign/caching]
-prereqs: []
+related: [sysdesign/pub-sub-and-streams, sysdesign/idempotency, sysdesign/backpressure, sysdesign/rate-limiting]
+prereqs: [sysdesign/client-server-basics]
 flashcards:
   - kind: qa
     q: "Why is 'exactly-once delivery' usually implemented as at-least-once plus idempotency?"
@@ -97,7 +97,7 @@ Flash sale: producers send 1,000 orders/s for 60 s, then 100/s. Two consumers ha
 | After, 2 consumers | 100/s | 400/s | shrinks 300/s → empty in 120 s |
 | After, autoscaled to 6 | 100/s | 1,200/s | shrinks 1,100/s → empty in ~33 s |
 
-No order was lost or rejected; customers just got their confirmation emails a little later. Then a consumer crashes mid-order: that message is redelivered after 30 s, and the handler sees order 123 in its `processed` table and skips the duplicate charge.
+No order was lost or rejected; customers just got their confirmation emails a little later. Then a consumer crashes after committing order 123 but before acking: the message is redelivered after 30 s, and the next handler finds 123 in its `processed` table and skips it. Had the crash come *before* the commit, the claim would roll back and the retry would charge again with the same payment idempotency key, which the payment provider recognises — the card is still charged once.
 
 ## In code
 
@@ -105,11 +105,13 @@ No order was lost or rejected; customers just got their confirmation emails a li
 def handle(msg):
     order_id = msg.body["order_id"]
     with db.transaction():
-        # idempotency: the unique key makes a second insert fail
-        if db.exists("SELECT 1 FROM processed WHERE order_id = %s", order_id):
+        # claim the order first: the primary key on processed.order_id rejects a second claim
+        claimed = db.execute("INSERT INTO processed(order_id) VALUES (%s) "
+                             "ON CONFLICT DO NOTHING", order_id).rowcount
+        if not claimed:
             return                                    # duplicate: already done
-        charge_card(order_id)                         # pass order_id as the payment idempotency key
-        db.execute("INSERT INTO processed(order_id) VALUES (%s)", order_id)
+        charge_card(order_id, idempotency_key=order_id)  # provider dedupes a retried charge
+    # a crash before commit rolls the claim back, so redelivery retries safely
 
 while True:
     for msg in queue.receive(max_messages=10, visibility_timeout=30):

@@ -121,6 +121,32 @@ const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
       )
     }
 
+    <section class="block">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Practice</p>
+          <h2>Test yourself, your way</h2>
+        </div>
+      </div>
+      <div class="practice">
+        <a class="practice__item card" href={href('review/')}>
+          <span class="practice__icon"><Icon name="layers" size={22} /></span>
+          <span class="practice__title">Spaced review</span>
+          <span class="practice__text">Flashcards scheduled by FSRS — a few minutes a day keeps everything fresh.</span>
+        </a>
+        <a class="practice__item card" href={href('quiz/')}>
+          <span class="practice__icon"><Icon name="target" size={22} /></span>
+          <span class="practice__title">Quick quiz</span>
+          <span class="practice__text">A mixed round of multiple-choice questions across every topic, with explanations.</span>
+        </a>
+        <a class="practice__item card" href={href('cheatsheet/')}>
+          <span class="practice__icon"><Icon name="library" size={22} /></span>
+          <span class="practice__title">Cheat sheet</span>
+          <span class="practice__text">Every key idea and complexity table on one printable page.</span>
+        </a>
+      </div>
+    </section>
+
     <section class="block how">
       <div class="section-head">
         <div>
@@ -370,6 +396,41 @@ const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
   .path__meta {
     font-size: var(--text-xs);
     color: var(--ink-faint);
+  }
+  .practice {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  }
+  .practice__item {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    transition:
+      transform var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out);
+  }
+  .practice__item:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+  }
+  .practice__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--hl);
+    color: var(--hl-ink);
+  }
+  .practice__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+  }
+  .practice__text {
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
   }
   .how__steps {
     list-style: none;

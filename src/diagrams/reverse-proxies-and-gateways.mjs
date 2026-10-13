@@ -47,12 +47,12 @@ export default (d) => {
   d.arrow(118, 166, 200, 166, { pen: 'blue', label: 'HTTPS', size: 14 });
   d.rect(204, 146, 100, 40, { pen: 'blue', fill: 'blue', label: 'rev proxy', size: 16, bold: true });
   d.group(() => {
-    d.rect(354, 124, 152, 84, { pen: 'muted', dashed: true });
+    d.rect(360, 124, 146, 84, { pen: 'muted', dashed: true });
     d.text(498, 136, 'your servers', { pen: 'muted', size: 14, anchor: 'end' });
     server(372, 162);
     server(440, 162);
   });
-  d.arrow(308, 166, 368, 177, { pen: 'blue', label: 'HTTP', size: 14, labelDx: -16, labelDy: -18 });
+  d.arrow(308, 168, 368, 177, { pen: 'blue', label: 'HTTP', size: 14, labelDx: 0, labelDy: -20 });
   d.text(254, 206, 'ends TLS · gzip · caches', { pen: 'blue', size: 14 });
 
   d.step('API gateway: one door, many services');

@@ -13,7 +13,7 @@ story:
   - title: A stream is an append-only log
     text: "Log-based streams such as Kafka store a topic as a log. Every new event is appended at the end and gets the next offset, here 7. Reading does not delete anything; a reader just remembers how far it got. That one change makes replay, many independent readers and huge throughput possible."
   - title: "Partitions: the key picks one"
-    text: "One log on one machine cannot hold every event, so the topic is split into partitions P0, P1 and P2, each its own log with its own offsets. The producer picks a partition by hashing the event's key: hash(user:7) % 3 = 1, so every event of user 7 lands in P1, in the order it was written. There is no order across partitions."
+    text: "One log on one machine cannot hold every event, so the topic is split into partitions P0, P1 and P2, each its own log with its own offsets. The producer picks a partition by hashing the event's key: hash(user:7) % 3 = 1, so every event of user 7 (highlighted) lands in P1, in the order it was written. There is no order across partitions."
   - title: "Consumer group: one partition, one consumer"
     text: "Consumers that share a group id split the partitions between them: C1 reads P0 and P1, C2 reads P2. Within a group, a partition is read by only one consumer, which is what keeps each partition in order. A different group, say analytics, gets every event again with its own separate progress."
   - title: Offsets, retention and replay
@@ -79,7 +79,7 @@ A **work queue** spreads *tasks*: resize this image, send this email. **Pub/sub*
 ## How a log-based stream works
 
 1. **Topic and partitions.** A **topic** (say `orders`) is split into **partitions**. Each partition is an **append-only log**: records are only ever added at the end, and each gets the next **offset**, a sequence number unique within that partition. Partitions live on different brokers and are replicated, so one topic can absorb far more writes than a single machine.
-2. **Producing.** The producer chooses a partition for each record. With a key, the default is `hash(key) % partitions` (Kafka uses murmur2), so **the same key always goes to the same partition**. Without a key, records are spread for balance.
+2. **Producing.** The producer chooses a partition for each record. With a key, the default is `hash(key) % partitions` (Kafka's Java client uses murmur2; other clients may use a different hash), so **the same key always goes to the same partition**. Without a key, records are spread for balance.
 3. **Consuming.** Consumers **pull** records in offset order. Reading does not delete anything. Each consumer just remembers its position.
 4. **Consumer groups.** Consumers that share a `group.id` form a **group**. The broker assigns each partition to **exactly one** consumer in the group (one consumer may own several partitions). When consumers join, leave or crash, the group **rebalances** and partitions move.
 5. **Committed offsets.** Each group periodically stores, per partition, the offset of the next record it will process. After a crash or rebalance, the new owner resumes from there.

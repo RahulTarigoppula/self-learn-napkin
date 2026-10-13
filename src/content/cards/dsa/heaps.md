@@ -149,6 +149,7 @@ print(top_k([5, 1, 9, 3, 7, 6, 8], 3))                 # [9, 8, 7]
 In practice use Python's **`heapq`** module, which works on a plain list: `heappush`, `heappop`, `heapify`, `heapreplace` (pop then push, in one sift), and `nsmallest` / `nlargest`. It is a min-heap only.
 
 ```python
+import heapq
 tasks = []
 heapq.heappush(tasks, (2, "write docs"))
 heapq.heappush(tasks, (1, "fix bug"))       # tuples compare by priority first

@@ -147,7 +147,7 @@ The iterative `find` avoids Python's recursion limit. The recursive version, `if
 - **Kruskal's minimum spanning tree**: sort edges by weight and take each edge whose ends have different roots. Union-find is what makes the "would this create a cycle?" check cheap.
 
 ```python
-def kruskal(n, edges):           # edges: (weight, u, v); returns MST weight
+def kruskal(n, edges):           # uses the DSU class above; edges: (w, u, v)
     dsu, total = DSU(n), 0
     for w, u, v in sorted(edges):
         if dsu.union(u, v):      # skip edges whose ends are already connected
