@@ -17,7 +17,7 @@ story:
   - title: "Add it, shrunk by η = 0.5"
     text: "Add the tree, scaled by the learning rate η = 0.5: F₁ = F₀ + 0.5 × tree 1, which is 2 on the left and 3.5 on the right. The squared error falls from 30 to 21. Taking half a step leaves later trees room to correct, which generalises better."
   - title: Tree 2 fits the new residuals
-    text: "Recompute the residuals against F₁ (orange) and fit tree 2 to them. The biggest pattern left is the drop at the right end, so it splits at x < 5.5. F₂ = F₁ + 0.5 × tree 2 is a three-level staircase with error 15.4."
+    text: "Recompute the residuals against F₁ (orange) and fit tree 2 to them. The biggest pattern left is the drop at the right end, so it splits at x < 5.5. F₂ = F₁ + 0.5 × tree 2 is a two-level step — low, high, then low again at the right end — with error 15.4."
   - title: "Many small steps, stop early"
     text: "Repeat hundreds of times. Training error keeps falling — after 30 stumps it is 0.07 — but eventually the trees fit noise and validation error turns up. Early stopping keeps the number of trees where validation error is lowest."
 keyIdeas:

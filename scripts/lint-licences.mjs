@@ -45,7 +45,8 @@ export function lintCards(cards, { numbers, diagramExists, griddles, warnings = 
     const d = parsed.data;
     if (d.track !== c.id.split('/')[0]) p(`track "${d.track}" does not match its folder`);
     const n = numbers[c.id];
-    if (n === undefined) p('no entry in src/content/numbers.json (run npm run number -- <id>)');
+    if (n === undefined)
+      p('no entry in src/content/numbers.json (add it to its track yaml, then npm run number)');
     else if (seenNumbers.has(n)) p(`number ${n} is already used by ${seenNumbers.get(n)}`);
     else seenNumbers.set(n, c.id);
     const dg = diagramExists(d.diagram);
@@ -59,6 +60,9 @@ export function lintCards(cards, { numbers, diagramExists, griddles, warnings = 
         warnings.push(`${c.file}: related/prereq "${r}" is planned but not written yet`);
       else p(`related/prereq "${r}" does not exist`);
     }
+    for (const r of d.prereqs)
+      if (numbers[r] !== undefined && n !== undefined && numbers[r] > n)
+        p(`prereq "${r}" comes later in the syllabus (No. ${numbers[r]} > ${n}); reorder the track yaml`);
     if (d.griddle && !griddles.includes(d.griddle)) p(`griddle "${d.griddle}" is not a known visualiser`);
     const quick = words([d.tldr, d.analogy ?? '', ...d.story.map((s) => s.text), ...d.keyIdeas].join(' '));
     if (quick > MAX_STORY_WORDS) p(`${quick} words in the story layer (max ${MAX_STORY_WORDS})`);
@@ -107,7 +111,8 @@ export function credits(cards) {
   const byUrl = new Map();
   for (const c of cards)
     for (const s of c.data.sources ?? [])
-      if (!byUrl.has(s.url)) byUrl.set(s.url, { name: s.name, url: s.url, licence: s.licence });
+      if (s.licence !== 'Own work' && !byUrl.has(s.url))
+        byUrl.set(s.url, { name: s.name, url: s.url, licence: s.licence });
   return [...byUrl.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 

@@ -13,7 +13,7 @@ story:
   - title: Cut it 70 / 15 / 15
     text: "Cut once, before any modelling: 700 rows to train, 150 to validate, 150 to test. Each slice answers a different question, so no row may sit in two of them. With millions of rows the held-out slices can be far smaller in percentage — 1 % of 10 million is still 100,000 rows."
   - title: "Train: fit the weights"
-    text: "Only the 700 training rows ever touch the weights. Gradient descent keeps pushing training loss down epoch after epoch, so training loss alone cannot tell you when the model has started memorising noise."
+    text: "Only the 700 training rows ever touch the weights. The training algorithm keeps lowering the training error with every pass over the data (an epoch), so training loss alone cannot tell you when the model has started memorising noise."
   - title: "Validation: tune and stop early"
     text: "After every epoch, score the model on the 150 validation rows. Validation loss falls, bottoms out, then climbs as the model overfits — stop at the bottom (early stopping). The same slice chooses hyperparameters such as depth or learning rate. Because you pick by it, its score is optimistic."
   - title: "Test: open it once"
@@ -132,7 +132,7 @@ print("C =", best_C, "validation:", best_acc, "test (look once):", final.score(X
 - **Duplicates and near-duplicates** (the same image resized, the same email forwarded) across slices inflate scores. Deduplicate before splitting.
 - **Features from the future:** "total purchases this year" used to predict a purchase in March leaks the answer.
 - **Tiny datasets:** 15 % of 300 rows is 45 rows, far too noisy to choose by. Use k-fold cross-validation on the training portion instead.
-- **A test score above validation** is usually luck or leakage, not a great model. Investigate before celebrating.
+- **A test score above validation** is usually noise, not a great model; if the gap is large, check for leakage before celebrating.
 
 ## In the interview
 

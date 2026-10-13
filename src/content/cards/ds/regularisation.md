@@ -74,7 +74,7 @@ Instead of minimising only the training loss, minimise
 
 - **L2 / ridge**: penalty = Σⱼ wⱼ². Large weights cost a lot (quadratically) and small ones almost nothing, so every weight is pulled smoothly towards 0 and none is forced to exactly 0. Ridge has a closed form, w = (XᵀX + λI)⁻¹Xᵀy. The `+ λI` also makes the matrix invertible when features are strongly correlated.
 - **L1 / lasso**: penalty = Σⱼ |wⱼ|. Every weight pays the same price per unit, however small it is, so a weight whose contribution to the fit is smaller than that price is set to exactly 0. Lasso has no closed form and is fitted by coordinate descent.
-- **Elastic net**: α·L1 + (1 − α)·L2. It keeps lasso's sparsity but shares weight among correlated features instead of picking one of them at random.
+- **Elastic net**: r·L1 + (1 − r)·L2, where the mix r is `l1_ratio` in scikit-learn (α stays the overall strength). It keeps lasso's sparsity but shares weight among correlated features instead of picking one of them at random.
 - **λ ≥ 0** sets the strength. λ = 0 is plain least squares, and as λ → ∞ every penalised weight goes to 0. Bigger λ means more bias and less variance.
 
 ### The constraint picture

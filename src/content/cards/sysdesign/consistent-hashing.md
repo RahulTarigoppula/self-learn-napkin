@@ -17,7 +17,7 @@ story:
   - title: Walk clockwise
     text: "The rule is one line: a key belongs to the first server you meet walking clockwise. cart:42 walks past nothing until it reaches B, so B owns it. Lookups are a binary search over the sorted server positions — O(log n)."
   - title: Add a server, move one slice
-    text: "Server D joins between B and C. Only the keys that sat between B and D change owner — they now hit D first. Everything else stays put. On average just K/N keys move instead of nearly all of them."
+    text: "Server D joins between B and C. Only the keys that sat between B and D change owner — they now hit D first. Everything else stays put. On average just K/(N+1) keys move — about one new server's share — instead of nearly all of them."
 keyIdeas:
   - "**Only ~K/N keys move** when a node joins or leaves — the rest of the cache stays warm."
   - "**Virtual nodes** give each server many ring positions, which evens out load and lets a big machine take a bigger share."
@@ -128,7 +128,7 @@ class Ring:
 
 - **Replication:** to keep R copies, walk clockwise and take the next R *distinct physical* servers — skip virtual nodes of a server you already chose.
 - **Hot keys** still hurt: consistent hashing balances *keys*, not *traffic*. One celebrity key overloads its owner no matter where it lands — cache it in more places or split it.
-- **Everyone must agree on the ring.** Clients with different server lists route the same key differently. Distribute membership through a coordinator or gossip.
+- **Everyone must agree on the ring.** Clients with different server lists route the same key differently. Distribute membership through a coordinator or **gossip** (each node periodically swaps its view of the cluster with a few random peers, so news spreads to everyone in a few rounds).
 
 ## In the interview
 

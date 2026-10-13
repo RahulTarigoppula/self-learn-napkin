@@ -109,7 +109,7 @@ Real fan-outs for small keys are in the hundreds, so four levels cover billions 
 | `WHERE last_name = 'Shah'` | yes, one contiguous range |
 | `WHERE last_name = 'Shah' AND first_name = 'Ana'` | yes, a narrower range |
 | `WHERE last_name LIKE 'Sh%'` | yes, a prefix is a range |
-| `WHERE first_name = 'Ana'` | no seek: Anas are scattered across every last name |
+| `WHERE first_name = 'Ana'` | no seek: Anas are scattered across every last name (a *skip scan* can help when last names are few) |
 
 This is the **leftmost-prefix rule**. Put equality columns first and the range column last: for `WHERE status = 'paid' AND created_at > ?`, index `(status, created_at)`, not `(created_at, status)`.
 

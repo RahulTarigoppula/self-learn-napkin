@@ -13,7 +13,7 @@ story:
   - title: The overlap test
     text: "Two intervals overlap exactly when each one starts before the other ends: a.start < b.end and b.start < a.end. For [1,3] and [2,6]: 1 < 6 and 2 < 3, so they share the stretch from 2 to 3. If either test fails, one interval is completely before the other."
   - title: Merge while they overlap
-    text: "Walk the sorted list keeping the last merged block. [2,6] starts at 2, which is not after the block's end 3, so the block grows to [1, max(3, 6)] = [1,6]. [8,10] starts after 6: start a new block. Same for [15,18]. Result: [1,6], [8,10], [15,18] in one pass."
+    text: "Walk the sorted list keeping the last merged block. [2,6] starts at 2, which is not after the block's end 3 (touching intervals merge too, so the test here is start ≤ end), so the block grows to [1, max(3, 6)] = [1,6]. [8,10] starts after 6: start a new block. Same for [15,18]. Result: [1,6], [8,10], [15,18] in one pass."
   - title: Meeting rooms, by sweeping
     text: "How many rooms do these meetings need? Turn each meeting into two events: +1 at its start, −1 at its end. Sort all events by time and sweep, keeping a running count. The violet line is the number of rooms in use at each moment."
   - title: The peak is the answer
@@ -47,7 +47,7 @@ bigO:
   - { op: "meeting rooms (heap or sweep)", avg: "O(n log n)", note: "O(n) extra space" }
   - { op: "do any two overlap?", avg: "O(n log n)", note: "sort, compare neighbours" }
 related: [dsa/heaps, dsa/sorting-overview, dsa/greedy-algorithms, dsa/prefix-sums]
-prereqs: [dsa/sorting-overview]
+prereqs: [dsa/sorting-overview, dsa/heaps]
 flashcards:
   - kind: qa
     q: "Write the condition for two intervals a and b to overlap."

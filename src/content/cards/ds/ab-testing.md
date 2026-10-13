@@ -9,9 +9,9 @@ analogy: "A clinical trial for a web page. Patients are assigned by coin flip so
 diagram: ab-testing
 story:
   - title: Hypothesis and random split
-    text: "Does a new checkout page sell more? Write the hypothesis first: H₀, the null hypothesis, says conversion (orders per user) is the same in both versions. Randomise per user by hashing the user id, so each person always sees one version and the groups differ only by chance and by the page."
+    text: "Does a new checkout page sell more? Write the hypothesis first: H₀, the null hypothesis, says the conversion rate (share of users who place at least one order) is the same in both versions. Randomise per user by hashing the user id, so each person always sees one version and the groups differ only by chance and by the page."
   - title: Sample size from baseline and MDE
-    text: "Today 10 % of users convert. The smallest lift worth detecting — the minimum detectable effect (MDE) — is 1 percentage point (pp), to 11 %. With a 5 % false-positive rate (α) and an 80 % chance of catching a real 1 pp lift (power): n = (1.96 + 0.8416)² × (0.09 + 0.0979) / 0.01² ≈ 14,750 users per arm."
+    text: "Today 10 % of users convert. The smallest lift worth detecting — the minimum detectable effect (MDE) — is 1 percentage point (pp), to 11 %. With a 5 % false-positive rate (α) and an 80 % chance of catching a real 1 pp lift (power): n = (1.96 + 0.8416)² — 1.96 is the z-value for a two-sided 5 % test, 0.84 the z-value for 80 % power — × (0.09 + 0.0979) / 0.01² ≈ 14,750 users per arm."
   - title: "Run time: whole weeks"
     text: "With 3,000 eligible users a day, the 29,500 users take about 10 days. Round up to 14: whole weeks cover weekday and weekend behaviour, and the extra days let the novelty effect fade — people clicking a change only because it is new."
   - title: Do not peek and stop early
@@ -67,7 +67,7 @@ Decide these *before* launch and write them down:
 | Piece | Example | Why it matters |
 |---|---|---|
 | Hypothesis | "the new checkout raises conversion" | H₀: no difference; H₁: some difference |
-| Primary metric | orders per user | one metric decides; others are secondary |
+| Primary metric | conversion rate (share of users with ≥ 1 order) | one metric decides; others are secondary |
 | Randomisation unit | user (hash of user id) | analysis must use the same unit |
 | Baseline | 10 % | drives the variance p(1 − p) |
 | MDE | +1 pp (10 % → 11 %) | the smallest effect worth shipping |

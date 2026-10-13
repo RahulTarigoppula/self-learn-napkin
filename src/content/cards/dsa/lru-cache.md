@@ -42,7 +42,7 @@ bigO:
   - { op: "put", avg: "O(1)", note: "map write + link at front (+ evict tail)" }
   - { op: "space", avg: "O(capacity)" }
 related: [dsa/hash-tables, sysdesign/caching]
-prereqs: [dsa/hash-tables]
+prereqs: [dsa/hash-tables, dsa/linked-lists]
 griddle: lru-cache
 flashcards:
   - kind: qa

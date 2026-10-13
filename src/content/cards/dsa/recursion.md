@@ -23,13 +23,13 @@ keyIdeas:
   - "Each call gets its own **stack frame**; extra space is O(maximum depth), even when the code allocates nothing."
   - "Draw the **recursion tree**: time ≈ number of nodes × work per node; space ≈ height of the tree."
   - "Repeated subtrees mean **overlapping subproblems** — memoize them and you have dynamic programming."
-  - "The stack is finite and most mainstream languages (Python, Java, C# among them) do **not optimise tail calls**: convert deep recursions to a loop or an explicit stack."
+  - "The stack is finite and most mainstream languages (Python, Java, C# among them) do **not guarantee tail-call optimisation**: convert deep recursions to a loop or an explicit stack."
 quiz:
   - q: "While computing fact(4) with the code on this napkin, how many frames of fact are on the call stack at the deepest point?"
     options: ["1", "3", "4", "24"]
     answer: 2
     why: "fact(4) waits for fact(3), which waits for fact(2), which waits for fact(1). All four are alive at once when fact(1) hits the base case."
-  - q: "f(n) is defined as return f(n − 1), with no base case. What happens when you call f(5)?"
+  - q: "f(n) is defined as return 1 + f(n − 1), with no base case. What happens when you call f(5)?"
     options: ["It returns 0", "It loops forever, using no extra memory", "Frames pile up until the stack overflows and the program fails", "It returns an empty value"]
     answer: 2
     why: "Every call makes another call, and each one pushes a frame that never pops. The stack is finite, so the program dies with a stack overflow: Java throws StackOverflowError, Python raises RecursionError at about 1,000 frames."

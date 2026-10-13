@@ -4,7 +4,7 @@ track: dsa
 tags: [hashing, collisions, arrays]
 difficulty: 2
 minutes: 4
-tldr: "A hash turns a key into a bucket index; collisions are expected, and the load factor decides your speed."
+tldr: "A hash table keeps key–value pairs in an array: hashing a key gives its index, so lookups are O(1) on average. Collisions happen; not letting the table get too full keeps it fast."
 analogy: "A cloakroom with numbered hooks: a rule turns your name into a hook number, so the attendant walks straight to it. When two coats share a hook they hang one over the other, and when the hooks get crowded the cloakroom moves to a bigger room."
 diagram: hash-chaining
 story:
@@ -20,7 +20,7 @@ story:
     text: "Many tables (Java's HashMap, for example) resize once the load factor would pass 0.75. The next insert doubles the array to 16 buckets and re-hashes every key with mod 16. emu moves to bucket 11 and the chain disappears. That copy is O(n), but it is rare enough to average out to O(1) per insert."
 keyIdeas:
   - "**index = hash(key) mod buckets**: one arithmetic step takes you straight to the only bucket that can hold the key."
-  - "**Collisions are guaranteed** (more keys than buckets); chaining keeps a list per bucket, open addressing probes for another slot."
+  - "**Collisions are unavoidable** — likely even in a sparse table (23 keys in 365 buckets already collide more than half the time); chaining keeps a list per bucket, open addressing probes for another slot."
   - "**Load factor = keys ÷ buckets** sets the average chain length; keep it bounded and lookups stay O(1) on average."
   - "**Resizing doubles the array and rehashes every key** — O(n) once in a while, amortised O(1) per insert."
   - "**Worst case is O(n)**: a bad hash or adversarial keys can pile everything into one bucket."
@@ -50,7 +50,7 @@ flashcards:
     q: "What makes a hash table degrade to O(n) lookups?"
     a: "Collisions concentrating in one bucket — a poor hash, adversarial keys, or a load factor left too high."
   - kind: cloze
-    text: "Most implementations resize when the load factor exceeds {{0.75}}, then rehash every key."
+    text: "Java's HashMap resizes when the load factor exceeds {{0.75}}, then rehashes every key."
   - kind: qa
     q: "Why must a hash table rehash every key when it grows, instead of copying buckets across?"
     a: "The bucket index is hash mod capacity, so changing the capacity changes the index. A key in bucket 3 of 8 may belong in bucket 3 or 11 of 16."

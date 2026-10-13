@@ -111,7 +111,7 @@ Every region accepts writes locally and replicates them asynchronously to the ot
 
 ### Globally consistent databases
 
-Systems such as Google Spanner and CockroachDB keep **linearizable** data across regions by running consensus (Paxos or Raft) over replicas in several regions. Nothing conflicts, but every write waits for a majority of replicas, so placing them in three continents means 100 ms or more per write. They let you place a row's replicas close to where it is used to soften this.
+Systems such as Google Spanner and CockroachDB keep **linearisable** data across regions by running consensus (Paxos or Raft) over replicas in several regions. Nothing conflicts, but every write waits for a majority of replicas, so placing them in three continents means 100 ms or more per write. They let you place a row's replicas close to where it is used to soften this.
 
 ### Routing users
 

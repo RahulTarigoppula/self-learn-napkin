@@ -17,7 +17,7 @@ story:
   - title: Union by size
     text: "union(4,1): root 4's tree has 2 elements and root 0's tree has 4. The smaller tree goes under the bigger root, parent[4] = 0. That way an element's depth increases only when its group at least doubles, so no tree is ever deeper than log₂ n."
   - title: Path compression
-    text: "find(3) walks 3 → 2 → 0. On the way back it repoints 3 straight at the root, so the next find(3) takes one step. Together with union by size, any sequence of operations costs O(α(n)) each on average, and α(n) ≤ 4 for any realistic n."
+    text: "find(3) walks 3 → 2 → 0. On the way back it repoints 3 straight at the root, so the next find(3) takes one step. Together with union by size, any sequence of operations costs O(α(n)) each on average, where α is the inverse Ackermann function, which grows so slowly that α(n) ≤ 4 for any realistic n."
   - title: Same root, same set
     text: "Now find(1) and find(3) both return 0, so 1 and 3 are already connected. If 1–3 were a new edge in an undirected graph, adding it would close a cycle. That one check is the core of Kruskal's minimum spanning tree algorithm."
 keyIdeas:
@@ -49,7 +49,7 @@ bigO:
   - { op: "find, no balancing, no compression", worst: "O(n)", avg: "O(n)", note: "trees can become chains" }
   - { op: "space", avg: "O(n)", note: "parent and size arrays" }
 related: [dsa/graphs, dsa/minimum-spanning-trees, dsa/bfs-and-dfs, dsa/amortised-analysis]
-prereqs: [dsa/trees-and-traversals]
+prereqs: [dsa/graphs, dsa/trees-and-traversals]
 flashcards:
   - kind: qa
     q: "What are the two optimisations of union-find, and what do they give together?"

@@ -19,7 +19,7 @@ story:
   - title: Heartbeats keep followers quiet
     text: "The leader sends heartbeats (empty AppendEntries messages) every 50 ms. Each heartbeat resets a follower's election timer, so as long as the leader is alive no timer ever fires. If S1 crashes, the heartbeats stop and the next timer to expire starts term 2."
   - title: Split vote, so retry
-    text: "Had S2 and S4 timed out together, each might win 2 votes, with no majority. Both wait for a new random timeout and the first to fire starts a fresh election with a higher term. Randomness makes repeated ties unlikely, so elections usually finish within a few hundred milliseconds."
+    text: "Suppose S1 crashes and S2 and S4 time out together. Each votes for itself and wins one of the two remaining voters: 2 votes each, short of the 3 needed. Both wait for a new random timeout and the first to fire starts a fresh election with a higher term. Randomness makes repeated ties unlikely, so elections usually finish within a few hundred milliseconds."
 keyIdeas:
   - "Three roles: **follower** (passive), **candidate** (asking for votes), **leader** (sends heartbeats and log entries)."
   - "A **term** is a numbered election; a server that sees a higher term updates and steps down to follower."

@@ -46,7 +46,7 @@ quiz:
     why: "A content hash in the name means a URL's content never changes. Set max-age to a year; a deploy simply references new URLs, and no purge is needed."
 bigO:
   - { op: "lookup, resolver cache hit", avg: "~1 RTT to resolver", note: "often < 20 ms" }
-  - { op: "lookup, cold cache", avg: "+3 referrals", note: "root, TLD, authoritative" }
+  - { op: "lookup, cold cache", avg: "+3 queries", note: "root and TLD refer; the authoritative server answers" }
   - { op: "CDN hit", avg: "RTT to edge", note: "often 5–30 ms" }
   - { op: "CDN miss", avg: "RTT to edge + edge→origin", note: "can be 100+ ms" }
   - { op: "origin load", avg: "requests × (1 − hit ratio)" }

@@ -15,7 +15,7 @@ story:
   - title: "Partitions: the key picks one"
     text: "One log on one machine cannot hold every event, so the topic is split into partitions P0, P1 and P2, each its own log with its own offsets. The producer picks a partition by hashing the event's key: hash(user:7) % 3 = 1, so every event of user 7 (highlighted) lands in P1, in the order it was written. There is no order across partitions."
   - title: "Consumer group: one partition, one consumer"
-    text: "Consumers that share a group id split the partitions between them: C1 reads P0 and P1, C2 reads P2. Within a group, a partition is read by only one consumer, which is what keeps each partition in order. A different group, say analytics, gets every event again with its own separate progress."
+    text: "Consumers that share a group id split the partitions between them: C1 reads P0 and P1, C2 reads P2. Within a classic consumer group, a partition is read by only one consumer, which is what keeps each partition in order. A different group, say analytics, gets every event again with its own separate progress."
   - title: Offsets, retention and replay
     text: "Each group commits the offset it has processed, per partition. On P2 billing is at 5 and analytics, slower, is at 1. Events are kept for a retention period, 7 days by default in Kafka, whether or not anyone read them. Rewind a group's offset and it replays history, for example after fixing a bug."
 keyIdeas:

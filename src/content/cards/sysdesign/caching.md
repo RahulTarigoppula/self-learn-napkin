@@ -9,7 +9,7 @@ analogy: "A chef keeps salt and oil on the counter instead of walking to the sto
 diagram: cache-aside
 story:
   - title: An app, a cache and a database
-    text: "Three actors, with time flowing down the page. The cache is an in-memory key-value store that answers in about 1 ms; the database sits on disk and takes about 10 ms or more. In the cache-aside pattern only the app talks to both — the cache never talks to the database."
+    text: "Three actors, with time flowing down the page. The cache is an in-memory key-value store that answers in about 1 ms; an indexed database read takes about 1–10 ms, and much more when it misses RAM or the query is complex. In the cache-aside pattern only the app talks to both — the cache never talks to the database."
   - title: Ask the cache first
     text: "A request needs user 42, so the app asks the cache for user:42. The cache has never seen it and replies miss. That cost about 1 ms and bought nothing — every miss pays the cache round trip on top of the database."
   - title: Miss, so read the database

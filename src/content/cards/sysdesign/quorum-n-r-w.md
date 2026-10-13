@@ -23,7 +23,7 @@ keyIdeas:
   - "**Majority quorum** = ⌊N/2⌋ + 1 (2 of 3, 3 of 5); with it on both sides you tolerate ⌊(N − 1)/2⌋ dead replicas."
   - "Replies can disagree, so values carry **versions**; the reader keeps the newest and can **read-repair** the stale replicas."
   - "Tune the dial: big W + small R for fast reads, small W + big R for fast writes, R = W = 1 for speed with only eventual consistency."
-  - "**Sloppy quorums** keep writes flowing during failures but void the overlap guarantee until hinted hand-off completes."
+  - "When home replicas are down, some stores accept writes on stand-in nodes (a **sloppy quorum**); until those writes are handed back, R + W > N no longer guarantees overlap."
 quiz:
   - q: "N = 5. Which setting guarantees that every read sees the latest successful write?"
     options: ["R = 2, W = 2", "R = 2, W = 3", "R = 3, W = 3", "R = 1, W = 4"]
@@ -71,7 +71,7 @@ To survive machine failures, a data store keeps **N copies** (replicas) of every
 - **W** — the write quorum: a write is reported successful once **W** replicas acknowledge it. It is still sent to all N; the rest catch up later.
 - **R** — the read quorum: a read asks replicas and waits for **R** replies, then returns the one with the **highest version**.
 
-Every stored value carries a **version** (a counter, a timestamp, or a version vector) so the reader can tell which of several replies is newest.
+Every stored value carries a **version** (a counter, a timestamp, or a version vector) so the reader can tell which of several replies is newest. A **version vector** keeps one counter per replica; if neither of two vectors is ≥ the other in every slot, the writes were concurrent and must be merged rather than one simply winning.
 
 ### Why R + W > N works
 

@@ -17,7 +17,7 @@ story:
   - title: "Linkage: how far apart are two clusters?"
     text: "C must now be compared with the cluster {A, B}, which has two points. The linkage rule decides: single linkage uses the closest pair (C–A = 2.00), complete the farthest (C–B = 2.24), average the mean (2.12). With single linkage C joins {A, B} at height 2."
   - title: "Last merge: everything at 5"
-    text: "Two clusters remain. Their closest pair is B and D, 5.0 apart, so the final single-linkage merge happens at height 5. Building the tree needs all pairwise distances: n² memory, about 40 GB for 100,000 points, which is the method's main limit."
+    text: "Two clusters remain. Their closest pair is B and D, 5.0 apart, so the final single-linkage merge happens at height 5. Building the tree needs all pairwise distances: n(n − 1)/2 distances, about 40 GB for 100,000 points, which is the method's main limit."
   - title: Cut the tree to get clusters
     text: "Draw a horizontal line across the dendrogram. Every vertical branch it crosses is one cluster. Cutting at height 3 crosses two branches: {A, B, C} and {D, E}. A long stretch of height with no merges, here from 2 to 5, signals natural clusters: any cut in that gap gives the same answer."
 keyIdeas:

@@ -4,7 +4,7 @@ track: dsa
 tags: [dynamic-programming, strings]
 difficulty: 3
 minutes: 5
-tldr: "dp[i][j] = LCS length of the first i letters of X and the first j of Y. Equal last letters: diagonal + 1. Otherwise: the larger of up and left. O(mn)."
+tldr: "The longest letters-in-order (gaps allowed) shared by two strings. Fill a table: equal last letters take the diagonal + 1, otherwise the larger of up and left. O(mn)."
 analogy: "Two friends list the films they watched this year, in order. The longest common subsequence is the longest list of films both watched in the same order — gaps allowed, no reshuffling."
 diagram: longest-common-subsequence
 story:

@@ -15,12 +15,12 @@ story:
   - title: Each check rules out a value
     text: "3 + 11 = 14, too big: R moves left. 3 + 9 = 12, too small: L moves right. 4 + 9 = 13, found. Every check eliminated one value for good, so the pointers meet after at most n − 1 moves: O(n). This only works because the array is sorted."
   - title: Same direction, read and write
-    text: "The second flavour runs both pointers left to right. Remove duplicates from the sorted [1, 1, 2, 2, 2, 3, 5] in place: R reads every cell once. A value is worth keeping only if it differs from the last value kept, so the shaded duplicates are skipped."
+    text: "The second flavour runs both pointers left to right. Remove duplicates from the sorted [1, 1, 2, 2, 2, 3, 5] in place: a read pointer, rd, visits every cell once (a new name, so it is not confused with R above). A value is worth keeping only if it differs from the last value kept, so the shaded duplicates are skipped."
   - title: W writes to the front
     text: "W marks the next free slot of the answer. Each kept value is copied to a[W] and W moves on: 2 goes to index 1, 3 to index 2, 5 to index 3. W ends at 4, the new length, and a[0..3] = [1, 2, 3, 5]. One pass, no second array."
 keyIdeas:
   - "**Opposite ends** (L from the left, R from the right) need a reason to discard an end each step — usually a **sorted** array."
-  - "**Same direction** (read/write, or slow/fast): R scans everything once, W marks where the next kept element goes."
+  - "**Same direction** (read/write, or slow/fast): rd reads everything once, W marks where the next kept element goes."
   - "**Why O(n):** every step moves a pointer and no pointer ever moves back, so there are at most n moves in total."
   - "Correctness is an invariant: **the answer is never in the part you discarded**. Say it out loud in interviews."
   - "Unsorted pair sum? A **hash set** gives O(n) time; sorting first costs O(n log n) and loses the original indices."
@@ -85,9 +85,9 @@ The same shape solves **reversing an array** (swap `a[L]` and `a[R]`, move both 
 
 ### 2. Same direction (read / write, slow / fast)
 
-Both pointers start at the left and only move right, at different speeds. A **read** pointer `R` visits every element exactly once; a **write** pointer `W` marks the end of the result being built *inside the same array*. Everything in `a[0..W−1]` is finished output; `a[W..n−1]` is scratch space.
+Both pointers start at the left and only move right, at different speeds. A **read** pointer `rd` visits every element exactly once; a **write** pointer `W` marks the end of the result being built *inside the same array*. Everything in `a[0..W−1]` is finished output; `a[W..n−1]` is scratch space.
 
-This solves "remove duplicates in place", "move all zeroes to the end", "remove every occurrence of x", and partitioning. Because `W ≤ R` at all times, a write never destroys a value that has not been read yet.
+This solves "remove duplicates in place", "move all zeroes to the end", "remove every occurrence of x", and partitioning. Because `W ≤ rd` at all times, a write never destroys a value that has not been read yet.
 
 ## Worked example
 
@@ -105,7 +105,7 @@ Five checks instead of 21 pairs.
 
 **Same direction:** `[1, 1, 2, 2, 2, 3, 5]`, start `W = 1` (the first element is always kept).
 
-| R | a[R] | last kept a[W−1] | Action | W after | Prefix a[0..W−1] |
+| rd | a[rd] | last kept a[W−1] | Action | W after | Prefix a[0..W−1] |
 |---|---|---|---|---|---|
 | 1 | 1 | 1 | skip | 1 | [1] |
 | 2 | 2 | 1 | a[1] = 2 | 2 | [1, 2] |
@@ -145,9 +145,9 @@ def remove_duplicates(a: list[int]) -> int:
     if not a:
         return 0
     w = 1                              # a[:w] holds the distinct values kept so far
-    for r in range(1, len(a)):
-        if a[r] != a[w - 1]:           # a new value: differs from the last one kept
-            a[w] = a[r]
+    for rd in range(1, len(a)):
+        if a[rd] != a[w - 1]:          # a new value: differs from the last one kept
+            a[w] = a[rd]
             w += 1
     return w
 
@@ -159,7 +159,7 @@ assert remove_duplicates(nums) == 4 and nums[:4] == [1, 2, 3, 5]
 
 ## Why it is O(n)
 
-For opposite ends, the gap `R − L` starts at n − 1 and shrinks by exactly one per iteration, so there are at most n − 1 iterations. For same direction, `R` moves once per iteration and `W` never passes it, so both make at most n moves. Each iteration does O(1) work, and no extra arrays are allocated: **O(n) time, O(1) extra space**.
+For opposite ends, the gap `R − L` starts at n − 1 and shrinks by exactly one per iteration, so there are at most n − 1 iterations. For same direction, `rd` moves once per iteration and `W` never passes it, so both make at most n moves. Each iteration does O(1) work, and no extra arrays are allocated: **O(n) time, O(1) extra space**.
 
 ## Edge cases and pitfalls
 

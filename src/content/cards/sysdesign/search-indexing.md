@@ -34,7 +34,7 @@ quiz:
   - q: "Postings: cat → 2, 5, 9, 14 and dog → 5, 6, 14, 20. Which documents match cat AND dog?"
     options: ["2, 5, 6, 9, 14, 20", "5 and 14", "Only 14", "5, 9 and 14"]
     answer: 1
-    why: "Walk both sorted lists: 2 < 5 advance cat; 5 = 5 match; 9 > 6 advance dog; 9 < 14 advance cat; 14 = 14 match; cat is exhausted. The union (OR) would be the first option."
+    why: "Walk both sorted lists: 2 < 5 advance cat; 5 = 5 match; 9 > 6 advance dog; 9 < 14 advance cat; 14 = 14 match; cat is exhausted. The union (OR) would be every id from both lists: 2, 5, 6, 9, 14, 20."
   - q: "In a document-sharded index with 20 shards, what does a search for 'red' cost?"
     options: ["One shard, chosen by hashing 'red'", "All 20 shards are queried, each returns its top k, and the results are merged", "Only the shard that holds the newest documents", "A full table scan"]
     answer: 1

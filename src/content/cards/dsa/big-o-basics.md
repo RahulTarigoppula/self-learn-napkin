@@ -56,7 +56,7 @@ flashcards:
     q: "Why does Big-O drop constant factors and lower-order terms?"
     a: "It describes growth as n → ∞; for large n the dominant term decides, and constants depend on the machine, not the algorithm."
   - kind: cloze
-    text: "Comparison sorts cannot beat {{O(n log n)}} in the worst case."
+    text: "Comparison sorts need {{Ω(n log n)}} comparisons in the worst case."
   - kind: qa
     q: "An algorithm does 3n² + 200n + 5000 operations. What is its Big-O, and when would the 5000 still matter?"
     a: "O(n²). The constant dominates for small n, so for tiny inputs a 'worse' algorithm can be faster in practice."

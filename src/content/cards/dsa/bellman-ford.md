@@ -25,7 +25,7 @@ keyIdeas:
   - "**Pass V is the test**: any improvement means a negative cycle is reachable from the source."
   - "**O(V · E)** time, slower than Dijkstra, but correct with negative weights. Stop early when a pass changes nothing."
   - "**Arbitrage**: use weights −log(rate); a profitable currency loop is a negative cycle."
-  - "Limit to **k edges** by running k passes that read only the previous pass's distances (*Cheapest Flights Within K Stops*)."
+  - "Limit to **k edges** by running k passes that read only the previous pass's distances (*Cheapest Flights Within K Stops*: K stops = K + 1 edges, so K + 1 passes)."
 quiz:
   - q: "Why are V − 1 passes always enough when there is no negative cycle?"
     options: ["Because each pass settles exactly one node", "A shortest path visits each node at most once, so it has at most V − 1 edges, and each pass extends correct paths by at least one edge", "Because the edges are sorted", "They are not; you need V² passes"]

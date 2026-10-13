@@ -79,7 +79,7 @@ None of this loses acknowledged data, since W replicas have it, but stale copies
 
 ### 1. Hinted handoff (at write time)
 
-If the coordinator cannot reach replica R3, it stores the write locally as a **hint**: "this belongs to R3". When gossip reports R3 is back, the coordinator replays the hints to it. This covers short outages cheaply. Hints are kept only for a bounded window (Cassandra's `max_hint_window` is 3 hours by default), because a long-dead node would otherwise make hints pile up without limit. In Dynamo's original design the hint lives on a stand-in node that also counts towards W, which is what makes the quorum *sloppy*.
+If the coordinator cannot reach replica R3, it stores the write locally as a **hint**: "this belongs to R3". When gossip (nodes periodically swapping cluster status with random peers) reports R3 is back, the coordinator replays the hints to it. This covers short outages cheaply. Hints are kept only for a bounded window (Cassandra's `max_hint_window` is 3 hours by default), because a long-dead node would otherwise make hints pile up without limit. In Dynamo's original design the hint lives on a stand-in node that also counts towards W, which is what makes the quorum *sloppy*.
 
 ### 2. Read repair (at read time)
 

@@ -15,7 +15,7 @@ story:
   - title: One row per customer per date
     text: "The unit of prediction is one customer on one date, so the training table has one row per (customer, date): blue feature columns and an orange label column. Labels arrive on their own 30 days later, which makes churn a supervised problem. Stack several monthly snapshots and test on a later month."
   - title: Offline metric vs business metric
-    text: "Only 3 % of customers cancel, so accuracy is useless: predicting 'nobody cancels' scores 97 %. The team can contact 5 % of customers, so measure precision in the top 5 % — the model reaches 0.30. The business metric is profit: a £10 offer that saves 1 in 5 churners worth £200 each only pays when precision exceeds 0.25."
+    text: "Only 3 % of customers cancel, so accuracy is useless: predicting 'nobody cancels' scores 97 %. The team can contact 5 % of customers, so measure precision in the top 5 % — of the customers we contact, the share who really would cancel. The model reaches 0.30. The business metric is profit: a £10 offer that saves 1 in 5 churners worth £200 each only pays when precision exceeds 0.25."
   - title: Beat a simple baseline first
     text: "Before training anything, score a one-line rule: flag the customers whose logins dropped most. Here it reaches precision 0.18, against 0.03 for random picks. If a model cannot clearly beat the rule, ship the rule — it is cheaper, explainable and has no pipeline to maintain."
 keyIdeas:

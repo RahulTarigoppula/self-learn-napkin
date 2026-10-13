@@ -6,7 +6,16 @@ import SearchPalette from '../features/search/SearchPalette';
 import { href } from '../lib/base';
 import Base from './Base.astro';
 
-export type NavKey = 'home' | 'library' | 'review' | 'progress' | 'settings' | 'about' | 'none';
+export type NavKey =
+  | 'home'
+  | 'library'
+  | 'review'
+  | 'progress'
+  | 'settings'
+  | 'about'
+  | 'quiz'
+  | 'cheatsheet'
+  | 'none';
 interface Props {
   title: string;
   description?: string;
@@ -51,8 +60,8 @@ const tracks = (await getCollection('tracks')).sort(
       </nav>
       <div class="sidebar__section">
         <p class="eyebrow">Practice</p>
-        <a class="sidenav__track" href={href('quiz/')}><Icon name="target" size={16} /> Quick quiz</a>
-        <a class="sidenav__track" href={href('cheatsheet/')}><Icon name="library" size={16} /> Cheat sheet</a>
+        <a class="sidenav__track" href={href('quiz/')} aria-current={active === 'quiz' ? 'page' : undefined}><Icon name="target" size={16} /> Quick quiz</a>
+        <a class="sidenav__track" href={href('cheatsheet/')} aria-current={active === 'cheatsheet' ? 'page' : undefined}><Icon name="library" size={16} /> Cheat sheet</a>
       </div>
       <div class="sidebar__section">
         <p class="eyebrow">Tracks</p>
@@ -342,6 +351,12 @@ const tracks = (await getCollection('tracks')).sort(
   .sidenav__track:hover {
     color: var(--ink);
     background: var(--surface-2);
+  }
+  .sidenav__track[aria-current='page'] {
+    color: var(--ink);
+    font-weight: 600;
+    background: var(--surface);
+    box-shadow: var(--shadow-1);
   }
   .sidenav__track .dot {
     width: 9px;

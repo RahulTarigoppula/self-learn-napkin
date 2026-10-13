@@ -50,7 +50,7 @@ bigO:
   - { op: "level size ratio", avg: "≈ 10×", note: "leveled: ~90 % of data in the last level, space amp ≈ 1.1" }
 bigOTitle: "Complexity and key numbers"
 related: [sysdesign/indexes-and-b-trees, sysdesign/bloom-filters, sysdesign/write-ahead-log, sysdesign/sql-vs-nosql]
-prereqs: [sysdesign/indexes-and-b-trees]
+prereqs: [sysdesign/indexes-and-b-trees, sysdesign/write-ahead-log, sysdesign/bloom-filters]
 flashcards:
   - kind: qa
     q: "What are the three amplifications an LSM-tree trades off?"

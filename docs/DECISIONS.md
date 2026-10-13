@@ -25,7 +25,7 @@ The planning documents in this folder (GOAL, PLAN, DESIGN, ARCHITECTURE, IMPLEME
 | Animation | SMIL + `setCurrentTime` scrubbing | CSS stroke-dash drawing per scene (classes toggled by `src/features/story/story.ts`) | Works everywhere including Android WebView; reduced motion just skips the drawing |
 | Search | Pagefind (WASM) | Hand-rolled ranked index over a ~JSON file (`src/engine/search`) | Instant, tiny, no WASM/CSP exceptions, fully tested |
 | Content files | `.mdx` | `.md` with zod schema shared by Astro and the lint (`src/content/schema.mjs`) | No MDX needed; one schema everywhere |
-| Napkin numbers | Hand-picked (037…) | DSA 001–042, System Design 101–141, DS 201–238, assigned from the syllabus order in `src/content/tracks/*.yaml` | Numbers tell you the track at a glance |
+| Napkin numbers | Hand-picked (037…) | DSA 001–042, System Design 101–141, DS 201–238, regenerated from the syllabus order in `src/content/tracks/*.yaml` by `npm run number`; the lint fails if a prereq comes later in the syllabus | Numbers tell you the track and the learning order at a glance; progress and flashcards are keyed by slug, so renumbering is safe |
 | Fonts | Caveat, Nunito, JetBrains Mono, Excalifont | Bricolage Grotesque, Inter (+ Greek subset for maths symbols), JetBrains Mono, Excalifont — subset by `scripts/subset-fonts.py` | Modern look; still ≤ 140 kB total |
 | Sounds | CC0 sprite via Howler | Synthesised with Web Audio (`src/platform/sound.ts`), off by default | Zero bytes, no licensing |
 | Repo / URL | `napkin`, `ttrahul007.github.io/napkin` | `self-learn-napkin`, `rahultarigoppula.github.io/self-learn-napkin/` | The repository the owner created |

@@ -17,7 +17,7 @@ story:
   - title: "Celebrities: pull at read time"
     text: "Pushing a post from a star with 50 million followers means 50 million cache writes — minutes of work for one post. So accounts above a threshold are not fanned out. When Ben reads, the feed service fetches recent posts from the few stars he follows and merges them in. This mix of push and pull is the hybrid model."
   - title: "Rank, then page with a cursor"
-    text: "The merged candidates are scored — how recent, how often Ben interacts with the author, how much engagement the post has — and returned 20 at a time. The next request says ?cursor=52, meaning 'continue after the last item I saw', so new posts arriving at the top never shift or duplicate the page."
+    text: "The merged candidates are scored — how recent, how often Ben interacts with the author, how much engagement the post has — and returned 20 at a time. The cursor names a position in this session's ranked snapshot (for a purely chronological feed, simply the last post id seen), so new posts arriving at the top never shift or duplicate a page."
   - title: Photos come from a CDN
     text: "The feed response carries only text and media URLs, a few kilobytes. The photos themselves were uploaded once to blob storage and are served by a CDN edge server close to Ben, so the heavy bytes never pass through the feed service."
 keyIdeas:

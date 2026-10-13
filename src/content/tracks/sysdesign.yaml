@@ -21,9 +21,9 @@ order:
   - sysdesign/acid-and-isolation
   - sysdesign/sql-vs-nosql
   - sysdesign/indexes-and-b-trees
-  - sysdesign/lsm-trees
   - sysdesign/write-ahead-log
   - sysdesign/bloom-filters
+  - sysdesign/lsm-trees
   - sysdesign/message-queues
   - sysdesign/pub-sub-and-streams
   - sysdesign/idempotency

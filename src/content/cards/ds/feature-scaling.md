@@ -148,7 +148,7 @@ scikit-learn names for the variants in the pitfalls below: `ColumnTransformer` s
 - **One-hot columns** are already 0/1. Standardising them is harmless for most models but makes them harder to read, so scale only the numeric columns.
 - **Sparse data** (text counts): centring destroys sparsity. Divide by the standard deviation or the largest absolute value without subtracting anything.
 - **Values outside the training range** are fine. Min-max scaling then produces values below 0 or above 1, and the model should cope.
-- **Regularised models** need scaling for fairness: an L1/L2 penalty on unscaled features punishes small-unit columns more.
+- **Regularised models** need scaling for fairness: an L1/L2 penalty on unscaled features punishes columns with small numeric ranges (large units, such as km rather than m) more, because they need larger weights.
 
 ## In the interview
 

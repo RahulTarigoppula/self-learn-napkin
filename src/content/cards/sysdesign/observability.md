@@ -128,10 +128,10 @@ In request terms, 10 million requests a month at 99.9 % allows 10,000 failures. 
 
 ## Worked example: a slow checkout
 
-1. **Metric alert:** checkout p99 rose from 300 ms to 2 s and the error rate from 0.05 % to 1 %. The SLO burn rate is 10, so someone is paged.
+1. **Metric alert:** checkout p99 rose from 300 ms to 2 s and the error rate from 0.05 % to 1.5 %. Against a 0.1 % budget that is a burn rate of 15, above the 14.4 paging threshold, so someone is paged.
 2. **Trace:** a slow checkout's trace shows `orders → db` taking 1.8 s of the 2 s, on a `SELECT … FOR UPDATE`.
 3. **Logs:** filtering by that trace id shows `lock wait timeout` errors that started with a deploy that added a long-running batch job holding row locks.
-4. **Fix and budget:** the batch job is rolled back. The incident consumed about 30 of the month's 43 minutes, so the team freezes non-urgent deploys until the window recovers.
+4. **Fix and budget:** the batch job is rolled back. Two hours at burn rate 15 spent about 4 % of the month's budget (15 × 2 h ÷ 720 h), roughly 1.8 of the 43 minutes. Left unnoticed for a day it would have spent half — which is exactly why burn-rate alerts page early.
 
 ## Implement it in Python
 

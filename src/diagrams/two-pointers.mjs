@@ -80,10 +80,10 @@ export default (d) => {
   d.text(LX, 140, '4 + 9 = 13 ✓', { pen: 'green', size: 18, bold: true, anchor: 'start' });
   d.text(LX, 166, '5 checks, not 21 pairs', { pen: 'green', size: 15, anchor: 'start' });
 
-  d.step('Same direction: R reads every cell');
+  d.step('Same direction: rd reads every cell');
   d.line(X0, 194, 500, 194, { pen: 'muted', dashed: true, thin: true });
   d.group(() => {
-    d.text(X0 + 4, 208, 'R reads every cell', { pen: 'blue', size: 15, anchor: 'start' });
+    d.text(X0 + 4, 208, 'rd reads every cell', { pen: 'blue', size: 15, anchor: 'start' });
     d.arrow(170, 208, 320, 208, { pen: 'blue', thick: true });
   });
   d.group(() => B.forEach((v, i) => cell(d, i, BY, BH, v)));

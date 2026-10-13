@@ -34,7 +34,7 @@ quiz:
   - q: "The 5 nearest neighbours of Q, nearest first, are blue, red, red, blue, blue. What do k = 3 and k = 5 predict?"
     options: ["k = 3: red, k = 5: blue", "Both red", "Both blue", "k = 3: blue, k = 5: red"]
     answer: 0
-    why: "k = 3 sees blue, red, red: red wins 2 to 1. k = 5 adds two blues: blue wins 3 to 2. This is exactly the example in the story, and why k must be tuned."
+    why: "k = 3 sees blue, red, red: red wins 2 to 1. k = 5 adds two blues: blue wins 3 to 2. This is the example in the worked table, and why k must be tuned."
   - q: "Features are age (20–70) and annual income (£20k–£200k), unscaled. What happens to kNN?"
     options: ["Income almost entirely decides who is 'near'", "Age dominates because it is listed first", "Nothing, kNN is scale-invariant", "The model refuses to train"]
     answer: 0

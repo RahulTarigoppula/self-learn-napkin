@@ -9,7 +9,7 @@ analogy: "Train the same model on many different samples and throw each one like
 diagram: bias-variance
 story:
   - title: Model complexity against error
-    text: "Picture fitting a curve to 20 noisy points. Across: how flexible the model is — a straight line on the left, a degree-15 polynomial on the right. Up: error. We will draw two curves, one measured on the training points and one on fresh test points."
+    text: "Picture fitting a curve to 20 noisy points. Across: how flexible the model is — a straight line on the left, a degree-9 polynomial on the right. Up: error. We will draw two curves, one measured on the training points and one on fresh test points."
   - title: Training error falls forever
     text: "Every extra degree of freedom lets the model bend closer to the training points, so training error only goes down. A flexible enough model can drive it to zero by memorising every point — noise included. Training error alone cannot tell you when to stop."
   - title: Test error falls, then rises
@@ -32,7 +32,7 @@ quiz:
     answer: 0
     why: "Training and validation errors are close, so the model generalises what it learned — it just learned too little. The 13-point gap to the expert is bias. Fix it with a richer model or better features, not more data."
   - q: "Which change usually lowers variance but raises bias?"
-    options: ["Adding more input features", "Increasing the L2 regularisation strength", "Training for more epochs", "Letting a decision tree grow deeper"]
+    options: ["Adding more input features", "Increasing the L2 regularisation strength (a penalty on large weights)", "Training for more epochs", "Letting a decision tree grow deeper"]
     answer: 1
     why: "A stronger penalty shrinks the weights, so the fitted function can bend less: it reacts less to the particular sample (lower variance) but can no longer follow every real wiggle (higher bias). The other three all add flexibility."
   - q: "Over many training sets, a model's predictions at x average 2.9 with variance 0.02. The truth at x is 3.0 and the noise variance is 0.25. What is the expected squared error at x?"
@@ -42,13 +42,13 @@ quiz:
   - q: "A 1-nearest-neighbour classifier is best described as…"
     options: ["High bias, low variance", "Low bias, high variance", "High bias, high variance", "Zero error on any data"]
     answer: 1
-    why: "It reproduces every training label exactly (low bias), but each prediction depends on a single neighbour, so swapping a few training points flips answers (high variance). Raising k averages more neighbours: more bias, less variance."
+    why: "Averaged over many training sets, its prediction at x tracks the true local label closely (low bias), but each prediction hangs on a single neighbour, so swapping a few training points flips answers (high variance). Raising k averages more neighbours: more bias, less variance."
 related: [ds/train-val-test, ds/cross-validation, ds/regularisation]
 prereqs: []
 flashcards:
   - kind: qa
     q: "You see 2 % training error and 18 % validation error. Bias or variance, and what do you do?"
-    a: "Variance (overfitting). Get more data, regularise harder, simplify the model, or add augmentation — not a bigger model."
+    a: "Variance (overfitting). Get more data, regularise harder, simplify the model, or add augmentation (extra training variants, such as flipped images) — not a bigger model."
   - kind: cloze
     text: "Underfitting shows as {{high bias}}: training and validation error are both high and close together."
   - kind: qa

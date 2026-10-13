@@ -1,4 +1,6 @@
-/** Curated learning paths: an ordered walk through napkins for a goal. Missing ids are skipped. */
+import numbers from '../content/numbers.json';
+
+/** Curated learning paths: a walk through napkins for a goal, in syllabus order. Missing ids are skipped. */
 export interface LearningPath {
   id: string;
   title: string;
@@ -7,7 +9,7 @@ export interface LearningPath {
   ids: string[];
 }
 
-export const PATHS: LearningPath[] = [
+const CURATED: LearningPath[] = [
   {
     id: 'dsa-essentials',
     title: 'Coding interview essentials',
@@ -85,3 +87,10 @@ export const PATHS: LearningPath[] = [
     ],
   },
 ];
+
+const num = numbers as Record<string, number>;
+/** Paths always follow the syllabus numbering, so a path never asks for a napkin before its prerequisites. */
+export const PATHS: LearningPath[] = CURATED.map((p) => ({
+  ...p,
+  ids: [...p.ids].sort((a, b) => (num[a] ?? 1e9) - (num[b] ?? 1e9)),
+}));

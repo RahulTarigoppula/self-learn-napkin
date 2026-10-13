@@ -12,15 +12,17 @@ order:
   - ds/categorical-encoding
   - ds/missing-data
   - ds/linear-regression
-  - ds/logistic-regression
   - ds/loss-functions
   - ds/gradient-descent
   - ds/sgd-and-mini-batch
+  - ds/logistic-regression
   - ds/decision-trees
   - ds/random-forests
   - ds/gradient-boosting
   - ds/svm-and-kernels
   - ds/k-nearest-neighbours
+  - ds/bayes-theorem
+  - ds/maximum-likelihood
   - ds/naive-bayes
   - ds/k-means
   - ds/hierarchical-clustering
@@ -29,11 +31,9 @@ order:
   - ds/precision-recall-roc
   - ds/class-imbalance
   - ds/calibration
-  - ds/ab-testing
-  - ds/p-values-and-confidence-intervals
   - ds/central-limit-theorem
-  - ds/bayes-theorem
-  - ds/maximum-likelihood
+  - ds/p-values-and-confidence-intervals
+  - ds/ab-testing
   - ds/neural-network-basics
   - ds/backpropagation
   - ds/embeddings

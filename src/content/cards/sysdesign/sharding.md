@@ -11,7 +11,7 @@ story:
   - title: One table outgrows one machine
     text: "A users table has 3 million rows and keeps growing. One database server eventually runs out of disk, memory for indexes, or write throughput. Read replicas help reads, not writes. Sharding (horizontal partitioning) splits the rows themselves across several machines."
   - title: Split by key range
-    text: "Pick a shard key, here the user id, and give each shard a contiguous range: S1 holds ids 1–1M, S2 1M–2M, S3 2M–3M. A small routing table maps ranges to shards. Range queries are cheap: ids 1,000 to 2,000 live on one shard."
+    text: "Pick a shard key, here the user id, and give each shard a contiguous range: S1 holds ids 1–1M, S2 1M+1–2M, S3 2M+1–3M. A small routing table maps ranges to shards. Range queries are cheap: ids 1,000 to 2,000 live on one shard."
   - title: The hot shard
     text: "Ids grow with every signup, so every new user lands on S3. New users are also the most active, so S3 takes nearly all the writes while S1 and S2 sit idle. Adding machines does not help; the load follows the key, not the hardware."
   - title: Split by hash instead
@@ -73,7 +73,7 @@ A single database server has fixed limits: disk size, the RAM that keeps indexes
 
 | | Range sharding | Hash sharding |
 |---|---|---|
-| Rule | `1–1M → S1, 1M–2M → S2, …` | `shard = hash(key) % N` (or a hash ring) |
+| Rule | `1–1M → S1, 1M+1–2M → S2, …` | `shard = hash(key) % N` (or a hash ring) |
 | Range scans | One or few shards | Every shard |
 | Load balance | Depends on key distribution; sequential keys create hot spots | Even, if the hash is good |
 | Splitting a full shard | Easy: split one range in two | Hard with `% N`; easy with consistent hashing |
@@ -84,7 +84,7 @@ A common middle ground is a **compound key**: hash on `user_id` to pick the shar
 
 Users table, 3 M rows, 3 shards, key `user_id`.
 
-- **Range:** S1 = 1–1M, S2 = 1M–2M, S3 = 2M–3M. `GET user 1,500,000` → S2. `users 1,000–2,000` → S1 only. But user 3,000,001 signs up → S3, and so does every later user: S3 becomes the **hot shard**.
+- **Range:** S1 = 1–1M, S2 = 1M+1–2M, S3 = 2M+1–3M. `GET user 1,500,000` → S2. `users 1,000–2,000` → S1 only. But user 3,000,001 signs up → S3, and so does every later user: S3 becomes the **hot shard**.
 - **Hash:** `shard = hash(user_id) % 3`. Ids 1, 2, 3 might land on S1, S2, S3; new signups spread evenly. `users 1,000–2,000` must query all three shards and merge.
 - **Resharding:** add S4 and change to `% 4`. For a hash value `h`, the row stays only if `h % 3 == h % 4`, true for `h % 12` in {0, 1, 2}: 3 values in 12. So **75 % of rows move**. With consistent hashing only about 1/4 move — just those that now belong to S4.
 

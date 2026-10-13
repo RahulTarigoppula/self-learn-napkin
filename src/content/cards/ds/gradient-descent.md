@@ -123,7 +123,7 @@ The loss is an average over N examples, and so is its gradient. **Batch** gradie
 
 **Momentum** keeps a running average of recent gradients, v ← βv + ∇L, and steps along it: w ← w − ηv (β ≈ 0.9). Zig-zags across a narrow valley cancel out, while steady progress along the valley floor builds up speed.
 
-**Adam** combines momentum with a per-weight scale: it divides each weight's step by a running estimate of that weight's typical gradient size. Weights with consistently tiny gradients get relatively larger steps. It is the default optimiser for most deep learning because it is forgiving about η (3 × 10⁻⁴ is a common start).
+**Adam** combines momentum with a per-weight scale: it divides each weight's step by a running estimate of that weight's typical gradient size. Weights with consistently tiny gradients get relatively larger steps. It is the default optimiser for most deep learning because it is forgiving about η (3 × 10⁻⁴ is a common start; the library default is 10⁻³).
 
 ## Implement it in Python
 

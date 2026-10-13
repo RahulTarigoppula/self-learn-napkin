@@ -23,7 +23,7 @@ story:
 keyIdeas:
   - "**State:** `dp[i][c]` = best value using the first i items within capacity c. The answer is `dp[n][W]`."
   - "**Recurrence:** `dp[i][c] = max(dp[i−1][c], dp[i−1][c−w] + v)`, where the second option exists only if `w ≤ c`."
-  - "**O(nW) time is pseudo-polynomial:** it grows with the *value* of W, which is exponential in the number of bits needed to write W. The general problem is NP-hard."
+  - "**O(nW) time is pseudo-polynomial:** it grows with the *value* of W, which is exponential in the number of bits needed to write W. The general problem is NP-hard (no known algorithm is fast in both n and the number of digits of W)."
   - "**One row:** iterate capacity **downwards** for 0/1 (each item once), **upwards** for unbounded (items reusable)."
   - "**Greedy by value per kg fails** for 0/1 knapsack; it is only correct for the fractional version, where items can be cut."
 quiz:

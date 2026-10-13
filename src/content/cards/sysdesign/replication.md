@@ -46,7 +46,7 @@ quiz:
 bigO:
   - { op: "sync write", avg: "+1 round trip", note: "≈ 0.5 ms in one datacentre, 60–200 ms between continents" }
   - { op: "async lag", avg: "ms, usually", note: "seconds to minutes under heavy load" }
-  - { op: "failure detection", avg: "≈ 10–30 s", note: "heartbeat timeout; too short causes false failovers" }
+  - { op: "failure detection", avg: "≈ 10–30 s", note: "longer than consensus timeouts: a false database failover (lost writes, repointed clients) costs more" }
   - { op: "data lost on failover", avg: "sync: none · async: unreplicated tail" }
 bigOTitle: "Key numbers"
 related: [sysdesign/consistency-models, sysdesign/quorum-n-r-w, sysdesign/raft-leader-election, sysdesign/geo-replication]

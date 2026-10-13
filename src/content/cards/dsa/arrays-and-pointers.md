@@ -11,7 +11,7 @@ story:
   - title: One block, one formula
     text: "Take a = [7, 2, 9, 4, 1] in a block of six 4-byte slots starting at address 1000. Slot i is at 1000 + 4 × i, so a[3] is at 1012. Finding any element is one multiply and one add, however long the array is: O(1) indexing. It is also why indices start at 0: a[0] is zero slots from the start."
   - title: Neighbours arrive in one cache line
-    text: "The CPU fetches memory in 64-byte cache lines, so one read brings in 16 neighbouring ints at once. A loop over an array mostly hits that fast cache; a linked list's nodes are scattered and each hop can miss. Both scans are O(n), but the array is often several times faster."
+    text: "The CPU fetches memory in 64-byte cache lines, so one read brings in 16 ints at once: the one you asked for plus 15 neighbours. A loop over an array mostly hits that fast cache; a linked list's nodes are scattered and each hop can miss. Both scans are O(n), but the array is often several times faster."
   - title: Insert in the middle shifts the tail
     text: "Having no gaps is also the price. To insert 5 at index 1, the four values after it each move one slot right (starting from the end, so nothing is overwritten), and only then does 5 go in. Deleting shifts them back left. Inserting near the front of n items is O(n); at the end it is cheap."
   - title: Full? Allocate double and copy

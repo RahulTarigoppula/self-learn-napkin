@@ -44,7 +44,7 @@ bigO:
   - { op: "Redlock", avg: "majority of 5 nodes", note: "relies on bounded clock drift and pauses" }
 bigOTitle: "Key numbers"
 related: [sysdesign/raft-leader-election, sysdesign/idempotency, sysdesign/acid-and-isolation, sysdesign/replication]
-prereqs: [sysdesign/acid-and-isolation]
+prereqs: [sysdesign/raft-leader-election]
 flashcards:
   - kind: qa
     q: "Why can a lease-based lock be held by two clients at once?"

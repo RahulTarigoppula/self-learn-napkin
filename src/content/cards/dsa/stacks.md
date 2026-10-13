@@ -20,7 +20,7 @@ story:
     text: "Postfix (reverse Polish) notation puts each operator after its operands: 3 4 + 2 * means (3 + 4) × 2. Push numbers; an operator pops two, applies itself and pushes the result. 3 and 4 become 7, then 7 and 2 become 14 — the single value left is the answer. No parentheses or precedence rules needed."
 keyIdeas:
   - "**LIFO:** the last item pushed is the first popped. `push`, `pop` and `peek` touch only the top, so each is **O(1)**."
-  - "**Use the end of a dynamic array as the top** (Python's list, Java's ArrayDeque, C++'s std::vector): push and pop there are O(1). Working at the front shifts every element, O(n)."
+  - "**Use the end of a dynamic array as the top** (Python's list, Java's ArrayList or array-backed ArrayDeque, C++'s std::vector): push and pop there are O(1). Working at the front shifts every element, O(n)."
   - "Reach for a stack when **the most recent unfinished thing must be finished first**: nested brackets, undo, function calls, depth-first search."
   - "Bracket matching: push openers, a closer must match the top, and the stack must be **empty at the end**."
   - "The **call stack** is a stack of frames; recursion that never stops overflows it. Any recursion can be rewritten with an explicit stack."

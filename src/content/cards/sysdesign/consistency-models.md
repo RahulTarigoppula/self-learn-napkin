@@ -4,8 +4,8 @@ track: sysdesign
 tags: [consistency, replication, distributed]
 difficulty: 3
 minutes: 5
-tldr: "A consistency model says which values a read may return. Linearizable acts like one copy in real time; sequential, causal and eventual allow more staleness for speed and availability."
-analogy: "A live football score. Linearizable: everyone sees the goal the moment it is scored. Sequential: everyone sees the same goals in the same order, some a bit late. Eventual: your friend's app may still show 0–0, but it will catch up."
+tldr: "A consistency model says which values a read may return. Linearisable acts like one copy in real time; sequential, causal and eventual allow more staleness for speed and availability."
+analogy: "A live football score. Linearisable: everyone sees the goal the moment it is scored. Sequential: everyone sees the same goals in the same order, some a bit late. Eventual: your friend's app may still show 0–0, but it will catch up."
 diagram: consistency-models
 story:
   - title: One value, three clients, real time
@@ -16,12 +16,12 @@ story:
     text: "C starts a read after the write completed and gets 0, the old value. This is what a lagging replica produces. It is not wrong under every model, only under those that respect real time."
   - title: B reads 1, then 0
     text: "B reads 1, then reads again and gets 0, as if time went backwards. This happens when consecutive reads hit different replicas, one up to date and one lagging. It violates monotonic reads, a guarantee users notice straight away."
-  - title: Linearizable forbids both
-    text: "Linearizability, also called strong consistency, makes the system behave like a single copy where every operation takes effect at one instant between its start and its end. Once the write completed, every later read must see 1. Both C's 0 and B's 1-then-0 are forbidden."
+  - title: Linearisable forbids both
+    text: "Linearisability, also called strong consistency, makes the system behave like a single copy where every operation takes effect at one instant between its start and its end. Once the write completed, every later read must see 1. Both C's 0 and B's 1-then-0 are forbidden."
   - title: Weaker models allow more
     text: "Sequential consistency needs one order that every client agrees on, but not real time: C's 0 is fine, B going backwards is not. Causal only orders cause and effect, and forbids B too. Eventual only promises that replicas converge if writes stop, so both are allowed."
 keyIdeas:
-  - "**Linearizable** (strong): behaves like one copy; once a write completes, every later read sees it. Needs coordination on every operation."
+  - "**Linearisable** (strong): behaves like one copy; once a write completes, every later read sees it. Needs coordination on every operation."
   - "**Sequential:** one global order consistent with each client's own order, but it may lag behind real time."
   - "**Causal:** if A could have influenced B, everyone sees A before B; unrelated writes may appear in different orders. About the strongest model that stays available during a network partition."
   - "**Eventual:** if writes stop, replicas converge. No promise about any particular read."
@@ -29,23 +29,23 @@ keyIdeas:
   - "**The cost of strong:** a round trip to a leader or majority per operation, and unavailability on the minority side of a partition (CAP)."
 quiz:
   - q: "A write of x = 1 has been acknowledged. Later, a different client reads x and gets 0. Which models allow this?"
-    options: ["Only linearizable", "Sequential, causal and eventual, but not linearizable", "None of them", "Only eventual"]
+    options: ["Only linearisable", "Sequential, causal and eventual, but not linearisable", "None of them", "Only eventual"]
     answer: 1
-    why: "Linearizability respects real time, so a read that starts after a completed write must see it. Sequential and causal do not tie order to the wall clock, and eventual promises nothing about individual reads."
+    why: "Linearisability respects real time, so a read that starts after a completed write must see it. Sequential and causal do not tie order to the wall clock, and eventual promises nothing about individual reads."
   - q: "A user refreshes a page and sees a comment, refreshes again and it is gone, then it reappears. Which guarantee is violated?"
     options: ["Read-your-writes", "Monotonic reads", "Monotonic writes", "Durability"]
     answer: 1
     why: "Monotonic reads says that once you have seen a value, later reads never show an older state. Pinning a user's session to one replica is the usual fix."
   - q: "Alice posts 'Lunch?' and Bob, having read it, replies 'Yes'. Carol sees 'Yes' but not 'Lunch?'. Which is the weakest model that forbids this?"
-    options: ["Eventual", "Causal", "Linearizable", "Read-your-writes"]
+    options: ["Eventual", "Causal", "Linearisable", "Read-your-writes"]
     answer: 1
     why: "Bob's reply causally depends on Alice's post because he read it first. Causal consistency requires everyone to see a cause before its effect. Eventual consistency allows the reply to show up first."
   - q: "Why do many systems default to eventual consistency for reads?"
     options: ["It is always correct", "Strong reads need a round trip to a leader or a quorum, costing latency and availability", "Eventual reads are more durable", "Strong consistency is impossible"]
     answer: 1
-    why: "A linearizable read must confirm it has the latest value, which means talking to a leader or majority. A local replica read is faster and keeps working during partitions, at the price of possible staleness."
+    why: "A linearisable read must confirm it has the latest value, which means talking to a leader or majority. A local replica read is faster and keeps working during partitions, at the price of possible staleness."
 bigO:
-  - { op: "Linearizable", avg: "single-copy, real time", note: "consensus or quorum per op; e.g. etcd, Spanner" }
+  - { op: "Linearisable", avg: "single-copy, real time", note: "consensus or quorum per op; e.g. etcd, Spanner" }
   - { op: "Sequential", avg: "one agreed order", note: "e.g. ZooKeeper reads (stale but in order)" }
   - { op: "Causal", avg: "cause before effect", note: "can stay available during a partition" }
   - { op: "Eventual", avg: "converges if writes stop", note: "e.g. DNS, default DynamoDB reads" }
@@ -54,16 +54,16 @@ related: [sysdesign/cap-theorem, sysdesign/replication, sysdesign/quorum-n-r-w, 
 prereqs: [sysdesign/replication]
 flashcards:
   - kind: qa
-    q: "Define linearizability in one sentence."
+    q: "Define linearisability in one sentence."
     a: "Every operation appears to take effect atomically at a single instant between its start and its end, so the system behaves like one up-to-date copy that respects real-time order."
   - kind: cloze
-    text: "Sequential consistency requires a single order consistent with {{each client's program order}}, but unlike linearizability it ignores {{real time}}."
+    text: "Sequential consistency requires a single order consistent with {{each client's program order}}, but unlike linearisability it ignores {{real time}}."
   - kind: qa
     q: "Name the four session guarantees."
     a: "Read-your-writes, monotonic reads, monotonic writes, and writes-follow-reads."
   - kind: qa
-    q: "Is linearizability the same as serializability?"
-    a: "No. Linearizability is a recency guarantee about single operations on single objects; serializability is about transactions over many objects appearing in some serial order. Both together is strict serializability."
+    q: "Is linearisability the same as serializability?"
+    a: "No. Linearisability is a recency guarantee about single operations on single objects; serializability is about transactions over many objects appearing in some serial order. Both together is strict serializability."
 sources:
   - { name: "Napkin (own explanation)", url: "https://github.com/RahulTarigoppula/self-learn-napkin", licence: "Own work" }
   - { name: "The System Design Primer", url: "https://github.com/donnemartin/system-design-primer", licence: "CC BY 4.0", note: "Consistency patterns, background" }
@@ -77,7 +77,7 @@ Note the two different meanings of "consistency": the C in ACID (application inv
 
 ## The models, strongest first
 
-**Linearizability** (strong consistency, atomic consistency). Every operation appears to happen atomically at some single point between its invocation and its response. Consequences: once a write has completed, every read that *starts* afterwards returns that value or a newer one; and once any read has returned the new value, no later read may return the old one. The system looks like one copy. It is a property of single objects (one key, one register).
+**Linearisability** (strong consistency, atomic consistency). Every operation appears to happen atomically at some single point between its invocation and its response. Consequences: once a write has completed, every read that *starts* afterwards returns that value or a newer one; and once any read has returned the new value, no later read may return the old one. The system looks like one copy. It is a property of single objects (one key, one register).
 
 **Sequential consistency.** The result is as if all operations ran in *some* single total order, and each client's operations appear in that order in the order the client issued them. Everyone agrees on the same order, but the order need not match real time: a read may return a value that, by the wall clock, has already been overwritten, as long as the client never sees time run backwards and all clients see the same history.
 
@@ -100,13 +100,13 @@ These are per-client promises layered on weak models, cheap to provide with stic
 
 `x = 0`. A writes `x = 1` during [t1, t4]. Then:
 
-| Observation | Linearizable | Sequential | Causal | Eventual |
+| Observation | Linearisable | Sequential | Causal | Eventual |
 |---|---|---|---|---|
 | C reads 0 during [t5, t6], after the write completed | no | yes | yes | yes |
 | B reads 1 during [t5, t6], then 0 during [t7, t9] | no | no | no | yes |
 | C reads 0 during [t2, t3], *while* the write is in flight | yes | yes | yes | yes |
 
-The last row matters: an operation concurrent with the write may return either value even under linearizability; real-time order constrains only operations that do not overlap.
+The last row matters: an operation concurrent with the write may return either value even under linearisability; real-time order constrains only operations that do not overlap.
 
 Why is B's 1-then-0 forbidden under sequential and causal? Under sequential, B's two reads must keep their order, so B's first read comes after the write, and so does its second, which therefore must return 1. Under causal, reading 1 puts the write into B's causal past, and a read may not return a value that something in its causal past has overwritten.
 
@@ -148,27 +148,27 @@ def allowed(history, real_time):
     return any(legal(p) and respects(p, real_time) for p in permutations(history))
 
 for name, h in [("C reads 0", [W, C1]), ("B reads 1 then 0", [W, B1, B2])]:
-    print(f"{name:17} linearizable={allowed(h, True)}  sequential={allowed(h, False)}")
-# C reads 0         linearizable=False  sequential=True
-# B reads 1 then 0  linearizable=False  sequential=False
+    print(f"{name:17} linearisable={allowed(h, True)}  sequential={allowed(h, False)}")
+# C reads 0         linearisable=False  sequential=True
+# B reads 1 then 0  linearisable=False  sequential=False
 ```
 
 Real checkers such as Jepsen's Knossos do the same search, far more cleverly, over histories recorded from a live cluster.
 
 ## The cost of strong consistency
 
-- **Latency.** A linearizable operation must make sure no newer value exists anywhere, which takes a round trip to a leader that holds a valid lease or to a majority of replicas. Within one datacentre that is about a millisecond; across continents it is 100 ms or more, for every write and every strong read.
+- **Latency.** A linearisable operation must make sure no newer value exists anywhere, which takes a round trip to a leader that holds a valid lease or to a majority of replicas. Within one datacentre that is about a millisecond; across continents it is 100 ms or more, for every write and every strong read.
 - **Availability.** By the CAP theorem, during a network partition the replicas on the minority side must refuse requests rather than return possibly stale data.
 - **Throughput.** Everything funnels through a leader or consensus group.
 
-Real systems therefore mix models: ZooKeeper makes writes linearizable but serves reads from any server (sequentially consistent, possibly stale) unless the client calls `sync`. DynamoDB reads are eventually consistent by default; a strongly consistent read costs twice the read capacity. Google Spanner offers linearizable transactions worldwide by waiting out clock uncertainty (commit wait, a few milliseconds) on every commit.
+Real systems therefore mix models: ZooKeeper makes writes linearisable but serves reads from any server (sequentially consistent, possibly stale) unless the client calls `sync`. DynamoDB reads are eventually consistent by default; a strongly consistent read costs twice the read capacity. Google Spanner offers linearisable transactions worldwide by waiting out clock uncertainty (commit wait, a few milliseconds) on every commit.
 
 ## Edge cases and pitfalls
 
-- **Linearizable is not serializable.** Serializability is about multi-object transactions appearing in some serial order; it says nothing about real time. Strict serializability is both.
-- **"Strongly consistent" is used loosely.** In interviews and docs it sometimes means linearizable and sometimes just "read-your-writes". Ask or define it.
-- **Quorums are not automatically linearizable.** R + W > N alone can still let one reader see a new value and a later reader the old one while a write is in flight. Closing that gap needs readers to write back what they return before returning (synchronous read repair), and last-write-wins clocks can still break it.
+- **Linearisable is not serializable.** Serializability is about multi-object transactions appearing in some serial order; it says nothing about real time. Strict serializability is both.
+- **"Strongly consistent" is used loosely.** In interviews and docs it sometimes means linearisable and sometimes just "read-your-writes". Ask or define it.
+- **Quorums are not automatically linearisable.** R + W > N alone can still let one reader see a new value and a later reader the old one while a write is in flight. Closing that gap needs readers to write back what they return before returning (synchronous read repair), and last-write-wins clocks can still break it.
 
 ## In the interview
 
-Expect *"what consistency does this feature need?"* Answer per feature: a bank balance check or a unique-username claim needs linearizability; a social feed needs causal at most (replies after posts); like-counts can be eventual; and almost every user-facing flow needs read-your-writes. Showing that you choose per use case, and know the latency price of strong consistency, is the strong answer.
+Expect *"what consistency does this feature need?"* Answer per feature: a bank balance check or a unique-username claim needs linearisability; a social feed needs causal at most (replies after posts); like-counts can be eventual; and almost every user-facing flow needs read-your-writes. Showing that you choose per use case, and know the latency price of strong consistency, is the strong answer.

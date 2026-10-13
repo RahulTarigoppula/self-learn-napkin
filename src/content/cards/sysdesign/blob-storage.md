@@ -11,7 +11,7 @@ story:
   - title: A bucket of objects
     text: "Object storage (S3, Google Cloud Storage, Azure Blob) keeps files as objects in a bucket. Each object is a key like users/42/cat.jpg, the bytes, and metadata such as the content type. The namespace is flat: the slashes are just characters in the key, not real folders."
   - title: The app hands out a pre-signed URL
-    text: "A 2 MB photo or a 1 GB video should not stream through your app servers or sit in database rows. The client asks the app for permission; the app checks who it is and returns a pre-signed URL: a link that allows one PUT to one key, signed with the app's secret, valid for 15 minutes."
+    text: "A 2 MB photo or a 1 GB video should not stream through your app servers or sit in database rows. The client asks the app for permission; the app checks who it is and returns a pre-signed URL: a link that allows a PUT to one key, signed with the app's secret. Anyone holding it can use it until it expires, 15 minutes later, so keep it short-lived."
   - title: Upload directly, in parallel parts
     text: "The client sends the bytes straight to the bucket. A big file goes as a multipart upload: parts are sent in parallel, a failed part is retried alone, and a final 'complete' call stitches them into one object. The app server never touches the bytes; it stores only the key."
   - title: "Erasure coding: 6 data + 3 parity"
@@ -40,7 +40,7 @@ quiz:
     answer: 1
     why: "The namespace is flat. photos/a.jpg is one key; there is no folder object to rename. Each key must be copied to a new name and the old one deleted."
 bigO:
-  - { op: "max object size (S3)", avg: "5 TB", note: "single PUT up to 5 GB; larger needs multipart" }
+  - { op: "max object size (S3)", avg: "50 TB", note: "since Dec 2025 (was 5 TB); single PUT up to 5 GB" }
   - { op: "multipart parts", avg: "5 MiB – 5 GiB each", note: "up to 10,000 parts; the last part may be smaller" }
   - { op: "3× replication", avg: "3.0× storage", note: "survives 2 lost copies" }
   - { op: "6+3 erasure coding", avg: "1.5× storage", note: "survives any 3 lost chunks" }
@@ -51,7 +51,7 @@ prereqs: [sysdesign/client-server-basics]
 flashcards:
   - kind: qa
     q: "What is a pre-signed URL and why use one?"
-    a: "A URL for one operation (e.g. PUT users/42/cat.jpg) signed with the server's secret and an expiry. The client uploads or downloads directly against the blob store, so large files never pass through app servers."
+    a: "A URL for one method on one key (e.g. PUT users/42/cat.jpg), signed with the server's secret and an expiry; anyone holding it can use it until it expires. The client uploads or downloads directly against the blob store, so large files never pass through app servers."
   - kind: cloze
     text: "Erasure coding with 6 data and 3 parity chunks stores {{1.5×}} the data and survives any {{3}} lost chunks."
   - kind: qa
@@ -94,7 +94,7 @@ Downloads mirror this: the app returns a pre-signed `GET` URL, or for public con
 
 ### Multipart upload
 
-A 1 GB video over a phone connection should not be one 1 GB request that restarts from zero when the train enters a tunnel. **Multipart upload**: *initiate* (the store returns an upload ID), upload numbered *parts* in parallel (each part returns an ETag), then *complete* with the list of part numbers and ETags, and the store assembles one object. In S3, parts are 5 MiB to 5 GiB, at most 10,000 parts, and an object can reach 5 TB; a single `PUT` is limited to 5 GB.
+A 1 GB video over a phone connection should not be one 1 GB request that restarts from zero when the train enters a tunnel. **Multipart upload**: *initiate* (the store returns an upload ID), upload numbered *parts* in parallel (each part returns an ETag), then *complete* with the list of part numbers and ETags, and the store assembles one object. In S3, parts are 5 MiB to 5 GiB, at most 10,000 parts, and an object can reach 50 TB (raised from 5 TB in December 2025); a single `PUT` is limited to 5 GB.
 
 ## Durability: replication vs erasure coding
 

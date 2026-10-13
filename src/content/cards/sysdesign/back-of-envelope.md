@@ -13,13 +13,13 @@ story:
   - title: Inside one machine
     text: "Reading main memory takes about 100 ns. A random read from an SSD takes about 100 µs — a thousand times slower. A spinning-disk seek takes about 10 ms, a hundred times slower again. This is why caches live in RAM and why random I/O on spinning disks is avoided."
   - title: Leaving the machine
-    text: "A round trip to another server in the same data centre costs about 0.5 ms — cheaper than a disk seek. Crossing an ocean costs roughly 100–150 ms, because light in fibre only goes about 200,000 km/s. A user far away pays that on every round trip, so you count round trips."
+    text: "A round trip to another server in the same data centre costs about 0.5 ms — cheaper than a disk seek. Crossing an ocean costs roughly 70–150 ms (New York–London ~70, US–Asia 150 or more), because light in fibre only goes about 200,000 km/s. A user far away pays that on every round trip, so you count round trips."
   - title: Users per day → requests per second
     text: "A photo app has 10 million daily active users who each view 100 photos: 1 billion views a day. A day has 86,400 seconds; round it to 10^5. So 10^9 ÷ 10^5 = 10,000 requests per second on average. Traffic is bursty, so plan for a peak of 2–3×, about 30,000."
   - title: Uploads → storage per year
     text: "If one user in five uploads one 2 MB photo a day, that is 2 million photos and 4 TB a day. Times 365 is about 1.5 PB a year, and keeping three copies makes it about 4.4 PB. That single number tells you the photos belong in object storage, not in a database."
 keyIdeas:
-  - "**Memory ≈ 100 ns, SSD random read ≈ 100 µs, same-DC round trip ≈ 0.5 ms, disk seek ≈ 10 ms, cross-continent ≈ 100–150 ms.** Learn the order, not the digits."
+  - "**Memory ≈ 100 ns, SSD random read ≈ 100 µs, same-DC round trip ≈ 0.5 ms, disk seek ≈ 10 ms, across an ocean ≈ 70–150 ms.** Learn the order, not the digits."
   - "**1 day ≈ 10^5 s** (really 86,400). So 1 M requests/day ≈ 12 QPS and 1 B/day ≈ 12 k QPS. Peak ≈ 2–3× average."
   - "**Powers of two:** 2^10 ≈ a thousand (KB), 2^20 ≈ a million (MB), 2^30 ≈ a billion (GB), 2^40 ≈ a trillion (TB)."
   - "Estimate **reads, writes, storage and bandwidth separately** — they lead to different components."
@@ -38,7 +38,7 @@ quiz:
     answer: 2
     why: "2 × 10^6 × 2 × 10^6 bytes = 4 × 10^12 B = 4 TB per day. 4 TB × 365 ≈ 1,460 TB ≈ 1.5 PB. Three replicas make it ≈ 4.4 PB."
   - q: "Why do estimates round 86,400 seconds up to 100,000?"
-    options: ["Because a day really has 100,000 seconds", "Because dividing by a power of ten is easy and the 16 % error does not change any decision", "Because servers count time in decimal", "Because peak traffic is exactly 16 % higher"]
+    options: ["Because a day really has 100,000 seconds", "Because dividing by a power of ten is easy and the ~14 % error does not change any decision", "Because servers count time in decimal", "Because peak traffic is exactly 16 % higher"]
     answer: 1
     why: "The rounding makes the arithmetic a shift of the decimal point. It understates QPS by about 14 %, which is noise next to the 2–3× peak factor and your guesses about user behaviour."
 bigO:
@@ -46,7 +46,7 @@ bigO:
   - { op: "SSD random read (4 KB)", avg: "~100 µs", note: "~1000× memory" }
   - { op: "round trip, same data centre", avg: "~0.5 ms" }
   - { op: "spinning-disk seek", avg: "~10 ms" }
-  - { op: "round trip across an ocean", avg: "~100–150 ms", note: "bounded by light in fibre" }
+  - { op: "round trip across an ocean", avg: "~70–150 ms", note: "NY–London ~70, US–Asia 150+; bounded by light in fibre" }
   - { op: "seconds per day", avg: "86,400 ≈ 10^5", note: "1 M/day ≈ 12 per second" }
 bigOTitle: "Key numbers"
 related: [sysdesign/client-server-basics, sysdesign/blob-storage, sysdesign/caching, sysdesign/design-url-shortener]
@@ -83,7 +83,7 @@ Latency is the time one operation takes. Learn these as rough powers of ten; rea
 | SSD random read (4 KB) | ~100 µs | 1,000× |
 | Round trip inside one data centre | ~0.5 ms | 5,000× |
 | Spinning-disk (HDD) seek | ~10 ms | 100,000× |
-| Round trip across a continent or ocean | ~100–150 ms | ~1,000,000× |
+| Round trip across a continent or ocean | ~70–150 ms | ~1,000,000× |
 
 Three lessons fall straight out of the table:
 

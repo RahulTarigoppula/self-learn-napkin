@@ -11,7 +11,7 @@ story:
   - title: Sorted inserts make a chain
     text: "Insert 10, 20, 30, 40 into a plain binary search tree. Each key is bigger than everything before it, so it always goes right: the tree is a chain of height n − 1. Every BST operation costs O(height), so search is now O(n), no better than a linked list."
   - title: "AVL rule: |balance factor| ≤ 1"
-    text: "An AVL tree stores each node's height. The balance factor is height(left) − height(right), and the rule is that it must be −1, 0 or +1 at every node. Here 30 has a left subtree of height 1 and a right one of height 0: +1, which is allowed."
+    text: "An AVL tree stores each node's height. The balance factor is height(left) − height(right), and the rule is that it must be −1, 0 or +1 at every node. Insert 30, 20, 40, 10, 25 instead and you get this bushier tree. Here 30 has a left subtree of height 1 and a right one of height 0: +1, which is allowed."
   - title: Insert 5 and find the violation
     text: "5 goes below 10. Walking back up, the balance factors become 10: +1, 20: +1, 30: +2. 30 breaks the rule, and both +2 and its left child's +1 lean left. This is the left-left case, fixed by one right rotation at 30."
   - title: Rotate right at 30

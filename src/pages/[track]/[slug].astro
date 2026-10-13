@@ -234,12 +234,19 @@ const flashcardCount = d.flashcards.length;
         <p>
           <span class="eyebrow">Sources</span>
           {
-            d.sources.map((s) => (
-              <span class="sources__item">
-                from <a href={s.url} rel="noopener" target="_blank">{s.name}</a>, {s.licence}
-                {s.note && <span class="muted"> — {s.note}</span>}
-              </span>
-            ))
+            d.sources
+              .filter((s) => s.licence !== 'Own work')
+              .map((s) => (
+                <span class="sources__item">
+                  from <a href={s.url} rel="noopener" target="_blank">{s.name}</a>, {s.licence}
+                  {s.note && <span class="muted"> — {s.note}</span>}
+                </span>
+              ))
+          }
+          {
+            d.sources.some((s) => s.licence === 'Own work') && (
+              <span class="sources__item">explanation, examples and drawing written for Napkin</span>
+            )
           }
         </p>
         <details class="behind">

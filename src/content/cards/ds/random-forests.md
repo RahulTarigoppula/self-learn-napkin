@@ -163,7 +163,7 @@ The forest beats the single tree by 7 points, and the OOB accuracy (0.915) match
 
 ## Edge cases and pitfalls
 
-- **Extrapolation:** like single trees, forests predict a flat line outside the range of the training targets.
+- **Extrapolation:** like single trees, forests predict a flat line outside the range of the training features; predictions never leave the range of the training targets.
 - **Memory and latency:** 500 deep trees can be hundreds of megabytes and slow to predict; cap the depth or raise the minimum rows per leaf if needed.
 - **Imbalanced classes:** weight the classes (re-computed per bootstrap sample) or tune the threshold on the averaged probabilities.
 - **Tuning:** forests work well out of the box. The knobs that matter most are m (features per split), the minimum rows per leaf and the number of trees (more is safe, just slower).

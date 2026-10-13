@@ -8,7 +8,7 @@ import { inlineMd } from '../lib/inline-md';
 const { tracks } = await library();
 ---
 
-<AppShell title="Cheat sheet" active="library" description="Every complexity table and key idea on one page — the night-before-the-interview sheet.">
+<AppShell title="Cheat sheet" active="cheatsheet" description="Every complexity table and key idea on one page — the night-before-the-interview sheet.">
   <div class="container cs">
     <header class="cs__head">
       <p class="eyebrow">The night before</p>
@@ -34,7 +34,11 @@ const { tracks } = await library();
                       {c.data.bigO.map((r) => (
                         <tr>
                           <th scope="row">{r.op}</th>
-                          <td class="mono">{[r.best, r.avg, r.worst].filter(Boolean).join(' · ')}</td>
+                          <td class="mono">
+                            {[r.best && r.best !== r.avg ? `best ${r.best}` : '', r.avg, r.worst && r.worst !== r.avg ? `worst ${r.worst}` : '']
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

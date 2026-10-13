@@ -5,33 +5,35 @@ order:
   - dsa/big-o-basics
   - dsa/recursion
   - dsa/arrays-and-pointers
+  - dsa/amortised-analysis
+  - dsa/hash-tables
   - dsa/two-pointers
   - dsa/sliding-window
   - dsa/prefix-sums
   - dsa/binary-search
   - dsa/binary-search-on-answer
-  - dsa/sorting-overview
   - dsa/bubble-sort
   - dsa/insertion-sort
   - dsa/merge-sort
   - dsa/quicksort
+  - dsa/sorting-overview
   - dsa/counting-and-radix-sort
   - dsa/stacks
   - dsa/monotonic-stack
   - dsa/queues-and-deques
   - dsa/linked-lists
   - dsa/fast-and-slow-pointers
-  - dsa/hash-tables
   - dsa/lru-cache
-  - dsa/intervals
   - dsa/trees-and-traversals
   - dsa/binary-search-trees
   - dsa/balanced-trees
   - dsa/heaps
+  - dsa/intervals
+  - dsa/greedy-algorithms
   - dsa/tries
-  - dsa/union-find
   - dsa/graphs
   - dsa/bfs-and-dfs
+  - dsa/union-find
   - dsa/topological-sort
   - dsa/dijkstra
   - dsa/bellman-ford
@@ -40,7 +42,5 @@ order:
   - dsa/knapsack
   - dsa/longest-common-subsequence
   - dsa/edit-distance
-  - dsa/greedy-algorithms
   - dsa/backtracking
   - dsa/bit-manipulation
-  - dsa/amortised-analysis

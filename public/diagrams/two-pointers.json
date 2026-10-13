@@ -24,7 +24,7 @@
     },
     {
       "index": 3,
-      "caption": "Same direction: R reads every cell",
+      "caption": "Same direction: rd reads every cell",
       "firstElement": 14,
       "lastElement": 21
     },
@@ -35,6 +35,6 @@
       "lastElement": 25
     }
   ],
-  "hash": "4209eff89c55e52e9e6808f501ccc640b3b41223",
+  "hash": "71385fad57fb95e90706bd064ea8505bfe169456",
   "title": "Two pointers: pair sum from both ends, and removing duplicates with read/write pointers"
 }

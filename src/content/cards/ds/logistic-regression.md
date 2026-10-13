@@ -25,7 +25,7 @@ keyIdeas:
   - "The boundary w·x + b = 0 is a **line or hyperplane** — logistic regression is a linear classifier."
   - "The score is the **log-odds**: ln(p / (1 − p)) = z, so one unit of feature j multiplies the odds by e^(wⱼ)."
   - "Trained by minimising **log-loss** (cross-entropy). It is convex, so gradient descent reaches the global minimum."
-  - "The gradient is beautifully simple: (p − y)·x per example."
+  - "The gradient is just (p − y)·x per example: error times input."
 quiz:
   - q: "For one email the model computes w·x + b = 3. Roughly what probability of spam does it output?"
     options: ["0.75", "0.95", "0.99", "3"]
