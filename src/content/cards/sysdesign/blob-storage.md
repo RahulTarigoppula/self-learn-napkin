@@ -123,7 +123,7 @@ Most objects are hot for days and cold forever after. Providers sell **storage c
 
 The idea is language-independent; Python (with the AWS SDK, as one example of an S3-style API) is used here only as compact, readable notation. The app hands out a pre-signed PUT, and a lifecycle rule, written as JSON, tidies up:
 
-```python
+```python sketch
 import boto3, uuid
 s3 = boto3.client("s3")
 

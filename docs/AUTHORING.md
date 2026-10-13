@@ -69,7 +69,7 @@ sources:
 
 - `## How it works` — the mechanism, step by step, with the reasoning behind each step.
 - `## Worked example` — trace a small concrete input all the way through (tables or numbered steps are great).
-- `## Implement it in Python` — a clean, correct, idiomatic **Python** implementation (open with one line saying the idea works in any language) (```python fenced; comments on the non-obvious lines). For system design use `## Sketch it` with a small sketch: pseudo-code, a config, or a request flow. Keep it short (≤ 40 lines) and runnable where it's an algorithm.
+- `## Implement it in Python` — a clean, correct, idiomatic **Python** implementation (open with one line saying the idea works in any language) (```python fenced; comments on the non-obvious lines). For system design use `## Sketch it` with a small sketch: pseudo-code, a config, or a request flow. Keep it short (≤ 40 lines) and runnable where it's an algorithm. `npm run test:python` executes every ```python block of a napkin, in order, in one interpreter (CI installs `scripts/requirements-examples.txt`); a block that needs a live service (a database, Kafka, S3) is fenced as ```python sketch, which skips it and labels it on the page.
 - `## Edge cases and pitfalls` — what people get wrong in practice and in interviews.
 - `## Trade-offs` / `## When to use it` (vs the alternatives).
 - `## In the interview` — how the question is usually asked, what a strong answer mentions, a follow-up you should expect.

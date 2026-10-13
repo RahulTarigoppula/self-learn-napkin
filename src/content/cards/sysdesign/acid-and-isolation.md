@@ -131,9 +131,9 @@ Balance x = 100. T1 deposits 50, T2 withdraws 20. Correct final balance: 130.
 
 ## Implement it in Python
 
-The idea is language-independent; here it is in Python.
+The idea is language-independent; here it is in Python with the psycopg PostgreSQL driver, so it needs a running database.
 
-```python
+```python sketch
 # Retry loop for SERIALIZABLE / repeatable-read transactions (psycopg-style sketch)
 from psycopg.errors import SerializationFailure
 

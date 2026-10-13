@@ -55,8 +55,14 @@ export default function HomeDashboard({ cards }: { cards: Lite[]; tracks: { id: 
       <div class="dash__top">
         <p class="dash__hello">{hello} 👋</p>
         <span class="dash__streak" title="Day streak">
-          <Icon name="flame" size={18} /> <b class="mono">{stats?.streak ?? 0}</b> day
-          {stats?.streak === 1 ? '' : 's'}
+          <Icon name="flame" size={18} />
+          {stats?.streak ? (
+            <>
+              <b class="mono">{stats.streak}</b> day{stats.streak === 1 ? '' : 's'}
+            </>
+          ) : (
+            'start a streak'
+          )}
         </span>
       </div>
 

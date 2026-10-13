@@ -1,4 +1,6 @@
 ---
+import { inlineMd } from '../../lib/inline-md';
+
 type Flash = { kind: 'qa'; q: string; a: string } | { kind: 'cloze'; text: string };
 interface Props {
   cards: Flash[];
@@ -20,15 +22,15 @@ const segs = (text: string) =>
             <span class="fc__tag mono">{c.kind === 'qa' ? 'Q' : 'Fill the blank'}</span>
             <span class="fc__q">
               {c.kind === 'qa'
-                ? c.q
-                : segs(c.text).map((s) => ('blank' in s ? <span class="fc__blank"><span class="sr-only">blank</span>____</span> : s.text))}
+                ? <Fragment set:html={inlineMd(c.q)} />
+                : segs(c.text).map((s) => ('blank' in s ? <span class="fc__blank"><span class="sr-only">blank</span>____</span> : <Fragment set:html={inlineMd(s.text ?? '')} />))}
             </span>
             <span class="fc__cta">Tap to reveal</span>
           </span>
           <span class="fc__face fc__back" aria-hidden="true">
             <span class="fc__tag mono">A</span>
             <span class="fc__a">
-              {c.kind === 'qa' ? c.a : segs(c.text).map((s) => ('blank' in s ? <mark>{s.blank}</mark> : s.text))}
+              {c.kind === 'qa' ? <Fragment set:html={inlineMd(c.a)} /> : segs(c.text).map((s) => ('blank' in s ? <mark set:html={inlineMd(s.blank ?? '')} /> : <Fragment set:html={inlineMd(s.text ?? '')} />))}
             </span>
             <span class="fc__cta">Tap to hide</span>
           </span>
@@ -110,6 +112,9 @@ const segs = (text: string) =>
   .fc__a {
     font-size: var(--text-base);
     line-height: 1.55;
+  }
+  .fc__face :global(code) {
+    font-size: 0.85em;
   }
   .fc__a mark {
     background: var(--hl);

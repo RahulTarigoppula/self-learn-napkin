@@ -40,8 +40,10 @@
   --hl-ink: #16181d;
   --code-bg: #ffffff;
   --success: #12884a;
+  --success-ink: #0b6b39;
   --warning: #b56f00;
   --danger: #d93a3f;
+  --danger-ink: #b3262b;
 
   /* ---- Tracks ---- */
   --dsa: #f2542d;
@@ -183,8 +185,10 @@
   --accent-ink: #a5b4ff;
   --accent-soft: rgb(129 151 255 / 0.16);
   --success: #3ddc97;
+  --success-ink: #3ddc97;
   --warning: #fbbf24;
   --danger: #ff6b6f;
+  --danger-ink: #ff8a8d;
   --dsa: #ff7a59;
   --dsa-ink: #ff9b80;
   --dsa-soft: rgb(255 122 89 / 0.15);
@@ -245,8 +249,10 @@
     --accent-ink: #a5b4ff;
     --accent-soft: rgb(129 151 255 / 0.16);
     --success: #3ddc97;
+    --success-ink: #3ddc97;
     --warning: #fbbf24;
     --danger: #ff6b6f;
+    --danger-ink: #ff8a8d;
     --dsa: #ff7a59;
     --dsa-ink: #ff9b80;
     --dsa-soft: rgb(255 122 89 / 0.15);

@@ -17,7 +17,7 @@ test('search says when nothing matches and closes on Escape', async ({ page }) =
   await page.waitForLoadState('networkidle');
   await page.locator('[data-open-search]:visible').first().click();
   await page.getByRole('searchbox', { name: 'Search napkins' }).fill('zzzzqqq');
-  await expect(page.locator('.sp__empty')).toContainText('Nothing on the menu');
+  await expect(page.locator('.sp__empty')).toContainText('No napkin matches');
   await page.keyboard.press('Escape');
   await expect(page.locator('.sp')).toHaveCount(0);
 });

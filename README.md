@@ -27,9 +27,9 @@ Napkin is the notebook I wish I'd had at each of those stops: simple pictures th
 
 | Track | Napkins | Highlights |
 |---|---|---|
-| **Starters · DSA** | 42 | Big-O, recursion, two pointers, sliding window, binary search, every major sort, stacks/queues/lists, hashing, trees, heaps, tries, union-find, graphs, BFS/DFS, Dijkstra, Bellman-Ford, MST, DP (knapsack, LCS, edit distance), greedy, backtracking, bit tricks |
-| **Mains · System Design** | 41 | Back-of-envelope maths, the life of a request, DNS/CDNs, load balancing, caching, consistent hashing, sharding, replication, quorums, CAP, consistency models, transactions, B-trees, LSM trees, WAL, bloom filters, queues & streams, idempotency, rate limiting, resilience, observability, Raft, distributed locks, sagas, IDs — and three full case studies (URL shortener, news feed, chat) |
-| **Desserts · Data Science & ML** | 38 | Framing, splits, cross-validation, bias–variance, regularisation, feature engineering, linear & logistic regression, losses, gradient descent, trees & ensembles, SVMs, kNN, naive Bayes, clustering, PCA, t-SNE/UMAP, evaluation & calibration, A/B testing, statistics, neural nets, backprop, embeddings, attention, transformers, recommenders |
+| **Data Structures & Algorithms** | 42 | Big-O, recursion, two pointers, sliding window, binary search, every major sort, stacks/queues/lists, hashing, trees, heaps, tries, union-find, graphs, BFS/DFS, Dijkstra, Bellman-Ford, MST, DP (knapsack, LCS, edit distance), greedy, backtracking, bit tricks |
+| **System Design** | 41 | Back-of-envelope maths, the life of a request, DNS/CDNs, load balancing, caching, consistent hashing, sharding, replication, quorums, CAP, consistency models, transactions, B-trees, LSM trees, WAL, bloom filters, queues & streams, idempotency, rate limiting, resilience, observability, Raft, distributed locks, sagas, IDs — and three full case studies (URL shortener, news feed, chat) |
+| **Data Science & ML** | 38 | Framing, splits, cross-validation, bias–variance, regularisation, feature engineering, linear & logistic regression, losses, gradient descent, trees & ensembles, SVMs, kNN, naive Bayes, clustering, PCA, t-SNE/UMAP, evaluation & calibration, A/B testing, statistics, neural nets, backprop, embeddings, attention, transformers, recommenders |
 
 ## Install
 

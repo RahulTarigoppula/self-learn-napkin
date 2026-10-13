@@ -104,9 +104,9 @@ Because reading is just "remember an offset", any number of groups can read the 
 
 ## Implement it in Python
 
-The idea is language-independent; Python is used here only as compact, readable notation.
+The idea is language-independent; Python is used here only as compact, readable notation. It uses the confluent-kafka client, so it needs a running broker.
 
-```python
+```python sketch
 from confluent_kafka import Consumer, Producer
 
 p = Producer({"bootstrap.servers": "broker:9092", "enable.idempotence": True})

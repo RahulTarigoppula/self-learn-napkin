@@ -137,7 +137,7 @@ In request terms, 10 million requests a month at 99.9 % allows 10,000 failures. 
 
 The idea is language-independent; Python (with the Prometheus and OpenTelemetry client libraries, which exist for most languages) is used here only as compact, readable notation. The query below it is PromQL, Prometheus's query language.
 
-```python
+```python sketch
 from prometheus_client import Counter, Histogram
 from opentelemetry import trace
 

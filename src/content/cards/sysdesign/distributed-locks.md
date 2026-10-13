@@ -101,7 +101,7 @@ This requires two things: the lock service must produce strictly increasing toke
 
 The idea is language-independent; Python is used here only as compact, readable notation. `lock_service` stands for any lease-based lock client (ZooKeeper, etcd, …).
 
-```python
+```python sketch
 # Client: hold a lease, pass its token with every write.
 lease = lock_service.acquire("report", ttl_s=10)        # e.g. lease.token == 34
 try:

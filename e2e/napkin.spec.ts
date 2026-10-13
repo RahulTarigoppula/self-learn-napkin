@@ -48,7 +48,7 @@ test('flashcards flip and the deep dive shows highlighted code', async ({ page }
 
 test('the bubble-sort playground runs to completion', async ({ page }) => {
   await page.goto('dsa/bubble-sort/');
-  const g = page.locator('#griddle .gd');
+  const g = page.locator('#griddle .gd:not(.gd--empty)');
   await g.scrollIntoViewIfNeeded();
   await g.getByRole('button', { name: '2 speed' }).click();
   await g.getByRole('button', { name: 'Run' }).click();
@@ -57,7 +57,7 @@ test('the bubble-sort playground runs to completion', async ({ page }) => {
 
 test('the hash-ring playground moves only one slice of keys', async ({ page }) => {
   await page.goto('sysdesign/consistent-hashing/');
-  const g = page.locator('#griddle .gd');
+  const g = page.locator('#griddle .gd:not(.gd--empty)');
   await g.scrollIntoViewIfNeeded();
   await g.getByRole('button', { name: 'Add server D' }).click();
   await expect(g.locator('.gd__caption')).toContainText('keys moved');

@@ -226,7 +226,7 @@
   line-height: 1.4;
 }
 .gd__frame {
-  color: var(--ink-faint);
+  color: var(--ink-muted);
   margin-right: 6px;
 }
 .gd__ruler {
@@ -343,11 +343,11 @@
 }
 .gd__verdict--ok {
   background: color-mix(in srgb, var(--success) 14%, var(--surface));
-  color: var(--success);
+  color: var(--success-ink);
 }
 .gd__verdict--bad {
   background: color-mix(in srgb, var(--danger) 12%, var(--surface));
-  color: var(--danger);
+  color: var(--danger-ink);
 }
 .gd__legend {
   display: flex;
@@ -492,11 +492,11 @@
 }
 .bucket__log li.ok {
   background: color-mix(in srgb, var(--success) 12%, var(--surface));
-  color: var(--success);
+  color: var(--success-ink);
 }
 .bucket__log li.no {
   background: color-mix(in srgb, var(--danger) 12%, var(--surface));
-  color: var(--danger);
+  color: var(--danger-ink);
 }
 
 /* --- lru --- */
@@ -564,10 +564,10 @@
   color: var(--ink-muted);
 }
 .lru__last--evict {
-  color: var(--danger);
+  color: var(--danger-ink);
 }
 .lru__last--hit {
-  color: var(--success);
+  color: var(--success-ink);
 }
 
 /* --- threshold --- */
@@ -601,11 +601,11 @@
 }
 .thr__good {
   background: color-mix(in srgb, var(--success) 14%, var(--surface));
-  color: var(--success);
+  color: var(--success-ink);
 }
 .thr__bad {
   background: color-mix(in srgb, var(--danger) 12%, var(--surface));
-  color: var(--danger);
+  color: var(--danger-ink);
 }
 .thr__metrics {
   display: grid;
@@ -631,7 +631,7 @@
 }
 .thr__f {
   font-size: 11px;
-  color: var(--ink-faint);
+  color: var(--ink-muted);
 }
 .thr__roc {
   max-width: 200px;
@@ -823,7 +823,7 @@
   height: 88px;
   border-radius: 50%;
   background: color-mix(in srgb, var(--success) 16%, var(--surface));
-  color: var(--success);
+  color: var(--success-ink);
   animation: fade-up var(--dur-slow) var(--ease-spring) both;
 }
 .rv__bar {
@@ -1305,7 +1305,7 @@
   color: var(--ink-muted);
 }
 .pg__backup.is-due {
-  color: var(--danger);
+  color: var(--danger-ink);
 }
 .pg__backup a {
   text-decoration: underline;
@@ -1471,7 +1471,7 @@
   font-weight: 700;
 }
 .qq__tally {
-  color: var(--success);
+  color: var(--success-ink);
 }
 .qq__card {
   display: grid;
@@ -1611,7 +1611,7 @@
 }
 .qq__ans {
   font-size: var(--text-sm);
-  color: var(--success);
+  color: var(--success-ink);
   font-weight: 600;
 }
 

@@ -9,7 +9,11 @@ import { inlineMd } from '../lib/inline-md';
 import { PATHS } from '../lib/paths';
 
 const { cards, tracks } = await library();
-const picks = cards.filter((c) => c.data.special).slice(0, 3);
+// Today's picks rotate daily through the hands-on napkins; the specials show first without JS.
+const picks = [
+  ...cards.filter((c) => c.data.special),
+  ...cards.filter((c) => c.data.griddle && !c.data.special),
+];
 const lite = cards.map((c) => ({
   id: c.id,
   title: c.data.title,
@@ -22,12 +26,12 @@ const paths = PATHS.map((p) => ({ ...p, ids: p.ids.filter((i) => ids.has(i)) }))
   (p) => p.ids.length > 0,
 );
 const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
-// One surprising, self-contained idea per napkin for the "Did you know?" card.
+// Each napkin's TL;DR is a self-contained fact for the "Did you know?" card.
 const facts = cards.map((c) => ({
   id: c.id,
   t: c.data.title,
   k: c.data.track,
-  f: c.data.keyIdeas[0] ?? c.data.tldr,
+  f: c.data.tldr,
 }));
 const firstFact = facts[0];
 ---
@@ -76,16 +80,18 @@ const firstFact = facts[0];
         <section class="block">
           <div class="section-head">
             <div>
-              <p class="eyebrow">Start here</p>
+              <p class="eyebrow">Hands on · new picks every day</p>
               <h2>Today's picks</h2>
             </div>
             <a class="btn btn--ghost" href={href('library/')}>
               All napkins <Icon name="arrowRight" />
             </a>
           </div>
-          <div class="grid3">
+          <div class="grid3" data-picks>
             {picks.map((c, i) => (
-              <NapkinTile card={c} index={i} />
+              <div class="pick" hidden={i >= 3}>
+                <NapkinTile card={c} index={i % 3} />
+              </div>
             ))}
           </div>
         </section>
@@ -257,8 +263,25 @@ const firstFact = facts[0];
     dyk.querySelector('.dyk__next')?.addEventListener('click', show);
   }
 
+  // Today's picks: a stable daily rotation of the hands-on napkins, unread ones first.
+  const pickSlots = [...document.querySelectorAll<HTMLElement>('[data-picks] .pick')];
+  const choosePicks = (read: Set<string>) => {
+    const day = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60_000) / 86_400_000);
+    const order = pickSlots
+      .map((el, i) => ({ el, i, slug: el.querySelector<HTMLElement>('[data-slug]')?.dataset.slug ?? '' }))
+      .sort((a, b) => Number(read.has(a.slug)) - Number(read.has(b.slug)) || ((a.i - day) % pickSlots.length + pickSlots.length) % pickSlots.length - ((b.i - day) % pickSlots.length + pickSlots.length) % pickSlots.length);
+    const show = new Set(order.slice(0, 3).map((o) => o.el));
+    const grid = pickSlots[0]?.parentElement;
+    for (const o of order) {
+      o.el.hidden = !show.has(o.el);
+      grid?.append(o.el);
+    }
+  };
+  choosePicks(new Set());
+
   const paint = (s: ShellStats | null) => {
     if (!s) return;
+    choosePicks(s.read);
     for (const el of document.querySelectorAll<HTMLElement>('[data-track-read]')) {
       const t = el.dataset.trackRead;
       const n = [...s.read].filter((id) => id.startsWith(`${t}/`)).length;
@@ -365,7 +388,7 @@ const firstFact = facts[0];
     line-height: 1.2;
   }
   .dyk__fact {
-    font-size: var(--text-lg);
+    font-size: clamp(1.02rem, 0.9rem + 0.6vw, var(--text-lg));
     font-weight: 500;
     margin: 4px 0 6px;
   }
@@ -394,6 +417,9 @@ const firstFact = facts[0];
   }
   .block h2 {
     font-size: clamp(1.5rem, 3.5vw, 2rem);
+  }
+  .pick {
+    display: grid;
   }
   .grid3 {
     display: grid;
@@ -431,7 +457,7 @@ const firstFact = facts[0];
     box-shadow: var(--shadow-3);
   }
   .track__name {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
     color: var(--track-ink);
   }
   .track__subtitle {
@@ -442,6 +468,7 @@ const firstFact = facts[0];
     line-height: 1.05;
   }
   .track__blurb {
+    flex: 1;
     color: var(--ink-muted);
     font-size: var(--text-sm);
   }
@@ -481,7 +508,12 @@ const firstFact = facts[0];
   .paths {
     display: grid;
     gap: var(--space-4);
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  /* four paths: a tidy 2 × 2, never 3 + 1 */
+  @container main (min-width: 600px) {
+    .paths {
+      grid-template-columns: 1fr 1fr;
+    }
   }
   .path {
     display: flex;
@@ -517,16 +549,19 @@ const firstFact = facts[0];
     flex: 1;
   }
   .path__meta {
+    margin-top: auto;
+    padding-top: var(--space-2);
     font-size: var(--text-xs);
     color: var(--ink-faint);
   }
   .practice {
     display: grid;
     gap: var(--space-4);
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
   .practice__item {
     display: grid;
+    align-content: start;
     gap: var(--space-2);
     padding: var(--space-5);
     transition:

@@ -137,7 +137,7 @@ eigvals, eigvecs = np.linalg.eigh(C)          # eigh: for symmetric matrices, as
 order = eigvals.argsort()[::-1]
 eigvals, eigvecs = eigvals[order], eigvecs[:, order]
 print(eigvals, eigvals / eigvals.sum())       # [4.5 0.5] [0.9 0.1]
-print(Xc @ eigvecs[:, 0])                     # 3. PC1 scores: ±[-2.12 -2.12 0.71 0.71 2.83]
+print(Xc @ eigvecs[:, 0])                     # PC1 scores: ±[-2.12 -2.12 0.71 0.71 2.83]
 
 U, S, Vt = np.linalg.svd(Xc, full_matrices=False)  # same answer via SVD (no covariance needed)
 print(S**2 / (len(X) - 1), Vt[0])             # [4.5 0.5], PC1 direction ±[0.707 0.707]

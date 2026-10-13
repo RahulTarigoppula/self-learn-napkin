@@ -138,7 +138,7 @@ print((s["sum"] + m * g) / (s["count"] + m))    # London 0.75, Paris 0.25, Tokyo
 te = TargetEncoder(smooth=0.0, cv=KFold(2))     # smooth=0: plain means, to match the table
 print(te.fit_transform(X, y).ravel())           # [1. 0. 0. 1. 0. 1.]  out-of-fold, training rows only
 te = TargetEncoder(smooth=2.0, cv=KFold(2)).fit(X, y)
-print(te.encodings_)                            # [0.75, 0.25, 0.5]: full-train values for te.transform(X_test)
+print(te.encodings_[0])                         # [0.75 0.25 0.5]: full-train values for te.transform(X_test)
 
 hasher = FeatureHasher(n_features=8, input_type="string")
 H = hasher.transform([[c] for c in df["city"]]) # sparse 6 x 8, one ±1 per row, no vocabulary

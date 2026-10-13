@@ -24,6 +24,7 @@ import {
 } from '../../engine/fsrs/scheduler';
 import { formatReceipt } from '../../engine/receipt/format';
 import { APP_VERSION, cardHref, href } from '../../lib/base';
+import { inlineMd } from '../../lib/inline-md';
 import { toast } from '../../lib/toast';
 import { haptic } from '../../platform/haptics';
 import { shareFile } from '../../platform/share';
@@ -47,7 +48,7 @@ function Cloze({ text, reveal }: { text: string; reveal: boolean }) {
     <>
       {segs.map((s, i) =>
         s.t === 'text' ? (
-          <span key={i}>{s.v}</span>
+          <span key={i} dangerouslySetInnerHTML={{ __html: inlineMd(s.v) }} />
         ) : reveal ? (
           <mark key={i} class="rv__fill">
             {s.v}
@@ -282,7 +283,7 @@ export default function Review() {
     const good = lines.filter((l) => l.rating >= 3).length;
     return (
       <div class="rv rv--center rv--done">
-        <h2>Order up! 🎉</h2>
+        <h2>Session done! 🎉</h2>
         <p class="muted">
           {lines.length} card{lines.length === 1 ? '' : 's'} ·{' '}
           {Math.round((good / Math.max(1, lines.length)) * 100)}% recalled · {streak}-day streak
@@ -349,7 +350,7 @@ export default function Review() {
                 {item.kind === 'cloze' && item.cloze ? (
                   <Cloze text={item.cloze} reveal={false} />
                 ) : (
-                  item.front
+                  <span dangerouslySetInnerHTML={{ __html: inlineMd(item.front) }} />
                 )}
               </span>
             </p>
@@ -364,9 +365,15 @@ export default function Review() {
                 No. {String(item.number).padStart(3, '0')} · {item.title} ↗
               </a>
             </div>
-            {item.kind === 'qa' && <p class="rv__q rv__q--small">{item.front}</p>}
+            {item.kind === 'qa' && (
+              <p class="rv__q rv__q--small" dangerouslySetInnerHTML={{ __html: inlineMd(item.front) }} />
+            )}
             <p class="rv__a">
-              {item.kind === 'cloze' && item.cloze ? <Cloze text={item.cloze} reveal /> : item.back}
+              {item.kind === 'cloze' && item.cloze ? (
+                <Cloze text={item.cloze} reveal />
+              ) : (
+                <span dangerouslySetInnerHTML={{ __html: inlineMd(item.back) }} />
+              )}
             </p>
           </div>
         </div>

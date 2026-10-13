@@ -194,7 +194,7 @@ export default function SearchPalette() {
           {index && !debounced && recent.length > 0 && <p class="eyebrow sp__label">Recently read</p>}
           {index && debounced && hits.length === 0 && (
             <p class="sp__empty">
-              Nothing on the menu for “{debounced}”. Try a broader word, or browse the{' '}
+              No napkin matches “{debounced}”. Try a broader word, or browse the{' '}
               <a href={href('library/')}>library</a>.
             </p>
           )}

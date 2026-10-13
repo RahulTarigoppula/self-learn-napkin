@@ -108,7 +108,7 @@ const flashcardCount = d.flashcards.length;
         <Story slug={id} diagram={d.diagram} title={d.title} tldr={d.tldr} story={d.story} />
       </div>
 
-      <div class="cols block">
+      <div class:list={['cols block', { 'cols--solo': !(d.bigO && d.bigO.length > 0) }]}>
         <section id="key-ideas" class="ideas card" aria-labelledby="ideas-h">
           <h2 id="ideas-h" class="block__title"><Icon name="sparkles" size={20} /> Key ideas</h2>
           <ul class="ideas__list">
@@ -155,7 +155,7 @@ const flashcardCount = d.flashcards.length;
                 </h2>
               </div>
             </div>
-            <Griddle client:visible kind={d.griddle} />
+            <Griddle client:idle kind={d.griddle} />
           </section>
         )
       }
@@ -317,14 +317,14 @@ const flashcardCount = d.flashcards.length;
   }
 
   // Code blocks: a language label and a copy button.
-  const LANG: Record<string, string> = { python: 'Python', py: 'Python', sql: 'SQL', yaml: 'YAML', json: 'JSON', bash: 'Shell', sh: 'Shell', nginx: 'nginx', text: 'Text', proto: 'Protobuf', http: 'HTTP' };
+  const LANG: Record<string, string> = { python: 'Python', py: 'Python', sql: 'SQL', yaml: 'YAML', json: 'JSON', bash: 'Shell', sh: 'Shell', nginx: 'nginx', text: 'Pseudocode', plaintext: 'Pseudocode', proto: 'Protobuf', http: 'HTTP', promql: 'PromQL', ini: 'Config' };
   for (const pre of document.querySelectorAll<HTMLPreElement>('.prose pre.astro-code')) {
     const lang = pre.dataset.language ?? 'text';
     const bar = document.createElement('div');
     bar.className = 'codebar';
     const label = document.createElement('span');
     label.className = 'codebar__lang';
-    label.textContent = LANG[lang] ?? lang;
+    label.textContent = (LANG[lang] ?? lang) + ('sketch' in pre.dataset ? ' · sketch, needs a live service' : '');
     const copy = document.createElement('button');
     copy.type = 'button';
     copy.className = 'codebar__copy';
@@ -520,8 +520,13 @@ const flashcardCount = d.flashcards.length;
     align-items: start;
   }
   @container main (min-width: 880px) {
-    .cols {
+    .cols:not(.cols--solo) {
       grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+    }
+    /* no complexity table: key ideas take the full row, in two columns */
+    .cols--solo .ideas__list {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-6);
     }
   }
   .ideas {

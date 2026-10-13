@@ -101,9 +101,9 @@ No order was lost or rejected; customers just got their confirmation emails a li
 
 ## Implement it in Python
 
-The idea is language-independent; Python is used here only as compact, readable notation.
+The idea is language-independent; Python is used here only as compact, readable notation. `queue` and `db` stand for any queue client (SQS, RabbitMQ, …) and database driver.
 
-```python
+```python sketch
 def handle(msg):
     order_id = msg.body["order_id"]
     with db.transaction():

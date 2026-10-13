@@ -111,7 +111,28 @@ Precision in the top 5 % is: sort customers by score, take the first 5 %, and co
 
 ## Implement it in Python
 
-The same pipeline works in any language or tool (SQL, R, Julia, Spark); this version uses pandas and scikit-learn and expects two tables, `subs` and `logins`.
+The same pipeline works in any language or tool (SQL, R, Julia, Spark); this version uses pandas and scikit-learn and expects two tables, `subs` and `logins`. No data to hand? This first block builds a toy pair in which customers log in less during the six weeks before they cancel:
+
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(7)
+n = 3000
+days = pd.date_range("2025-11-01", "2026-04-30")             # the login history we need
+start = pd.Timestamp("2025-01-01") + pd.to_timedelta(rng.integers(0, 420, n), unit="D")
+leaves = rng.random(n) < 0.35
+cancel = (start + pd.to_timedelta(rng.integers(30, 500, n), unit="D")).where(leaves)
+subs = pd.DataFrame({"customer": np.arange(n), "start": start, "cancelled_at": cancel})
+
+d, s, c = days.values[None, :], start.values[:, None], cancel.values[:, None]
+active = (d >= s) & ~(d >= c)                                # comparisons with NaT are False
+p = np.where(d >= c - np.timedelta64(42, "D"), 0.15, 0.6) * active
+who, day = np.nonzero(rng.random(p.shape) < p)
+logins = pd.DataFrame({"customer": who, "ts": days[day]})
+```
+
+The pipeline itself:
 
 ```python
 import numpy as np
@@ -146,10 +167,12 @@ model = LogisticRegression(max_iter=1000).fit(train[cols], train.label)
 
 y = test.label.to_numpy()
 drop = (test.logins_prev_30d - test.logins_30d).to_numpy()
-print("random:", y.mean())                                      # random picks hit the base rate
-print("rule:  ", precision_at_top(y, drop))                     # biggest login drop first
-print("model: ", precision_at_top(y, model.predict_proba(test[cols])[:, 1]))
+print(f"random: {y.mean():.2f}")                                # random picks hit the base rate
+print(f"rule:   {precision_at_top(y, drop):.2f}")               # biggest login drop first
+print(f"model:  {precision_at_top(y, model.predict_proba(test[cols])[:, 1]):.2f}")
 ```
+
+On the toy data this prints 0.03, 0.39 and 0.50: a random 5 % finds the 3 % base rate, the "biggest login drop" rule is already 13× better, and the model beats the rule. That ordering — baseline, rule, model — is the comparison to show in an interview.
 
 The last training snapshot (1 March) has its label window end on 31 March, before the test date — so no training label peeks into the test period.
 

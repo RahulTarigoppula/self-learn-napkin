@@ -21,6 +21,14 @@ export default defineConfig({
       themes: { light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' },
       defaultColor: false,
       wrap: false,
+      // ```python sketch marks a block that talks to a live service and is not run by check-python.
+      transformers: [
+        {
+          pre(node) {
+            if (/\bsketch\b/.test(this.options.meta?.__raw ?? '')) node.properties['data-sketch'] = '';
+          },
+        },
+      ],
     },
   },
   devToolbar: { enabled: false },

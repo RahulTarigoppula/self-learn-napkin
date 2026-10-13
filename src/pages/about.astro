@@ -53,6 +53,25 @@ const story = [
       <Story slug="about" diagram="journey" title="the road to Napkin" tldr="From tester to C++ payments, Python, data science, system design and AI — and why that path led to Napkin." story={story} trackRead={false} after="beliefs" />
     </div>
 
+    <ol class="road" aria-label="The road so far">
+      {
+        [
+          ['Tester', 'never accept “it just works”'],
+          ['C++ · payments', 'every edge case is money'],
+          ['Python', 'simple reads like the idea'],
+          ['DS + HLD', 'pictures beat folklore'],
+          ['AI · Sr. engineer', 'the hard part is the mental model'],
+          ['Napkin', 'all of it, drawn simply'],
+        ].map(([stop, lesson], i) => (
+          <li class="road__stop" style={`--d:${i}`}>
+            <span class="road__n mono">{String(i + 1).padStart(2, '0')}</span>
+            <b>{stop}</b>
+            <span>{lesson}</span>
+          </li>
+        ))
+      }
+    </ol>
+
     <section id="beliefs" class="beliefs" aria-labelledby="beliefs-h">
       <p class="eyebrow">What Napkin believes</p>
       <h2 id="beliefs-h">Simple, not simplistic. Facts, not folklore.</h2>
@@ -65,7 +84,7 @@ const story = [
         <article class="belief card">
           <span class="belief__icon"><Icon name="check" size={20} /></span>
           <h3>No superstition</h3>
-          <p>Claims are checked, numbers are computed, every code block is run against its worked example, and every napkin cites where its facts come from.</p>
+          <p>Claims are checked, numbers are computed, every runnable Python example is executed on each build and prints the numbers in its worked example, and every napkin cites its sources.</p>
         </article>
         <article class="belief card">
           <span class="belief__icon"><Icon name="code" size={20} /></span>
@@ -141,6 +160,40 @@ const story = [
     font-size: clamp(1.05rem, 2.2vw, 1.22rem);
     color: var(--ink-muted);
     max-width: 62ch;
+  }
+  .road {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-5) 0 0;
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  .road__stop {
+    position: relative;
+    display: grid;
+    gap: 2px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-strong);
+    background: var(--surface);
+    font-size: var(--text-sm);
+  }
+  .road__stop:last-child {
+    border-style: solid;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .road__stop b {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+  }
+  .road__stop span:last-child {
+    color: var(--ink-muted);
+  }
+  .road__n {
+    font-size: var(--text-xs);
+    color: var(--ink-faint);
   }
   .beliefs {
     margin-top: var(--space-10);

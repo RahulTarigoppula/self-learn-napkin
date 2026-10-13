@@ -27,5 +27,5 @@ for (const [path, heading] of ROUTES) {
 test('unknown pages get the 404 napkin', async ({ page }) => {
   const res = await page.goto('definitely-not-a-page/');
   expect(res?.status()).toBe(404);
-  await expect(page.getByRole('heading', { name: 'Not on the menu' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Nothing drawn here' })).toBeVisible();
 });
