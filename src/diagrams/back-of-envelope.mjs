@@ -17,9 +17,9 @@ export default (d) => {
   // three boxes joined by two labelled arrows
   const chain = (y, pen, [a, b, c], [opAB, opBC]) => {
     box(24, y, 90, a, pen);
-    d.arrow(118, y, 200, y, { pen, label: opAB, labelDy: -14 });
+    d.arrow(118, y, 200, y, { pen, label: opAB, labelDy: -17 });
     box(204, y, 116, b, pen);
-    d.arrow(324, y, 402, y, { pen, label: opBC, labelDy: -14 });
+    d.arrow(324, y, 402, y, { pen, label: opBC, labelDy: -17 });
     box(406, y, 90, c, pen);
   };
 

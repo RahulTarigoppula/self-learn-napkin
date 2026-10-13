@@ -46,7 +46,7 @@ bigO:
   - { op: "insert into sorted, disjoint list", avg: "O(n)", note: "no sort needed" }
   - { op: "meeting rooms (heap or sweep)", avg: "O(n log n)", note: "O(n) extra space" }
   - { op: "do any two overlap?", avg: "O(n log n)", note: "sort, compare neighbours" }
-related: [dsa/heaps, dsa/sorting-overview, dsa/greedy-algorithms, dsa/sliding-window]
+related: [dsa/heaps, dsa/sorting-overview, dsa/greedy-algorithms, dsa/prefix-sums]
 prereqs: [dsa/sorting-overview]
 flashcards:
   - kind: qa
@@ -95,7 +95,7 @@ If the list is already **sorted and disjoint**, inserting `[s, e]` needs no sort
 
 The fewest rooms that can host all meetings equals the **maximum number of meetings in progress at any instant**. Fewer rooms cannot work at that instant, and that many is always enough because a free room can be reused. Two ways to compute it:
 
-- **Sweep line:** make events `(start, +1)` and `(end, −1)`, sort them, and keep a running total. The peak is the answer. On ties, process ends before starts so back-to-back meetings share a room — sorting tuples does this for free because `−1 < +1`.
+- **Sweep line:** make events `(start, +1)` and `(end, −1)`, sort them, and keep a running total. The peak is the answer (this is a prefix sum over the ±1 events). On ties, process ends before starts so back-to-back meetings share a room — sorting tuples does this for free because `−1 < +1`.
 - **Min-heap of end times:** sort meetings by start. Keep a min-heap holding the end time of every room in use. For each meeting, if the earliest end `≤` its start, that room is free: replace its end time. Otherwise push a new room. The heap's size at the end is the answer.
 
 ## Worked example

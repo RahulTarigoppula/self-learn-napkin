@@ -19,7 +19,7 @@ story:
   - title: "HTTP: request and response"
     text: "Only now does the real request go out: GET /cart, with headers such as Host and the session cookie. The server does its work — maybe a cache or database lookup — and replies with a status line (200 OK), headers and the HTML body."
   - title: Where the time went
-    text: "Count the arrows: about four round trips before the first byte of the page arrives. At a 50 ms round-trip time that is roughly 200 ms, most of it handshakes. Keep-alive reuses the open connection, so the next request costs a single round trip."
+    text: "Count the round trips: DNS, TCP, TLS, HTTP — four before the first byte of the page arrives. At about 50 ms each that is roughly 200 ms, most of it handshakes. Keep-alive reuses the open connection, so the next request costs a single round trip."
 keyIdeas:
   - "**A new HTTPS connection costs ~3 RTTs before the first byte** (TCP 1 + TLS 1.3 1 + HTTP 1), plus DNS if not cached."
   - "**HTTP is stateless**: every request carries what the server needs (cookie or token), so any server can answer it — the basis of horizontal scaling."
@@ -115,7 +115,7 @@ A user in London loads a page from a server in Virginia: RTT ≈ 80 ms. DNS is n
 | TLS 1.3 handshake | 80 ms | 200 ms |
 | Request → server work → first byte | 80 + 30 ms | 310 ms |
 
-So the **time to first byte (TTFB)** is ~310 ms, and only 30 ms of it is your code. The second request on the same kept-alive connection costs 80 + 30 = 110 ms. Moving the TLS termination closer to the user (a CDN edge 10 ms away) shrinks both handshakes to 10 ms each — far more effective than optimising the 30 ms.
+So the **time to first byte (TTFB)** is ~310 ms, and only 30 ms of it is your code. The second request on the same kept-alive connection costs 80 + 30 = 110 ms. Terminating TCP and TLS closer to the user (a CDN edge 10 ms away, which keeps a warm connection to Virginia) shrinks both handshakes to 10 ms each and cuts TTFB to roughly 180 ms — far more effective than optimising the 30 ms.
 
 ## In code
 

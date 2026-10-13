@@ -16,9 +16,10 @@ const PATH = [0.4, 1.3, 2.15, 1.7, 1.2, 0.9, 1.1, 0.6, 0.8, 0.3, 0.5, 0.2, 0.6, 
 export default (d) => {
   d.step('Hypothesis and random split');
   d.group(() => {
-    d.circle(56, 62, 64, { pen: 'blue', fill: 'blue', label: 'users', size: 16 });
+    d.circle(56, 58, 64, { pen: 'blue', fill: 'blue', label: 'users', size: 16 });
+    d.text(56, 106, 'hash(user id)', { pen: 'blue', size: 14 });
   });
-  d.arrow(92, 54, 196, 36, { pen: 'blue', label: 'hash(user id)', size: 14, labelDy: -14, labelDx: -6 });
+  d.arrow(92, 54, 196, 36, { pen: 'blue' });
   d.arrow(92, 70, 196, 88, { pen: 'blue' });
   d.group(() => {
     d.rect(200, 20, 132, 34, { pen: 'muted', fill: 'muted', rough: 0.7, label: 'A: old checkout', size: 15 });
@@ -44,7 +45,7 @@ export default (d) => {
       });
     }
   });
-  d.text(404, 196, '3,000 users/day: 10 days → run 14', { pen: 'blue', size: 14 });
+  d.text(404, 194, '3,000 users/day → 10 days;\nround up to 2 full weeks', { pen: 'blue', size: 14 });
 
   d.step('Do not peek and stop early');
   d.group(() => {
@@ -72,8 +73,8 @@ export default (d) => {
   d.step('Check the split first: SRM');
   d.group(() => {
     d.text(20, 346, 'planned 50 / 50, got', { pen: 'muted', size: 15, anchor: 'start' });
-    d.text(20, 368, '15,012 vs 14,488', { pen: 'ink', size: 15, mono: true, anchor: 'start' });
-    d.text(20, 392, 'χ² = 9.3, p = 0.002: broken', { pen: 'red', size: 15, anchor: 'start' });
+    d.text(20, 368, '15,100 vs 14,400', { pen: 'ink', size: 15, mono: true, anchor: 'start' });
+    d.text(20, 392, 'χ² = 16.6, p < 0.0001: broken', { pen: 'red', size: 15, anchor: 'start' });
   });
 
   d.step('Read the result and the guardrails');

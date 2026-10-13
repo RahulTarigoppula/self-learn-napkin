@@ -202,9 +202,13 @@ const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
     transform: rotate(-1.5deg);
     display: inline-block;
   }
+  .hero__copy {
+    container-type: inline-size;
+    min-width: 0;
+  }
   .hero__title {
     margin-top: var(--space-3);
-    font-size: clamp(2.6rem, 8vw, 4.6rem);
+    font-size: clamp(2.3rem, 12.5cqi, 4.6rem);
     letter-spacing: -0.045em;
     line-height: 0.98;
   }

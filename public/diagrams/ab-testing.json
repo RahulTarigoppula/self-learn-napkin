@@ -1,0 +1,46 @@
+{
+  "name": "ab-testing",
+  "width": 520,
+  "height": 420,
+  "elements": 16,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Hypothesis and random split",
+      "firstElement": 0,
+      "lastElement": 4
+    },
+    {
+      "index": 1,
+      "caption": "Sample size from baseline and MDE",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 2,
+      "caption": "Run time: whole weeks",
+      "firstElement": 8,
+      "lastElement": 9
+    },
+    {
+      "index": 3,
+      "caption": "Do not peek and stop early",
+      "firstElement": 10,
+      "lastElement": 13
+    },
+    {
+      "index": 4,
+      "caption": "Check the split first: SRM",
+      "firstElement": 14,
+      "lastElement": 14
+    },
+    {
+      "index": 5,
+      "caption": "Read the result and the guardrails",
+      "firstElement": 15,
+      "lastElement": 15
+    }
+  ],
+  "hash": "133cbffbeb2846c641bb8787a5229fd6990f7a36",
+  "title": "A/B test: random split, sample size, run time, peeking, SRM check and the result"
+}

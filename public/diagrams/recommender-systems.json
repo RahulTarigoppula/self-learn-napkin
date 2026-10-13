@@ -1,0 +1,46 @@
+{
+  "name": "recommender-systems",
+  "width": 520,
+  "height": 420,
+  "elements": 7,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "The user-item matrix is mostly empty",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "Collaborative filtering: find similar users",
+      "firstElement": 1,
+      "lastElement": 1
+    },
+    {
+      "index": 2,
+      "caption": "Matrix factorisation: a vector per user and item",
+      "firstElement": 2,
+      "lastElement": 2
+    },
+    {
+      "index": 3,
+      "caption": "Fill the gap with a dot product",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 4,
+      "caption": "At scale: retrieve, then rank",
+      "firstElement": 5,
+      "lastElement": 5
+    },
+    {
+      "index": 5,
+      "caption": "Measure: offline, then an A/B test",
+      "firstElement": 6,
+      "lastElement": 6
+    }
+  ],
+  "hash": "95b2680bea2ae011ab90ff1b100bc8350ea4cd1e",
+  "title": "Recommender systems: a user-item rating matrix, collaborative filtering, matrix factorisation and the retrieval-then-ranking funnel"
+}

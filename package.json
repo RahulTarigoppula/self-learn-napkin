@@ -27,7 +27,7 @@
     "test:e2e": "playwright test --project=desktop --project=pixel7",
     "test:a11y": "playwright test --project=a11y",
     "test:offline": "playwright test --project=offline",
-    "test:licences": "license-checker-rseidelsohn --onlyAllow \"MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MPL-2.0;0BSD;CC0-1.0;Unlicense;OFL-1.1;Python-2.0;BlueOak-1.0.0\" --production"
+    "test:licences": "license-checker-rseidelsohn --onlyAllow \"MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MPL-2.0;0BSD;CC0-1.0;Unlicense;OFL-1.1;Python-2.0;BlueOak-1.0.0;CC-BY-4.0\" --production --excludePrivatePackages --summary"
   },
   "dependencies": {
     "@astrojs/preact": "^6.0.6",

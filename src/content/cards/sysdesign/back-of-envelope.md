@@ -13,13 +13,13 @@ story:
   - title: Inside one machine
     text: "Reading main memory takes about 100 ns. A random read from an SSD takes about 100 µs — a thousand times slower. A spinning-disk seek takes about 10 ms, a hundred times slower again. This is why caches live in RAM and why random I/O on spinning disks is avoided."
   - title: Leaving the machine
-    text: "A round trip to another server in the same data centre costs about 0.5 ms — cheaper than a disk seek. Crossing an ocean costs about 150 ms because light in fibre only goes about 200,000 km/s. A user far away pays that on every round trip, so you count round trips."
+    text: "A round trip to another server in the same data centre costs about 0.5 ms — cheaper than a disk seek. Crossing an ocean costs roughly 100–150 ms, because light in fibre only goes about 200,000 km/s. A user far away pays that on every round trip, so you count round trips."
   - title: Users per day → requests per second
     text: "A photo app has 10 million daily active users who each view 100 photos: 1 billion views a day. A day has 86,400 seconds; round it to 10^5. So 10^9 ÷ 10^5 = 10,000 requests per second on average. Traffic is bursty, so plan for a peak of 2–3×, about 30,000."
   - title: Uploads → storage per year
     text: "If one user in five uploads one 2 MB photo a day, that is 2 million photos and 4 TB a day. Times 365 is about 1.5 PB a year, and keeping three copies makes it about 4.4 PB. That single number tells you the photos belong in object storage, not in a database."
 keyIdeas:
-  - "**Memory ≈ 100 ns, SSD random read ≈ 100 µs, same-DC round trip ≈ 0.5 ms, disk seek ≈ 10 ms, cross-continent ≈ 100–150 ms.** Each is roughly 10–1000× the one before."
+  - "**Memory ≈ 100 ns, SSD random read ≈ 100 µs, same-DC round trip ≈ 0.5 ms, disk seek ≈ 10 ms, cross-continent ≈ 100–150 ms.** Learn the order, not the digits."
   - "**1 day ≈ 10^5 s** (really 86,400). So 1 M requests/day ≈ 12 QPS and 1 B/day ≈ 12 k QPS. Peak ≈ 2–3× average."
   - "**Powers of two:** 2^10 ≈ a thousand (KB), 2^20 ≈ a million (MB), 2^30 ≈ a billion (GB), 2^40 ≈ a trillion (TB)."
   - "Estimate **reads, writes, storage and bandwidth separately** — they lead to different components."

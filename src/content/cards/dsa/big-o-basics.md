@@ -13,7 +13,7 @@ story:
   - title: O(1) and O(log n) stay flat
     text: "O(1) is a fixed amount of work whatever n is — reading a[7], or a hash lookup on average. O(log n) grows but barely: each step halves the problem, so binary search needs about 20 probes for a million items and only 30 for a billion."
   - title: O(n) and O(n log n) climb
-    text: "O(n) touches every item once, like summing an array: double n, double the work. O(n log n) is a touch steeper. It is the sorting floor: any sort that only compares items needs about n log₂ n comparisons in the worst case, and merge sort and heap sort reach that floor."
+    text: "O(n) touches every item once, like summing an array: double n, double the work. O(n log n) is a touch steeper. It is the sorting floor: any sort that only compares items needs on the order of n log n comparisons in the worst case, and merge sort and heap sort achieve it."
   - title: O(n²) and O(2ⁿ) leave the napkin
     text: "Nested loops over the same data give O(n²): n = 1,000,000 means a trillion steps. Trying every subset gives O(2ⁿ): already about 10¹⁸ steps at n = 60. These curves leave the page while the flat ones have hardly moved, so for large n the shape decides, not the hardware."
   - title: Drop the constants and small terms

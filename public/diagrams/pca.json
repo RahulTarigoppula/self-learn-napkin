@@ -1,0 +1,46 @@
+{
+  "name": "pca",
+  "width": 520,
+  "height": 420,
+  "elements": 13,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Five points in two features",
+      "firstElement": 0,
+      "lastElement": 1
+    },
+    {
+      "index": 1,
+      "caption": "Centre: subtract the mean",
+      "firstElement": 2,
+      "lastElement": 3
+    },
+    {
+      "index": 2,
+      "caption": "Find the direction of maximum spread",
+      "firstElement": 4,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Project onto PC1: 2-D → 1-D",
+      "firstElement": 7,
+      "lastElement": 8
+    },
+    {
+      "index": 4,
+      "caption": "PC2 and explained variance",
+      "firstElement": 9,
+      "lastElement": 10
+    },
+    {
+      "index": 5,
+      "caption": "Under the hood: eigenvectors",
+      "firstElement": 11,
+      "lastElement": 12
+    }
+  ],
+  "hash": "36f0f3d0dde098811fe0be6f4e9c695e7b354cbc",
+  "title": "PCA on five 2-D points: centre on the mean, find the diagonal direction of maximum variance, project onto it, the perpendicular second component with 90 % / 10 % explained variance, and the covariance eigenvectors"
+}
