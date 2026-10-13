@@ -1,0 +1,46 @@
+{
+  "name": "hierarchical-clustering",
+  "width": 520,
+  "height": 420,
+  "elements": 14,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Every point starts as its own cluster",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "Merge the closest pair: A + B at 1",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "Next closest: D + E at 1.41",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 3,
+      "caption": "Linkage: how far apart are two clusters?",
+      "firstElement": 7,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "Last merge: everything at 5",
+      "firstElement": 10,
+      "lastElement": 11
+    },
+    {
+      "index": 5,
+      "caption": "Cut the tree to get clusters",
+      "firstElement": 12,
+      "lastElement": 13
+    }
+  ],
+  "hash": "84452f1939423788f3ca718687aadcf2bbe3ca57",
+  "title": "Agglomerative clustering of five points with single linkage: merges at 1, 1.41, 2 and 5 drawn as a dendrogram, the linkage rules compared, and a cut at height 3 giving two clusters"
+}

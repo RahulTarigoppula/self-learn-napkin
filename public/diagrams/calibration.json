@@ -1,0 +1,40 @@
+{
+  "name": "calibration",
+  "width": 520,
+  "height": 420,
+  "elements": 13,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "Calibrated: 0.8 means 8 in 10",
+      "firstElement": 0,
+      "lastElement": 2
+    },
+    {
+      "index": 1,
+      "caption": "The reliability diagram",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 2,
+      "caption": "An overconfident model",
+      "firstElement": 5,
+      "lastElement": 7
+    },
+    {
+      "index": 3,
+      "caption": "Score it: Brier and log-loss",
+      "firstElement": 8,
+      "lastElement": 9
+    },
+    {
+      "index": 4,
+      "caption": "Fix it: Platt scaling or isotonic",
+      "firstElement": 10,
+      "lastElement": 12
+    }
+  ],
+  "hash": "ebf9532ae88009a33d5f93f384ae695b4155e437",
+  "title": "Calibration: reliability diagram, an overconfident model, Brier score and Platt / isotonic fixes"
+}

@@ -39,8 +39,20 @@ export async function buildSw({ dist = 'dist', base = '/', maxMb = 25 } = {}) {
     skipWaiting: false,
     clientsClaim: true,
     cleanupOutdatedCaches: true,
-    navigateFallback: `${base}offline/index.html`,
-    navigateFallbackAllowlist: [/./],
+    // Precached pages are served from the cache; anything newer than this worker (e.g. a napkin added by a
+    // later deploy) goes to the network, and only falls back to the offline page when there is no network.
+    runtimeCaching: [
+      {
+        urlPattern: ({ request }) => request.mode === 'navigate',
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'napkin-pages',
+          networkTimeoutSeconds: 4,
+          expiration: { maxEntries: 200 },
+          precacheFallback: { fallbackURL: `${base}offline/index.html` },
+        },
+      },
+    ],
     directoryIndex: 'index.html',
     ignoreURLParametersMatching: [/^utm_/, /^topic$/, /^track$/, /^tag$/],
     maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,

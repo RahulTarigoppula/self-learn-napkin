@@ -17,7 +17,11 @@ export default defineConfig({
   prefetch: false,
   markdown: {
     // Code in deep dives is highlighted at build time; both themes ship as CSS variables.
-    shikiConfig: { themes: { light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' }, defaultColor: false, wrap: false },
+    shikiConfig: {
+      themes: { light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' },
+      defaultColor: false,
+      wrap: false,
+    },
   },
   devToolbar: { enabled: false },
   integrations: [preact()],

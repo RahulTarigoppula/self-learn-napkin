@@ -1,0 +1,40 @@
+{
+  "name": "embeddings",
+  "width": 520,
+  "height": 420,
+  "elements": 11,
+  "steps": [
+    {
+      "index": 0,
+      "caption": "One-hot: every word is equally different",
+      "firstElement": 0,
+      "lastElement": 0
+    },
+    {
+      "index": 1,
+      "caption": "An embedding table: one dense row per word",
+      "firstElement": 1,
+      "lastElement": 2
+    },
+    {
+      "index": 2,
+      "caption": "Similar words land close together",
+      "firstElement": 3,
+      "lastElement": 4
+    },
+    {
+      "index": 3,
+      "caption": "Cosine similarity measures the angle",
+      "firstElement": 5,
+      "lastElement": 6
+    },
+    {
+      "index": 4,
+      "caption": "Directions can carry meaning",
+      "firstElement": 7,
+      "lastElement": 10
+    }
+  ],
+  "hash": "c1c2bc3ea6ec02c83baeb0f2d59372c9c66710b4",
+  "title": "Embeddings: from one-hot vectors to a learned table of dense vectors where similar things sit close"
+}

@@ -18,7 +18,10 @@ test('the story draws scene by scene and finishing marks the napkin read', async
   await expect(story.locator('g.is-future')).toHaveCount(0);
   await page.waitForTimeout(400);
   await page.goto('library/');
-  await expect(page.locator('[data-slug="sysdesign/consistent-hashing"]')).toHaveAttribute('data-read', 'true');
+  await expect(page.locator('[data-slug="sysdesign/consistent-hashing"]')).toHaveAttribute(
+    'data-read',
+    'true',
+  );
 });
 
 test('the quiz explains every answer and scores the round', async ({ page }) => {
