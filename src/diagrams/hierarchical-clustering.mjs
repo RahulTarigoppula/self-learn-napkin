@@ -15,7 +15,7 @@ const PTS = { A: [1, 1], B: [2, 1], C: [1, 3], D: [6, 4], E: [7, 5] };
 const LABEL = {
   A: [0, -26, 'middle'],
   B: [0, -26, 'middle'],
-  C: [-12, 0, 'end'],
+  C: [12, 0, 'start'],
   D: [0, 26, 'middle'],
   E: [0, -26, 'middle'],
 };

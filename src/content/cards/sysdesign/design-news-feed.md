@@ -51,8 +51,8 @@ bigO:
   - { op: "one celebrity post, pushed", avg: "~4 min", note: "50 M writes at 200 k/s — so pull instead" }
   - { op: "new media per day", avg: "~5 TB", note: "10 M photos × 500 KB, served by a CDN" }
 bigOTitle: "Key numbers"
-related: [sysdesign/message-queues, sysdesign/dns-and-cdns, sysdesign/blob-storage, sysdesign/api-design]
-prereqs: [sysdesign/back-of-envelope, sysdesign/caching, sysdesign/load-balancing]
+related: [sysdesign/dns-and-cdns, sysdesign/consistency-models, sysdesign/design-url-shortener, sysdesign/design-chat-system]
+prereqs: [sysdesign/back-of-envelope, sysdesign/api-design, sysdesign/load-balancing, sysdesign/caching, sysdesign/message-queues, sysdesign/blob-storage, sysdesign/unique-id-generation, sysdesign/sharding]
 flashcards:
   - kind: qa
     q: "Compare fan-out on write and fan-out on read in one sentence each."
@@ -123,18 +123,21 @@ POST /media                 → a short-lived upload URL for blob storage
 
 **Storage choices.** The posts table is large (tens of TB a year) but only ever read by id, so a key-value or wide-column store sharded by `post_id` fits well (**SQL vs NoSQL**). The follow graph is two lookups — "who follows Ana?" for fan-out and "whom does Ben follow?" for the celebrity merge — so store both directions, each partitioned by its first column. The feed cache is a derived copy: if it is lost, it can be rebuilt from the other two.
 
-### Read path in code
+## Sketch it
 
-```python
-def get_feed(user, cursor=None, limit=20):
-    ids = cache.zrevrange(f"feed:{user}", 0, 499)            # pushed ids, newest first
-    for star in graph.celebrities_followed_by(user):          # usually a handful
-        ids += cache.lrange(f"recent:{star}", 0, 49)          # pulled at read time
-    if cursor:                                                 # chronological cursor
-        ids = [i for i in ids if i < cursor]
-    top = sorted(set(ids), reverse=True)[:limit]               # ids are time-sortable
-    posts = [p for p in posts_cache.mget(top) if p and visible(p, user)]
-    return {"posts": posts, "next_cursor": top[-1] if top else None}
+The idea is language-independent, so here is the read path as plain pseudocode:
+
+```text
+get_feed(user, cursor, limit = 20):
+    ids ← newest 500 ids in feed:{user}               # pushed earlier by fan-out workers
+    for each celebrity that user follows:              # usually a handful
+        ids ← ids + newest 50 ids in recent:{star}     # pulled now, at read time
+    if cursor is given:
+        keep only ids smaller than cursor              # ids are time-sortable
+    page ← the `limit` largest distinct ids            # newest first
+    posts ← one batched get of those posts from the post cache
+    drop posts that are deleted or from blocked authors
+    return posts, next_cursor = smallest id in page (none if page is empty)
 ```
 
 ## 5. Deep dive: push, pull or both

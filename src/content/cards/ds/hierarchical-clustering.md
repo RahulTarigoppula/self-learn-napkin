@@ -28,20 +28,20 @@ keyIdeas:
   - "Needs the **O(n²) distance matrix** and O(n²)–O(n³) time: great for thousands of points, impractical for millions."
 quiz:
   - q: "Cluster {A, B} has points at distances 2 and 6 from point C. What is the cluster-to-C distance under single, complete and average linkage?"
-    options: ["2, 6, 4", "6, 2, 4", "4, 4, 4", "2, 4, 6"]
-    answer: 0
+    options: ["6, 2, 4", "2, 6, 4", "4, 4, 4", "2, 4, 6"]
+    answer: 1
     why: "Single uses the closest pair (2), complete the farthest pair (6), and average the mean over all pairs, (2 + 6) / 2 = 4."
   - q: "Which linkage is most likely to merge two separate blobs joined by a thin line of noise points?"
     options: ["Single linkage", "Complete linkage", "Ward linkage", "They all behave the same"]
     answer: 0
     why: "Single linkage only needs one close pair to merge two clusters, so a chain of points acts as a bridge. This chaining is also what lets it trace long, curved clusters."
   - q: "Seven points produce merges at heights 0.5, 0.7, 0.9, 1.1, 6.0 and 6.4. How many clusters does the data most naturally have?"
-    options: ["3", "2", "6", "1"]
-    answer: 0
+    options: ["2", "6", "1", "3"]
+    answer: 3
     why: "The first four merges happen at small heights (≤ 1.1), then the next one jumps to 6.0. A cut anywhere in that gap undoes the last two merges and leaves 7 − 4 = 3 clusters."
   - q: "Two leaves sit right next to each other at the bottom of a dendrogram, but the link joining them is at the very top. What does that tell you?"
-    options: ["They are very dissimilar; leaf order on the axis means little", "They are near-duplicates", "The dendrogram is drawn wrongly", "They must be outliers"]
-    answer: 0
+    options: ["They are near-duplicates", "They are very dissimilar; leaf order on the axis means little", "The dendrogram is drawn wrongly", "They must be outliers"]
+    answer: 1
     why: "Only the height of the joining link measures dissimilarity. Any branch can be flipped left-to-right without changing the tree, so neighbouring leaves can belong to the two biggest, most different clusters."
 bigO:
   - { op: "distance matrix memory", avg: "O(n²)", note: "n(n − 1)/2 pairs: 5 × 10⁹ for 100,000 points ≈ 40 GB in float64" }
@@ -90,7 +90,7 @@ Once a cluster holds several points, "distance to another cluster" needs a defin
 | **Average** (UPGMA) | mean of all cross-cluster pairs | a compromise between single and complete | still assumes roughly blob-like clusters |
 | **Ward** | merge that adds the least within-cluster sum of squares | round, similar-sized clusters, much like k-means | needs Euclidean distances |
 
-Ward's linkage uses the same objective as k-means, the within-cluster sum of squares, applied greedily one merge at a time. That is why it is scikit-learn's default and why its clusters look like k-means clusters.
+Ward's linkage uses the same objective as k-means, the within-cluster sum of squares, applied greedily one merge at a time. That is why its clusters look like k-means clusters, and why many libraries make it the default.
 
 On two interleaved half-moons (300 points), only single linkage follows the curved shapes. Adjusted Rand index against the true moons: single **1.00**, average 0.43, complete 0.30, Ward 0.24. On noisy blobs connected by stray points, the ranking flips and single linkage chains everything together.
 
@@ -119,7 +119,7 @@ Other linkages build the same tree here (the two groups are well separated), but
 | single | 1, 1.41, 2.00, 5.00 |
 | average | 1, 1.41, 2.12, 5.98 |
 | complete | 1, 1.41, 2.24, 7.21 |
-| Ward (SciPy's scale) | 1, 1.41, 2.38, 9.13 |
+| Ward (height = √(2 × added sum of squares), SciPy's convention) | 1, 1.41, 2.38, 9.13 |
 
 Cutting the single-linkage tree anywhere between heights 2 and 5 gives {A, B, C} and {D, E}.
 
@@ -130,7 +130,9 @@ Cutting the single-linkage tree anywhere between heights 2 and 5 gives {A, B, C}
 - **Cut by height**: choose a dissimilarity threshold t; clusters are the branches crossing the line at t. **Cut by count**: choose k and cut between the (k − 1)-th and k-th highest merges, undoing the top k − 1 merges.
 - **Look for big gaps.** A long vertical stretch without merges means the clusters below it are well separated. Here nothing happens between 2 and 5, so 2 clusters is the natural answer.
 
-## In code
+## Implement it in Python
+
+Any language with a linear-algebra or statistics library offers this; here it is in Python with SciPy (which builds and cuts the tree) and scikit-learn.
 
 ```python
 import numpy as np
@@ -158,11 +160,11 @@ for link in ["single", "complete", "average", "ward"]:
     print(link, round(adjusted_rand_score(ym, pred), 2))   # 1.0, 0.3, 0.43, 0.24
 ```
 
-`scipy.cluster.hierarchy.dendrogram(Z)` draws the tree with matplotlib.
+`scipy.cluster.hierarchy.dendrogram(Z)` draws the tree with matplotlib. In scikit-learn, `AgglomerativeClustering` defaults to Ward linkage and accepts a `connectivity=` graph to restrict merges to nearest neighbours on large data.
 
 ## Edge cases and pitfalls
 
-- **Memory.** The condensed distance matrix holds n(n − 1)/2 numbers: 5 × 10⁹ for 100,000 points, about 40 GB as float64. Beyond tens of thousands of points, cluster a sample, use k-means or mini-batch k-means first and build the tree on the centroids, or use a connectivity graph (`connectivity=` in scikit-learn) to restrict merges to nearest neighbours.
+- **Memory.** The condensed distance matrix holds n(n − 1)/2 numbers: 5 × 10⁹ for 100,000 points, about 40 GB as float64. Beyond tens of thousands of points, cluster a sample, use k-means or mini-batch k-means first and build the tree on the centroids, or supply a connectivity graph that only allows merges between nearest neighbours.
 - **Time.** The naive algorithm is O(n³). Priority-queue implementations reach O(n² log n), and single linkage runs in O(n²) because it is equivalent to building a minimum spanning tree and cutting its longest edges (SLINK).
 - **Merges are final.** A greedy early merge is never undone, even if it looks wrong later. k-means can move points between clusters; hierarchical clustering cannot.
 - **Scale features first**, exactly as for k-means or kNN. Distances drive every merge.

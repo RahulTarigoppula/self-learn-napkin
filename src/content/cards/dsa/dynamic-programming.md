@@ -15,7 +15,7 @@ story:
   - title: The same subproblems, again and again
     text: "Look at the colours: w(3) is solved twice and w(2) three times. These are overlapping subproblems. At n = 40 the naive recursion makes about 205 million calls, yet there are only 40 different questions being asked."
   - title: Memoise
-    text: "Store each answer the first time you compute it, in a dictionary keyed by n. When w(3) is needed again, it is a memo hit: return the stored 3, and its whole subtree is never called. Every distinct n is now solved once, so the work drops to O(n) — 77 calls at n = 40."
+    text: "Store each answer the first time you compute it, in a lookup table (a hash map or an array) keyed by n. When w(3) is needed again, it is a memo hit: return the stored 3, and its whole subtree is never called. Every distinct n is now solved once, so the work drops to O(n) — 77 calls at n = 40."
   - title: Tabulate bottom-up
     text: "Or skip recursion entirely: fill a table from the smallest n upwards, each cell the sum of the two before it — 1, 2, 3, 5, 8. That is O(n) time, and since each cell needs only the previous two, you can keep just two variables for O(1) space."
 keyIdeas:

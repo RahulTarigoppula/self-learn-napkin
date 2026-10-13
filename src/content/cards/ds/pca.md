@@ -11,7 +11,7 @@ story:
   - title: Five points in two features
     text: "Five points, A to E, measured on two features x₁ and x₂. The cloud is stretched along a diagonal: when x₁ is large, x₂ tends to be large too. The two features partly repeat each other, so two numbers per point say less than they seem to."
   - title: "Centre: subtract the mean"
-    text: "PCA first subtracts each feature's mean, here (3, 3), so the cloud is centred on the origin. Directions are then measured from the middle of the data, and variance along a direction is just the average squared projection."
+    text: "PCA first subtracts each feature's mean, here (3, 3), so the cloud is centred on the origin. Directions are then measured from the middle of the data, and the variance along a direction is just the sum of squared projections divided by n − 1."
   - title: Find the direction of maximum spread
     text: "Project every point onto a line through the centre and measure how spread out the projections are. Along the horizontal axis the variance is 2.5; along the diagonal it is 4.5, the most of any direction. That direction, (0.71, 0.71), is the first principal component, PC1."
   - title: "Project onto PC1: 2-D → 1-D"
@@ -28,20 +28,20 @@ keyIdeas:
   - "**Limits**: linear only, unsupervised (high variance ≠ predictive), sensitive to scale and outliers, and components are mixtures of features that are hard to interpret."
 quiz:
   - q: "A covariance matrix has eigenvalues 6, 3 and 1. What fraction of the variance do the first two components explain?"
-    options: ["90 %", "60 %", "67 %", "30 %"]
-    answer: 0
+    options: ["60 %", "67 %", "90 %", "30 %"]
+    answer: 2
     why: "Total variance is 6 + 3 + 1 = 10. The first two components explain (6 + 3) / 10 = 0.9, i.e. 90 %."
   - q: "One feature is income in pounds (std ≈ 20,000) and another is age in years (std ≈ 12). You run PCA without scaling. What will PC1 be?"
-    options: ["Almost exactly the income axis", "A 50/50 mix of both", "Almost exactly the age axis", "Undefined"]
-    answer: 0
+    options: ["A 50/50 mix of both", "Almost exactly the income axis", "Almost exactly the age axis", "Undefined"]
+    answer: 1
     why: "PCA maximises raw variance, and income's variance is millions of times larger. PC1 just points along income. Standardise first (PCA on the correlation matrix) when units differ."
   - q: "Why might the first few principal components be useless for a classification task?"
     options: ["PCA ignores the labels: the direction separating the classes may have low variance", "Principal components are always correlated", "PCA only works on images", "PCA removes the mean, which carries the class information"]
     answer: 0
     why: "PCA is unsupervised; it keeps high-variance directions whatever their link to the target. A low-variance direction can be exactly what separates the classes. Compare with a supervised method or validate the downstream model."
   - q: "Your data lies on a circle (a ring) in 2-D. What does PCA do?"
-    options: ["It finds two components of roughly equal variance and cannot unroll the ring", "It recovers the angle around the ring as PC1", "It finds 90 % of variance in PC1", "It fails to run"]
-    answer: 0
+    options: ["It recovers the angle around the ring as PC1", "It puts about 90 % of the variance in PC1", "It finds two components of roughly equal variance and cannot unroll the ring", "It fails to run"]
+    answer: 2
     why: "PCA can only rotate the axes. A ring has about the same spread in every direction, so the eigenvalues are nearly equal and no straight line captures the angle. Non-linear methods (kernel PCA, UMAP) are needed."
 bigO:
   - { op: "covariance matrix", avg: "O(n · d²)", note: "n rows, d features" }
@@ -79,7 +79,7 @@ Principal component analysis (PCA) finds a new set of axes for your data. The ax
 
 ### The SVD route
 
-In practice nobody forms C. Take the **singular value decomposition** of the centred data, X_c = U S Vᵀ. The rows of Vᵀ are the principal directions, the scores are U S, and the variance along component i is sᵢ² / (n − 1). This is more accurate numerically (forming XᵀX squares the condition number) and, with randomised SVD, much faster when you only need the top k components. scikit-learn's `PCA` uses SVD.
+In practice nobody forms C. Take the **singular value decomposition** of the centred data, X_c = U S Vᵀ. The rows of Vᵀ are the principal directions, the scores are U S, and the variance along component i is sᵢ² / (n − 1). This is more accurate numerically (forming XᵀX squares the condition number) and, with randomised SVD, much faster when you only need the top k components. Library PCA routines use the SVD for exactly these reasons.
 
 ## Worked example
 
@@ -115,12 +115,14 @@ Check: the PC1 scores have variance (4.5 + 4.5 + 0.5 + 0.5 + 8) / 4 = **4.5** = 
 
 ## Choosing the number of components
 
-- **Cumulative explained variance:** keep the smallest k reaching a target such as 90 % or 95 %. On scikit-learn's 8×8 digit images, 29 of 64 components keep 95 % of the pixel variance.
+- **Cumulative explained variance:** keep the smallest k reaching a target such as 90 % or 95 %. On the classic 8×8 handwritten-digit images (1,797 images, 64 pixels each), 29 of 64 components keep 95 % of the pixel variance.
 - **Scree plot:** plot eigenvalues in order and look for the elbow where they flatten.
 - **Downstream validation:** if PCA feeds a model, treat k as a hyperparameter and pick it by cross-validation.
 - **Visualisation:** k = 2 or 3, accepting whatever fraction that keeps.
 
-## In code
+## Implement it in Python
+
+PCA is a few lines of linear algebra (centre, then an eigen-decomposition or SVD), available in any language with a matrix library; here it is in Python with NumPy, then with scikit-learn.
 
 ```python
 import numpy as np
@@ -151,12 +153,12 @@ p95 = PCA(n_components=0.95).fit(Xd)
 print(p95.n_components_)                      # 29
 ```
 
-The ± in the comments is real: an eigenvector and its negative are equally valid, so different libraries (or versions) may flip a component's sign.
+The ± in the comments is real: an eigenvector and its negative are equally valid, so different libraries (or versions) may flip a component's sign. scikit-learn's `PCA` centres the data itself and uses the SVD; put it inside a `Pipeline` after the scaler so cross-validation refits both on each training fold.
 
 ## Edge cases and pitfalls
 
 - **Scale.** PCA maximises raw variance, so units decide the answer. In the example, recording x₂ in centimetres instead of metres (×100) makes PC1 point almost exactly along x₂ and claim 99.996 % of the variance. Standardise when units differ; this is the same as PCA on the correlation matrix. Leave features unscaled when they share a unit and their spread is meaningful, as with pixel intensities.
-- **Leakage.** The mean, scale and components are learned parameters. Fit PCA on the training set only, inside a `Pipeline`.
+- **Leakage.** The mean, scale and components are learned parameters. Fit PCA on the training set only (refit inside each cross-validation fold), then apply it unchanged to validation and test data.
 - **Variance is not relevance.** PCA never sees the target. A low-variance direction can be the one that separates the classes, and dropping it hurts. Validate the downstream model, or use a supervised method such as linear discriminant analysis or partial least squares.
 - **Linear only.** PCA can only rotate and drop axes. Curved structure (rings, spirals, a rolled-up sheet) needs kernel PCA, autoencoders, or t-SNE / UMAP for visualisation.
 - **Outliers** inflate variance in their direction and can hijack PC1. Use robust scaling or robust PCA.

@@ -24,7 +24,7 @@ story:
 keyIdeas:
   - "**Lloyd's algorithm**: assign each point to its nearest centroid, move each centroid to its cluster mean, repeat until assignments stop changing."
   - "**Inertia** = Σ squared distance to the assigned centroid. Each step can only lower it, so the algorithm always stops, but often at a **local** minimum."
-  - "**k-means++** seeding (probability ∝ D²) plus several restarts (`n_init`) avoids most bad local minima."
+  - "**k-means++** seeding (probability ∝ D²) plus several restarts (keep the lowest inertia) avoids most bad local minima."
   - "**Choose k** with the elbow of inertia vs k, the silhouette score, or the downstream use. Inertia alone always prefers more clusters."
   - "Assumes **round, similar-sized clusters in scaled features**. Scale first; use DBSCAN, Gaussian mixtures or spectral clustering for other shapes."
 quiz:
@@ -33,16 +33,16 @@ quiz:
     answer: 0
     why: "For a fixed set of points, Σ‖x − c‖² is minimised exactly at c = mean. That is why the update step can only lower inertia."
   - q: "Points (0, 0), (2, 0) and (10, 0) are in one cluster. Where does the centroid move?"
-    options: ["(4, 0)", "(2, 0)", "(5, 0)", "(10, 0)"]
-    answer: 0
+    options: ["(2, 0)", "(5, 0)", "(4, 0)", "(10, 0)"]
+    answer: 2
     why: "The mean is ((0 + 2 + 10) / 3, 0) = (4, 0). Note how the single far point drags it: k-means is sensitive to outliers."
   - q: "Inertia for k = 1…6 is 900, 400, 160, 140, 125, 115. Which k does the elbow method suggest?"
-    options: ["3", "1", "6", "2"]
-    answer: 0
+    options: ["2", "3", "6", "1"]
+    answer: 1
     why: "The drops are 500, 240, then only 20, 15, 10. The big gains stop after k = 3, so that is the elbow. Picking the minimum inertia would always choose the largest k."
   - q: "Two features: age (20–70) and income (£20k–£200k), unscaled. What will k-means do?"
-    options: ["Cluster almost entirely by income", "Cluster almost entirely by age", "Weight both equally", "Refuse to run"]
-    answer: 0
+    options: ["Cluster almost entirely by age", "Weight both equally", "Cluster almost entirely by income", "Refuse to run"]
+    answer: 2
     why: "Squared Euclidean distance is dominated by the feature with the largest numeric spread. Standardise first so each feature contributes on a comparable scale."
 bigO:
   - { op: "one iteration (assign + update)", avg: "O(n · k · d)", note: "n points, k centroids, d features" }
@@ -124,9 +124,11 @@ Random starts can put two centroids in one true cluster, as in the example, and 
 2. For every point, compute D(x), the distance to the nearest centroid chosen so far.
 3. Pick the next centroid at random with probability proportional to **D(x)²**. Repeat until you have k.
 
-In the example, if the first pick is (1, 1), the squared distances are 4, 4, 41, 74 and 72, a total of 195. The next centroid comes from the upper-right group with probability (41 + 74 + 72) / 195 ≈ **0.96**. Arthur and Vassilvitskii (2007) proved the expected inertia after k-means++ seeding is within a factor O(log k) of the optimum. scikit-learn uses k-means++ by default and, since version 1.4, runs it once (`n_init="auto"`); set `n_init=10` to keep the best of ten runs.
+In the example, if the first pick is (1, 1), the squared distances are 4, 4, 41, 74 and 72, a total of 195. The next centroid comes from the upper-right group with probability (41 + 74 + 72) / 195 ≈ **0.96**. Arthur and Vassilvitskii (2007) proved the expected inertia after k-means++ seeding is within a factor O(log k) of the optimum. It is still random, so in practice you run the whole algorithm several times (say 10) from different seeds and keep the run with the lowest inertia.
 
-## In code
+## Implement it in Python
+
+Lloyd's algorithm is a dozen lines of array arithmetic in any language; here it is in Python with NumPy, then the same thing through scikit-learn.
 
 ```python
 import numpy as np
@@ -147,7 +149,7 @@ def lloyd(X, C, max_iter=100):
         C = newC
 
 C, labels = lloyd(X, X[[0, 1]].copy())        # start on (1,1) and (3,1): 36.75, 9.33, 9.33
-print(C)                                      # [[1.67 1.67] [7. 6.]]
+print(C.round(2))                             # [[1.67 1.67] [7. 6.]]
 
 for k in range(1, 6):                         # elbow: 80.17, 9.33, 6.0, 3.0, 1.0
     km = KMeans(n_clusters=k, n_init=10, random_state=0).fit(X)
@@ -159,7 +161,7 @@ pred = KMeans(n_clusters=2, n_init=10, random_state=0).fit_predict(Xc)
 print(adjusted_rand_score(yc, pred))          # ≈ 0: k-means cuts the rings in half
 ```
 
-The empty-cluster case (a centroid that wins no points) is ignored in this sketch; libraries re-seed such a centroid, typically at a far-away point.
+The empty-cluster case (a centroid that wins no points) is ignored in this sketch; libraries re-seed such a centroid, typically at a far-away point. In scikit-learn, k-means++ is the default `init`; since version 1.4 `n_init="auto"` runs it only once, so pass `n_init=10` to keep the best of ten runs. `MiniBatchKMeans` is the mini-batch variant for millions of rows.
 
 ## Edge cases and pitfalls
 
@@ -173,7 +175,7 @@ The empty-cluster case (a centroid that wins no points) is ignored in this sketc
 
 ## When to use it
 
-Use k-means when you want a fast, simple partition of numeric data into a known or guessable number of compact groups: customer segmentation, colour quantisation, vector quantisation and codebooks, initialising Gaussian mixtures, or a quick look at structure. `MiniBatchKMeans` handles millions of rows by updating centroids from small random batches. Prefer hierarchical clustering when you want a tree of nested groups, DBSCAN when clusters have arbitrary shapes or you need noise detection, and Gaussian mixtures when you want soft (probabilistic) membership.
+Use k-means when you want a fast, simple partition of numeric data into a known or guessable number of compact groups: customer segmentation, colour quantisation, vector quantisation and codebooks, initialising Gaussian mixtures, or a quick look at structure. Mini-batch k-means handles millions of rows by updating centroids from small random batches. Prefer hierarchical clustering when you want a tree of nested groups, DBSCAN when clusters have arbitrary shapes or you need noise detection, and Gaussian mixtures when you want soft (probabilistic) membership.
 
 ## In the interview
 

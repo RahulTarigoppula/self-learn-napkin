@@ -42,11 +42,11 @@ export default (d) => {
   });
   d.group(() => {
     // tread 3 = (135, 140), tread 4 = (169, 110), tread 5 = (203, 80)
-    d.dot(135, 132, 8, { pen: 'violet' });
-    d.dot(171, 102, 8, { pen: 'blue' });
-    d.arrow(175, 97, 204, 72, { pen: 'blue', bend: -8, rough: 0.6, headSize: 8 });
+    d.circle(135, 132, 8, { pen: 'violet', fill: 'violet', single: true, rough: 0.4 });
+    d.circle(171, 102, 8, { pen: 'blue', fill: 'blue', single: true, rough: 0.4 });
+    d.arrow(175, 97, 204, 72, { pen: 'blue', bend: -8, rough: 0.6, single: true, headSize: 8 });
     d.text(222, 92, '+1', { pen: 'blue', size: 15, bold: true, anchor: 'start' });
-    d.arrow(131, 126, 196, 68, { pen: 'violet', bend: -30, rough: 0.6, headSize: 8 });
+    d.arrow(131, 126, 196, 68, { pen: 'violet', bend: -30, rough: 0.6, single: true, headSize: 8 });
     d.text(116, 84, '+2', { pen: 'violet', size: 15, bold: true });
   });
   d.text(16, 262, 'ways(n) =\nways(n−1) + ways(n−2)', { pen: 'ink', size: 15, anchor: 'start' });
@@ -54,7 +54,7 @@ export default (d) => {
   d.step('Recurse: the call tree');
   d.group(() => {
     for (const [id, t] of Object.entries(T))
-      if (t.p) d.line(T[t.p].x, T[t.p].y + EH / 2, t.x, t.y - EH / 2, { pen: 'muted', thin: true });
+      if (t.p) d.line(T[t.p].x, T[t.p].y + EH / 2, t.x, t.y - EH / 2, { pen: 'muted', thin: true, single: true });
   });
   d.group(() => {
     for (const id of Object.keys(T)) tnode(d, id);

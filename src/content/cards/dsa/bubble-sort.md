@@ -41,7 +41,7 @@ bigO:
   - { op: "compare", best: "O(n)", avg: "O(n²)", worst: "O(n²)", note: "best case needs the early-exit flag" }
   - { op: "swap",    best: "0",    avg: "O(n²)", worst: "O(n²)" }
   - { op: "space",   avg: "O(1)",  note: "in place, stable" }
-related: [dsa/big-o-basics]
+related: [dsa/insertion-sort, dsa/sorting-overview, dsa/big-o-basics]
 prereqs: [dsa/arrays-and-pointers]
 griddle: bubble-sort
 special: true
@@ -90,7 +90,9 @@ Total: **25 comparisons and 14 swaps**. Pass 4 actually finished the job, but th
 
 An **inversion** is a pair of positions i < j with a[i] > a[j]. Swapping two out-of-order neighbours fixes exactly that one pair and leaves every other pair's order unchanged, so each swap removes exactly one inversion. A sorted array has none, so the number of swaps is exactly the number of inversions you started with. For our array: 5 is inverted with 3, 1, 2, 4 (four pairs); 3 with 1, 2 (two); 8 with 1, 2, 7, 4 (four); 9 with 2, 7, 4 (three); 7 with 4 (one). 4 + 2 + 4 + 3 + 1 = 14.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here it is in Python, with the shrinking boundary and the early-exit flag.
 
 ```python
 def bubble_sort(a):
@@ -125,7 +127,7 @@ print(bubble_sort([5, 3, 8, 1, 9, 2, 7, 4]))   # [1, 2, 3, 4, 5, 7, 8, 9]
 
 ## Trade-offs
 
-Bubble sort is easy to reason about and stable, and that is all. **Insertion sort** is also O(n²) in the worst case and O(n) on sorted input, but it shifts elements instead of swapping them, so it does fewer writes and is usually faster; real libraries use it for very short runs. For anything non-trivial, use the language's built-in sort (Timsort in Python and Java for objects: O(n log n) worst case, stable).
+Bubble sort is easy to reason about and stable, and that is all. **Insertion sort** is also O(n²) in the worst case and O(n) on sorted input, but it shifts elements instead of swapping them, so it does fewer writes and is usually faster; real libraries use it for very short runs. For anything non-trivial, use the language's built-in sort (for example Timsort in Python and in Java for objects, or introsort in C++: O(n log n) worst case).
 
 ## In the interview
 

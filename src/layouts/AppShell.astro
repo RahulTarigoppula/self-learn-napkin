@@ -123,6 +123,7 @@ const tracks = (await getCollection('tracks')).sort(
   }
   .main {
     view-transition-name: main;
+    container: main / inline-size;
     padding-top: calc(var(--topbar-h) + var(--safe-top));
     padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + var(--space-8));
     min-width: 0;

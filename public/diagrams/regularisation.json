@@ -2,39 +2,39 @@
   "name": "regularisation",
   "width": 520,
   "height": 420,
-  "elements": 15,
+  "elements": 16,
   "steps": [
     {
       "index": 0,
       "caption": "Degree 9, no penalty: it wiggles",
       "firstElement": 0,
-      "lastElement": 2
+      "lastElement": 3
     },
     {
       "index": 1,
       "caption": "A small λ: smooth and close to the truth",
-      "firstElement": 3,
-      "lastElement": 4
+      "firstElement": 4,
+      "lastElement": 5
     },
     {
       "index": 2,
       "caption": "Too much λ: it underfits",
-      "firstElement": 5,
-      "lastElement": 6
+      "firstElement": 6,
+      "lastElement": 7
     },
     {
       "index": 3,
       "caption": "L2 (ridge): a circle, weights shrink",
-      "firstElement": 7,
-      "lastElement": 10
+      "firstElement": 8,
+      "lastElement": 11
     },
     {
       "index": 4,
       "caption": "L1 (lasso): a diamond, a weight hits 0",
-      "firstElement": 11,
-      "lastElement": 14
+      "firstElement": 12,
+      "lastElement": 15
     }
   ],
-  "hash": "55fe952185711aec758de75cbe428657fc4a1130",
+  "hash": "8025d680676034d5c9b6e89c2e61b3d73416257c",
   "title": "Ridge regularisation taming a degree-9 polynomial, and the L2 circle vs L1 diamond constraint pictures"
 }

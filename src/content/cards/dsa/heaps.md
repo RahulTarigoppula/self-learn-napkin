@@ -9,7 +9,7 @@ analogy: "A hospital emergency room: patients are not seen in arrival order, and
 diagram: heaps
 story:
   - title: A tree with no pointers
-    text: "Fill a binary tree level by level, left to right, with no gaps: a complete tree. Then it fits in an array with no pointers. The children of index i are at 2i+1 and 2i+2, and its parent is at (i−1)//2. Node 4 at index 1 has children 9 and 7 at indices 3 and 4."
+    text: "Fill a binary tree level by level, left to right, with no gaps: a complete tree. Then it fits in an array with no pointers. The children of index i are at 2i+1 and 2i+2, and its parent is at ⌊(i−1)/2⌋. Node 4 at index 1 has children 9 and 7 at indices 3 and 4."
   - title: "The heap property"
     text: "In a min-heap, every parent is ≤ its children. So the smallest item, 2, must be at the root, index 0, and peeking at it is O(1). The array is not sorted: 9 sits at index 3, before 7, 8 and 5. A heap keeps just enough order to find the minimum fast."
   - title: "Push 1: append at the end"
@@ -19,7 +19,7 @@ story:
   - title: "Pop: last to the root, sift down"
     text: "Starting again from the original heap, pop removes the root 2. The last item, 5, moves into the root slot, then sinks: it swaps with its smaller child 3, and stops because its new child 8 is bigger. Result: [3, 4, 5, 9, 7, 8]. Also O(log n)."
 keyIdeas:
-  - "**Complete tree in an array**: children of i at **2i+1, 2i+2**, parent at **(i−1)//2**. No pointers, cache-friendly."
+  - "**Complete tree in an array**: children of i at **2i+1, 2i+2**, parent at **⌊(i−1)/2⌋**. No pointers, cache-friendly."
   - "**Heap property**: parent ≤ children (min-heap) or ≥ (max-heap). The root is the min (or max); the rest is only partly ordered."
   - "**push = append + sift up**, **pop = move last to root + sift down**: both O(log n). Peek is O(1)."
   - "**Heapify** builds a heap from n items in **O(n)**, not O(n log n), by sifting down from the last parent backwards."
@@ -28,7 +28,7 @@ quiz:
   - q: "In a heap stored in an array (0-based), where are the children of index 5?"
     options: ["Indices 10 and 11", "Indices 11 and 12", "Indices 6 and 7", "Index 2"]
     answer: 1
-    why: "Children are at 2i+1 and 2i+2: 2·5+1 = 11 and 2·5+2 = 12. Index 2 is its parent, (5−1)//2."
+    why: "Children are at 2i+1 and 2i+2: 2·5+1 = 11 and 2·5+2 = 12. Index 2 is its parent, ⌊(5−1)/2⌋."
   - q: "You need the 100 largest values from a stream of 10 million numbers. Which is best?"
     options: ["Sort everything: O(n log n)", "A max-heap of all n items, pop 100 times", "A min-heap of size 100, replacing its root when a bigger value arrives", "A hash set"]
     answer: 2
@@ -72,7 +72,7 @@ Two obvious designs are each half fast. An unsorted list inserts in O(1) but nee
 
 ## How it works
 
-**Shape: a complete binary tree.** Every level is full except possibly the last, which is filled from the left. Number the nodes level by level, left to right, starting at 0, and the tree packs into an array with no gaps and no pointers. The node at index i has its **left child at 2i+1**, its **right child at 2i+2**, and its **parent at (i−1)//2** (integer division). A complete tree with n nodes has height ⌊log₂ n⌋, so every root-to-leaf path is short.
+**Shape: a complete binary tree.** Every level is full except possibly the last, which is filled from the left. Number the nodes level by level, left to right, starting at 0, and the tree packs into an array with no gaps and no pointers. The node at index i has its **left child at 2i+1**, its **right child at 2i+2**, and its **parent at ⌊(i−1)/2⌋** (integer division, rounding down). A complete tree with n nodes has height ⌊log₂ n⌋, so every root-to-leaf path is short.
 
 **Order: the heap property.** In a **min-heap**, every node's value is ≤ its children's values. Following parents upward, values never increase, so the root holds the minimum. A **max-heap** flips the comparison. Nothing is promised about siblings or cousins: the array is only partly sorted, which is exactly why it is cheap to maintain.
 
@@ -80,7 +80,7 @@ Two obvious designs are each half fast. An unsorted list inserts in O(1) but nee
 
 **Pop (sift down).** The minimum is at index 0. Remove the *last* item (keeping the tree complete) and put it in the root slot. It is probably too big for the root, so compare it with its children and swap with the **smaller** child, which is the only one that can legally become the parent of the other. Repeat until both children are bigger, or it reaches a leaf. Again O(log n).
 
-**Heapify (build a heap in O(n)).** Given n items in any order, call sift-down on every non-leaf, from index n//2 − 1 back to 0. Leaves (half the array) are already one-element heaps. A node h levels above the bottom sifts down at most h steps, and there are only about n/2^(h+1) such nodes. The total, n·(1/4 + 2/8 + 3/16 + …), is less than n. Pushing the items one by one would cost O(n log n).
+**Heapify (build a heap in O(n)).** Given n items in any order, call sift-down on every non-leaf, from index ⌊n/2⌋ − 1 back to 0. Leaves (half the array) are already one-element heaps. A node h levels above the bottom sifts down at most h steps, and there are only about n/2^(h+1) such nodes. The total, n·(1/4 + 2/8 + 3/16 + …), is less than n. Pushing the items one by one would cost O(n log n).
 
 ## Worked example
 
@@ -90,7 +90,7 @@ Start from the min-heap `[2, 4, 3, 9, 7, 8, 5]`.
 
 **Pop from the original heap.** Return 2. Move the last item, 5, to index 0: `[5, 4, 3, 9, 7, 8]`. Its children are 4 and 3; the smaller is 3 at index 2, and 5 > 3, so swap: `[3, 4, 5, 9, 7, 8]`. Index 2's children would be at 5 and 6; only index 5 exists, holding 8, and 5 < 8, so stop.
 
-**Heapify `[9, 7, 8, 5, 2, 4, 3]`.** The last parent is index 7//2 − 1 = 2.
+**Heapify `[9, 7, 8, 5, 2, 4, 3]`.** The last parent is index ⌊7/2⌋ − 1 = 2.
 
 | Sift down at | Swaps | Array afterwards |
 |---|---|---|

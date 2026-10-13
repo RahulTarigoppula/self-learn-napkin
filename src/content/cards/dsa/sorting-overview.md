@@ -37,7 +37,7 @@ quiz:
     options: ["It always picks the median as pivot", "It checks if the input is sorted first", "Introsort switches to heapsort once recursion depth exceeds about 2·log₂ n", "It uses counting sort for integers"]
     answer: 2
     why: "Introsort tracks recursion depth. Bad pivots make the recursion deep, so when it passes a limit of about 2·log₂ n the current range is finished with heapsort, which is O(n log n) in the worst case."
-  - q: "How many comparisons does Python's sorted() make on an already-sorted list of 1,000 numbers?"
+  - q: "Timsort is the built-in sort in Python, in Java (for objects) and in V8. How many comparisons does it make on an already-sorted list of 1,000 numbers?"
     options: ["999", "About 8,530", "About 10,000", "499,500"]
     answer: 0
     why: "Timsort first scans for runs of already-ordered values. The whole list is one run, found with 999 neighbour comparisons, and there is nothing left to merge."
@@ -120,9 +120,9 @@ Any sort can be made stable by sorting (key, original index) pairs instead of ba
 - **Introsort** (typical C++ `std::sort`). Quicksort with median-of-3 pivots, but it counts recursion depth: past about 2·log₂ n it finishes that range with **heapsort**, which caps the worst case at O(n log n). Ranges below about 16 elements are left for a final **insertion sort** pass. Not stable; `std::stable_sort` is a merge sort.
 - **Dual-pivot quicksort** for Java's primitive arrays (stability is meaningless for identical ints) and **pdqsort**, an introsort descendant, in Go since 1.19.
 
-## In code
+## Implement it in Python
 
-Two small demos: stability makes multi-key sorting work, and Timsort's comparison count is close to the theoretical floor.
+The same experiments work in any language with a built-in sort; here they are in Python. Two small demos: stability makes multi-key sorting work, and Timsort's comparison count is close to the theoretical floor.
 
 ```python
 import math, random

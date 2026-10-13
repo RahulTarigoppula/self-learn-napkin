@@ -21,7 +21,7 @@ story:
   - title: Nearly sorted is nearly free
     text: "On [1,2,3,5,4,6,7,8] only one pair is out of order, so the whole sort takes 1 shift and 8 comparisons. The cost is O(n + inversions): linear on nearly sorted data, O(n²) on reversed data."
 keyIdeas:
-  - "**Invariant**: before step i, `a[:i]` is sorted. Insert `a[i]` by shifting larger values right."
+  - "**Invariant**: before step i, `a[0..i−1]` is sorted. Insert `a[i]` by shifting the larger values in it one slot right."
   - "**Shifts = inversions**: total time is Θ(n + I), where I is the number of out-of-order pairs. Sorted input is O(n); reversed input is n(n−1)/2 shifts."
   - "**Stable, in place, online**: equal keys never pass each other (strict `>`), O(1) extra memory, and it can sort values as they arrive."
   - "**Fastest choice for tiny arrays**: low overhead and cache-friendly, which is why Timsort and introsort use it below roughly 16–64 elements."
@@ -98,7 +98,9 @@ Totals: **14 shifts and 19 comparisons**. The comparisons are one per shift plus
 
 An **inversion** is a pair of positions i < j with a[i] > a[j]. When the key moves left past a bigger value, exactly that one pair gets fixed and no other pair changes order. A sorted array has no inversions, so the total number of shifts equals the number of inversions in the input. Here: 5 is bigger than four later values (3, 1, 2, 4), 3 than two, 8 than four, 9 than three, 7 than one: 4 + 2 + 4 + 3 + 1 = 14.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here it is in Python.
 
 ```python
 def insertion_sort(a):
@@ -128,7 +130,7 @@ print(insertion_sort([5, 3, 8, 1, 9, 2, 7, 4]))   # [1, 2, 3, 4, 5, 7, 8, 9]
 Insertion sort is O(n²), yet every major library still uses it:
 
 - **Tiny inputs**: for n around 10–50, n² is small, and the inner loop is just a compare and a copy over contiguous memory. Merge sort's recursion, buffers and function calls cost more than they save.
-- **Timsort** extends every natural run shorter than a minimum length (about 32–64) with **binary insertion sort**, then merges runs. Binary search cuts comparisons to O(log i) per key, which matters when comparing Python objects is expensive, but the shifts are still O(i).
+- **Timsort** extends every natural run shorter than a minimum length (about 32–64) with **binary insertion sort**, then merges runs. Binary search cuts comparisons to O(log i) per key, which matters when comparing two keys is expensive (strings, or objects with custom comparison), but the shifts are still O(i).
 - **Introsort** leaves ranges below about 16 elements unsorted during quicksort, then runs one insertion sort pass over the nearly sorted array, where it is close to linear.
 
 It is also **online**: it can sort values as they arrive, keeping the prefix sorted at every moment.
@@ -136,7 +138,7 @@ It is also **online**: it can sort values as they arrive, keeping the prefix sor
 ## Edge cases and pitfalls
 
 - **`>=` instead of `>`** still sorts, but moves equal keys past each other and loses stability.
-- **Check `j >= 0` first** in the loop condition; otherwise `a[-1]` in Python silently reads the last element.
+- **Check `j ≥ 0` first** in the loop condition. Otherwise you read `a[−1]`: most languages crash, and Python silently reads the last element instead.
 - **Linked lists**: insertion sort works, but you must scan from the head to find the spot, because you cannot walk backwards in a singly linked list.
 
 ## In the interview

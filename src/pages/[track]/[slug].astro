@@ -10,7 +10,7 @@ import Quiz from '../../components/napkin/Quiz.astro';
 import Story from '../../components/napkin/Story.astro';
 import Griddle from '../../features/griddle/Griddle';
 import AppShell from '../../layouts/AppShell.astro';
-import { cardHref, href } from '../../lib/base';
+import { cardHref, href, PUBLIC_URL } from '../../lib/base';
 import {
   type Card,
   cardById,
@@ -74,6 +74,9 @@ const flashcardCount = d.flashcards.length;
           <a class="btn" href={href(`review/?topic=${encodeURIComponent(id)}`)}>
             <Icon name="cards" size={17} /> Quiz me <span class="muted">({flashcardCount})</span>
           </a>
+          <button class="btn btn--ghost" type="button" data-share={`${PUBLIC_URL}${id}/`} data-title={d.title} data-text={d.tldr}>
+            <Icon name="share" size={17} /> Share
+          </button>
         </div>
         {
           prereqs.length > 0 && (
@@ -280,6 +283,26 @@ const flashcardCount = d.flashcards.length;
     } catch (err) {
       console.error(err);
       toast("Couldn't save that — try again.", { danger: true });
+    }
+  });
+
+  // Share the public web link of this napkin (works from the APK too).
+  document.querySelector<HTMLButtonElement>('[data-share]')?.addEventListener('click', async (e) => {
+    const b = e.currentTarget as HTMLButtonElement;
+    const url = b.dataset.share ?? location.href;
+    const title = `${b.dataset.title} · Napkin`;
+    try {
+      if (import.meta.env.PUBLIC_PLATFORM === 'android') {
+        const { Share } = await import('@capacitor/share');
+        await Share.share({ title, text: b.dataset.text, url });
+      } else if (navigator.share) {
+        await navigator.share({ title, text: b.dataset.text, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast('Link copied.');
+      }
+    } catch (err) {
+      if ((err as DOMException).name !== 'AbortError') toast(`Copy this link: ${url}`, { ms: 8000 });
     }
   });
 
@@ -496,7 +519,7 @@ const flashcardCount = d.flashcards.length;
     gap: var(--space-5);
     align-items: start;
   }
-  @media (min-width: 960px) {
+  @container main (min-width: 880px) {
     .cols {
       grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
     }
@@ -545,7 +568,7 @@ const flashcardCount = d.flashcards.length;
     gap: var(--space-5);
     align-items: start;
   }
-  @media (min-width: 1100px) {
+  @container main (min-width: 980px) {
     .deep__grid {
       grid-template-columns: 210px minmax(0, 1fr);
     }
@@ -575,7 +598,7 @@ const flashcardCount = d.flashcards.length;
     color: var(--ink);
     border-left-color: var(--track);
   }
-  @media (max-width: 1099px) {
+  @container main (max-width: 979px) {
     .toc {
       display: none;
     }

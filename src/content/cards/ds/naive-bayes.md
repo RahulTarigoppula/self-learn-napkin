@@ -28,16 +28,16 @@ keyIdeas:
   - "Fast, tiny and data-efficient: a strong baseline for text. Its probabilities are overconfident, so calibrate them if you need real probabilities."
 quiz:
   - q: "Why is the method called 'naive'?"
-    options: ["It assumes features are independent of each other given the class", "It ignores the class priors", "It uses only one feature", "It cannot handle more than two classes"]
-    answer: 0
+    options: ["It ignores the class priors", "It assumes features are independent of each other given the class", "It looks at only one feature at a time when predicting", "It cannot handle more than two classes"]
+    answer: 1
     why: "It factorises P(x | class) as a product over features, which is exact only if features are conditionally independent given the class. Words in real text are not, but the ranking of classes often survives."
-  - q: "Without smoothing, a word that never appeared in any ham training email shows up in a new email. What is P(ham | email)?"
-    options: ["Exactly 0, whatever the other words say", "0.5", "The ham prior", "It is undefined"]
-    answer: 0
+  - q: "Without smoothing, a new email contains a word that appeared in spam training emails but never in a ham one. What is P(ham | email)?"
+    options: ["The ham prior", "0.5", "Exactly 0, whatever the other words say", "Small, but the other words can still outweigh it"]
+    answer: 2
     why: "P(word | ham) = 0, and a product with one zero factor is zero. A single word overrides every other piece of evidence, which is why smoothing is standard."
   - q: "Priors are 0.5 and 0.5. P('prize' | spam) = 0.2 and P('prize' | ham) = 0.05. An email contains only 'prize'. What is P(spam | email)?"
-    options: ["0.8", "0.2", "0.5", "0.95"]
-    answer: 0
+    options: ["0.2", "0.5", "0.95", "0.8"]
+    answer: 3
     why: "Spam: 0.5 × 0.2 = 0.1. Ham: 0.5 × 0.05 = 0.025. Normalise: 0.1 / (0.1 + 0.025) = 0.8."
   - q: "You accidentally include the same feature twice. How does naive Bayes react?"
     options: ["It counts that evidence twice and becomes more overconfident", "Nothing changes", "It ignores the copy automatically", "Training fails"]
@@ -130,7 +130,9 @@ A side effect: the log-score is log P(c) + Σᵢ countᵢ · log P(wordᵢ | c),
 - **Low variance.** It has only k·d + k parameters, each estimated from simple counts. With little data it often beats more flexible models, which overfit. Ng and Jordan (2001) showed it approaches its best error with fewer examples than logistic regression, which usually wins once data is plentiful.
 - **Many weak clues add up.** Spam has hundreds of mildly informative words, which is exactly the setting where summing log-evidence works.
 
-## In code
+## Implement it in Python
+
+The method is just counting and adding logs, so it works the same in any language or library; Python with NumPy and scikit-learn is shown here.
 
 ```python
 import numpy as np
@@ -164,19 +166,21 @@ Xi, yi = load_iris(return_X_y=True)
 print(cross_val_score(GaussianNB(), Xi, yi, cv=5).mean())   # ≈ 0.953
 ```
 
+In scikit-learn, `CountVectorizer` silently drops words it did not see during `fit`, `MultinomialNB.partial_fit` adds new counts for incremental training, and `CalibratedClassifierCV` wraps the model to recalibrate its probabilities.
+
 ## Edge cases and pitfalls
 
-- **Overconfident probabilities.** Correlated features ("free", "FREE", "free!!!") are counted as independent evidence, so scores pile up and probabilities crowd towards 0 and 1. Rank by them freely, but calibrate (`CalibratedClassifierCV`) before using them as real probabilities or thresholds.
+- **Overconfident probabilities.** Correlated features ("free", "FREE", "free!!!") are counted as independent evidence, so scores pile up and probabilities crowd towards 0 and 1. Rank by them freely, but recalibrate them (Platt scaling or isotonic regression on held-out data) before using them as real probabilities or thresholds.
 - **Duplicated or derived features** double-count evidence. Remove near-duplicates.
 - **Smoothing strength α** is a hyperparameter. α = 1 is Laplace; smaller values (Lidstone, e.g. 0.1) often work better with large vocabularies. Tune it by cross-validation.
-- **Words never seen in training** are simply dropped by the vectoriser at prediction time; they carry no evidence either way.
+- **Words never seen in training** are usually ignored at prediction time: they are not in the vocabulary, so they have no estimated probability and carry no evidence either way.
 - **Gaussian NB on skewed features** fits a bell curve to something that is not one. Log-transform heavy-tailed features first.
 - **Multinomial NB needs non-negative features**: counts or tf-idf weights, not standardised values.
 - **Priors matter under imbalance.** With 1 % spam the prior pushes towards ham. That is correct for accuracy, but adjust the threshold if recall on spam matters more.
 
 ## When to use it
 
-Use it as a **first baseline for text** (spam, sentiment, topic, language detection), when you have **little labelled data**, when you need **training and prediction in microseconds** or incremental updates (`partial_fit` just adds counts), and when features really are close to independent. Prefer logistic regression, gradient-boosted trees or neural models when you have plenty of data and correlated features, or need well-calibrated probabilities.
+Use it as a **first baseline for text** (spam, sentiment, topic, language detection), when you have **little labelled data**, when you need **training and prediction in microseconds** or incremental updates (new data just adds to the counts), and when features really are close to independent. Prefer logistic regression, gradient-boosted trees or neural models when you have plenty of data and correlated features, or need well-calibrated probabilities.
 
 ## In the interview
 

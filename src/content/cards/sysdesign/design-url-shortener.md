@@ -51,8 +51,8 @@ bigO:
   - { op: "key space, 7 base62 chars", avg: "62^7 ≈ 3.5 trillion", note: "62^6 ≈ 57 billion is too small" }
   - { op: "cache for hot links", avg: "~100 GB", note: "20 % of a day's 1 B reads × 500 B" }
 bigOTitle: "Key numbers"
-related: [sysdesign/unique-id-generation, sysdesign/caching, sysdesign/sharding, sysdesign/message-queues]
-prereqs: [sysdesign/back-of-envelope, sysdesign/api-design, sysdesign/load-balancing]
+related: [sysdesign/consistent-hashing, sysdesign/rate-limiting, sysdesign/cache-eviction, sysdesign/design-news-feed]
+prereqs: [sysdesign/back-of-envelope, sysdesign/api-design, sysdesign/load-balancing, sysdesign/unique-id-generation, sysdesign/caching, sysdesign/sharding, sysdesign/message-queues]
 flashcards:
   - kind: qa
     q: "Why does a URL shortener usually answer with 302 rather than 301?"
@@ -146,7 +146,7 @@ Options 1 (with ranges) and 3 are the strong answers; mention the trade-offs of 
 
 **301 or 302?** A `301 Moved Permanently` may be cached by the browser indefinitely: the next click on the same device goes straight to the destination without touching you. That saves load but you lose the click, cannot change the target and cannot enforce expiry. A `302 Found` is not cached by default, so every click passes through. When analytics are part of the product, 302 is the usual choice; a 301 with a short `Cache-Control: max-age` is a middle ground that saves some traffic.
 
-**Caching.** Reads are 10× writes and heavily skewed toward a few viral links. Put a cache-aside in-memory tier in front of the database, as in **Caching**, with LRU eviction (see **Cache Eviction**). Mappings never change, so invalidation only happens on delete or expiry; a TTL of a day bounds any leftover staleness. A miss for a key that does not exist should also be cached briefly, otherwise a bot requesting random keys reaches the database every time.
+**Caching.** Reads are 10× writes and heavily skewed toward a few viral links. Put a cache-aside in-memory tier in front of the database, as in **Caching**, with LRU eviction (see **Cache Eviction Policies**). Mappings never change, so invalidation only happens on delete or expiry; a TTL of a day bounds any leftover staleness. A miss for a key that does not exist should also be cached briefly, otherwise a bot requesting random keys reaches the database every time.
 
 **Analytics.** Writing `clicks = clicks + 1` on every redirect would turn 11,600 reads a second into 11,600 writes, with hot rows for viral links. Instead the app publishes a small event `(key, time, country, referrer)` to a queue (see **Message Queues**) and returns the redirect immediately. Workers aggregate events into per-key, per-hour counters. If the queue is briefly unavailable, buffer locally or drop the event: an analytics gap is acceptable, a slow redirect is not.
 

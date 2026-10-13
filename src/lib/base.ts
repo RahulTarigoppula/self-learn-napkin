@@ -3,6 +3,9 @@ export const BASE: string = (import.meta.env.PUBLIC_BASE as string | undefined) 
 export const PLATFORM: string = (import.meta.env.PUBLIC_PLATFORM as string | undefined) ?? 'web';
 export const APP_VERSION: string = (import.meta.env.PUBLIC_APP_VERSION as string | undefined) ?? 'dev';
 
+/** The public web home of Napkin (used for share links, also from inside the APK). */
+export const PUBLIC_URL = 'https://rahultarigoppula.github.io/self-learn-napkin/';
+
 export const joinBase = (base: string, p: string): string => base + p.replace(/^\/+/, '');
 
 /** An asset or data URL: withBase('decks/all.json') → '/self-learn-napkin/decks/all.json'. */

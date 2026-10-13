@@ -70,7 +70,7 @@ export default (d) => {
 
   d.step('Prefix sums: where each key starts');
   d.group(() => cells(d, 138, START, 'orange', 'start'));
-  d.text(296, 153, 'running total\nof the counts', { pen: 'orange', size: 15, anchor: 'start' });
+  d.text(296, 153, 'sum of counts of\nall smaller keys', { pen: 'orange', size: 15, anchor: 'start' });
 
   d.step('Place left to right: equal keys keep order');
   d.group(() => {

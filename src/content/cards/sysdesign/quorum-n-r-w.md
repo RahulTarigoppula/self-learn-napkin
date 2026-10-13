@@ -90,9 +90,9 @@ N = 3, W = 2, R = 2, key `cart:42` at version v1 everywhere.
 
 Try every pair the reader could pick: {R1, R2}, {R1, R3}, {R2, R3}. Each contains R1 or R2, so each contains v2. Now set R = W = 1: the write lands only on R1, the read asks only R3, and the reader returns v1 — a **stale read** — with no error.
 
-## Implement it in Python
+## Sketch it
 
-The idea is language-independent; here it is in Python.
+The idea is language-independent; here is the coordinator's logic as a Python-flavoured sketch (`replicas_for` and `next_version` stand in for your cluster's placement and versioning).
 
 ```python
 def write(key, value, W):

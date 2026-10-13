@@ -50,8 +50,8 @@ bigO:
   - { op: "gateway servers", avg: "~1,000", note: "at ~100 k connections each" }
   - { op: "heartbeats", avg: "~3.3 M/s", note: "100 M ÷ 30 s — absorbed by gateways" }
 bigOTitle: "Key numbers"
-related: [sysdesign/realtime-communication, sysdesign/pub-sub-and-streams, sysdesign/unique-id-generation, sysdesign/design-news-feed]
-prereqs: [sysdesign/back-of-envelope, sysdesign/load-balancing, sysdesign/sql-vs-nosql]
+related: [sysdesign/pub-sub-and-streams, sysdesign/lsm-trees, sysdesign/design-news-feed, sysdesign/design-url-shortener]
+prereqs: [sysdesign/back-of-envelope, sysdesign/api-design, sysdesign/load-balancing, sysdesign/realtime-communication, sysdesign/unique-id-generation, sysdesign/idempotency, sysdesign/sql-vs-nosql]
 flashcards:
   - kind: qa
     q: "How does a chat system know which server to send Bob's message to?"
@@ -101,7 +101,7 @@ What the numbers say: bandwidth is small; the hard parts are **100 M stateful co
 
 ## 3. API
 
-Real-time traffic runs as small JSON or binary frames over the WebSocket (see **Realtime Communication** for WebSockets vs long polling vs server-sent events):
+Real-time traffic runs as small JSON or binary frames over the WebSocket (see **Real-time Communication** for WebSockets vs long polling vs server-sent events):
 
 ```text
 → send      { conv: "A-B", client_id: "c-91f", body: "hi" }
@@ -130,7 +130,7 @@ Users only care about order **within a conversation**, so give each conversation
 
 ## 6. Deep dive: storage, groups and offline sync
 
-**Message store.** The workload is append-heavy (230,000 writes a second), and reads are almost always "the latest N messages of one conversation". A **wide-column store** such as Cassandra or HBase fits: partition key `conversation_id`, clustering (sort) key `seq` descending. One partition read returns a page of history in order, and writes are sequential appends that **LSM Trees** handle well. Very long conversations would make huge partitions, so bucket the partition key by time, e.g. `(conversation_id, month)`. Replicate across nodes (**Replication**) for durability. See **SQL vs NoSQL** for why a single relational database struggles at petabyte scale here.
+**Message store.** The workload is append-heavy (230,000 writes a second), and reads are almost always "the latest N messages of one conversation". A **wide-column store** such as Cassandra or HBase fits: partition key `conversation_id`, clustering (sort) key `seq` descending. One partition read returns a page of history in order, and writes are sequential appends that **LSM-Trees** handle well. Very long conversations would make huge partitions, so bucket the partition key by time, e.g. `(conversation_id, month)`. Replicate across nodes (**Replication**) for durability. See **SQL vs NoSQL** for why a single relational database struggles at petabyte scale here.
 
 **Groups.** Store the message once under the group's conversation, then fan out delivery to each online member's gateway and push notifications to offline ones. With a 500-member cap that is at most 500 deliveries per message. Broadcast channels with millions of readers flip to the pull model from **Design a News Feed**: readers fetch new messages when they open the channel.
 

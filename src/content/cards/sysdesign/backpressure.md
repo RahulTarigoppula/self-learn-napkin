@@ -38,7 +38,7 @@ quiz:
     answer: 1
     why: "Old prices are worthless once a newer one exists, so dropping them loses nothing important. Blocking would make the dashboard ever more stale."
   - q: "Why is rejecting excess requests with 503 often better than queueing them?"
-    options: ["503s are cached", "Queued requests may wait past the client's timeout, so the server does work nobody is waiting for", "It increases throughput above capacity", "It avoids TLS"]
+    options: ["503s are cached", "Queued requests may wait past the client's timeout, so the server does work nobody is waiting for", "It increases throughput above capacity", "Clients never retry after a 503"]
     answer: 1
     why: "A request that waits 15 s behind a backlog is usually abandoned and retried by its client. Failing fast keeps latency low for the work you accept and tells callers to back off."
 bigO:

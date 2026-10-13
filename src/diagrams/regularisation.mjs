@@ -59,7 +59,17 @@ const poly = (w) => (x) => w.reduce((s, c, k) => s + c * x ** k, 0);
 
 const PX = (x) => 44 + 440 * x;
 const PY = (y) => 104 - 41 * y;
-const curvePts = (f) => Array.from({ length: 61 }, (_, i) => [PX(i / 60), PY(f(i / 60))]);
+const curvePts = (f) => Array.from({ length: 41 }, (_, i) => [PX(i / 40), PY(f(i / 40))]);
+
+/** A small filled hexagon: reads as a dot but costs half the bytes of d.dot. */
+const mark = (d, x, y, pen, dia = 9) =>
+  d.poly(
+    Array.from({ length: 6 }, (_, i) => [
+      x + (dia / 2) * Math.cos((i * Math.PI) / 3),
+      y + (dia / 2) * Math.sin((i * Math.PI) / 3),
+    ]),
+    { pen, fill: pen, closed: true, rough: 0.3, single: true },
+  );
 
 // ---------- Bottom panels: loss contours in weight space ----------
 const WS = [1.0, 1.6]; // unregularised optimum
@@ -78,8 +88,8 @@ const loss = ([w1, w2]) => {
 };
 /** Points of the contour loss = c (an ellipse around WS). */
 const contour = (c) =>
-  Array.from({ length: 33 }, (_, i) => {
-    const p = (2 * Math.PI * i) / 32;
+  Array.from({ length: 25 }, (_, i) => {
+    const p = (2 * Math.PI * i) / 24;
     const u = Math.sqrt(c / EA) * Math.cos(p);
     const v = Math.sqrt(c / EB) * Math.sin(p);
     return [WS[0] + C * u - S * v, WS[1] + S * u + C * v];
@@ -113,8 +123,8 @@ const SC = 38; // px per weight unit
 function panel(d, ox, oy, title, pen) {
   const X = ([w1, w2]) => [ox + SC * w1, oy - SC * w2];
   d.group(() => {
-    d.arrow(ox - 1.2 * SC, oy, ox + 3 * SC, oy, { pen: 'muted', thin: true });
-    d.arrow(ox, oy + 1.15 * SC, ox, oy - 3.4 * SC, { pen: 'muted', thin: true });
+    d.arrow(ox - 1.2 * SC, oy, ox + 3 * SC, oy, { pen: 'muted', thin: true, single: true });
+    d.arrow(ox, oy + 1.15 * SC, ox, oy - 3.4 * SC, { pen: 'muted', thin: true, single: true });
     d.text(ox + 3 * SC + 6, oy, 'w₁', { pen: 'muted', size: 15, anchor: 'start' });
     d.text(ox - 10, oy - 3.3 * SC, 'w₂', { pen: 'muted', size: 15, anchor: 'end' });
     d.text(ox + 3.2 * SC, 226, title, { pen, size: 16, bold: true, anchor: 'end' });
@@ -135,23 +145,25 @@ export default (d) => {
   d.step('Degree 9, no penalty: it wiggles');
   d.group(() => {
     d.line(PX(0) - 8, PY(0), PX(1) + 8, PY(0), { pen: 'muted', thin: true });
-    for (let i = 0; i < 10; i++) d.dot(PX(XS[i]), PY(YS[i]), 9, { pen: 'blue', single: true });
+    d.curve(curvePts((x) => Math.sin(2 * Math.PI * x)), { pen: 'muted', dashed: true, single: true });
+    for (let i = 0; i < 10; i++) mark(d, PX(XS[i]), PY(YS[i]), 'blue');
   });
-  d.curve(curvePts(poly(ridge(0))), { pen: 'red', thick: true });
+  d.curve(curvePts(poly(ridge(0))), { pen: 'red', thick: true, single: true });
   d.text(PX(0.35), 182, 'λ = 0: weights up to ≈ 580,000', { pen: 'red', size: 15 });
+  d.text(PX(0.35), 204, 'dashed: the true sine', { pen: 'muted', size: 14 });
 
   d.step('A small λ: smooth and close to the truth');
-  d.curve(curvePts(poly(ridge(1e-3))), { pen: 'green', thick: true });
+  d.curve(curvePts(poly(ridge(1e-3))), { pen: 'green', thick: true, single: true });
   d.text(PX(1) + 6, 26, 'λ = 0.001\njust right', { pen: 'green', size: 15, anchor: 'end' });
 
   d.step('Too much λ: it underfits');
-  d.curve(curvePts(poly(ridge(1))), { pen: 'orange', thick: true });
+  d.curve(curvePts(poly(ridge(1))), { pen: 'orange', thick: true, single: true });
   d.text(PX(0.78), PY(0.4), 'λ = 1: too flat', { pen: 'orange', size: 15 });
 
   d.step('L2 (ridge): a circle, weights shrink');
   {
     const X = panel(d, 66, 358, 'L2 · ridge', 'blue');
-    d.circle(...X([0, 0]), 2 * SC, { pen: 'blue', fill: 'blue' });
+    d.circle(...X([0, 0]), 2 * SC, { pen: 'blue', fill: 'blue', single: true });
     contours(d, X, loss(ridgeBest));
     d.group(() => {
       d.dot(...X(ridgeBest), 11, { pen: 'red' });
@@ -162,7 +174,7 @@ export default (d) => {
   d.step('L1 (lasso): a diamond, a weight hits 0');
   {
     const X = panel(d, 320, 358, 'L1 · lasso', 'violet');
-    d.poly(DIAMOND.map(X), { pen: 'violet', fill: 'violet', closed: true });
+    d.poly(DIAMOND.map(X), { pen: 'violet', fill: 'violet', closed: true, single: true });
     contours(d, X, loss(lassoBest));
     d.group(() => {
       d.dot(...X(lassoBest), 11, { pen: 'red' });

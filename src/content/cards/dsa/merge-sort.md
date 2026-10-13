@@ -43,7 +43,7 @@ quiz:
     why: "Each merge writes into a buffer as large as the two halves; the largest merge needs n slots. The recursion stack adds only O(log n)."
 bigO:
   - { op: "time", best: "O(n log n)", avg: "O(n log n)", worst: "O(n log n)", note: "same on every input" }
-  - { op: "comparisons, n = 8", best: "12", avg: "≈ 15–16", worst: "17", note: "[5,3,8,1,9,2,7,4] hits the worst case" }
+  - { op: "comparisons, n = 8", best: "12", avg: "≈ 15.7", worst: "17", note: "averaged over all 8! orders; [5,3,8,1,9,2,7,4] hits the worst case" }
   - { op: "extra space (array)", avg: "O(n)", note: "merge buffer + O(log n) stack" }
   - { op: "extra space (linked list)", avg: "O(log n)", note: "relink nodes; only the recursion stack" }
 related: [dsa/sorting-overview, dsa/quicksort, dsa/insertion-sort, dsa/recursion]
@@ -100,7 +100,9 @@ Draw the recursion as a tree. The root is the whole array; its two children are 
 
 As a recurrence: T(n) = 2T(n/2) + cn, T(1) = c. Unrolling gives T(n) = cn·log₂ n + cn. Unlike quicksort, the split is always exactly in half, so **no input is slower**: best, average and worst cases are all Θ(n log n).
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here it is in Python, written for clarity rather than speed.
 
 ```python
 def merge_sort(a):
@@ -126,7 +128,7 @@ def merge(left, right):
 print(merge_sort([5, 3, 8, 1, 9, 2, 7, 4]))   # [1, 2, 3, 4, 5, 7, 8, 9]
 ```
 
-The slices `a[:mid]` copy data, which keeps the code short. A production version allocates one buffer of size n up front and merges index ranges back and forth, so peak extra memory is exactly O(n).
+The slices `a[:mid]` and `a[mid:]` copy data, which keeps the code short. A production version allocates one buffer of size n up front and merges index ranges back and forth, so peak extra memory is exactly O(n).
 
 ## Variants
 
@@ -138,10 +140,10 @@ The slices `a[:mid]` copy data, which keeps the code short. A production version
 ## Edge cases and pitfalls
 
 - **Using `<` in the merge** breaks stability.
-- **Off-by-one in the split**: with `mid = len(a) // 2`, both halves are non-empty for any length ≥ 2, so the recursion always shrinks. A split that can produce an empty half and a full half recurses forever.
+- **Off-by-one in the split**: with mid = ⌊n / 2⌋, both halves are non-empty for any length ≥ 2, so the recursion always shrinks. A split that can produce an empty half and a full half recurses forever.
 - **Small subarrays**: recursing down to size 1 has overhead. Real implementations switch to insertion sort below about 16–32 elements.
 - **Memory**: the O(n) buffer is the main reason libraries use quicksort or heapsort variants when stability is not required.
 
 ## In the interview
 
-Merge sort shows up directly ("sort a linked list in O(n log n)", "merge k sorted lists") and as a tool. The classic tool question is **counting inversions**: during each merge, whenever you take a value from the right half, every value still waiting in the left half is bigger and earlier, so add `len(left) - i` to the count. That counts all inversions in O(n log n). Be ready to explain the recursion tree argument, why the merge is stable, and why the space is O(n).
+Merge sort shows up directly ("sort a linked list in O(n log n)", "merge k sorted lists") and as a tool. The classic tool question is **counting inversions**: during each merge, whenever you take a value from the right half, every value still waiting in the left half is bigger and earlier, so add the number of values still waiting in the left half to the count. That counts all inversions in O(n log n). Be ready to explain the recursion tree argument, why the merge is stable, and why the space is O(n).

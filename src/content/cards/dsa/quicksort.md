@@ -75,10 +75,10 @@ There is no combine step: once both sides are sorted, the whole range is sorted,
 
 ### Lomuto partition, step by step
 
-Take the last value `a[hi]` as the pivot. Keep a boundary `i`, starting at `lo`. Everything in `a[lo:i]` is known to be ≤ pivot.
+Take the last value `a[hi]` as the pivot. Keep a boundary `i`, starting at `lo`. Everything in `a[lo..i−1]` is known to be ≤ pivot.
 
 - Walk `j` from `lo` to `hi − 1`. If `a[j] ≤ pivot`, swap `a[i]` and `a[j]` and increase `i`. Otherwise do nothing, so the larger value stays to the right of the boundary.
-- At the end, `a[lo:i]` holds the small values and `a[i:hi]` the large ones. Swap the pivot `a[hi]` into `a[i]`. Return `i`.
+- At the end, `a[lo..i−1]` holds the small values and `a[i..hi−1]` the large ones. Swap the pivot `a[hi]` into `a[i]`. Return `i`.
 
 One partition of m values makes exactly **m − 1 comparisons**.
 
@@ -123,7 +123,9 @@ Every level of recursion partitions ranges that together hold at most n values, 
 - **Introsort** (C++ `std::sort`): if recursion depth passes about 2·log₂ n, switch that range to heapsort. This guarantees O(n log n).
 - **Three-way partition** (values <, =, > pivot) handles many duplicates in linear time per level.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here it is in Python, with the smaller-side-first trick that bounds the stack.
 
 ```python
 def partition(a, lo, hi):

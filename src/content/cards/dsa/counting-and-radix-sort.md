@@ -13,7 +13,7 @@ story:
   - title: Count each key
     text: "One pass over the input fills a count array with one slot per key: one 0, three 1s, one 2, two 3s, one 4. That pass is O(n), and it never compares two values with each other."
   - title: Prefix sums give start positions
-    text: "Turn the counts into a running total of everything before each key: start = [0,1,4,5,7]. Key 0 starts at slot 0; the three 1s get slots 1–3, so key 2 starts at slot 4; the two 3s take slots 5–6, so key 4 starts at slot 7."
+    text: "Turn the counts into a running total of everything before each key (an exclusive prefix sum): start = [0,1,4,5,7]. Key 0 starts at slot 0; the three 1s get slots 1–3, so key 2 starts at slot 4; the two 3s take slots 5–6, so key 4 starts at slot 7."
   - title: Place left to right
     text: "Walk the input from left to right. Put each value at start[key] and then add 1 to start[key]. The 1s arrive as a, b, c, so they land in slots 1, 2, 3 in that same order. That makes the sort stable, which radix sort relies on."
   - title: Radix sort, last digit first
@@ -116,7 +116,9 @@ In the last pass 512 and 523 tie on the hundreds digit 5; they stay in the order
 
 **Cost**: d passes of O(n + b), so **O(d·(n + b))**. For n 32-bit integers with b = 256: 4 passes over the data plus tiny count arrays. Real implementations pick b as a power of two so digits come from shifts and masks.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here are both sorts in Python.
 
 ```python
 def counting_sort(a, k, key=lambda x: x):

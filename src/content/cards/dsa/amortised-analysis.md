@@ -151,9 +151,9 @@ The difference matters. Quicksort's O(n log n) is an *average* over random order
 
 - **Growing by a constant** (say +100 slots) is a classic bug: resizes happen every 100 appends, copies total about n²/200, so append becomes O(n) amortised. Any constant **factor** g > 1 works; copies then total about n·g/(g − 1). Real libraries use different factors: CPython lists over-allocate by about 1/8, Java's ArrayList grows by 1.5×, GCC's `std::vector` by 2×.
 - **Shrinking**: halve the capacity when the array is a **quarter** full, not half full. Shrinking at half full lets alternating push/pop at the boundary trigger a resize on every operation.
-- **Latency**: amortised O(1) still allows one slow O(n) call. In real-time code (games, audio), pre-size the array with `reserve` or use a structure with worst-case O(1) operations.
+- **Latency**: amortised O(1) still allows one slow O(n) call. In real-time code (games, audio), pre-size the array (C++ `reserve`, Java `ensureCapacity`) or use a structure with worst-case O(1) operations.
 - **Other classic examples**: a queue built from two stacks (each element is moved at most once, so O(1) amortised), incrementing a binary counter (fewer than 2n bit flips for n increments), and union-find.
 
 ## In the interview
 
-You will hear "what's the complexity of `list.append`?" or "implement a dynamic array / ArrayList". Answer "O(1) amortised, O(n) worst case for the call that resizes", then justify it with the doubling series 1 + 2 + 4 + … < 2n. Interviewers often follow up with "why double instead of adding a fixed amount?", "when should it shrink?", or "explain the two-stack queue's amortised O(1) dequeue".
+You will hear "what's the complexity of appending to a dynamic array?" (Python's `list.append`, Java's `ArrayList.add`, C++'s `vector::push_back`) or "implement a dynamic array / ArrayList". Answer "O(1) amortised, O(n) worst case for the call that resizes", then justify it with the doubling series 1 + 2 + 4 + … < 2n. Interviewers often follow up with "why double instead of adding a fixed amount?", "when should it shrink?", or "explain the two-stack queue's amortised O(1) dequeue".

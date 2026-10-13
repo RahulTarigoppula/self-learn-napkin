@@ -9,7 +9,7 @@ analogy: "A tailor who charges for every extra seam. With no charge you get a su
 diagram: regularisation
 story:
   - title: "Degree 9, no penalty: it wiggles"
-    text: "Fit a degree-9 polynomial to 10 noisy points from a sine wave. Ten points and ten coefficients means the curve passes exactly through every point: training error 0. To do it, coefficients swing as large as 580,000 and the curve lurches between points. Its mean squared error against the true sine is 0.37."
+    text: "Fit a degree-9 polynomial to 10 noisy points from a sine wave. Ten points and ten coefficients means the curve passes exactly through every point: training error 0. To do it, coefficients swing as large as 580,000 and the curve lurches between points. Its mean squared error against the true sine (dashed) is 0.37."
   - title: "A small λ: smooth and close to the truth"
     text: "Regularisation adds a price for large weights to the loss: minimise squared error + λ·Σw². With λ = 0.001 no weight exceeds 12 and training error rises to 0.04, but error against the true curve drops to 0.007, about 50 times better. We accept a little bias to remove a lot of variance."
   - title: "Too much λ: it underfits"
@@ -88,27 +88,44 @@ When the features are orthonormal (XᵀX = I), the loss splits into one term per
 - **Ridge**: minimise (w − ŵ)² + λw², which gives w = ŵ / (1 + λ) = **(1.5, 0.2)**. Every weight is halved, and none reaches zero.
 - **Lasso**: minimise (w − ŵ)² + λ|w|, which gives w = sign(ŵ) · max(|ŵ| − λ/2, 0). That is 3.0 − 0.5 = 2.5, and 0.4 − 0.5 < 0 becomes 0, so **(2.5, 0)**. Lasso shifts every weight towards 0 by the same amount and clips the small one to exactly zero (**soft-thresholding**).
 
+### How lasso is fitted: coordinate descent
+
+Lasso has no closed form, but the one-weight answer above gives an algorithm: fix every weight except one, solve for that one exactly, move on, and cycle until nothing changes. With each feature column scaled to unit length:
+
+```text
+start with w = 0
+repeat until no weight changes by more than a tiny tolerance:
+    for each feature j:
+        r = y − (current predictions without feature j)     # what is left for j to explain
+        z = Σᵢ xᵢⱼ · rᵢ                                       # the best weight for j on its own
+        wⱼ = sign(z) · max(|z| − λ/2, 0)                      # soft-threshold: small z → exactly 0
+```
+
+Each sweep costs O(n·d), and features whose z never clears λ/2 stay at exactly zero.
+
 ## Worked example: taming a polynomial
 
 Ten points xᵢ = 0, 1/9, …, 1 with yᵢ = sin(2πxᵢ) + noise, using the noise values (0.15, −0.20, 0.10, 0.25, −0.15, 0.05, −0.25, 0.10, 0.20, −0.10). We fit a degree-9 polynomial with a ridge penalty on all coefficients except the intercept. "vs truth" is the mean squared gap to the noise-free sine over 201 points in [0, 1].
 
 | λ | train MSE | MSE vs truth | largest \|w\| |
 |---|---|---|---|
-| 0 | 0.000 | 0.366 | 582,535 |
-| 10⁻⁶ | 0.012 | 0.012 | 114.6 |
-| 10⁻³ | 0.041 | **0.007** | 11.6 |
-| 0.1 | 0.186 | 0.118 | 1.3 |
+| 0 | 0.000 | 0.366 | 582,535.28 |
+| 10⁻⁶ | 0.012 | 0.012 | 114.61 |
+| 10⁻³ | 0.041 | **0.007** | 11.55 |
+| 0.1 | 0.186 | 0.118 | 1.28 |
 | 1 | 0.291 | 0.244 | 0.46 |
 
 Training error only rises with λ, while the error that matters falls and then rises. The best value here, λ = 10⁻³, is 50 times closer to the truth than the unregularised fit.
 
-## In code
+## Implement it in Python
+
+Ridge, lasso and elastic net exist in every ML library (R's glmnet, Julia's MLJ, Spark MLlib…); this version uses scikit-learn. Beware that libraries scale the loss differently, so the same λ number can mean different strengths.
 
 ```python
 import numpy as np
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
-from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.linear_model import Ridge
 
 x = np.linspace(0, 1, 10)
 noise = np.array([0.15, -0.20, 0.10, 0.25, -0.15, 0.05, -0.25, 0.10, 0.20, -0.10])
@@ -116,11 +133,13 @@ y = np.sin(2 * np.pi * x) + noise
 grid = np.linspace(0, 1, 201)                      # where we compare with the true curve
 
 for lam in [0, 1e-6, 1e-3, 1e-1, 1]:
-    reg = LinearRegression() if lam == 0 else Ridge(alpha=lam)   # intercept is not penalised
-    model = make_pipeline(PolynomialFeatures(9, include_bias=False), reg).fit(x[:, None], y)
+    # solver="svd" stays exact even at lam = 0, where the 10 x 10 system is badly conditioned;
+    # Ridge never penalises the intercept
+    model = make_pipeline(PolynomialFeatures(9, include_bias=False), Ridge(alpha=lam, solver="svd"))
+    model.fit(x[:, None], y)
     train = np.mean((model.predict(x[:, None]) - y) ** 2)
     truth = np.mean((model.predict(grid[:, None]) - np.sin(2 * np.pi * grid)) ** 2)
-    print(f"λ={lam:g}  train={train:.3f}  vs truth={truth:.3f}  max|w|={np.abs(model[-1].coef_).max():,.1f}")
+    print(f"lambda={lam:g}  train={train:.3f}  vs truth={truth:.3f}  max|w|={np.abs(model[-1].coef_).max():,.2f}")
 
 # In practice: scale, then let cross-validation pick λ
 from sklearn.preprocessing import StandardScaler
@@ -141,7 +160,7 @@ scikit-learn's `Ridge` minimises ‖y − Xw‖² + α‖w‖², matching the ta
 ## Edge cases and pitfalls
 
 - **Unscaled features** get penalised unevenly. Standardise first, inside a pipeline.
-- **Don't penalise the intercept**, or the model is pulled towards predicting 0 instead of the mean. scikit-learn already leaves it out.
+- **Don't penalise the intercept**, or the model is pulled towards predicting 0 instead of the mean. Most libraries leave it out by default.
 - **Lasso with correlated features** keeps one of them more or less at random and drops the rest, and the choice can flip between resamples. Use elastic net if you need stability.
 - **Selecting λ on the test set** is leakage. Use cross-validation on the training data.
 - **Bayesian view**: L2 is the MAP estimate under a Gaussian prior on the weights, and L1 under a Laplace prior. Interviewers like this connection.

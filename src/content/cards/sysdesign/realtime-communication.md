@@ -26,7 +26,7 @@ keyIdeas:
   - "Each server holds only some connections; a **pub/sub backplane** (Redis, Kafka, NATS) routes a message to the servers holding its recipients."
 quiz:
   - q: "A dashboard shows live order counts. The browser never sends data back. What is the simplest good fit?"
-    options: ["Polling every 100 ms", "Server-Sent Events", "WebSockets", "Email"]
+    options: ["Polling every 100 ms", "Server-Sent Events", "WebSockets", "A peer-to-peer WebRTC connection"]
     answer: 1
     why: "The data flows only server to client, so SSE fits: one HTTP response, automatic reconnect with resume, and it passes through HTTP infrastructure. WebSockets work too but add a protocol you don't need."
   - q: "1,000,000 clients poll every 5 seconds. How many requests per second hit the servers, even when nothing changes?"

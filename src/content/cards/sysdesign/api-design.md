@@ -31,7 +31,7 @@ quiz:
     answer: 1
     why: "POST is not idempotent, and the first attempt may have succeeded. The server stores the key with the result; a repeat with the same key returns the stored result."
   - q: "Why does ?offset=100000&limit=20 get slow on a large table?"
-    options: ["JSON gets bigger", "The database must walk past 100,000 rows to throw them away before returning 20", "Offsets are not indexed by HTTP", "It is not slow"]
+    options: ["JSON gets bigger", "The database must walk past 100,000 rows to throw them away before returning 20", "Offsets are not indexed by HTTP", "The query string becomes too long to parse"]
     answer: 1
     why: "OFFSET skips rows by reading them. A cursor (WHERE id < :last ORDER BY id DESC LIMIT 20) seeks straight to the position with an index and reads only 20 rows."
   - q: "A GraphQL query fetches 100 posts and each post's author. Without batching, how many database queries run?"
@@ -39,7 +39,7 @@ quiz:
     answer: 2
     why: "One query for the posts, then the author resolver runs once per post: 1 + 100 = 101. A per-request batcher (DataLoader) collects the 100 author ids into one query: 2 in total."
   - q: "Which is the best fit for low-latency calls between internal microservices written in Go, Java and Python?"
-    options: ["GraphQL", "gRPC", "SOAP", "Offset pagination"]
+    options: ["GraphQL", "gRPC", "SOAP", "Server-Sent Events"]
     answer: 1
     why: "gRPC generates typed clients in each language from one .proto contract, uses compact binary encoding, and multiplexes calls over HTTP/2."
 bigO:
