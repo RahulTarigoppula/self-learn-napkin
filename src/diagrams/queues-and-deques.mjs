@@ -78,7 +78,7 @@ export default (d) => {
   row(d, 3, [['G', O], null, ['C', B], ['D', O], ['E', O], ['F', O]], 2, 1, 'enqueue G', 'h=2 t=1');
   d.group(() => {
     d.arrow(cx(5), RY[3] + CH + 4, cx(0) + 4, RY[3] + CH + 4, { pen: 'red', bend: -36, thick: true });
-    d.text(TX, 396, 't = (t+1) % 6', { pen: 'red', mono: true, size: 15, anchor: 'start' });
+    d.text(TX, 396, 't = (t + 1) mod 6', { pen: 'red', mono: true, size: 15, anchor: 'start' });
   });
 
   d.step('A deque: push and pop at both ends');
@@ -99,10 +99,10 @@ export default (d) => {
   );
   d.group(() => {
     d.arrow(300, 61, 344, 61, { pen: 'green', both: true, thick: true });
-    d.text(318, 92, 'appendleft\npopleft', { pen: 'green', size: 14 });
+    d.text(318, 92, 'push/pop\nfront', { pen: 'green', size: 14 });
   });
   d.group(() => {
     d.arrow(472, 61, 508, 61, { pen: 'green', both: true, thick: true });
-    d.text(478, 92, 'append\npop', { pen: 'green', size: 14 });
+    d.text(478, 92, 'push/pop\nback', { pen: 'green', size: 14 });
   });
 };

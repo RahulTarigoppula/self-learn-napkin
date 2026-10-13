@@ -1,3 +1,5 @@
+> **Historical planning document.** The shipped app changed direction in October 2026 (modern "Sketchbook" design, story-driven layered napkins, 121 topics, language-agnostic lessons). See [docs/DECISIONS.md](DECISIONS.md), which supersedes this file wherever they differ.
+
 # Napkin — ARCHITECTURE.md
 
 > **Conflicts are resolved in `docs/IMPLEMENTATION-PROMPT.md` §0; that file wins.** This document explains *why* the system is shaped the way it is; the implementation prompt is what you build from.

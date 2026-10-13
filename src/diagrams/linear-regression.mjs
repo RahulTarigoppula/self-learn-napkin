@@ -4,7 +4,8 @@ export const meta = {
   height: 420,
 };
 
-// Plot: hours x in [0, 6.5] across, score y in [0, 6] up. Same px per unit on both axes, so squares are squares.
+// Plot: hours x in [0, 6.5] across (44 px/unit), score y in [0, 6] up (40 px/unit). Residual squares use
+// the y scale for both sides, so a residual of r draws as an r × r square.
 const S = 40;
 const X0 = 52;
 const Y0 = 296;

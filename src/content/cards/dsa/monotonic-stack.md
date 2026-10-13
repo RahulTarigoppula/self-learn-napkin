@@ -5,7 +5,7 @@ tags: [stacks, arrays, amortised]
 difficulty: 2
 minutes: 5
 tldr: "Keep a stack whose values only go down (or only up). Each new value pops everything it beats — and each popped item has just found its next greater element. O(n) total."
-analogy: "People queue in a line facing right, each wanting to know who is the first taller person ahead of them. When a tall person joins, every shorter person still waiting directly in front of them gets their answer at once and leaves."
+analogy: "People join a row one at a time from the right, each wanting to know the first taller person to arrive after them. When a tall person arrives, every shorter person still waiting gets their answer at once and stops waiting."
 diagram: monotonic-stack
 story:
   - title: The next greater element
@@ -30,7 +30,7 @@ quiz:
     answer: 0
     why: "Nothing to the right of 5 is bigger → −1. For 3 and for 1 the first bigger value to the right is 4. 4 is last → −1. In the scan, 4 pops 1 and then 3, and stops at 5."
   - q: "The inner while-loop can pop many items in one step. Why is the algorithm still O(n)?"
-    options: ["The stack never holds more than two items", "Each index is pushed once and popped at most once, so all pops together are at most n", "Python's list.pop is O(1/n)", "It is actually O(n log n)"]
+    options: ["The stack never holds more than two items", "Each index is pushed once and popped at most once, so all pops together are at most n", "Popping costs nothing", "It is actually O(n log n)"]
     answer: 1
     why: "Count work per element, not per step: every index enters the stack once and can leave it at most once. Total pushes + pops ≤ 2n, which is amortised O(1) per element."
   - q: "Daily temperatures [30, 40, 35, 50]: how many days until a warmer day, for each day?"
@@ -92,7 +92,9 @@ The inner `while` loop can pop many items in one step, which looks like O(n²). 
 
 Indices 3 and 4 are left on the stack, so their answers stay −1. Final answer: `[4, 2, 4, -1, -1]`. Five pushes and three pops: the work is proportional to n.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here are the three classic uses in Python (`stack[-1]` is the top).
 
 ```python
 def next_greater(nums):
@@ -143,7 +145,7 @@ An **increasing** stack gives both at once. When bar `i` is lower than the top, 
 
 - **Strict or not?** "Next greater" means strictly greater, so pop on `<`, not `<=`. With `<=`, an equal value would wrongly answer its twin — on `[2, 1, 2, 4, 3]` index 0 would get 2 instead of 4.
 - **Values instead of indices** works only when you never need positions; most variants do need them.
-- **Circular arrays** (the last element's "right" wraps to the start): loop `i` over `range(2 * n)`, use `nums[i % n]`, and only push during the first pass.
+- **Circular arrays** (the last element's "right" wraps to the start): loop i from 0 to 2n − 1, read `nums[i mod n]`, and only push during the first n steps.
 - **Which direction?** Next greater/smaller to the *right*: scan left to right and answer on pop. Previous greater/smaller to the *left*: the answer is whatever is on top right after you finish popping.
 
 ## In the interview

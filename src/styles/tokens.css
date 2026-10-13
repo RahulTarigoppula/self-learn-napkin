@@ -153,8 +153,9 @@
   --topbar-h: 60px;
   --tabbar-h: 66px;
   --sidebar-w: 252px;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Capacitor injects --safe-area-inset-* on Android WebViews that lack env() insets; take whichever is set. */
+  --safe-top: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
+  --safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
 }
 
 /* ---- Night. Declared twice: the explicit choice, and the system preference when not pinned to light. ---- */

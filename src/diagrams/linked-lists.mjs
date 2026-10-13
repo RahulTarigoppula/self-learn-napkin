@@ -4,7 +4,7 @@ export const meta = {
   height: 420,
 };
 
-// ---- top: the list head → 1 → 2 → 3 → 4 → None
+// ---- top: the list head → 1 → 2 → 3 → 4 → null
 const NX = (i) => 76 + i * 100; // left edge of node i
 const NY = 58;
 const NH = 34;
@@ -37,8 +37,8 @@ const flip = (d, r, from, to, pen) => {
 const snap = (d, r, links, marks, tag) =>
   d.group(() => {
     const y = RYC[r];
-    d.text(NONE_L, y, 'None', { pen: 'muted', mono: true, size: 14 });
-    d.text(NONE_R, y, 'None', { pen: 'muted', mono: true, size: 14 });
+    d.text(NONE_L, y, 'null', { pen: 'muted', mono: true, size: 14 });
+    d.text(NONE_R, y, 'null', { pen: 'muted', mono: true, size: 14 });
     RX.forEach((x, i) =>
       d.rect(x - RW / 2, y - 15, RW, 30, {
         pen: 'blue',
@@ -66,7 +66,7 @@ export default (d) => {
   d.group(() => {
     for (let i = 0; i < 3; i++) d.arrow(NX(i) + 53, YC, NX(i + 1) - 3, YC, { pen: 'ink', rough: 0.6, single: true });
     d.arrow(NX(3) + 53, YC, 458, YC, { pen: 'ink', rough: 0.6, single: true });
-    d.text(482, YC, 'None', { pen: 'muted', mono: true, size: 15 });
+    d.text(482, YC, 'null', { pen: 'muted', mono: true, size: 15 });
   });
 
   d.step('Finding a node means walking from head');
@@ -127,7 +127,7 @@ export default (d) => {
     'step 1',
   );
 
-  d.step('Repeat until curr is None; prev is the new head');
+  d.step('Repeat until curr is null; prev is the new head');
   snap(
     d,
     2,

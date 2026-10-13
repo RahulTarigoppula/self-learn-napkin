@@ -79,6 +79,14 @@ b is the **intercept** (the prediction when every feature is 0) and each wⱼ is
 3. **Closed form.** Put the features in a matrix X (one row per example, plus a column of ones for the intercept) and the targets in a vector y. Setting the gradient of SSE to zero gives the **normal equation**: XᵀX w = Xᵀy, so w = (XᵀX)⁻¹Xᵀy. With a single feature it reduces to slope = Σ(x − x̄)(y − ȳ) / Σ(x − x̄)² and intercept = ȳ − slope · x̄, which is why the line always passes through (x̄, ȳ).
 4. **Gradient view.** The gradient of the MSE is (2/n) Xᵀ(Xw − y). Gradient descent steps against it and reaches the same weights, because the loss is convex. It is the route for very large datasets or when a penalty term has no closed form.
 
+Both routes in pseudocode:
+
+```text
+X = feature matrix with a leading column of 1s;  y = targets;  n = number of rows
+closed form:   w = solve(XᵀX, Xᵀy)                      # never form the inverse explicitly
+iterative:     w = zeros;  repeat:  w = w − η · (2/n) · Xᵀ(Xw − y)
+```
+
 In practice libraries do not invert XᵀX; they solve the least-squares problem with a QR or SVD decomposition, which is more numerically stable.
 
 > **Tip:** Least squares is also maximum likelihood. If y = b + w·x + ε with ε ~ Normal(0, σ²), the weights that make the observed data most probable are exactly the ones that minimise Σr².
@@ -129,7 +137,9 @@ Squaring means one residual of 5 costs as much as 25 residuals of 1, so a single
 
 Find influential points with residual-vs-leverage plots or **Cook's distance**. Then fix the data error, or use a robust loss such as Huber (see loss functions) that grows linearly for big residuals.
 
-## In code
+## Implement it in Python
+
+Linear regression is built into every numerical tool (R's `lm`, Julia's GLM.jl, Excel's LINEST, Spark MLlib…); here it is three ways with NumPy and scikit-learn.
 
 ```python
 import numpy as np

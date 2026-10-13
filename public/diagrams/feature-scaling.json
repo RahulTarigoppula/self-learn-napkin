@@ -41,6 +41,6 @@
       "lastElement": 18
     }
   ],
-  "hash": "ab8c4e8af39cce1ea23025da1beb9f87af5179d9",
+  "hash": "efcf51af5f69ce8cb655f11b3b35d17ad6093c55",
   "title": "Nearest neighbour before and after standardising age and income, fitting the scaler on train only, and gradient descent on raw vs scaled features"
 }

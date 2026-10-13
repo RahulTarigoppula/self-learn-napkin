@@ -32,16 +32,16 @@ quiz:
     answer: 1
     why: "A's 99 % comes entirely from the majority class; it never catches fraud. B's accuracy (9,770 / 10,000) is lower, but it finds 70 % of the fraud with precision 0.26 — whether that is good enough depends on costs, not on accuracy."
   - q: "You apply SMOTE to the whole dataset and then split into train and test. What goes wrong?"
-    options: ["Nothing; SMOTE only adds rows", "Synthetic points built from test rows leak into training, and the test set no longer has the real ratio, so scores are inflated", "The model can no longer use class weights", "SMOTE deletes the majority class"]
-    answer: 1
+    options: ["Nothing; SMOTE only adds rows", "The model can no longer use class weights", "SMOTE deletes the majority class", "Synthetic points built from test rows leak into training, and the test set no longer has the real ratio, so scores are inflated"]
+    answer: 3
     why: "A synthetic fraud point lies between two real ones, so a test fraud row's near-copy ends up in training. The test set is also artificially balanced, so its precision means nothing for production."
   - q: "9,900 legit rows and 100 fraud rows with balanced class weights, n / (2 × class count). What weight does each class get?"
-    options: ["1 and 99", "0.505 and 50", "0.01 and 0.99", "0.5 and 0.5"]
-    answer: 1
+    options: ["0.505 and 50", "1 and 99", "0.01 and 0.99", "0.5 and 0.5"]
+    answer: 0
     why: "Weight = n / (n_classes × class count): 10,000 / (2 × 9,900) = 0.505 and 10,000 / (2 × 100) = 50. Each class then contributes 5,000 to the loss."
   - q: "You undersampled legit rows, keeping 1 in 10, and the model says p = 0.5 for a transaction. What is the probability on real traffic?"
-    options: ["0.5", "About 0.09", "About 0.05", "About 0.91"]
-    answer: 1
+    options: ["0.5", "About 0.05", "About 0.09", "About 0.91"]
+    answer: 2
     why: "Keeping 10 % of negatives multiplies the odds by 10. Undo it: real odds = 1 × 0.1 = 0.1, so p = 0.1 / 1.1 ≈ 0.091. Formula: p = βp_s / (βp_s − p_s + 1) with β = 0.1."
 related: [ds/precision-recall-roc, ds/calibration, ds/logistic-regression, ds/train-val-test]
 prereqs: [ds/precision-recall-roc]
@@ -101,7 +101,7 @@ for t in candidate thresholds, from high to low:
 
 ## Fix 2: class weights
 
-Multiply each row's contribution to the training loss by a weight for its class. The usual "balanced" choice is w_c = n / (k · n_c) for k classes, where n_c is the number of rows in class c: 10,000 / (2 × 9,900) = 0.505 for legit rows and 10,000 / (2 × 100) = 50 for fraud rows, so each class adds up to 5,000. Relative to each other, that is the same as copying every fraud row 99 times, without the extra memory. Any learner that minimises a sum of per-row losses can take weights.
+Multiply each row's contribution to the training loss by a weight for its class. The usual "balanced" choice is w_c = n / (k · n_c) for k classes, where n_c is the number of rows in class c: 10,000 / (2 × 9,900) = 0.505 for legit rows and 10,000 / (2 × 100) = 50 for fraud rows, so each class adds up to 5,000. Relative to each other, one fraud row now counts as much as 99 legit rows — the same as having every fraud row appear 99 times, without the extra memory. Any learner that minimises a sum of per-row losses can take weights.
 
 ## Fix 3: resampling
 

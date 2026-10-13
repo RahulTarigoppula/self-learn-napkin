@@ -9,7 +9,7 @@ analogy: "A stack of plates in a canteen: you put clean plates on top and take p
 diagram: stacks
 story:
   - title: Last in, first out
-    text: "A stack is a pile where you only touch the top. push puts an item on top, pop removes the top item, peek reads it without removing it — each in O(1). On a Python list the end of the list is the top: [5, 8, 2] has 2 on top, so the next pop returns 2, and only after that can 8 come out."
+    text: "A stack is a pile where you only touch the top. push puts an item on top, pop removes the top item, peek reads it without removing it — each in O(1). In an array-backed stack the end of the array is the top: [5, 8, 2] has 2 on top, so the next pop returns 2, and only after that can 8 come out."
   - title: Opening brackets are pushed
     text: "Is {[()]} balanced? Read it left to right. Each opening bracket is a promise to close it later, and the most recent promise has to be kept first. So every opener is pushed: after three characters the stack holds { [ ( with ( on top."
   - title: Each closer must match the top
@@ -20,7 +20,7 @@ story:
     text: "Postfix (reverse Polish) notation puts each operator after its operands: 3 4 + 2 * means (3 + 4) × 2. Push numbers; an operator pops two, applies itself and pushes the result. 3 and 4 become 7, then 7 and 2 become 14 — the single value left is the answer. No parentheses or precedence rules needed."
 keyIdeas:
   - "**LIFO:** the last item pushed is the first popped. `push`, `pop` and `peek` touch only the top, so each is **O(1)**."
-  - "In Python, a **list is a stack**: `append` pushes, `pop()` pops, `a[-1]` peeks. Never use `insert(0, x)` / `pop(0)` — those shift every element, O(n)."
+  - "**Use the end of a dynamic array as the top** (Python's list, Java's ArrayDeque, C++'s std::vector or std::stack): push and pop there are O(1). Working at the front shifts every element, O(n)."
   - "Reach for a stack when **the most recent unfinished thing must be finished first**: nested brackets, undo, function calls, depth-first search."
   - "Bracket matching: push openers, a closer must match the top, and the stack must be **empty at the end**."
   - "The **call stack** is a stack of frames; recursion that never stops overflows it. Any recursion can be rewritten with an explicit stack."
@@ -37,10 +37,10 @@ quiz:
     options: ["\"(()\"", "\"())\"", "\"([)]\"", "\"}\""]
     answer: 0
     why: "\"(()\" never meets a wrong closer; it just ends with one ( still on the stack. \"())\" and \"}\" hit a closer with an empty stack, and \"([)]\" hits a mismatch — all three fail inside the loop."
-  - q: "Why is a Python list a good stack but list.pop(0) a bad one?"
-    options: ["pop(0) raises an error", "Removing the first element shifts all others left: O(n)", "Lists are linked lists in Python", "pop(0) is not allowed on lists"]
+  - q: "You build a stack on a dynamic array. Why push and pop at the end rather than at index 0?"
+    options: ["Index 0 cannot be written to", "Removing or inserting at the front shifts every other element: O(n)", "Dynamic arrays are linked lists underneath", "The end is the only index you can read"]
     answer: 1
-    why: "A list is a dynamic array. The end can grow and shrink in O(1) (amortised for append); removing index 0 moves n − 1 elements one slot left."
+    why: "The end of a dynamic array grows and shrinks in O(1) (amortised for push). Working at index 0 moves all n − 1 other elements one slot each time."
 bigO:
   - { op: "push", best: "O(1)", avg: "O(1)", worst: "O(n)", note: "amortised O(1); a rare resize copies the array" }
   - { op: "pop / peek", avg: "O(1)" }
@@ -109,7 +109,9 @@ There are three different ways to fail, and a correct solution handles all of th
 2. A closer **does not match** the top — `"([)]"`.
 3. The string ends with openers **still on the stack** — `"(()"`.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here a Python list serves as the stack (`append` pushes, `pop()` pops, `stack[-1]` peeks).
 
 ```python
 PAIRS = {')': '(', ']': '[', '}': '{'}
@@ -152,7 +154,7 @@ An editor keeps an **undo stack** of actions. Each new action is pushed. *Undo* 
 
 ## Edge cases and pitfalls
 
-- **Popping an empty stack.** Python raises `IndexError`; check `if stack` first, as `is_balanced` does.
+- **Popping an empty stack.** Most libraries throw an error (Python's `IndexError`, Java's `EmptyStackException`); check that the stack is non-empty first, as `is_balanced` does.
 - **Forgetting the final emptiness check** — the classic bug that accepts `"(("`.
 - **Operand order** in postfix: the first pop is the *right* operand. `5 3 -` is 2, not −2.
 - **Stack ≠ queue.** If you need the *oldest* item first (a waiting line, breadth-first search), you want a queue.

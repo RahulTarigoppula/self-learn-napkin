@@ -1,3 +1,4 @@
+import { onSettings } from '../db/settings';
 import { PLATFORM } from '../lib/base';
 
 /** Android-only wiring: status bar, back button chain, pausing animation when backgrounded. */
@@ -10,11 +11,17 @@ export function initPlatform(): void {
         import('@capacitor/status-bar'),
         import('@capacitor/splash-screen'),
       ]);
-      const dark =
-        document.documentElement.getAttribute('data-theme') === 'dark' ||
-        (!document.documentElement.hasAttribute('data-theme') &&
-          matchMedia('(prefers-color-scheme: dark)').matches);
-      await StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light }).catch(() => undefined);
+      const paintBars = async () => {
+        const dark =
+          document.documentElement.getAttribute('data-theme') === 'dark' ||
+          (!document.documentElement.hasAttribute('data-theme') &&
+            matchMedia('(prefers-color-scheme: dark)').matches);
+        await StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light }).catch(() => undefined);
+        await StatusBar.setBackgroundColor({ color: dark ? '#0D0F15' : '#F6F3EE' }).catch(() => undefined);
+      };
+      await paintBars();
+      onSettings(() => void paintBars());
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => void paintBars());
       await SplashScreen.hide().catch(() => undefined);
       await App.addListener('backButton', ({ canGoBack }) => {
         // Close the top-most layer first (search palette, dialogs), then go back, then exit.

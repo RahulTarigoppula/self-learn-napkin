@@ -39,7 +39,7 @@ quiz:
     options: ["Increases its variance", "Leaves its variance unchanged", "Shrinks its variance and weakens its correlations", "Removes outliers"]
     answer: 2
     why: "Every imputed row sits exactly at the mean, which adds zero spread and ignores the other columns. The variance shrinks and the column's correlations with other features are pulled toward 0."
-  - q: "You run SimpleImputer(strategy='median').fit(X_all) before splitting into train and test. What is wrong?"
+  - q: "You fill each column's gaps with its median computed over the full dataset, then split into train and test. What is wrong?"
     options: ["Nothing; medians are robust", "Test rows influenced the fill values, which is leakage", "The median cannot be used for imputation", "You must use the mean instead"]
     answer: 1
     why: "The fill value is a learned parameter. Computing it with test rows lets the test set shape training. Fit on the training rows, or better, put the imputer in a pipeline."
@@ -60,7 +60,7 @@ sources:
 
 ## Why the reason matters
 
-Almost every real dataset has holes: skipped survey questions, sensors that dropped out, fields added to a form halfway through the year. Most scikit-learn models refuse NaN outright, so you must do *something*. The right thing depends on **why** the values are missing. Statisticians (Rubin) name three mechanisms.
+Almost every real dataset has holes: skipped survey questions, sensors that dropped out, fields added to a form halfway through the year. Most models refuse missing values (NaN) outright, so you must do *something*. The right thing depends on **why** the values are missing. Statisticians (Rubin) name three mechanisms.
 
 - **MCAR, missing completely at random.** The chance a value is missing has nothing to do with any data, observed or not. Examples: a lab tube breaks, a network packet is lost. The complete rows are a random sample of all rows.
 - **MAR, missing at random** (a misleading name). Missingness depends only on *observed* variables. Example: younger respondents skip the income question more often, but among people of the same age, who skips is random. The complete rows are biased, but the bias can be corrected using the observed variables.
@@ -78,7 +78,7 @@ You can test whether missingness relates to observed columns: compare rows with 
 | **kNN imputation** | average of the k most similar rows | MAR with informative neighbours | O(n²) distances; needs scaled features |
 | **Iterative (MICE-style)** | regress each column on the others, cycling until stable | MAR, correlated features | slower; still underestimates uncertainty |
 | **Missing indicator** | extra 0/1 column per gappy feature | missingness carries signal (often MNAR) | more columns |
-| **Native NaN handling** | trees learn which branch NaNs take | gradient boosting (XGBoost, LightGBM, HistGB) | model-specific |
+| **Native NaN handling** | trees learn which branch NaNs take | gradient-boosted trees (XGBoost, LightGBM) | model-specific |
 
 The median beats the mean for skewed columns such as income. For categorical columns, use the mode or, often better, an explicit `"missing"` category.
 
@@ -93,11 +93,29 @@ Ages 21, 25, 28, 33, 37, 41, 45, 49, 53, 57, 61, 64 with incomes (£k) 30, 36, 3
 | Mean imputation | 53.7 / 53.7 / 53.7 | 53.7 | 7.4 |
 | Regression on age | 31.8 / 34.9 / 37.3 | 48.9 | 11.1 |
 
+(SD here divides by n, the population formula.)
+
 The regression fitted on the 9 complete rows is income ≈ 15.26 + 0.786 × age, so at age 21 it predicts 15.26 + 16.50 = 31.8. Deletion and mean imputation both overstate the average by £5.2k, and mean imputation also squeezes the spread. Regression imputation recovers both, because under MAR the observed variable (age) explains the missingness. If the gaps had been MNAR (the top earners hiding), every method would underestimate high incomes. A missing-indicator column would at least let a downstream model learn "missing income ⇒ probably rich".
 
 Single regression imputation still puts every filled value exactly on the line, so the SD (11.1) is a little too small. For statistical **inference** (confidence intervals, p-values), use **multiple imputation**: impute several times with random noise, analyse each copy, and pool the results. For **prediction**, single imputation plus indicators is usually enough.
 
-## In code
+## Iterative imputation, step by step
+
+The model-based row above is one round of the general recipe that MICE-style imputers repeat:
+
+```text
+start: fill every gap with its column mean
+repeat for a few rounds (or until the fills stop changing):
+    for each column c that has gaps:
+        fit a regression of c on all other columns, using the rows where c was observed
+        replace c's gaps with that regression's predictions
+```
+
+With a single gappy column (our income example) one round is the whole job. With several, each round improves the fills that the next column's regression relies on. **Multiple imputation** runs this several times with random noise added to each prediction.
+
+## Implement it in Python
+
+Every data stack has imputers (R's mice and missForest, Julia's Impute.jl, Spark's Imputer…); this version uses scikit-learn.
 
 ```python
 import numpy as np
@@ -129,7 +147,7 @@ The kNN result shows a real limitation: it can only average existing rows. With 
 
 ## Edge cases and pitfalls
 
-- **Leakage.** Fill values are learned parameters. Fitting on all rows before splitting lets test data shape training. Always fit on train, inside a `Pipeline`, so cross-validation refits per fold.
+- **Leakage.** Fill values are learned parameters. Fitting on all rows before splitting lets test data shape training. Always fit on train, inside a pipeline, so cross-validation refits per fold.
 - **Missing in production but not in training** (or the reverse) breaks models silently. Check missingness rates in live data, not just in training.
 - **Placeholder codes** such as −1, 0, 999 or "N/A" disguise missing values as real ones. Convert them to NaN first; an age of 999 will wreck a mean.
 - **Imputing the target**: rows with a missing label can't be used for supervised training. Drop them, don't invent labels.

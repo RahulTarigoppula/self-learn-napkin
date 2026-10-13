@@ -13,7 +13,7 @@ Napkin is a free, offline-first study app for **Data Structures & Algorithms**, 
 5. **Check your understanding** — multiple-choice questions with an explanation for every answer.
 6. **Flashcards with spaced repetition** — an on-device FSRS-6 scheduler brings each card back just before you'd forget it. Every session ends with a printable "receipt" you can share.
 
-Plus: a ⌘K / Ctrl K search across everything, curated learning paths, a one-page **cheat sheet** of every complexity table, a progress page with streaks, a 18-week activity heatmap and a 7-day review forecast, light/dark themes, reduced-motion support, and JSON backup/restore. No accounts, no tracking, no network calls — your progress never leaves your device.
+Plus: a **Quick quiz** that mixes questions from every topic, a ⌘K / Ctrl K search across everything, curated learning paths, a one-page **cheat sheet** of every complexity table, a progress page with streaks, a 18-week activity heatmap and a 7-day review forecast, light/dark themes, reduced-motion support, and JSON backup/restore. No accounts, no tracking, no network calls — your progress never leaves your device.
 
 ## Why I built this
 

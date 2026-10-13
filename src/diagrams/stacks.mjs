@@ -75,7 +75,7 @@ export default (d) => {
     d.text(110, 24, 'pop', { pen: 'orange', size: 17, bold: true });
   });
   d.text(142, 138, '← top', { pen: 'blue', size: 16, anchor: 'start' });
-  d.text(22, 252, 'a list [5, 8, 2]: the end is the top', { pen: 'muted', size: 15, anchor: 'start' });
+  d.text(22, 252, 'array [5, 8, 2]: the end is the top', { pen: 'muted', size: 15, anchor: 'start' });
 
   d.step('Opening brackets are pushed');
   d.text(346, 22, 'is  {[()]}  balanced?', { pen: 'ink', size: 17, bold: true });

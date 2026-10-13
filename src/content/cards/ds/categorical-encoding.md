@@ -25,7 +25,7 @@ keyIdeas:
   - "**Ordinal** only when the order is real, or for tree models. Otherwise it invents an order and distances that don't exist."
   - "**Target encoding** packs signal into one column but leaks the label. Smooth it and compute it **out-of-fold**, inside the training data only."
   - "**Hashing** gives a fixed-size output with no vocabulary, at the cost of collisions. **Embeddings** learn dense vectors for high-cardinality IDs."
-  - "Plan for **unseen categories** at prediction time: an 'other' bucket, `handle_unknown='ignore'`, or the global mean."
+  - "Plan for **unseen categories** at prediction time: an 'other' bucket, an all-zeros one-hot row, or the global mean."
 quiz:
   - q: "A logistic regression uses a 'colour' feature with values red, green and blue. Which encoding fits best?"
     options: ["Ordinal: red 0, green 1, blue 2", "One-hot", "Hashing into 2 buckets", "Drop the feature"]
@@ -69,11 +69,11 @@ Most models compute weighted sums, distances or gradients, so every input must b
 
 ## The main encoders
 
-- **One-hot**: one binary column per category, with a single 1 per row. It claims nothing beyond "same or different". For a linear model *with an intercept*, the k columns always sum to 1, which duplicates the intercept (the "dummy variable trap"). Drop one column (`drop="first"`) or rely on regularisation. Width grows with k, so it suits up to roughly a few hundred categories, stored sparse.
+- **One-hot**: one binary column per category, with a single 1 per row. It claims nothing beyond "same or different". For a linear model *with an intercept*, the k columns always sum to 1, which duplicates the intercept (the "dummy variable trap"). Drop one column or rely on regularisation. Width grows with k, so it suits up to roughly a few hundred categories, stored sparse.
 - **Ordinal**: one integer per category. It is correct when the order is real. For unordered categories it is fine for **tree-based models**, which can isolate any value with a few threshold splits, but harmful for linear models and distance-based models, which read the codes as quantities.
 - **Target (mean) encoding**: replace a category by a statistic of the label for that category. For binary y that is the fraction of positives; for regression, the mean of y. It is one dense, informative column even for 100,000 categories. Its danger is leakage (below).
 - **Count/frequency encoding**: replace a category by how often it appears. It is cheap, label-free and often surprisingly useful.
-- **Hashing trick**: compute `hash(category) mod B` and set that column. The output width B is fixed whatever the cardinality, there is no vocabulary to store, and unseen categories still map somewhere. The price is **collisions**: unrelated categories that share a bucket share a weight. scikit-learn's `FeatureHasher` also uses a sign hash (±1), so collisions tend to cancel rather than pile up.
+- **Hashing trick**: compute `hash(category) mod B` and set that column. The output width B is fixed whatever the cardinality, there is no vocabulary to store, and unseen categories still map somewhere. The price is **collisions**: unrelated categories that share a bucket share a weight. Many implementations also use a second hash to pick a sign (±1), so collisions tend to cancel rather than pile up.
 - **Embeddings**: give each category an ID and look up a learned dense vector of, say, 8–64 numbers, trained with the rest of a neural network. Categories that behave alike get nearby vectors. This is the standard choice for users, items and words in deep models.
 
 ## Worked example
@@ -91,7 +91,7 @@ Rows (city, y): London 1, Paris 0, Tokyo 1, London 1, Paris 0, Tokyo 0. The glob
 
 **Smoothing**: encoding = (n·mean + m·global) / (n + m). London has n = 2 and mean 1, giving (2 + 1) / 4 = 0.75. Paris gives (0 + 1) / 4 = 0.25. Tokyo gives (1 + 1) / 4 = 0.50. A category seen 1,000 times barely moves; one seen twice is pulled halfway to the global mean.
 
-**Out-of-fold**: split into fold A (rows 1–3) and fold B (rows 4–6). Each row is encoded with statistics from the *other* fold only (unsmoothed here, for clarity). Row 3 (Tokyo, y = 1) gets fold B's Tokyo mean, 0. Row 6 (Tokyo, y = 0) gets fold A's, 1. The feature no longer contains the row's own label, which is the point. In practice you combine both: smoothed statistics computed out-of-fold.
+**Out-of-fold**: split into fold A (rows 1–3) and fold B (rows 4–6). Each row is encoded with statistics from the *other* fold only (unsmoothed here, for clarity). Row 3 (Tokyo, y = 1) gets fold B's Tokyo mean, 0. Row 6 (Tokyo, y = 0) gets fold A's, 1. The feature no longer contains the row's own label, which is the point. With one Tokyo row per fold the values are very noisy (here they even point the wrong way), which is why in practice you combine both fixes: smoothed statistics computed out-of-fold, with enough rows per fold.
 
 ## Why naive target encoding leaks
 
@@ -99,11 +99,25 @@ Picture a category that appears exactly once in training. Its in-sample mean *is
 
 Rules: fit encoders on training data only; produce training features out-of-fold; encode validation and test with statistics from the full training set; and run all of it inside the cross-validation loop.
 
-## In code
+## The recipe
+
+```text
+fit on training rows:
+    one-hot / ordinal: list the categories seen (plus an "unknown" slot)
+    target encoding:   split training rows into K folds
+                       for each fold: encode its rows with smoothed means from the OTHER folds
+                       also store smoothed means from ALL training rows
+transform new rows:    look the category up; unseen → unknown slot / global mean
+```
+
+## Implement it in Python
+
+Every ML stack has these encoders (R's recipes and embed, Julia's MLJ, Spark's StringIndexer and OneHotEncoder…); this version uses pandas and scikit-learn (TargetEncoder needs version 1.3 or later).
 
 ```python
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, TargetEncoder
+from sklearn.model_selection import KFold
 from sklearn.feature_extraction import FeatureHasher
 
 df = pd.DataFrame({"city": ["London", "Paris", "Tokyo", "London", "Paris", "Tokyo"],
@@ -120,21 +134,22 @@ m, g = 2, y.mean()
 s = df.groupby("city")["y"].agg(["sum", "count"])
 print((s["sum"] + m * g) / (s["count"] + m))    # London 0.75, Paris 0.25, Tokyo 0.50
 
-# scikit-learn does the same smoothing and cross-fits automatically
-te = TargetEncoder(smooth=2.0, cv=2, random_state=0)
-X_train_enc = te.fit_transform(X, y)            # out-of-fold values for the training rows
-print(te.encodings_)                            # full-train values, used by te.transform(X_test)
+# TargetEncoder cross-fits for you. KFold(2) = folds A (rows 1-3) and B (rows 4-6), as in the table
+te = TargetEncoder(smooth=0.0, cv=KFold(2))     # smooth=0: plain means, to match the table
+print(te.fit_transform(X, y).ravel())           # [1. 0. 0. 1. 0. 1.]  out-of-fold, training rows only
+te = TargetEncoder(smooth=2.0, cv=KFold(2)).fit(X, y)
+print(te.encodings_)                            # [0.75, 0.25, 0.5]: full-train values for te.transform(X_test)
 
 hasher = FeatureHasher(n_features=8, input_type="string")
 H = hasher.transform([[c] for c in df["city"]]) # sparse 6 x 8, one ±1 per row, no vocabulary
 ```
 
-For embeddings, a layer such as `torch.nn.Embedding(num_cities, 16)` maps city IDs to 16 learned numbers. Reserve one extra ID for unknown or rare categories.
+`OneHotEncoder(drop="first")` avoids the dummy-variable trap, and `handle_unknown="ignore"` turns unseen cities into all zeros. Wrap encoders and model in a `Pipeline` (with a `ColumnTransformer` for mixed columns) so cross-validation refits them per fold. For embeddings, a layer such as `torch.nn.Embedding(num_cities, 16)` maps city IDs to 16 learned numbers. Reserve one extra ID for unknown or rare categories.
 
 ## Edge cases and pitfalls
 
-- **Unseen categories at prediction time** crash a naive mapping. Use `handle_unknown`, an explicit "other" bucket for rare values (say, fewer than 20 rows), or the global mean for target encoding.
-- **Encoding before splitting** leaks, just like scaling. Put encoders in a `Pipeline` / `ColumnTransformer`.
+- **Unseen categories at prediction time** crash a naive mapping. Map them to all zeros in one-hot, to an explicit "other" bucket for rare values (say, fewer than 20 rows), or the global mean for target encoding.
+- **Encoding before splitting** leaks, just like scaling. Fit encoders inside the same pipeline as the model, so cross-validation refits them per fold.
 - **High-cardinality one-hot with trees** spreads signal across thousands of sparse columns that each split poorly. Target, count or native categorical handling (LightGBM, CatBoost) usually works better.
 - **Numbers that are really categories** (postcodes, product codes, user IDs) must not be fed in as numbers. Postcode 10001 is not "bigger" than 02139.
 

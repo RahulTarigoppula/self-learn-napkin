@@ -30,12 +30,12 @@ keyIdeas:
   - "**F1** = 2PR / (P + R) when you need a single number that punishes a weak precision or recall."
 quiz:
   - q: "TP = 30, FP = 10, FN = 20, TN = 940. What are precision and recall?"
-    options: ["Precision 0.75, recall 0.60", "Precision 0.60, recall 0.75", "Precision 0.97, recall 0.60", "Precision 0.75, recall 0.97"]
-    answer: 0
+    options: ["Precision 0.60, recall 0.75", "Precision 0.97, recall 0.60", "Precision 0.75, recall 0.60", "Precision 0.75, recall 0.97"]
+    answer: 2
     why: "Precision = 30 / (30 + 10) = 0.75. Recall = 30 / (30 + 20) = 0.60. The 940 true negatives appear in neither formula, which is why both metrics suit imbalanced data."
   - q: "0.5 % of transactions are fraud. A model labels everything 'not fraud'. What are its accuracy and recall?"
-    options: ["99.5 % accuracy, 0 % recall", "50 % accuracy, 50 % recall", "99.5 % accuracy, 99.5 % recall", "0.5 % accuracy, 100 % recall"]
-    answer: 0
+    options: ["50 % accuracy, 50 % recall", "99.5 % accuracy, 99.5 % recall", "0.5 % accuracy, 100 % recall", "99.5 % accuracy, 0 % recall"]
+    answer: 3
     why: "It is right on all 99.5 % of legitimate transactions, so accuracy is 99.5 %, yet it catches no fraud: recall = 0 / (0 + all fraud) = 0. This is the accuracy paradox."
   - q: "You lower the threshold from 0.5 to 0.3. What usually happens?"
     options: ["Recall rises, precision usually falls", "Both rise", "Precision rises, recall falls", "ROC AUC rises"]
@@ -45,7 +45,7 @@ quiz:
     options: ["80 % of its predictions are correct", "A random positive outscores a random negative 80 % of the time", "Its precision is 0.80 at the best threshold", "Its probabilities are calibrated to within 20 %"]
     answer: 1
     why: "AUC measures ranking: compare every positive with every negative and count how often the positive has the higher score. It says nothing directly about accuracy, precision at a threshold, or calibration."
-related: [ds/logistic-regression, ds/cross-validation]
+related: [ds/class-imbalance, ds/calibration, ds/logistic-regression, ds/cross-validation]
 prereqs: [ds/logistic-regression]
 flashcards:
   - kind: qa
@@ -113,7 +113,9 @@ Because AUC depends only on the **order** of the scores, it is unchanged by any 
 
 FPR divides by the number of negatives. With 9,900 good emails, an FPR of 4.4 % is 440 false alarms — tiny on the ROC plot, overwhelming next to 80 caught spam emails. Precision compares false alarms with true positives directly, so it collapses (0.67 → 0.15 in the story) while the ROC curve does not move at all. The baseline of a PR curve is the positive rate (0.01 here), not 0.5. **Average precision** (AP), roughly the area under the PR curve, is the usual single-number summary.
 
-## In code
+## Implement it in Python
+
+Every metric here is a ratio of four counts, so it takes a few lines in any language; Python with scikit-learn's metric functions is shown.
 
 ```python
 import numpy as np

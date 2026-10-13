@@ -1,3 +1,5 @@
+> **Historical planning document.** The shipped app changed direction in October 2026 (modern "Sketchbook" design, story-driven layered napkins, 121 topics, language-agnostic lessons). See [docs/DECISIONS.md](DECISIONS.md), which supersedes this file wherever they differ.
+
 # Napkin — THE IMPLEMENTATION PROMPT
 
 **Project:** 03 · The Visual Tech Learning Platform · codename **Napkin** · repo name **`napkin`**

@@ -11,6 +11,8 @@ const ROUTES = [
   ['settings/', /Settings/],
   ['cheatsheet/', /Cheat sheet/],
   ['paths/system-design-kit/', /System design interview kit/],
+  ['quiz/', /Quick quiz/],
+  ['about/', /drew it/],
 ] as const;
 
 for (const [path, heading] of ROUTES) {

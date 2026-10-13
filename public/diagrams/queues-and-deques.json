@@ -35,6 +35,6 @@
       "lastElement": 13
     }
   ],
-  "hash": "b0ddd6347bf8f3aeca2e6f4913df72d0465d7549",
+  "hash": "afe44f8feac77c5fc16c86780209c52fc9baaf3c",
   "title": "A FIFO queue, a circular buffer of six slots traced with head and tail, and a deque"
 }

@@ -11,7 +11,7 @@ story:
   - title: A list whose tail loops back
     text: "Here node 6 points back to node 3, so the list 1→2→3→4→5→6 never ends: a loop that follows next would run forever. We want to detect this without a set of visited nodes, using O(1) extra memory. The shape — a tail leading into a loop — is often called a rho, after the Greek letter ρ."
   - title: Tortoise 1 step, hare 2 steps
-    text: "Start two pointers at head. Each step, slow moves one node and fast moves two. The table traces them: after two steps slow is at 3 and fast is already at 5, inside the loop. If the list had an end, fast would reach None first, proving there is no loop."
+    text: "Start two pointers at head. Each step, slow moves one node and fast moves two. The table traces them: after two steps slow is at 3 and fast is already at 5, inside the loop. If the list had an end, fast would reach null (the end) first, proving there is no loop."
   - title: The gap shrinks by one each step
     text: "Once both are in the loop, think of fast as chasing slow. Each step fast moves 2 and slow 1, so the gap between them shrinks by exactly 1: 2, then 1, then 0. A gap that shrinks by one cannot jump over zero, so they must land on the same node — here node 5, at step 4."
   - title: Find the loop's start
@@ -19,7 +19,7 @@ story:
   - title: "No loop: slow stops in the middle"
     text: "The same pair finds the middle of an ordinary list. On 1→2→3→4→5, fast stops at 5 because nothing follows it, and slow, having gone half as far, is at 3. For an even length this loop returns the second of the two middle nodes."
 keyIdeas:
-  - "**slow moves 1, fast moves 2.** No loop: fast hits `None`. Loop: they meet inside it."
+  - "**slow moves 1, fast moves 2.** No loop: fast reaches the end (null). Loop: they meet inside it."
   - "They **must** meet because the gap closes by **exactly one** node per step — it cannot skip past zero."
   - "**Loop start:** after they meet, restart one pointer at head; step both by 1; they meet at the start of the loop."
   - "**O(n) time, O(1) space** — the point of the trick, versus O(n) memory for a visited set."
@@ -33,10 +33,10 @@ quiz:
     options: ["3", "5", "8", "It depends on where they first met"]
     answer: 0
     why: "They meet at the loop's start, which is μ = 3 steps from head. The pointer at the meeting point also needs 3 steps (plus whole laps) to reach the start, so both arrive after exactly 3 steps."
-  - q: "middle() uses `while fast and fast.next`. What does it return for 1→2→3→4?"
-    options: ["2", "3", "4", "None"]
+  - q: "middle() keeps going while fast and fast.next both exist. What does it return for 1→2→3→4?"
+    options: ["2", "3", "4", "null"]
     answer: 1
-    why: "slow=1,fast=1 → slow=2,fast=3 → slow=3,fast=None (3's next is 4, whose next is None). The loop stops and returns 3, the second of the two middles."
+    why: "slow=1,fast=1 → slow=2,fast=3 → slow=3,fast=null (3's next is 4, whose next is null). The loop stops and returns 3, the second of the two middles."
   - q: "What is the extra memory used by Floyd's cycle detection?"
     options: ["O(1)", "O(log n)", "O(n)", "O(λ), the loop length"]
     answer: 0
@@ -64,11 +64,11 @@ sources:
 
 ## How it works
 
-A singly linked list can contain a **cycle**: some node's `next` points back to an earlier node, so following `next` never reaches `None`. The easy way to detect one is to remember every node in a hash set and stop when you see a node twice — O(n) time but also O(n) memory. **Floyd's algorithm** (the *tortoise and hare*) does it with two pointers and O(1) memory.
+A singly linked list can contain a **cycle**: some node's `next` points back to an earlier node, so following `next` never reaches the end (null). The easy way to detect one is to remember every node in a hash set and stop when you see a node twice — O(n) time but also O(n) memory. **Floyd's algorithm** (the *tortoise and hare*) does it with two pointers and O(1) memory.
 
 Start `slow` and `fast` at the head. Repeatedly move `slow` one node and `fast` two nodes.
 
-- **No cycle:** `fast` reaches the end (`fast` or `fast.next` is `None`) and you stop. There is no loop.
+- **No cycle:** `fast` reaches the end (`fast` or `fast.next` is null) and you stop. There is no loop.
 - **Cycle:** `fast` enters the loop first and keeps circling. Eventually `slow` enters too, and from then on `fast` is *chasing* `slow` around the same loop.
 
 ### Why they must meet
@@ -95,9 +95,15 @@ The list `1→2→3→4→5→6`, with 6 pointing back to 3. So μ = 2 (nodes 1 
 
 Phase two: `p` starts at 1, `slow` stays at 5. Step 1: `p` = 2, `slow` = 6. Step 2: `p` = 3, `slow` = 3 — **they meet at 3**, the start of the loop, after μ = 2 steps.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here it is in Python (`is` compares node identity, `None` is null).
 
 ```python
+class Node:
+    def __init__(self, val, next=None):
+        self.val, self.next = val, next
+
 def has_cycle(head):
     slow = fast = head
     while fast and fast.next:            # fast needs two nodes ahead to jump
@@ -132,8 +138,13 @@ def is_happy(n):                         # the same idea on numbers
         slow, fast = step(slow), step(step(fast))
     return fast == 1
 
-# 1→2→3→4→5→6→(back to 3):  has_cycle → True,  cycle_start(...).val → 3
-print(is_happy(19), is_happy(2))         # True False
+nodes = [Node(v) for v in range(1, 7)]   # 1→2→3→4→5→6, then 6 → 3
+for a, b in zip(nodes, nodes[1:]):
+    a.next = b
+nodes[-1].next = nodes[2]
+print(has_cycle(nodes[0]), cycle_start(nodes[0]).val)   # True 3
+print(middle(Node(1, Node(2, Node(3, Node(4))))).val)   # 3
+print(is_happy(19), is_happy(2))                       # True False
 ```
 
 ## Beyond linked lists
@@ -146,10 +157,10 @@ Floyd's algorithm only needs a function `next(x)` that is applied over and over.
 
 ## Edge cases and pitfalls
 
-- **Check `fast and fast.next`** before jumping two nodes; checking only `fast.next` crashes on an empty list.
-- **Compare nodes with `is`,** not values: two different nodes may hold the same value.
+- **Check both `fast` and `fast.next`** before jumping two nodes; checking only `fast.next` crashes on an empty list.
+- **Compare node identity, not values** (Python's `is`, reference `==` in Java): two different nodes may hold the same value.
 - **A one-node list pointing to itself** is a loop with λ = 1: after one step both pointers are on that node, and phase two returns it immediately. Trace it to be sure your code agrees.
-- **Middle of an even-length list.** `while fast and fast.next` returns the second middle; to get the first, loop `while fast.next and fast.next.next`.
+- **Middle of an even-length list.** Looping while `fast` and `fast.next` exist returns the second middle; to get the first, loop while `fast.next` and `fast.next.next` exist.
 
 ## In the interview
 

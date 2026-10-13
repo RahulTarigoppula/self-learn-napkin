@@ -54,20 +54,22 @@ function columns(d, keys, pen, fill) {
       });
     }
   });
+  // Body: one box per column plus one rule per row (far fewer bytes than a box per cell).
   d.group(() => {
+    const x0 = colX(keys[0]);
+    const x1 = colX(keys.at(-1)) + colW(keys.at(-1));
+    for (const k of keys)
+      d.rect(colX(k), rowY(0), colW(k), RH * ROWS.length, { pen: 'muted', rough: 0.3, single: true });
+    for (let r = 1; r < ROWS.length; r++)
+      d.line(x0, rowY(r), x1, rowY(r), { pen: 'muted', rough: 0.3, single: true });
     ROWS.forEach((row, r) => {
-      for (const k of keys) {
-        const isQ = row.who === 'Q';
-        d.rect(colX(k), rowY(r), colW(k), RH, {
-          pen: 'muted',
-          rough: 0.3,
-          single: true,
-          label: row[k],
-          size: 15,
-          mono: k !== 'who',
-          textPen: isQ ? 'orange' : 'ink',
-        });
-      }
+      for (const k of keys)
+        if (row[k])
+          d.text(colX(k) + colW(k) / 2, rowY(r) + RH / 2, row[k], {
+            size: 15,
+            mono: k !== 'who',
+            pen: row.who === 'Q' ? 'orange' : 'ink',
+          });
     });
   });
 }

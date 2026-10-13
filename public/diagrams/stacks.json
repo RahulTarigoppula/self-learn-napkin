@@ -35,6 +35,6 @@
       "lastElement": 32
     }
   ],
-  "hash": "56708611bc89fc95715473b2c57fdf066788a1e8",
+  "hash": "642e3793f9ddc21f81a3cb6a5cc990ae77c0b02f",
   "title": "A stack, the bracket-matching trace for {[()]} and ([)], and postfix evaluation"
 }

@@ -74,7 +74,7 @@ export default (d) => {
     const P = [
       [1, '.81'],
       [2, '.18'],
-      [3, '.02'],
+      [3, '.015'],
     ];
     for (const [dist, p] of P) {
       d.dot(nx(dist), NY, 9, { pen: 'ink', single: true });
@@ -126,8 +126,8 @@ export default (d) => {
     d.text(312, 286, 'A', { pen: 'blue', size: 16, bold: true });
     d.text(388, 286, 'B', { pen: 'green', size: 16, bold: true });
     d.text(464, 286, 'C', { pen: 'violet', size: 16, bold: true });
-    d.text(350, 332, '35', { pen: 'ink', size: 15, mono: true });
-    d.text(426, 332, '36', { pen: 'ink', size: 15, mono: true });
+    d.text(350, 334, 'gap 35', { pen: 'ink', size: 14 });
+    d.text(426, 334, 'gap 36', { pen: 'ink', size: 14 });
   });
   d.text(388, 360, 'sizes and gaps are not data', { pen: 'red', size: 16, bold: true });
 

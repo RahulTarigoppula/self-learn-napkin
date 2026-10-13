@@ -30,11 +30,11 @@
     },
     {
       "index": 4,
-      "caption": "Repeat until curr is None; prev is the new head",
+      "caption": "Repeat until curr is null; prev is the new head",
       "firstElement": 15,
       "lastElement": 16
     }
   ],
-  "hash": "487cb5dacaebf282f806b76c13d6c7ec8eb3f8e9",
+  "hash": "1a71047e95f2d9af42b1f17b68abee4f0f9be8d0",
   "title": "A singly linked list: walking, inserting after a node, and reversing 1→2→3 in place"
 }

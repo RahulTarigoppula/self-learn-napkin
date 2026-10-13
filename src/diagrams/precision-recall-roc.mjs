@@ -31,8 +31,8 @@ export default (d) => {
   d.group(() => {
     d.text(MX + CW / 2, MY - 24, 'flagged', { pen: 'muted', size: 15 });
     d.text(MX + CW * 1.5, MY - 24, 'not flagged', { pen: 'muted', size: 15 });
-    d.text(MX - 10, MY + CH / 2, 'spam', { pen: 'muted', size: 15, anchor: 'end' });
-    d.text(MX - 10, MY + CH * 1.5, 'not spam', { pen: 'muted', size: 15, anchor: 'end' });
+    d.text(MX - 16, MY + CH / 2, 'spam', { pen: 'muted', size: 15, anchor: 'end' });
+    d.text(MX - 16, MY + CH * 1.5, 'not spam', { pen: 'muted', size: 15, anchor: 'end' });
   });
   d.group(() => {
     d.rect(MX, MY, CW, CH, { pen: 'green', fill: 'green', rough: 0.6, label: 'TP 8', size: 18, bold: true });

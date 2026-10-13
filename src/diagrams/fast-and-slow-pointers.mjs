@@ -78,7 +78,7 @@ export default (d) => {
       d.rect(x, 370, 36, 26, { pen: i === 2 ? 'blue' : 'ink', fill: i === 2 ? 'blue' : undefined, rough: 0.6, single: true, label: String(v), mono: true, size: 15, bold: true });
       if (i < 4) d.arrow(x + 39, 383, x + 58, 383, { pen: 'muted', rough: 0.4, single: true, headSize: 8 });
     });
-    d.text(52 + 4 * 62 + 46, 383, 'None', { pen: 'muted', mono: true, size: 14, anchor: 'start' });
+    d.text(52 + 4 * 62 + 46, 383, 'null', { pen: 'muted', mono: true, size: 14, anchor: 'start' });
     d.text(52 + 2 * 62 + 18, 404, 'slow', { pen: 'blue', size: 14, bold: true });
     d.text(52 + 4 * 62 + 18, 404, 'fast', { pen: 'orange', size: 14, bold: true });
     d.text(400, 383, '→ middle = 3', { pen: 'blue', size: 15, bold: true, anchor: 'start' });

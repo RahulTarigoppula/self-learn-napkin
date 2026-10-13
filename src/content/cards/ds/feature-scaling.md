@@ -21,10 +21,10 @@ story:
   - title: "Gradient descent: a round bowl"
     text: "Scaling also speeds up gradient descent. With raw features the loss surface is a long, narrow valley: a learning rate small enough for the steep direction crawls along the flat one, and the path zig-zags. Scaled features give a rounder bowl, and the steps head nearly straight to the minimum."
 keyIdeas:
-  - "**Standardise**: z = (x − μ) / σ gives mean 0, std 1. **Min-max**: (x − min) / (max − min) maps to [0, 1]. **Robust**: (x − median) / IQR ignores outliers."
+  - "**Standardise**: z = (x − μ) / σ gives mean 0, std 1. **Min-max**: (x − min) / (max − min) maps to [0, 1]. **Robust**: (x − median) / IQR is barely moved by outliers."
   - "**Needs scaling**: kNN, k-means, SVM, PCA, regularised linear models, neural nets and anything trained by gradient descent."
   - "**Doesn't**: decision trees, random forests, gradient-boosted trees. A threshold split is unchanged by any monotonic rescaling."
-  - "**Fit on train only**, transform everything else with the same μ and σ. Use a `Pipeline` so cross-validation can't leak."
+  - "**Fit on train only**, transform everything else with the same μ and σ. Chain scaler and model in a **pipeline** so cross-validation can't leak."
   - "One extreme outlier squashes min-max scaling. Use robust scaling or a log transform for heavy-tailed columns."
 quiz:
   - q: "Which model's predictions are unaffected if you standardise the features?"
@@ -35,8 +35,8 @@ quiz:
     options: ["0.67", "1.5", "1.8", "18"]
     answer: 1
     why: "z = (58 − 40) / 12 = 18 / 12 = 1.5: one and a half standard deviations above the mean."
-  - q: "You fit StandardScaler on the full dataset, then split into train and test. What is the problem?"
-    options: ["None, scaling has no parameters", "The test rows influenced μ and σ, so test information leaked into training", "StandardScaler must be fit on the test set", "The model will not converge"]
+  - q: "You fit a standard scaler on the full dataset, then split into train and test. What is the problem?"
+    options: ["None, scaling has no parameters", "The test rows influenced μ and σ, so test information leaked into training", "The scaler must be fit on the test set", "The model will not converge"]
     answer: 1
     why: "μ and σ are learned parameters. Computing them with test rows lets the test set shape the training inputs, so the test score is slightly optimistic. Fit on train, then transform test."
   - q: "Incomes are £35k–£65k plus one at £1,000,000. What does min-max scaling do to the normal incomes?"
@@ -56,7 +56,7 @@ flashcards:
   - kind: cloze
     text: "Fit the scaler on the {{training set only}}, then use the same {{μ and σ}} to transform validation, test and production data."
   - kind: qa
-    q: "When would you choose RobustScaler over StandardScaler?"
+    q: "When would you choose robust scaling over standardisation?"
     a: "When a column has strong outliers. The median and IQR barely move for a few extreme values, while the mean and especially the standard deviation get dragged and squash the normal rows together."
 sources:
   - { name: "Stanford CS229 VIP cheatsheets (Amidi)", url: "https://github.com/afshinea/stanford-cs-229-machine-learning", licence: "MIT", note: "Machine-learning tips and tricks; data preprocessing" }
@@ -75,7 +75,7 @@ A model that measures **distance** between rows (kNN, k-means, SVM with an RBF k
 | **Min-max** | (x − min) / (max − min) | exactly [0, 1] on training data | one outlier squashes everything else |
 | **Robust** | (x − median) / IQR | median 0, IQR 1 | values are not bounded |
 
-IQR is the interquartile range, the 75th percentile minus the 25th. scikit-learn's `StandardScaler` uses the population standard deviation (divide by n, not n − 1). Standardisation is the usual default. Min-max suits bounded quantities such as pixel intensities (0–255 → 0–1). Robust scaling suits heavy-tailed columns. For strongly skewed positive values such as incomes or counts, a **log transform** before scaling often helps more than any scaler.
+IQR is the interquartile range, the 75th percentile minus the 25th. Scalers conventionally use the population standard deviation (divide by n, not n − 1), as the worked example below does. Standardisation is the usual default. Min-max suits bounded quantities such as pixel intensities (0–255 → 0–1). Robust scaling suits heavy-tailed columns. For strongly skewed positive values such as incomes or counts, a **log transform** before scaling often helps more than any scaler.
 
 ## Worked example
 
@@ -98,9 +98,20 @@ Raw: E wins, because √(34² + 1000²) ≈ 1,000.6 and the 34-year age gap cont
 
 ## Why gradient descent cares
 
-For a linear model with mean squared error, the curvature of the loss along each weight is twice the average of that feature's squared values, μ² + σ². For age that is 40² + 12² = 1,744. For income it is 50,000² + 10,000² = 2.6 billion. The bowl is about 1.5 million times steeper in one direction than the other. Gradient descent must use a learning rate small enough not to overshoot along the steepest direction, so along the flattest one it barely moves. The path zig-zags across the valley, and the number of steps needed grows with that curvature ratio (the **condition number**). Standardised features make the bowl far rounder, and convergence takes a handful of steps instead of thousands. Neural networks use the same reasoning, and batch normalisation applies it inside the network.
+For a linear model with mean squared error, the curvature of the loss along each weight is 2 × the average of that feature's squared values, and that average equals μ² + σ². For age it is 40² + 12² = 1,744. For income it is 50,000² + 10,000² = 2.6 billion. The bowl is about 1.5 million times steeper in one direction than the other. Gradient descent must use a learning rate small enough not to overshoot along the steepest direction, so along the flattest one it barely moves. The path zig-zags across the valley, and the number of steps needed grows with that curvature ratio (the **condition number**). Standardised features make the bowl far rounder, and convergence takes a handful of steps instead of thousands. Neural networks use the same reasoning, and batch normalisation applies it inside the network.
 
-## In code
+## The recipe
+
+```text
+fit (training rows only):   for each numeric column j: store μⱼ and σⱼ   (or min/max, or median/IQR)
+transform (any row, ever):  zⱼ = (xⱼ − μⱼ) / σⱼ  using the STORED values
+```
+
+Treat the stored numbers as part of the model: save them with it and apply them unchanged in production.
+
+## Implement it in Python
+
+Every ML library has these scalers (R's recipes, Julia's MLJ, Spark's StandardScaler…); this version uses scikit-learn, where the stored values are `mean_` and `scale_`.
 
 ```python
 import numpy as np
@@ -125,15 +136,17 @@ Xw, yw = load_wine(return_X_y=True)                      # 13 features, 'proline
 Xtr, Xte, ytr, yte = train_test_split(Xw, yw, stratify=yw, random_state=0)
 raw = KNeighborsClassifier().fit(Xtr, ytr).score(Xte, yte)
 scaled = make_pipeline(StandardScaler(), KNeighborsClassifier()).fit(Xtr, ytr).score(Xte, yte)
-print(raw, scaled)                                       # scaling lifts kNN accuracy markedly
+print(raw, scaled)                                       # 0.667 -> 0.933
 ```
+
+scikit-learn names for the variants in the pitfalls below: `ColumnTransformer` scales only chosen columns, and `StandardScaler(with_mean=False)` or `MaxAbsScaler` keep sparse matrices sparse. `StandardScaler` divides by the population standard deviation.
 
 ## Edge cases and pitfalls
 
-- **Leakage.** `scaler.fit(X_all)` before splitting lets test rows shape μ and σ. The effect is usually small for scaling, but it is a habit that turns into serious leakage with target encoding or imputation. Use pipelines.
+- **Leakage.** Fitting the scaler on all rows before splitting lets test rows shape μ and σ. The effect is usually small for scaling, but it is a habit that turns into serious leakage with target encoding or imputation. Use pipelines.
 - **Scaling the target.** Scaling y can help neural network training. Remember to inverse-transform predictions before reporting errors.
-- **One-hot columns** are already 0/1. Standardising them is harmless for most models but makes them harder to read. `ColumnTransformer` lets you scale only the numeric columns.
-- **Sparse data** (text counts): centring destroys sparsity. Use `StandardScaler(with_mean=False)` or `MaxAbsScaler`.
+- **One-hot columns** are already 0/1. Standardising them is harmless for most models but makes them harder to read, so scale only the numeric columns.
+- **Sparse data** (text counts): centring destroys sparsity. Divide by the standard deviation or the largest absolute value without subtracting anything.
 - **Values outside the training range** are fine. Min-max scaling then produces values below 0 or above 1, and the model should cope.
 - **Regularised models** need scaling for fairness: an L1/L2 penalty on unscaled features punishes small-unit columns more.
 

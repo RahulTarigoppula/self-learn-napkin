@@ -9,15 +9,15 @@ analogy: "A treasure hunt: each clue tells you where the next clue is hidden. Ad
 diagram: linked-lists
 story:
   - title: Nodes joined by next pointers
-    text: "A linked list stores each value in its own node, together with a pointer — a reference — to the next node. The list itself is just a pointer to the first node, called head; the last node points to None. Nodes can live anywhere in memory: only the pointers keep them in order."
+    text: "A linked list stores each value in its own node, together with a pointer — a reference — to the next node. The list itself is just a pointer to the first node, called head; the last node points to null (nothing). Nodes can live anywhere in memory: only the pointers keep them in order."
   - title: Finding a node means walking
     text: "There is no index arithmetic. To reach the node holding 2 you start at head and follow next pointers one hop at a time. Finding a value, or the k-th node, is O(n) — an array gets a[k] in O(1)."
   - title: Insert after a known node
     text: "Once you hold a reference to node 2, inserting 9 after it takes two pointer writes: 9.next = 2.next, then 2.next = 9. Nothing shifts, so it is O(1) however long the list is. The order matters: overwrite 2.next first and you lose the rest of the list."
   - title: "Reverse: flip one pointer at a time"
-    text: "To reverse 1→2→3 in place, walk with two pointers: prev starts at None, curr at head. Each step saves nxt = curr.next, points curr.next back at prev, then moves prev and curr one node forward. After step 1, node 1 points to None and the walk continues at 2."
+    text: "To reverse 1→2→3 in place, walk with two pointers: prev starts at null, curr at head. Each step saves nxt = curr.next, points curr.next back at prev, then moves prev and curr one node forward. After step 1, node 1 points to null and the walk continues at 2."
   - title: prev ends up as the new head
-    text: "Step 2 points 2 back at 1; step 3 points 3 back at 2. Now curr is None, the loop stops, and prev — node 3 — is the new head: 3→2→1. Each node was visited once: O(n) time and O(1) extra space, because no node was copied."
+    text: "Step 2 points 2 back at 1; step 3 points 3 back at 2. Now curr is null, the loop stops, and prev — node 3 — is the new head: 3→2→1. Each node was visited once: O(n) time and O(1) extra space, because no node was copied."
 keyIdeas:
   - "A node holds a **value and a pointer** to the next node; the list is just a pointer to the **head**."
   - "**Insert or delete next to a node you hold: O(1).** Reaching that node, or searching: **O(n)**."
@@ -33,12 +33,12 @@ quiz:
     options: ["Freeing memory is slow", "You must find X's predecessor to change its next pointer, which means walking from head", "All later nodes must shift left", "It is O(1)"]
     answer: 1
     why: "Deleting X means setting pred.next = X.next, and a singly linked node does not know its predecessor. A doubly linked list stores prev, making it O(1)."
-  - q: "What does reverse(head) return for an empty list (head is None)?"
-    options: ["It raises an error", "None", "A node with value None", "head.next"]
+  - q: "What does reverse(head) return for an empty list (head is null)?"
+    options: ["It raises an error", "null", "A node holding the value null", "head.next"]
     answer: 1
-    why: "curr starts as None, so the loop body never runs and prev — still None — is returned. The empty list reversed is the empty list."
+    why: "curr starts as null, so the loop body never runs and prev, still null, is returned. The empty list reversed is the empty list."
   - q: "Summing an array and summing a linked list are both O(n). Why is the array usually several times faster?"
-    options: ["Arrays use fewer comparisons", "Array elements are contiguous, so each cache line fetched brings many next elements; list nodes are scattered and each hop can miss the cache", "Linked lists are O(n log n)", "Python optimises arrays only"]
+    options: ["Arrays use fewer comparisons", "Array elements are contiguous, so each cache line fetched brings many next elements; list nodes are scattered and each hop can miss the cache", "Linked lists are O(n log n)", "Compilers only optimise array loops"]
     answer: 1
     why: "Big-O counts steps, not memory stalls. The CPU loads 64-byte cache lines and prefetches sequential data; a pointer chase to a random address can cost ~100 ns from RAM versus ~1 ns from cache."
 bigO:
@@ -52,7 +52,7 @@ prereqs: [dsa/arrays-and-pointers]
 flashcards:
   - kind: qa
     q: "Reverse a singly linked list in place — what are the three moves in each iteration?"
-    a: "nxt = curr.next (save the rest); curr.next = prev (flip); prev, curr = curr, nxt (advance). When curr is None, prev is the new head."
+    a: "nxt = curr.next (save the rest); curr.next = prev (flip); prev = curr, curr = nxt (advance). When curr is null, prev is the new head."
   - kind: cloze
     text: "A {{dummy (sentinel) head}} node gives the first real node a predecessor, so deleting or inserting at the front needs {{no special case}}."
   - kind: qa
@@ -65,7 +65,7 @@ sources:
 
 ## How it works
 
-A **linked list** is a chain of **nodes**. Each node holds a value and a **pointer** (in Python, a reference) to the next node. The list as a whole is just a reference to the first node, the **head**; the last node's `next` is `None`, which marks the end.
+A **linked list** is a chain of **nodes**. Each node holds a value and a **pointer** to the next node (languages such as Python and Java call it a *reference*). The list as a whole is just a pointer to the first node, the **head**; the last node's `next` is **null** (Python spells it `None`), which marks the end.
 
 Because each node knows only its successor, nodes do not need to sit next to each other in memory. That one fact explains every trade-off:
 
@@ -82,7 +82,7 @@ A **doubly linked** list gives every node a `prev` pointer as well. Now X can un
 
 ### The dummy (sentinel) head
 
-Many list operations need the node *before* the one you are changing. The first real node has no predecessor, so code fills up with `if node is head:` special cases. A **dummy** node placed in front of the real head fixes this: every real node now has a predecessor, and at the end you return `dummy.next`. Doubly linked lists often use one sentinel at each end (or a single circular sentinel), so no pointer is ever `None` in the middle of an operation.
+Many list operations need the node *before* the one you are changing. The first real node has no predecessor, so code fills up with `if node is head:` special cases. A **dummy** node placed in front of the real head fixes this: every real node now has a predecessor, and at the end you return `dummy.next`. Doubly linked lists often use one sentinel at each end (or a single circular sentinel), so no pointer is ever null in the middle of an operation.
 
 ## Worked example: reversing 1 → 2 → 3
 
@@ -90,14 +90,16 @@ Keep `prev` (the already-reversed part) and `curr` (the next node to flip). Each
 
 | Step | nxt saved | Pointer flipped | prev | curr | Lists at this moment |
 |---|---|---|---|---|---|
-| start | — | — | None | 1 | 1→2→3 |
-| 1 | 2 | 1.next = None | 1 | 2 | 1→None · 2→3 |
-| 2 | 3 | 2.next = 1 | 2 | 3 | 2→1→None · 3 |
-| 3 | None | 3.next = 2 | 3 | None | 3→2→1→None |
+| start | — | — | null | 1 | 1→2→3 |
+| 1 | 2 | 1.next = null | 1 | 2 | 1→null · 2→3 |
+| 2 | 3 | 2.next = 1 | 2 | 3 | 2→1→null · 3 |
+| 3 | null | 3.next = 2 | 3 | null | 3→2→1→null |
 
-`curr` is None, so the loop ends and `prev` (node 3) is the new head. Three nodes, three iterations, and only three extra variables however long the list is: O(n) time, O(1) space. The step people forget is saving `nxt` — once `curr.next` is overwritten, the rest of the list is unreachable.
+`curr` is null, so the loop ends and `prev` (node 3) is the new head. Three nodes, three iterations, and only three extra variables however long the list is: O(n) time, O(1) space. The step people forget is saving `nxt` — once `curr.next` is overwritten, the rest of the list is unreachable.
 
-## In code
+## Implement it in Python
+
+The same idea works in any language; here it is in Python, where null is spelled `None`.
 
 ```python
 class Node:
@@ -144,14 +146,14 @@ Without the dummy, `remove_all` would need a separate loop to strip leading 7s a
 
 ## Why arrays usually win in practice
 
-Big-O treats every step as equal, but the hardware does not. A CPU reads memory in **cache lines** of 64 bytes and prefetches sequential addresses, so scanning an array brings the next several elements in almost for free. Linked-list nodes are scattered across the heap, so each hop can be a **cache miss**: roughly 100 ns to fetch from main memory versus about 1 ns from the L1 cache. Each node also carries one or two pointers of overhead (and in Python, a whole object). That is why a dynamic array is the default sequence in Python, Java and C++, and linked lists are reserved for jobs that need O(1) splicing at known positions: LRU caches (a hash map pointing into a doubly linked list), free lists in memory allocators, and queues where nodes are handed around rather than searched.
+Big-O treats every step as equal, but the hardware does not. A CPU reads memory in **cache lines** of 64 bytes and prefetches sequential addresses, so scanning an array brings the next several elements in almost for free. Linked-list nodes are scattered across the heap, so each hop can be a **cache miss**: roughly 100 ns to fetch from main memory versus about 1 ns from the L1 cache. Each node also carries one or two pointers of overhead (and in languages like Python or Java, a whole object header). That is why a dynamic array is the default sequence in Python, Java and C++, and linked lists are reserved for jobs that need O(1) splicing at known positions: LRU caches (a hash map pointing into a doubly linked list), free lists in memory allocators, and queues where nodes are handed around rather than searched.
 
 ## Edge cases and pitfalls
 
-- **Empty list and single node.** Check every function with `head = None` and with one node; `reverse` handles both because the loop just runs zero or one time.
+- **Empty list and single node.** Check every function with an empty list (head is null) and with one node; `reverse` handles both because the loop just runs zero or one time.
 - **Losing the rest of the list.** Always save `curr.next` before overwriting it.
 - **Forgetting to update `head`.** Deleting or inserting at the front changes the head; return the new head (or use a dummy).
-- **Cycles.** A bug or a malicious input can make `next` point backwards, and a `while node:` loop will never end. Floyd's fast and slow pointers detect that in O(1) space.
+- **Cycles.** A bug or a malicious input can make `next` point backwards, and a "walk until null" loop will never end. Floyd's fast and slow pointers detect that in O(1) space.
 
 ## In the interview
 

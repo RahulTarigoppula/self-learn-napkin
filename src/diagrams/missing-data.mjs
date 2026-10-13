@@ -23,6 +23,26 @@ const P = [
 const AGE = [18, 67];
 const INC = [25, 72];
 
+/** A small filled hexagon: reads as a dot but costs half the bytes of d.dot. */
+const mark = (d, x, y, pen, dia = 9, sides = 6) =>
+  d.poly(
+    Array.from({ length: sides }, (_, i) => [
+      x + (dia / 2) * Math.cos((i * 2 * Math.PI) / sides),
+      y + (dia / 2) * Math.sin((i * 2 * Math.PI) / sides),
+    ]),
+    { pen, fill: pen, closed: true, rough: 0.3, single: true },
+  );
+
+/** A hollow octagon ring: a missing value, cheaper than d.circle. */
+const ring = (d, x, y, pen, dia = 13) =>
+  d.poly(
+    Array.from({ length: 8 }, (_, i) => [
+      x + (dia / 2) * Math.cos((i * Math.PI) / 4),
+      y + (dia / 2) * Math.sin((i * Math.PI) / 4),
+    ]),
+    { pen, thick: true, closed: true, rough: 0.3, single: true },
+  );
+
 /** A mini scatter where the `missing` rows are drawn hollow and dashed (income not recorded). */
 function mini(d, x0, title, sub, missing, pen) {
   const W = 148;
@@ -35,8 +55,8 @@ function mini(d, x0, title, sub, missing, pen) {
     d.line(x0, y0 + H, x0 + W, y0 + H, { pen: 'muted', thin: true });
     d.line(x0, y0 + H, x0, y0, { pen: 'muted', thin: true });
     P.forEach(([a, v], i) => {
-      if (missing.includes(i)) d.circle(sx(a), sy(v), 13, { pen, thick: true, single: true });
-      else d.dot(sx(a), sy(v), 9, { pen: 'blue', single: true });
+      if (missing.includes(i)) ring(d, sx(a), sy(v), pen);
+      else mark(d, sx(a), sy(v), 'blue', 9, 4); // small diamonds keep the three minis light
     });
     d.text(x0 + W / 2, y0 + H + 18, sub, { pen, size: 14 });
   });
@@ -73,19 +93,19 @@ export default (d) => {
     d.line(BX0, BY0, BX0, BY1 - 8, { pen: 'muted' });
     d.text(BX1, BY0 + 16, 'age', { pen: 'muted', size: 15, anchor: 'end' });
     d.text(BX0 + 8, BY1 - 10, 'income £k (MAR case)', { pen: 'muted', size: 15, anchor: 'start' });
-    for (const [a, v] of OBS) d.dot(bx(a), by(v), 9, { pen: 'blue', single: true });
-    for (const [a, v] of MISS) d.circle(bx(a), by(v), 13, { pen: 'orange', thick: true, single: true });
+    for (const [a, v] of OBS) mark(d, bx(a), by(v), 'blue', 9);
+    for (const [a, v] of MISS) ring(d, bx(a), by(v), 'orange');
   });
   d.group(() => {
     d.line(BX0 + 4, by(MEAN), BX1, by(MEAN), { pen: 'red', dashed: true });
-    for (const [a] of MISS) d.dot(bx(a), by(MEAN), 10, { pen: 'red', single: true });
+    for (const [a] of MISS) mark(d, bx(a), by(MEAN), 'red', 10);
     d.text(BX0 + 8, by(MEAN) + 16, 'mean 53.7', { pen: 'red', size: 15, anchor: 'start' });
   });
 
   d.step('Model-based imputation follows the pattern');
   d.line(bx(19), by(fit(19)), bx(66), by(fit(66)), { pen: 'green', thick: true });
   d.group(() => {
-    for (const [a] of MISS) d.dot(bx(a), by(fit(a)), 10, { pen: 'green', single: true });
+    for (const [a] of MISS) mark(d, bx(a), by(fit(a)), 'green', 10);
     d.text(BX1, by(36), 'predicted\nfrom age', { pen: 'green', size: 15, anchor: 'end' });
   });
 

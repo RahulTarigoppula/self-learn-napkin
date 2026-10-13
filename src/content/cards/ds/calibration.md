@@ -17,12 +17,12 @@ story:
   - title: "Score it: Brier and log-loss"
     text: "Two scoring rules grade probabilities directly. The Brier score is the mean squared gap between p and the 0/1 outcome: these five emails give 0.59 / 5 = 0.118. Log-loss averages −ln of the probability given to what actually happened: 0.372. Both are dominated by one confident miss, 0.7 on a good email."
   - title: "Fix it: Platt scaling or isotonic"
-    text: "Recalibration learns the red curve on data the model never trained on, then re-maps every score. Platt scaling fits a sigmoid σ(a·z + b) to the model's log-odds z; here it finds a = 0.5, b = 0, turning 0.9 into 0.75. Isotonic regression fits any increasing step function: more flexible, but it needs more data."
+    text: "Recalibration learns the red curve on data the model never trained on, then re-maps every score; the re-mapped bins (green) sit back on the diagonal. Platt scaling fits a sigmoid σ(a·z + b) to the model's log-odds z; here a = 0.5, b = 0 turns 0.9 into 0.75. Isotonic regression fits any increasing step function (violet): more flexible, but it needs more data."
 keyIdeas:
   - "**Calibrated** means of all predictions near p, about p are positive. Check with a **reliability diagram** (predicted vs observed, per bin)."
   - "Calibration is not ranking: ROC AUC is unchanged by any order-preserving re-mapping, so a high-AUC model can be badly calibrated."
   - "**Brier score** and **log-loss** are proper scoring rules: they reward probabilities that are both calibrated and sharp."
-  - "**Platt scaling** (2 parameters) suits small calibration sets; **isotonic regression** fits any monotone shape but overfits with few hundred points. Always fit on held-out data."
+  - "**Platt scaling** (2 parameters) suits small calibration sets; **isotonic regression** fits any monotone shape but overfits with only a few hundred points. Always fit on held-out data."
   - "Typical drift: naive Bayes and large neural nets are **overconfident**; random forests keep away from 0 and 1; resampling and class weights inflate the rare class."
 quiz:
   - q: "A forecaster is perfectly calibrated. Over 200 days on which they said '30 % chance of rain', about how many had rain?"
@@ -34,12 +34,12 @@ quiz:
     answer: 0
     why: "σ(a·z + b) with a > 0 is strictly increasing, so the order of scores — all AUC depends on — is unchanged. Only the probability values move. (Isotonic regression can merge scores into ties and nudge AUC slightly.)"
   - q: "Five emails, two of them spam. A lazy model predicts 0.4 for every email. What is its Brier score?"
-    options: ["0.16", "0.24", "0.36", "0.40"]
-    answer: 1
+    options: ["0.16", "0.36", "0.24", "0.40"]
+    answer: 2
     why: "Spam emails: (0.4 − 1)² = 0.36 each; good emails: (0.4 − 0)² = 0.16 each. (2 × 0.36 + 3 × 0.16) / 5 = 1.20 / 5 = 0.24 — worse than the story model's 0.118, though this lazy model is perfectly calibrated on average."
   - q: "You have only 300 held-out examples to calibrate a gradient-boosted model. Which method is the safer choice?"
-    options: ["Isotonic regression", "Platt scaling", "Retrain with class weights", "No calibration is possible"]
-    answer: 1
+    options: ["Isotonic regression", "Retrain with class weights", "No calibration is possible", "Platt scaling"]
+    answer: 3
     why: "Platt scaling estimates just two numbers, so 300 points are plenty. Isotonic regression fits a free-form step function and tends to overfit below roughly a thousand calibration points."
 related: [ds/logistic-regression, ds/precision-recall-roc, ds/class-imbalance, ds/loss-functions]
 prereqs: [ds/logistic-regression]

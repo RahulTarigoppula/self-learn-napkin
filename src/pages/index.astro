@@ -3,8 +3,9 @@ import Icon from '../components/Icon.astro';
 import NapkinTile from '../components/NapkinTile.astro';
 import HomeDashboard from '../features/home/HomeDashboard';
 import AppShell from '../layouts/AppShell.astro';
-import { href, withBase } from '../lib/base';
+import { cardHref, href, withBase } from '../lib/base';
 import { library, numberOf } from '../lib/content';
+import { inlineMd } from '../lib/inline-md';
 import { PATHS } from '../lib/paths';
 
 const { cards, tracks } = await library();
@@ -21,6 +22,14 @@ const paths = PATHS.map((p) => ({ ...p, ids: p.ids.filter((i) => ids.has(i)) }))
   (p) => p.ids.length > 0,
 );
 const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
+// One surprising, self-contained idea per napkin for the "Did you know?" card.
+const facts = cards.map((c) => ({
+  id: c.id,
+  t: c.data.title,
+  k: c.data.track,
+  f: c.data.keyIdeas[0] ?? c.data.tldr,
+}));
+const firstFact = facts[0];
 ---
 
 <AppShell title="Napkin" active="home">
@@ -41,6 +50,26 @@ const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
       </div>
       <HomeDashboard client:load cards={lite} tracks={tracks.map((t) => ({ id: t.id, total: t.cards.length }))} />
     </section>
+
+    {
+      firstFact && (
+        <section class="dyk card" aria-live="polite" data-facts={JSON.stringify(facts)}>
+          <span class="dyk__icon" aria-hidden="true">
+            <Icon name="bulb" size={22} />
+          </span>
+          <div class="dyk__body">
+            <p class="dyk__label hand">Did you know?</p>
+            <p class="dyk__fact" set:html={inlineMd(firstFact.f)} />
+            <a class="dyk__link" href={cardHref(firstFact.id)}>
+              From <span>{firstFact.t}</span> <Icon name="arrowRight" size={14} />
+            </a>
+          </div>
+          <button class="btn btn--ghost btn--icon dyk__next" type="button" aria-label="Show another fact">
+            <Icon name="shuffle" size={18} />
+          </button>
+        </section>
+      )
+    }
 
     {
       picks.length > 0 && (
@@ -202,6 +231,31 @@ const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
 
 <script>
   import { lastStats, type ShellStats } from '../features/shell/shell';
+  import { cardHref } from '../lib/base';
+  import { inlineMd } from '../lib/inline-md';
+
+  // "Did you know?": a random key idea each visit, and another on every shuffle.
+  const dyk = document.querySelector<HTMLElement>('.dyk');
+  if (dyk) {
+    const facts = JSON.parse(dyk.dataset.facts ?? '[]') as { id: string; t: string; k: string; f: string }[];
+    const show = () => {
+      const x = facts[Math.floor(Math.random() * facts.length)];
+      if (!x) return;
+      const p = dyk.querySelector('.dyk__fact');
+      const a = dyk.querySelector<HTMLAnchorElement>('.dyk__link');
+      if (p) p.innerHTML = inlineMd(x.f);
+      if (a) {
+        a.href = cardHref(x.id);
+        const span = a.querySelector('span');
+        if (span) span.textContent = x.t;
+      }
+      dyk.classList.remove('is-new');
+      void dyk.offsetWidth;
+      dyk.classList.add('is-new');
+    };
+    show();
+    dyk.querySelector('.dyk__next')?.addEventListener('click', show);
+  }
 
   const paint = (s: ShellStats | null) => {
     if (!s) return;
@@ -284,6 +338,59 @@ const totalMinutes = cards.reduce((s, c) => s + c.data.minutes, 0);
   }
   .block {
     margin-top: var(--space-10);
+  }
+  .dyk {
+    margin-top: var(--space-8);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-4);
+    align-items: start;
+    padding: var(--space-5);
+    background:
+      radial-gradient(80% 140% at 0% 0%, color-mix(in srgb, var(--hl) 22%, transparent), transparent 60%),
+      var(--surface);
+  }
+  .dyk__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--hl);
+    color: var(--hl-ink);
+  }
+  .dyk__label {
+    font-size: 1.2rem;
+    color: var(--accent-ink);
+    line-height: 1.2;
+  }
+  .dyk__fact {
+    font-size: var(--text-lg);
+    font-weight: 500;
+    margin: 4px 0 6px;
+  }
+  .dyk__fact :global(code) {
+    font-size: 0.88em;
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: var(--surface-2);
+  }
+  .dyk__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 32px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+  .dyk__link span {
+    color: var(--accent-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .dyk.is-new .dyk__body {
+    animation: fade-up var(--dur-slow) var(--ease-out) both;
   }
   .block h2 {
     font-size: clamp(1.5rem, 3.5vw, 2rem);

@@ -11,7 +11,7 @@ story:
   - title: Three groups in 10-D
     text: "Take 300 points in 10 dimensions forming three groups. Along the first axis they sit at 0, 40 and 240, so the gaps are 40 and 200, and group B is five times wider than A and C. We want a 2-D picture, but no flat map can keep every 10-D distance, so something has to give."
   - title: Distances become neighbour probabilities
-    text: "t-SNE first asks, for each point i, who its neighbours are. It centres a Gaussian on i: with width σ = 1, neighbours at distance 1, 2, 3 and 10 get probabilities 0.81, 0.18, 0.02 and ≈ 0. Every point gets its own σ, tuned so its perplexity — roughly the effective number of neighbours, here 30 — is the same."
+    text: "t-SNE first asks, for each point i, who its neighbours are. It centres a Gaussian on i: with width σ = 1, neighbours at distance 1, 2, 3 and 10 get probabilities 0.81, 0.18, 0.015 and ≈ 0. Every point gets its own σ, tuned so its perplexity — roughly the effective number of neighbours, here 30 — is the same."
   - title: Lay out in 2-D with heavy tails
     text: "Then it scatters the points in 2-D and moves them until the 2-D neighbour probabilities match the 10-D ones. In 2-D, similarity uses a Student-t curve with a much fatter tail: at distance 3 it gives 0.10 where the Gaussian gives 0.011. Moderately distant points can drift far apart cheaply, which carves clean gaps between groups."
   - title: "The map: same sizes, same gaps"
